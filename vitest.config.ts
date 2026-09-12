@@ -16,7 +16,9 @@ const aliases = {
   '@assets': alias('assets'),
 };
 
-const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as {
+  version: string;
+};
 
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
@@ -29,7 +31,14 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['src/engine/**/*.test.ts', 'src/content/**/*.test.ts', 'src/state/**/*.test.ts', 'src/platform/**/*.test.ts', 'src/i18n/**/*.test.ts', 'tools/**/*.test.ts'],
+          include: [
+            'src/engine/**/*.test.ts',
+            'src/content/**/*.test.ts',
+            'src/state/**/*.test.ts',
+            'src/platform/**/*.test.ts',
+            'src/i18n/**/*.test.ts',
+            'tools/**/*.test.ts',
+          ],
           setupFiles: ['./vitest.setup.node.ts'],
         },
       },
@@ -38,7 +47,12 @@ export default defineConfig({
         test: {
           name: 'ui',
           environment: 'jsdom',
-          include: ['src/ui/**/*.test.{ts,tsx}', 'src/app/**/*.test.{ts,tsx}', 'src/audio/**/*.test.ts', 'src/render/**/*.test.ts'],
+          include: [
+            'src/ui/**/*.test.{ts,tsx}',
+            'src/app/**/*.test.{ts,tsx}',
+            'src/audio/**/*.test.ts',
+            'src/render/**/*.test.ts',
+          ],
           setupFiles: ['./vitest.setup.ts'],
         },
       },

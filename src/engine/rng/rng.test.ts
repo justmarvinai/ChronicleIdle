@@ -40,7 +40,13 @@ describe('rng', () => {
     const rng = createRng('weights');
     let heavy = 0;
     for (let i = 0; i < 10000; i++) {
-      if (rng.weighted([{ item: 'heavy', weight: 90 }, { item: 'light', weight: 10 }]) === 'heavy') heavy++;
+      if (
+        rng.weighted([
+          { item: 'heavy', weight: 90 },
+          { item: 'light', weight: 10 },
+        ]) === 'heavy'
+      )
+        heavy++;
     }
     expect(heavy / 10000).toBeCloseTo(0.9, 1);
   });

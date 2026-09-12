@@ -7,7 +7,12 @@ import { CURRENCY_IDS } from '@content/currencies/types';
 
 export const SAVE_VERSION = 1 as const;
 
-export const walletSchema = z.object(Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<(typeof CURRENCY_IDS)[number], z.ZodNumber>);
+export const walletSchema = z.object(
+  Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
+    (typeof CURRENCY_IDS)[number],
+    z.ZodNumber
+  >,
+);
 
 export const settingsSchema = z.object({
   musicVolume: z.number().min(0).max(1),

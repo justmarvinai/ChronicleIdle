@@ -5,7 +5,13 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-_(none — new questions are added here as they arise during development)_
+### Q28 — Re-encode the two music tracks?
+**Why it matters.** `outside_combat.mp3` (6.8 MB) and `combat_campaign_depths_arena.mp3`
+(8.1 MB) are streamed on demand, so they never block the game, but they are the two biggest
+downloads by far (Lighthouse "total byte weight"). Re-encoding them in-house to OGG/Opus at
+~128 kbps would cut them to roughly 2–3 MB each with no audible change on laptop speakers.
+**Default until answered.** The originals ship untouched (music quality is the owner's call);
+the pipeline gains the re-encode step in Phase 15 (polish) if you say yes.
 
 ## 2. Answered
 

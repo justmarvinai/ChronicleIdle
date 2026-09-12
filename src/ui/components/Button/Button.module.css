@@ -1,0 +1,128 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 28px;
+  min-width: 120px;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    filter var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out);
+  will-change: transform;
+}
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.15) saturate(1.05);
+  box-shadow: var(--glow-gold);
+}
+.button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  filter: brightness(0.95);
+  transition-duration: 60ms;
+}
+.button:disabled {
+  filter: grayscale(0.7) brightness(0.6);
+  opacity: 0.85;
+}
+
+.label {
+  font-size: 22px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.icon {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+}
+
+.sm {
+  height: 44px;
+  padding: 0 18px;
+  min-width: 96px;
+}
+.sm .label {
+  font-size: 18px;
+}
+.md {
+  height: 60px;
+}
+.lg {
+  height: 84px;
+  padding: 0 44px;
+  min-width: 260px;
+}
+.lg .label {
+  font-size: 30px;
+}
+
+.primary {
+  color: var(--gold-3);
+}
+.danger {
+  color: #ffd9d3;
+  filter: hue-rotate(-8deg) saturate(1.2);
+}
+.danger:hover:not(:disabled) {
+  box-shadow: var(--glow-ember);
+}
+.secondary {
+  color: var(--text-1);
+}
+.square {
+  min-width: 0;
+  width: 60px;
+  padding: 0;
+}
+.square.sm {
+  width: 44px;
+}
+.square.lg {
+  width: 84px;
+}
+.square .label {
+  font-size: 20px;
+}
+.active {
+  color: var(--gold-3);
+  box-shadow: inset 0 0 12px rgba(240, 213, 122, 0.25);
+}
+
+.ghost {
+  min-width: 0;
+  padding: 0 8px;
+  height: 40px;
+  color: var(--text-2);
+  border-bottom: 1px solid transparent;
+}
+.ghost:hover:not(:disabled) {
+  transform: none;
+  filter: none;
+  box-shadow: none;
+  color: var(--gold-3);
+  border-bottom-color: var(--gold-2);
+}
+
+.loading .label,
+.loading .icon {
+  visibility: hidden;
+}
+.spinner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(243, 236, 220, 0.25);
+  border-top-color: var(--gold-3);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

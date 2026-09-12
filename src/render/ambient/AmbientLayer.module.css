@@ -1,0 +1,6 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-ambient);
+  pointer-events: none;
+}

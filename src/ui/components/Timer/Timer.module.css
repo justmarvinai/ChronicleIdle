@@ -1,0 +1,12 @@
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gold-3);
+  font-size: var(--fs-num);
+}
+.label {
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  color: var(--text-2);
+}

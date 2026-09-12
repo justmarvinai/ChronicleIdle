@@ -46,7 +46,11 @@ export function onFullscreenChange(listener: (active: boolean) => void): () => v
 
 /** True when running as an installed PWA (standalone window) rather than a browser tab. */
 export function isStandalone(): boolean {
-  return typeof window !== 'undefined' && (window.matchMedia?.('(display-mode: standalone)').matches || window.matchMedia?.('(display-mode: fullscreen)').matches);
+  return (
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(display-mode: standalone)').matches ||
+      window.matchMedia?.('(display-mode: fullscreen)').matches)
+  );
 }
 
 export function prefersReducedMotion(): boolean {

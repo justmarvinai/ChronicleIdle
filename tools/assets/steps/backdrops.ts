@@ -14,9 +14,14 @@ export async function buildBackdrops(ctx: BuildContext): Promise<void> {
       const meta = await image.metadata();
       const full = await sharp(source).webp({ quality: 80, effort: 5 }).toBuffer();
       const out = await ctx.emit('backdrops', name, 'webp', full);
-      const tiny = await sharp(source).resize(32, null, { fit: 'inside' }).blur(1.5).webp({ quality: 50 }).toBuffer();
+      const tiny = await sharp(source)
+        .resize(32, null, { fit: 'inside' })
+        .blur(1.5)
+        .webp({ quality: 50 })
+        .toBuffer();
       const entry: ImageSetEntry = {
-        kind: 'image-set', group: 'backdrops',
+        kind: 'image-set',
+        group: 'backdrops',
         sizes: { full: { url: out.url, w: meta.width ?? 0, h: meta.height ?? 0 } },
         placeholder: `data:image/webp;base64,${tiny.toString('base64')}`,
       };

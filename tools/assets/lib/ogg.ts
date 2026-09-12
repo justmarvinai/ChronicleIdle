@@ -12,7 +12,10 @@ let queue: Promise<unknown> = Promise.resolve();
 export function encodeOgg(channels: Float32Array[], sampleRate: number, vbrQuality: number): Promise<Buffer> {
   const run = async (): Promise<Buffer> => {
     const enc = await encoder();
-    const stereo: Float32Array[] = channels.length >= 2 ? [channels[0] as Float32Array, channels[1] as Float32Array] : [channels[0] as Float32Array];
+    const stereo: Float32Array[] =
+      channels.length >= 2
+        ? [channels[0] as Float32Array, channels[1] as Float32Array]
+        : [channels[0] as Float32Array];
     enc.configure({ sampleRate, channels: stereo.length === 2 ? 2 : 1, vbrQuality });
     const parts: Buffer[] = [];
     const chunk = 65536;

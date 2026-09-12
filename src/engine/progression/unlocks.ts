@@ -10,5 +10,7 @@ export function isFeatureUnlocked(feature: FeatureId, playerLevel: number): bool
 
 /** Features that become available exactly when reaching `level` (for level-up celebrations). */
 export function featuresUnlockedAt(level: number): FeatureId[] {
-  return (Object.keys(FEATURE_UNLOCK_LEVEL) as FeatureId[]).filter((id) => FEATURE_UNLOCK_LEVEL[id] === level);
+  return (Object.keys(FEATURE_UNLOCK_LEVEL) as FeatureId[]).filter(
+    (id) => FEATURE_UNLOCK_LEVEL[id] === level,
+  );
 }

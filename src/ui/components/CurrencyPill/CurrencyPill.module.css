@@ -1,0 +1,76 @@
+.pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 14px 0 8px;
+  min-width: 170px;
+}
+.sm {
+  height: 42px;
+  min-width: 130px;
+  padding: 0 10px 0 6px;
+}
+.fill {
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+}
+.icon,
+.amount,
+.add {
+  position: relative;
+  z-index: 1;
+}
+.icon {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+}
+.amount {
+  font-size: 24px;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+  flex: 1 1 auto;
+  text-align: right;
+}
+.sm .amount {
+  font-size: 20px;
+}
+.cap {
+  color: var(--text-3);
+  font-size: 0.8em;
+}
+.over .amount {
+  color: var(--gold-3);
+}
+.low .amount {
+  color: #ffb3a8;
+}
+.add {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--gold-3);
+  background: linear-gradient(to bottom, var(--ember-2), var(--ember-1));
+  border: 1px solid var(--gold-1);
+  transition:
+    filter var(--t-fast),
+    transform var(--t-fast);
+}
+.add:hover {
+  filter: brightness(1.25);
+  transform: scale(1.06);
+}
+.tipTitle {
+  font-size: 20px;
+  color: var(--gold-3);
+  margin-bottom: 4px;
+}
+.tipBody {
+  color: var(--text-2);
+}

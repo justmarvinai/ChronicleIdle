@@ -1,0 +1,17 @@
+.row {
+  display: inline-flex;
+  gap: 1px;
+}
+.star {
+  flex: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.on {
+  filter: drop-shadow(0 0 3px rgba(240, 213, 122, 0.6));
+}
+.off {
+  filter: grayscale(1) brightness(0.35);
+  opacity: 0.8;
+}

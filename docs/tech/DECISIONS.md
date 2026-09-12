@@ -148,3 +148,27 @@ no unclear licences ever enter the repository.
 branch is fast-forwarded into `main` before the session ends; never force-push `main`.
 **Consequences.** CI on every push keeps `main` deployable; the changelog and roadmap status are
 updated in the same commits as the work.
+
+## ADR-021 — Deco frames tinted at runtime; kit textures shipped as WebP
+**Context.** The pixel deco frames are ivory sources that must appear in six rarity colours,
+gold and ash; shipping tinted copies would multiply 140 files by every colour. The painted kits
+are large PNGs (up to 1.5 MB each).
+**Decision.** The asset pipeline packs all deco frames into one exact PNG sheet (one request,
+decoded once at boot); `useDecoTint` copies a frame into a 96 px canvas, fills it with
+`source-in` and caches the data URL per (frame, colour), so tinting is synchronous and frames
+never flash their source colour. Painted kit textures are re-encoded as WebP (quality 92, alpha
+kept); glyphs are inlined into the generated CSS as data URIs (zero requests) and also emitted as
+files for Pixi.
+**Consequences.** One asset per frame, any colour for free, ~70 % smaller kit downloads; a new
+rarity colour is a token change, not an asset change.
+
+## ADR-022 — Immediate writes for explicit edits and a synchronous unload mirror
+**Context.** A debounced IndexedDB autosave can be cut off when the tab is closed or reloaded
+within the debounce window; IndexedDB writes issued during `pagehide` are not guaranteed to
+commit.
+**Decision.** Settings and profile edits bypass the debounce; `pagehide`/`visibilitychange`
+additionally write the save synchronously to a localStorage mirror that boot reconciles (newer
+mirror wins, written back to IndexedDB, then cleared).
+**Consequences.** A changed setting survives an immediate reload; the mirror costs one small
+synchronous write per tab hide and is invisible otherwise. Electron later replaces both stores
+with file writes behind the same adapter interface.

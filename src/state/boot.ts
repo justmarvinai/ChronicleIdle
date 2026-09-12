@@ -38,7 +38,12 @@ export async function bootGame({ store, storage, clock }: BootDeps): Promise<voi
     return;
   }
   if (loaded.kind === 'unsupported') {
-    actions.setBoot({ status: 'ready', hasSave: false, unsupportedSaveVersion: loaded.version, corruptSaveText: JSON.stringify(raw) });
+    actions.setBoot({
+      status: 'ready',
+      hasSave: false,
+      unsupportedSaveVersion: loaded.version,
+      corruptSaveText: JSON.stringify(raw),
+    });
     return;
   }
   // Corrupt: try the newest backup before giving up.
@@ -50,14 +55,27 @@ export async function bootGame({ store, storage, clock }: BootDeps): Promise<voi
     if (attempt.kind === 'ok') {
       const { save, report } = applyOfflineElapsed(attempt.save, clock.now());
       actions.loadSave(save, report);
-      actions.setBoot({ status: 'ready', hasSave: true, error: 'restored_from_backup', corruptSaveText: JSON.stringify(raw) });
+      actions.setBoot({
+        status: 'ready',
+        hasSave: true,
+        error: 'restored_from_backup',
+        corruptSaveText: JSON.stringify(raw),
+      });
       return;
     }
   }
-  actions.setBoot({ status: 'ready', hasSave: false, error: 'save_corrupt', corruptSaveText: JSON.stringify(raw) });
+  actions.setBoot({
+    status: 'ready',
+    hasSave: false,
+    error: 'save_corrupt',
+    corruptSaveText: JSON.stringify(raw),
+  });
 }
 
-type LoadOutcome = { kind: 'ok'; save: ReturnType<typeof migrateSave>['save'] } | { kind: 'unsupported'; version: number } | { kind: 'corrupt' };
+type LoadOutcome =
+  | { kind: 'ok'; save: ReturnType<typeof migrateSave>['save'] }
+  | { kind: 'unsupported'; version: number }
+  | { kind: 'corrupt' };
 
 async function tryLoad(raw: unknown, storage: StorageAdapter, clock: Clock): Promise<LoadOutcome> {
   try {

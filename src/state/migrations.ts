@@ -24,14 +24,19 @@ export interface MigrationResult {
 function versionOf(raw: unknown): number {
   if (typeof raw !== 'object' || raw === null) throw new SaveError('save_invalid', 'Save is not an object');
   const v = (raw as { saveVersion?: unknown }).saveVersion;
-  if (typeof v !== 'number' || !Number.isInteger(v) || v < 0) throw new SaveError('save_invalid', 'Save has no valid saveVersion');
+  if (typeof v !== 'number' || !Number.isInteger(v) || v < 0)
+    throw new SaveError('save_invalid', 'Save has no valid saveVersion');
   return v;
 }
 
 export function migrateSave(raw: unknown, steps: readonly MigrationStep[] = MIGRATIONS): MigrationResult {
   const fromVersion = versionOf(raw);
   if (fromVersion > SAVE_VERSION) {
-    throw new SaveError('save_version_unsupported', `Save version ${fromVersion} is newer than supported ${SAVE_VERSION}`, { version: fromVersion });
+    throw new SaveError(
+      'save_version_unsupported',
+      `Save version ${fromVersion} is newer than supported ${SAVE_VERSION}`,
+      { version: fromVersion },
+    );
   }
   let current = raw as Record<string, unknown>;
   let version = fromVersion;
@@ -43,8 +48,13 @@ export function migrateSave(raw: unknown, steps: readonly MigrationStep[] = MIGR
   }
   const parsed = saveSchemaV1.safeParse(current);
   if (!parsed.success) {
-    const detail = parsed.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
-    throw new SaveError('save_invalid', `Save failed validation (${detail})`, { issues: parsed.error.issues });
+    const detail = parsed.error.issues
+      .slice(0, 3)
+      .map((i) => `${i.path.join('.')}: ${i.message}`)
+      .join('; ');
+    throw new SaveError('save_invalid', `Save failed validation (${detail})`, {
+      issues: parsed.error.issues,
+    });
   }
   return { save: parsed.data, fromVersion, migrated: fromVersion !== SAVE_VERSION };
 }

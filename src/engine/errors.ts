@@ -28,7 +28,11 @@ export class ContentError extends GameError {
 }
 
 export class SaveError extends GameError {
-  constructor(code: 'save_invalid' | 'save_version_unsupported', message: string, details?: Record<string, unknown>) {
+  constructor(
+    code: 'save_invalid' | 'save_version_unsupported',
+    message: string,
+    details?: Record<string, unknown>,
+  ) {
     super(code, message, details);
     this.name = 'SaveError';
   }
@@ -38,7 +42,11 @@ export class SaveError extends GameError {
 export type Result<T> = { ok: true; value: T } | { ok: false; error: GameError };
 
 export const ok = <T>(value: T): Result<T> => ({ ok: true, value });
-export const fail = <T = never>(code: GameErrorCode, message: string, details?: Record<string, unknown>): Result<T> => ({
+export const fail = <T = never>(
+  code: GameErrorCode,
+  message: string,
+  details?: Record<string, unknown>,
+): Result<T> => ({
   ok: false,
   error: new GameError(code, message, details),
 });

@@ -14,7 +14,18 @@ import globals from 'globals';
 const layer = (type, folder) => ({ type, pattern: `src/${folder}/**/*`, mode: 'full' });
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'public/**', 'playwright-report/**', 'test-results/**', 'coverage/**', '**/*.generated.ts', 'game/**'] },
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'public/**',
+      'playwright-report/**',
+      'test-results/**',
+      'coverage/**',
+      '**/*.generated.ts',
+      'game/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -22,12 +33,18 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports', fixStyle: 'inline-type-imports' }],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'no-restricted-syntax': [
         'error',
-        { selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']", message: 'Use the seeded Rng from @engine/rng (CLAUDE.md §5.2).' },
+        {
+          selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']",
+          message: 'Use the seeded Rng from @engine/rng (CLAUDE.md §5.2).',
+        },
       ],
       eqeqeq: ['error', 'always'],
     },
@@ -65,25 +82,76 @@ export default tseslint.config(
           default: 'disallow',
           rules: [
             { from: ['balance'], allow: ['balance', 'assets', 'i18n'] },
-            { from: ['balance'], allow: ['balance', 'content', 'engine', 'assets', 'i18n'], importKind: 'type' },
+            {
+              from: ['balance'],
+              allow: ['balance', 'content', 'engine', 'assets', 'i18n'],
+              importKind: 'type',
+            },
             { from: ['content'], allow: ['content', 'balance', 'assets', 'i18n', 'engine'] },
             { from: ['engine'], allow: ['engine', 'balance', 'i18n'] },
-            { from: ['engine'], allow: ['engine', 'balance', 'content', 'assets', 'i18n'], importKind: 'type' },
-            { from: ['state'], allow: ['state', 'engine', 'balance', 'content', 'platform', 'assets', 'i18n'] },
-            { from: ['render'], allow: ['render', 'engine', 'state', 'balance', 'content', 'assets', 'platform'] },
+            {
+              from: ['engine'],
+              allow: ['engine', 'balance', 'content', 'assets', 'i18n'],
+              importKind: 'type',
+            },
+            {
+              from: ['state'],
+              allow: ['state', 'engine', 'balance', 'content', 'platform', 'assets', 'i18n'],
+            },
+            {
+              from: ['render'],
+              allow: ['render', 'engine', 'state', 'balance', 'content', 'assets', 'platform'],
+            },
             { from: ['audio'], allow: ['audio', 'assets', 'state', 'platform', 'balance', 'content'] },
-            { from: ['ui'], allow: ['ui', 'state', 'engine', 'balance', 'content', 'render', 'audio', 'assets', 'i18n', 'platform'] },
+            {
+              from: ['ui'],
+              allow: [
+                'ui',
+                'state',
+                'engine',
+                'balance',
+                'content',
+                'render',
+                'audio',
+                'assets',
+                'i18n',
+                'platform',
+              ],
+            },
             { from: ['platform'], allow: ['platform', 'engine'], importKind: 'type' },
             { from: ['platform'], allow: ['platform'] },
             { from: ['i18n'], allow: ['i18n'] },
             { from: ['assets'], allow: ['assets'] },
-            { from: ['app'], allow: ['app', 'engine', 'balance', 'content', 'state', 'ui', 'render', 'audio', 'platform', 'i18n', 'assets'] },
+            {
+              from: ['app'],
+              allow: [
+                'app',
+                'engine',
+                'balance',
+                'content',
+                'state',
+                'ui',
+                'render',
+                'audio',
+                'platform',
+                'i18n',
+                'assets',
+              ],
+            },
           ],
         },
       ],
       'no-restricted-imports': [
         'error',
-        { patterns: [{ group: ['../*'], message: 'Cross-boundary relative imports are forbidden; use the @alias of the layer (CLAUDE.md §4).' }] },
+        {
+          patterns: [
+            {
+              group: ['../*'],
+              message:
+                'Cross-boundary relative imports are forbidden; use the @alias of the layer (CLAUDE.md §4).',
+            },
+          ],
+        },
       ],
     },
   },
@@ -95,16 +163,37 @@ export default tseslint.config(
         'error',
         {
           paths: ['react', 'react-dom', 'pixi.js', 'howler', 'zustand', 'gsap', 'motion', 'idb'],
-          patterns: [{ group: ['../*'], message: 'Cross-boundary relative imports are forbidden; use the @alias of the layer.' }],
+          patterns: [
+            {
+              group: ['../*'],
+              message: 'Cross-boundary relative imports are forbidden; use the @alias of the layer.',
+            },
+          ],
         },
       ],
-      'no-restricted-globals': ['error', 'window', 'document', 'localStorage', 'indexedDB', 'navigator', 'performance'],
+      'no-restricted-globals': [
+        'error',
+        'window',
+        'document',
+        'localStorage',
+        'indexedDB',
+        'navigator',
+        'performance',
+      ],
       'no-restricted-properties': [
         'error',
         { object: 'Date', property: 'now', message: 'Engine code receives a Clock (CLAUDE.md §5.2).' },
       ],
     },
   },
-  { files: ['tools/**/*.ts', 'tests/**/*.ts', '*.config.ts', 'vitest.setup*.ts'], rules: { 'no-console': 'off', 'no-restricted-syntax': 'off' } },
+  {
+    files: ['tools/**/*.ts', 'tests/**/*.ts', '*.config.ts', 'vitest.setup*.ts'],
+    rules: { 'no-console': 'off', 'no-restricted-syntax': 'off' },
+  },
+  {
+    // Tests may assert non-null where the assertion itself is the check (CLAUDE.md §6).
+    files: ['tests/**/*.ts', 'src/**/*.test.{ts,tsx}'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
   prettier,
 );

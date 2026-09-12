@@ -43,7 +43,13 @@ export function decodeWav(buffer: Buffer): DecodedAudio {
       let value: number;
       if (format === 3 && bitsPerSample === 32) value = buffer.readFloatLE(pos);
       else if (bitsPerSample === 16) value = buffer.readInt16LE(pos) / 32768;
-      else if (bitsPerSample === 24) value = ((buffer[pos] as number) | ((buffer[pos + 1] as number) << 8) | ((buffer[pos + 2] as number) << 16) | (((buffer[pos + 2] as number) & 0x80) ? 0xff000000 : 0)) / 8388608;
+      else if (bitsPerSample === 24)
+        value =
+          ((buffer[pos] as number) |
+            ((buffer[pos + 1] as number) << 8) |
+            ((buffer[pos + 2] as number) << 16) |
+            ((buffer[pos + 2] as number) & 0x80 ? 0xff000000 : 0)) /
+          8388608;
       else if (bitsPerSample === 32) value = buffer.readInt32LE(pos) / 2147483648;
       else if (bitsPerSample === 8) value = ((buffer[pos] as number) - 128) / 128;
       else throw new Error(`Unsupported WAV bit depth ${bitsPerSample}`);
@@ -56,7 +62,8 @@ export function decodeWav(buffer: Buffer): DecodedAudio {
 
 export function peak(channels: Float32Array[]): number {
   let max = 0;
-  for (const ch of channels) for (let i = 0; i < ch.length; i++) max = Math.max(max, Math.abs(ch[i] as number));
+  for (const ch of channels)
+    for (let i = 0; i < ch.length; i++) max = Math.max(max, Math.abs(ch[i] as number));
   return max;
 }
 

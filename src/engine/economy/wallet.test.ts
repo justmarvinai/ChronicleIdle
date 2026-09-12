@@ -10,7 +10,10 @@ describe('wallet', () => {
 
   it('grants and reports changes without mutating the input', () => {
     const w = walletWith([{ currency: 'gold', amount: 100 }]);
-    const { wallet, changes } = grant(w, [{ currency: 'gold', amount: 50 }, { currency: 'gems', amount: 0 }]);
+    const { wallet, changes } = grant(w, [
+      { currency: 'gold', amount: 50 },
+      { currency: 'gems', amount: 0 },
+    ]);
     expect(wallet.gold).toBe(150);
     expect(w.gold).toBe(100);
     expect(changes).toEqual([{ currency: 'gold', delta: 50, total: 150 }]);
@@ -18,11 +21,20 @@ describe('wallet', () => {
   });
 
   it('spends only when affordable', () => {
-    const w = walletWith([{ currency: 'gold', amount: 100 }, { currency: 'gems', amount: 10 }]);
-    const result = spend(w, [{ currency: 'gold', amount: 60 }, { currency: 'gold', amount: 50 }]);
+    const w = walletWith([
+      { currency: 'gold', amount: 100 },
+      { currency: 'gems', amount: 10 },
+    ]);
+    const result = spend(w, [
+      { currency: 'gold', amount: 60 },
+      { currency: 'gold', amount: 50 },
+    ]);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe('insufficient_currency');
-    const okResult = spend(w, [{ currency: 'gold', amount: 60 }, { currency: 'gems', amount: 10 }]);
+    const okResult = spend(w, [
+      { currency: 'gold', amount: 60 },
+      { currency: 'gems', amount: 10 },
+    ]);
     expect(okResult.ok).toBe(true);
     if (okResult.ok) {
       expect(okResult.value.wallet.gold).toBe(40);

@@ -41,6 +41,9 @@ export interface UiState {
   updateAvailable: boolean;
   offlineReady: boolean;
   fullscreen: boolean;
+  /** The one-time fullscreen offer (owner's answer Q27): asked this session / declined. */
+  fullscreenOffered: boolean;
+  fullscreenDeclined: boolean;
 }
 
 export interface GameState {
@@ -75,10 +78,13 @@ export interface GameActions {
   setUpdateAvailable(value: boolean): void;
   setOfflineReady(value: boolean): void;
   setFullscreen(value: boolean): void;
+  setFullscreenOffer(patch: { offered?: boolean; declined?: boolean }): void;
 }
 
 export type GameStore = GameState & { actions: GameActions };
-export type GameStoreApi = UseBoundStore<Mutate<StoreApi<GameStore>, [['zustand/subscribeWithSelector', never], ['zustand/immer', never]]>>;
+export type GameStoreApi = UseBoundStore<
+  Mutate<StoreApi<GameStore>, [['zustand/subscribeWithSelector', never], ['zustand/immer', never]]>
+>;
 
 export interface StoreDeps {
   clock: Clock;
@@ -117,10 +123,26 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
         };
 
         return {
-          boot: { status: 'booting', hasSave: false, storageKind: 'memory', unsupportedSaveVersion: null, corruptSaveText: null, error: null },
+          boot: {
+            status: 'booting',
+            hasSave: false,
+            storageKind: 'memory',
+            unsupportedSaveVersion: null,
+            corruptSaveText: null,
+            error: null,
+          },
           save: null,
           lastOffline: null,
-          ui: { stack: [{ name: 'title' }], dialog: null, toasts: [], updateAvailable: false, offlineReady: false, fullscreen: false },
+          ui: {
+            stack: [{ name: 'title' }],
+            dialog: null,
+            toasts: [],
+            updateAvailable: false,
+            offlineReady: false,
+            fullscreen: false,
+            fullscreenOffered: false,
+            fullscreenDeclined: false,
+          },
 
           actions: {
             setBoot(patch) {
@@ -144,7 +166,16 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               const now = clock.now();
               const seedRoot = `${hashString(`${valid.value}:${now}`).toString(16)}-${now.toString(36)}`;
               const previous = get().save;
-              const save = createNewGame(previous ? { name: valid.value, now, seedRoot, settings: previous.settings } : { name: valid.value, now, seedRoot });
+              const created = createNewGame(
+                previous
+                  ? { name: valid.value, now, seedRoot, settings: previous.settings }
+                  : { name: valid.value, now, seedRoot },
+              );
+              // A fullscreen offer declined before the chronicle existed is remembered by it.
+              const save =
+                !previous && get().ui.fullscreenDeclined
+                  ? { ...created, settings: { ...created.settings, launchFullscreen: false } }
+                  : created;
               set((state) => {
                 state.save = save;
                 state.lastOffline = null;
@@ -204,7 +235,11 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               const current = get().save;
               if (!current) return;
               const next = regenerateEnergy(current.energy, current.profile.level, clock.now());
-              if (next === current.energy || (next.value === current.energy.value && next.lastTickAt === current.energy.lastTickAt)) return;
+              if (
+                next === current.energy ||
+                (next.value === current.energy.value && next.lastTickAt === current.energy.lastTickAt)
+              )
+                return;
               const delta = next.value - current.energy.value;
               set((state) => {
                 if (state.save) state.save.energy = next;
@@ -219,8 +254,16 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               withSave((save) => {
                 save.energy = next;
               });
-              events.emit({ type: 'energy.changed', delta: next.value - current.energy.value, total: next.value });
-              events.emit({ type: 'currency.changed', changes: [{ currency: 'energy', delta: amount, total: next.value }], reason });
+              events.emit({
+                type: 'energy.changed',
+                delta: next.value - current.energy.value,
+                total: next.value,
+              });
+              events.emit({
+                type: 'currency.changed',
+                changes: [{ currency: 'energy', delta: amount, total: next.value }],
+                reason,
+              });
             },
 
             spendEnergy(amount) {
@@ -320,6 +363,12 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             setFullscreen(value) {
               set((state) => {
                 state.ui.fullscreen = value;
+              });
+            },
+            setFullscreenOffer(patch) {
+              set((state) => {
+                if (patch.offered !== undefined) state.ui.fullscreenOffered = patch.offered;
+                if (patch.declined !== undefined) state.ui.fullscreenDeclined = patch.declined;
               });
             },
           },

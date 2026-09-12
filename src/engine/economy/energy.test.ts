@@ -15,7 +15,10 @@ describe('energy', () => {
     expect(s).toEqual({ value: 12, lastTickAt: 2 * MIN });
     const capped = regenerateEnergy({ value: 59, lastTickAt: 0 }, 1, 10 * MIN);
     expect(capped).toEqual({ value: 60, lastTickAt: 10 * MIN });
-    expect(regenerateEnergy({ value: 60, lastTickAt: 0 }, 1, 5 * MIN)).toEqual({ value: 60, lastTickAt: 5 * MIN });
+    expect(regenerateEnergy({ value: 60, lastTickAt: 0 }, 1, 5 * MIN)).toEqual({
+      value: 60,
+      lastTickAt: 5 * MIN,
+    });
   });
 
   it('never regenerates above the cap but rewards overflow without limit', () => {

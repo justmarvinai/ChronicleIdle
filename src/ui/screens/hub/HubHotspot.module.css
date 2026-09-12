@@ -1,0 +1,109 @@
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-scene);
+  color: var(--text-1);
+}
+/* The bob runs on an inner wrapper so the button's hit box (and pointer targeting) stays still. */
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: bob 4.5s ease-in-out infinite;
+}
+.hotspot:nth-child(2n) .body {
+  animation-delay: -1.3s;
+}
+.hotspot:nth-child(3n) .body {
+  animation-delay: -2.6s;
+}
+.hotspot:hover {
+  z-index: calc(var(--z-scene) + 1);
+}
+.hotspot:hover .body {
+  animation-play-state: paused;
+}
+.ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 0 28px color-mix(in srgb, var(--accent) 45%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--accent) 30%, transparent);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+    rgba(11, 10, 13, 0.15) 70%
+  );
+  transition:
+    transform var(--t-base) var(--ease-snap),
+    box-shadow var(--t-base),
+    filter var(--t-base);
+}
+.ringInner {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+  animation: spin 18s linear infinite;
+}
+.hotspot:hover .ring {
+  transform: scale(1.08);
+  filter: brightness(1.25);
+  box-shadow:
+    0 0 0 8px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 44px color-mix(in srgb, var(--accent) 65%, transparent),
+    inset 0 0 30px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.hotspot:active .ring {
+  transform: scale(0.97);
+}
+.locked .ring {
+  border-style: dashed;
+  box-shadow: 0 0 0 4px rgba(141, 133, 119, 0.12);
+  background: radial-gradient(circle, rgba(60, 56, 66, 0.5) 0%, rgba(11, 10, 13, 0.35) 70%);
+}
+.locked .ringInner {
+  animation: none;
+}
+.banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 190px;
+  padding: 8px 26px 10px;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+}
+.above {
+  order: -1;
+}
+.label {
+  font-size: 22px;
+  white-space: nowrap;
+}
+.locked .label {
+  color: var(--text-3);
+}
+.lock {
+  font-size: 13px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

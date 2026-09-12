@@ -27,7 +27,9 @@ async function main(): Promise<void> {
     console.error(`[content] ${issues.length} issue(s).`);
     process.exit(1);
   }
-  console.log(`[content] OK — ${content.currencies.length} currencies validated against ${assetKeys.size} assets and ${I18N_KEYS.size} strings.`);
+  console.log(
+    `[content] OK — ${content.currencies.length} currencies validated against ${assetKeys.size} assets and ${I18N_KEYS.size} strings.`,
+  );
 }
 
 main().catch((error: unknown) => {

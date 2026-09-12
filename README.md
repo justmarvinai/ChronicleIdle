@@ -32,10 +32,15 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 All game art, UI kits, icons, music and design references live in `/game` (owner-provided,
 read-only). The build pipeline derives optimised assets from it.
 
-## Quick start (available after Phase 0)
+## Quick start
 
 ```
 pnpm install
-pnpm dev          # http://localhost:5173
-pnpm build        # static output in dist/
+pnpm dev                    # derives assets from /game, then Vite on http://localhost:5173
+pnpm build && pnpm preview  # production build in dist/, served on http://localhost:4173
+pnpm test                   # engine, content, state, platform and UI unit tests
+pnpm test:e2e               # Playwright suite against the production build (run pnpm build first)
 ```
+
+Open `/?screen=devkit` for the component gallery. Saves live in the browser (IndexedDB) and can
+be exported/imported as `.chronicle` files from Settings → Save data.

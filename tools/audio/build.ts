@@ -20,8 +20,16 @@ export async function buildGeneratedAudio(ctx: BuildContext): Promise<void> {
       const data = await encodeOgg([left, right], SR, recipe.quality);
       const out = await ctx.emit('audio/generated', recipe.key.replace(/\./g, '-'), 'ogg', data);
       const entry: AudioEntry = {
-        kind: 'audio', group: recipe.key.startsWith('ambience.') ? 'ambience' : 'audio', loop: recipe.loop,
-        variants: [{ url: out.url, duration: Math.round((left.length / SR) * 1000) / 1000, rmsDb: Math.round(level * 10) / 10 }],
+        kind: 'audio',
+        group: recipe.key.startsWith('ambience.') ? 'ambience' : 'audio',
+        loop: recipe.loop,
+        variants: [
+          {
+            url: out.url,
+            duration: Math.round((left.length / SR) * 1000) / 1000,
+            rmsDb: Math.round(level * 10) / 10,
+          },
+        ],
       };
       return { outputs: [out.rel], entries: { [recipe.key]: entry } };
     });

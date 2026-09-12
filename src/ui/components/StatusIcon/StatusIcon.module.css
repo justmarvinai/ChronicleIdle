@@ -1,0 +1,34 @@
+.status {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(11, 10, 13, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.buff {
+  border-color: rgba(99, 201, 106, 0.6);
+}
+.debuff {
+  border-color: rgba(224, 74, 58, 0.6);
+}
+.turns {
+  position: absolute;
+  right: -3px;
+  bottom: -4px;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 2px;
+  background: var(--bg-0);
+  color: var(--text-1);
+}
+.sign {
+  position: absolute;
+  left: -3px;
+  top: -5px;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0 2px;
+  background: var(--bg-0);
+  color: var(--text-2);
+}

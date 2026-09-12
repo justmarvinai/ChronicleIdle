@@ -10,7 +10,9 @@ describe('chronicle file', () => {
     const decoded = await decodeChronicleFile(text);
     expect(decoded.save).toEqual(save);
     expect(decoded.appVersion).toBe('0.0.0');
-    expect(chronicleFileName(save, new Date(2026, 8, 12, 9, 5).getTime())).toBe('Eldric_the_Wise-20260912-0905.chronicle');
+    expect(chronicleFileName(save, new Date(2026, 8, 12, 9, 5).getTime())).toBe(
+      'Eldric_the_Wise-20260912-0905.chronicle',
+    );
   });
 
   it('detects tampering and garbage', async () => {

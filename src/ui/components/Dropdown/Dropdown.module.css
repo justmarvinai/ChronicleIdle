@@ -1,0 +1,65 @@
+.root {
+  position: relative;
+}
+.trigger {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  color: var(--text-1);
+  transition: filter var(--t-fast);
+}
+.trigger:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+.trigger:disabled {
+  filter: grayscale(0.6) brightness(0.6);
+}
+.value {
+  font-size: var(--fs-body);
+}
+.chevron {
+  transform: rotate(90deg);
+  transition: transform var(--t-fast);
+}
+.open .chevron {
+  transform: rotate(-90deg);
+}
+.list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg-1);
+  max-height: 320px;
+  overflow-y: auto;
+  animation: drop var(--t-fast) var(--ease-out);
+}
+.option {
+  padding: 10px 14px;
+  color: var(--text-2);
+  cursor: var(--cursor-pointer);
+}
+.highlight {
+  background: rgba(201, 162, 74, 0.12);
+  color: var(--text-1);
+}
+.selected {
+  color: var(--gold-3);
+}
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

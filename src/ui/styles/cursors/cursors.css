@@ -1,0 +1,8 @@
+/* Custom cursor set (docs/tech/UI_DESIGN.md §2.1). Hotspots: arrow tip, fingertip, palm, I-beam centre. */
+:root {
+  --cursor-default: url('./default.svg') 6 3, auto;
+  --cursor-pointer: url('./pointer.svg') 11 4, pointer;
+  --cursor-grab: url('./grab.svg') 16 16, grab;
+  --cursor-disabled: url('./disabled.svg') 6 3, not-allowed;
+  --cursor-text: url('./text.svg') 16 16, text;
+}

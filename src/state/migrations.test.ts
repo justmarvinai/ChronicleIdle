@@ -20,7 +20,15 @@ describe('migrateSave', () => {
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [
-      { from: 0, to: 1, migrate: (raw) => ({ ...raw, saveVersion: 1, profile: { ...(raw['profile'] as object), name: raw['legacyName'] as string } }) },
+      {
+        from: 0,
+        to: 1,
+        migrate: (raw) => ({
+          ...raw,
+          saveVersion: 1,
+          profile: { ...(raw['profile'] as object), name: raw['legacyName'] as string },
+        }),
+      },
     ]);
     expect(result.migrated).toBe(true);
     expect(result.save.profile.name).toBe('Old');

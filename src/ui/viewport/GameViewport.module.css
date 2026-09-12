@@ -1,0 +1,27 @@
+.window {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg-0);
+}
+
+.letterbox {
+  position: absolute;
+  inset: -40px;
+  background-color: var(--bg-0);
+  background-size: cover;
+  background-position: center;
+  filter: blur(18px) brightness(0.55) saturate(0.9);
+  transform: scale(1.05);
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+  overflow: hidden;
+  background: var(--bg-0);
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
+  contain: layout style;
+}

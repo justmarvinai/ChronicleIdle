@@ -14,6 +14,13 @@ pnpm build            # runs assets:build → typecheck → vite build → dist/
 `dist/` contains hashed, immutable assets under `dist/assets/` and the entry `index.html`.
 Requirements: Node 22 LTS, pnpm 10, ~2 GB RAM for the asset pipeline (sharp).
 
+**Verified for 0.0.0 (Phase 0).** `pnpm build` produces `dist/` (app shell ≈ 310 kB of gzipped
+JS on the title route, 338 precached entries); `pnpm preview` serves it with the same static
+semantics as nginx/Vercel (SPA fallback to `index.html`, hashed assets) and the Playwright suite
+runs against that output. The nginx and Vercel guides below were reviewed against this build;
+no live VPS or Vercel deployment was performed from the development environment, so the first
+real deploy should walk §2 or §3 once and confirm the service worker updates (§5).
+
 ## 2. Ubuntu VPS (nginx)
 
 Tested target: Ubuntu 24.04 LTS, 1 vCPU / 1 GB RAM is enough (2 GB if you build on the box).

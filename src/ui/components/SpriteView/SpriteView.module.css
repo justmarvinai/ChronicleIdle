@@ -1,0 +1,15 @@
+.sprite {
+  position: relative;
+  flex: none;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  image-rendering: pixelated;
+}

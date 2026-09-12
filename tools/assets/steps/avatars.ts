@@ -12,7 +12,10 @@ async function avatarSet(ctx: BuildContext, id: string, source: string): Promise
     const sizes: Record<string, ImageVariant> = {};
     const outputs: string[] = [];
     for (const size of SIZES) {
-      const data = await sharp(source).resize(size, size, { fit: 'cover', position: 'attention' }).webp({ quality: size >= 512 ? 82 : 86 }).toBuffer();
+      const data = await sharp(source)
+        .resize(size, size, { fit: 'cover', position: 'attention' })
+        .webp({ quality: size >= 512 ? 82 : 86 })
+        .toBuffer();
       const out = await ctx.emit('avatars', `${id}-${size}`, 'webp', data);
       sizes[String(size)] = { url: out.url, w: size, h: size };
       outputs.push(out.rel);

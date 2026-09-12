@@ -1,0 +1,36 @@
+.dot {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle at 35% 35%, #ff8a5c, var(--ember-2) 70%);
+  border: 2px solid var(--bg-0);
+  box-shadow: 0 0 0 0 rgba(216, 85, 47, 0.7);
+  animation: pulse 1.8s ease-out infinite;
+  z-index: 2;
+}
+.withCount {
+  width: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+}
+.count {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-1);
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(216, 85, 47, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(216, 85, 47, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(216, 85, 47, 0);
+  }
+}

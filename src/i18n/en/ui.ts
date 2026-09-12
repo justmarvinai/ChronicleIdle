@@ -42,7 +42,8 @@ export const ui = {
   'title.fullscreen': 'Fullscreen',
   'title.exitFullscreen': 'Exit Fullscreen',
   'title.continueAs': '{name} · Level {level}',
-  'title.newChronicle.warning': 'Starting a new chronicle will overwrite the saved one. A backup is kept until the next save.',
+  'title.newChronicle.warning':
+    'Starting a new chronicle will overwrite the saved one. A backup is kept until the next save.',
   'title.credits': 'Credits',
 
   'newGame.title': 'Name your Chronicle',
@@ -143,14 +144,27 @@ export const ui = {
   'save.import.error.title': 'This file is not a chronicle',
   'save.import.error.checksum': 'The file is damaged (checksum mismatch).',
   'save.import.error.format': 'The file could not be read as a ChronicleIdle save.',
-  'save.import.error.version': 'This save was written by a newer version of the game ({version}). Update the game first.',
+  'save.import.error.version':
+    'This save was written by a newer version of the game ({version}). Update the game first.',
   'save.import.error.schema': 'The save contents are invalid: {detail}',
   'save.imported': 'Chronicle imported.',
   'save.newerVersion.title': 'Your chronicle is from the future',
-  'save.newerVersion.body': 'The saved chronicle was written by a newer game version and cannot be opened safely. Update the game, or export it to keep it.',
+  'save.newerVersion.body':
+    'The saved chronicle was written by a newer game version and cannot be opened safely. Update the game, or export it to keep it.',
 
   'credits.title': 'Credits',
-  'credits.body': 'All art, UI kits, icons, music and sounds were provided by the project owner, except the Free Pixel Effects Pack (public domain, Davit Masia & CodeManu). Fonts: Alegreya Sans SC, Nunito Sans, Rajdhani (SIL OFL).',
+  'credits.body':
+    'All art, UI kits, icons, music and sounds were provided by the project owner, except the Free Pixel Effects Pack (public domain, Davit Masia & CodeManu). Fonts: Alegreya Sans SC, Nunito Sans, Rajdhani (SIL OFL).',
 
   'devkit.title': 'Component gallery',
+
+  'welcome.title': 'Welcome back, Chronicler',
+  'welcome.body': 'Emberhold kept the fires lit while you were away for {time}.',
+  'welcome.energy': 'Energy regenerated',
+
+  'hub.hotspot.later': 'Written in a later chapter',
+  'hub.bossCard.daily': 'Gravemaw, the Bone Tyrant',
+  'hub.bossCard.weekly': 'Nyxara, Mother of Shadows',
+  'hub.bossCard.keys': 'Keys',
+  'hub.idleChest.body': 'Fills while you are away.',
 } as const;

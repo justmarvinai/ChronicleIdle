@@ -1,0 +1,123 @@
+@import './tokens.css';
+@import '../../assets/ui-assets.generated.css';
+@import './cursors/cursors.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+html {
+  background: var(--bg-0);
+  color-scheme: dark;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.35;
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: var(--cursor-default);
+  touch-action: none;
+}
+
+/* No native scrollbars anywhere (docs/tech/UI_DESIGN.md §2.1); ScrollArea draws its own. */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+img,
+svg,
+canvas {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: var(--cursor-pointer);
+}
+
+button:disabled,
+[aria-disabled='true'] {
+  cursor: var(--cursor-disabled);
+}
+
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: var(--cursor-text);
+}
+
+a {
+  color: var(--gold-3);
+  cursor: var(--cursor-pointer);
+}
+
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--gold-2);
+  outline-offset: 2px;
+}
+
+.pixel {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.num {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

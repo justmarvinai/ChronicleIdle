@@ -60,9 +60,9 @@ battle animation, music and sound.
 
 | Concern | Choice | Why |
 | --- | --- | --- |
-| Language | TypeScript 5.x, `strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` | Type-safe content and engine; refactors stay cheap |
+| Language | TypeScript 5.9, `strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `verbatimModuleSyntax` | Type-safe content and engine; refactors stay cheap |
 | Package manager | pnpm (workspace-ready, single package for now) | Fast, deterministic lockfile |
-| Bundler / dev server | Vite 6 | Best-in-class DX, static output for VPS/Vercel, easy Electron later |
+| Bundler / dev server | Vite 8 (Rolldown) | Best-in-class DX, static output for VPS/Vercel, easy Electron later |
 | UI layer | React 19 + CSS Modules + CSS custom properties (design tokens) | Menu-heavy game; React is the right tool for lists, panels, forms. No Tailwind, no component library — they produce the look we forbid |
 | UI animation | Framer Motion (`motion`) for screen/element transitions; CSS keyframes for loops | Declarative, interruptible, performant |
 | Battle / FX rendering | PixiJS 8 (WebGL2, WebGPU when available) | Sprite batching, filters, particles; pixel-perfect nearest scaling |
@@ -109,7 +109,7 @@ each other's internals.
   audio/                      Howler wrappers, music/sfx registry, mixer
   platform/                   Storage adapters (web now, electron later), clipboard, file dialogs
   i18n/                       String tables (English shipped; keys everywhere, no literals in UI)
-/tools/                       Node scripts: assets:build, content:validate, sim:balance
+/tools/                       Node scripts: assets:build, assets:check, content:validate, audio synth (sim:balance arrives with Phase 3)
 /tests/e2e/                   Playwright specs
 /docs/                        Design + technical documentation (see document map)
 ```
@@ -320,18 +320,23 @@ docs/tech/DECISIONS.md         architecture decision records
 docs/tech/CREDITS.md           asset provenance and licences
 ```
 
-## 11. Commands (once Phase 0 lands)
+## 11. Commands
 
 ```
 pnpm install            install
-pnpm dev                Vite dev server with content validation on boot
+pnpm dev                assets:build (incremental, quiet) → Vite dev server on :5173
 pnpm build              assets:build → typecheck → vite build (static output in dist/)
-pnpm preview            serve dist/
-pnpm test               vitest (engine + ui)
-pnpm test:e2e           playwright
+pnpm preview            serve dist/ on :4173 (what the e2e suite and Lighthouse run against)
+pnpm test               vitest (engine, content, state, platform, ui projects)
+pnpm test:e2e           playwright (builds nothing: run pnpm build first)
 pnpm lint               eslint + boundaries + prettier check
-pnpm typecheck          tsc --noEmit
-pnpm content:validate   validate all content and cross-references
-pnpm assets:build       generate atlases, WebP variants and the asset manifest from /game
-pnpm sim:balance        headless campaign/boss simulations, prints difficulty curve report
+pnpm format             prettier --write
+pnpm typecheck          tsc --noEmit for the app and for tools/
+pnpm content:validate   validate all content and cross-references (ids, assets, strings)
+pnpm assets:build       generate atlases, WebP variants, audio and the typed manifest from /game
+pnpm assets:check       fail when the committed manifest no longer matches /game (CI)
+pnpm sim:balance        (Phase 3) headless campaign/boss simulations, prints difficulty curve report
 ```
+
+The component gallery is at `/?screen=devkit` in every build (code-split, never linked from the
+game).

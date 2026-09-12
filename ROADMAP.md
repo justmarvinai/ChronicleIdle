@@ -9,7 +9,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | Phase | Feature | Version tag | Status |
 | --- | --- | --- | --- |
 | P | Planning (this document set) | — | ✅ |
-| 0 | Foundation & Game Shell | 0.0.0 | ⬜ |
+| 0 | Foundation & Game Shell | 0.0.0 | ✅ shipped in 0.0.0 |
 | 1 | Champions & Collection | 0.0.1 | ⬜ |
 | 2 | Battle System | 0.0.2 | ⬜ |
 | 3 | Campaign | 0.0.3 | ⬜ |
@@ -37,6 +37,9 @@ Phase 0/2 and extended in each phase.
 
 ## Phase 0 — Foundation & Game Shell (`0.0.0`)
 
+**Status.** ✅ shipped in 0.0.0 (2026-09-12). See `CHANGELOG.md` for what landed and the
+verification notes.
+
 **Goal.** A runnable, deployable game shell that already feels like ChronicleIdle: title screen,
 new/continue chronicle, Emberhold hub with navigation, settings, saves, music. No game systems yet,
 but everything a system will plug into.
@@ -48,8 +51,9 @@ but everything a system will plug into.
 - `GameViewport` (1920×1080 scaling, letterbox backdrop), router with screen stack, loading screen.
 - Game window: installable PWA (web manifest + versioned service-worker precache with an update
   prompt), fullscreen offered at launch (never forced), custom cursor, browser-chrome guards (`docs/tech/UI_DESIGN.md` §2.1).
-- Design system: tokens, fonts, the full component library of `UI_DESIGN.md` §4 with a `/dev/kit`
-  gallery route (dev only) showing every component in every state.
+- Design system: tokens, fonts, the full component library of `UI_DESIGN.md` §4 with a component
+  gallery (`/?screen=devkit`, code-split and never linked from the game) showing every component
+  in every state.
 - State: Zustand store, slices skeleton (`profile`, `wallet`, `settings`, `ui`), persistence
   (IndexedDB, debounce, backups), migration framework (v1), export/import `.chronicle`.
 - Wallet system with **all 24 currencies** defined (icons, names, top-bar pills), even though most

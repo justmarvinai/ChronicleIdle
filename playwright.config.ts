@@ -3,7 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 // The remote build environment ships a pinned Chromium; local machines use Playwright's own.
 const PRESET_CHROMIUM = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
-const executablePath = process.env['PW_CHROMIUM_PATH'] ?? (existsSync(PRESET_CHROMIUM) ? PRESET_CHROMIUM : undefined);
+const executablePath =
+  process.env['PW_CHROMIUM_PATH'] ?? (existsSync(PRESET_CHROMIUM) ? PRESET_CHROMIUM : undefined);
 
 export default defineConfig({
   testDir: 'tests/e2e',

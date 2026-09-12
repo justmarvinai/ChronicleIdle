@@ -1,0 +1,41 @@
+.slot {
+  position: relative;
+  box-sizing: border-box;
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    filter var(--t-fast);
+}
+.fill {
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+}
+.content {
+  position: absolute;
+  inset: 4px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.interactive {
+  cursor: var(--cursor-pointer);
+}
+.interactive:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+.selected {
+  box-shadow:
+    0 0 0 2px var(--gold-2),
+    var(--glow-gold);
+}
+.locked {
+  filter: grayscale(0.5) brightness(0.7);
+}
+.lock {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+}

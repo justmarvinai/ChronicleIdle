@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { FixedClock, dailyKey, formatDuration, msUntilDailyReset, msUntilWeeklyReset, weeklyKey } from './clock';
+import {
+  FixedClock,
+  dailyKey,
+  formatDuration,
+  msUntilDailyReset,
+  msUntilWeeklyReset,
+  weeklyKey,
+} from './clock';
 
-const local = (y: number, m: number, d: number, h = 0, min = 0): number => new Date(y, m - 1, d, h, min).getTime();
+const local = (y: number, m: number, d: number, h = 0, min = 0): number =>
+  new Date(y, m - 1, d, h, min).getTime();
 
 describe('clock periods', () => {
   it('daily key changes exactly at the reset hour', () => {

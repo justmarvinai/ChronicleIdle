@@ -1,0 +1,45 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.body {
+  position: absolute;
+  inset: var(--topbar-h) 0 0 0;
+  z-index: var(--z-scene);
+  padding: 24px 40px;
+}
+.section {
+  margin-bottom: 36px;
+}
+.sectionTitle {
+  font-size: var(--fs-h2);
+  color: var(--gold-3);
+  margin: 0 0 12px;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.small {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.glyphCell {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(0, 0, 0, 0.35);
+}
+.spriteCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.35);
+}

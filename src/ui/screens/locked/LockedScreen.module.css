@@ -1,0 +1,32 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.center {
+  position: absolute;
+  inset: var(--topbar-h) 0 0 0;
+  z-index: var(--z-scene);
+  display: grid;
+  place-items: center;
+}
+.panel {
+  width: 720px;
+  text-align: center;
+}
+.panel > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.title {
+  margin: 0;
+  font-size: var(--fs-title);
+  color: var(--gold-3);
+}
+.body {
+  margin: 0;
+  color: var(--text-2);
+  max-width: 520px;
+}

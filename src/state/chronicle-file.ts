@@ -34,7 +34,14 @@ function fromBase64(b64: string): string {
 
 export async function encodeChronicleFile(save: SaveGame, appVersion: string, now: number): Promise<string> {
   const payload = toBase64(JSON.stringify(save));
-  const envelope: Envelope = { magic: 'chronicleidle', format: CHRONICLE_FILE_FORMAT, appVersion, exportedAt: now, checksum: await sha256Hex(payload), payload };
+  const envelope: Envelope = {
+    magic: 'chronicleidle',
+    format: CHRONICLE_FILE_FORMAT,
+    appVersion,
+    exportedAt: now,
+    checksum: await sha256Hex(payload),
+    payload,
+  };
   return JSON.stringify(envelope, null, 0);
 }
 
@@ -59,11 +66,17 @@ export async function decodeChronicleFile(text: string): Promise<DecodedChronicl
   } catch {
     throw new SaveError('save_invalid', 'format');
   }
-  if (envelope.magic !== 'chronicleidle' || typeof envelope.payload !== 'string' || typeof envelope.checksum !== 'string') {
+  if (
+    envelope.magic !== 'chronicleidle' ||
+    typeof envelope.payload !== 'string' ||
+    typeof envelope.checksum !== 'string'
+  ) {
     throw new SaveError('save_invalid', 'format');
   }
-  if (envelope.format !== CHRONICLE_FILE_FORMAT) throw new SaveError('save_version_unsupported', 'format', { version: envelope.format });
-  if ((await sha256Hex(envelope.payload)) !== envelope.checksum) throw new SaveError('save_invalid', 'checksum');
+  if (envelope.format !== CHRONICLE_FILE_FORMAT)
+    throw new SaveError('save_version_unsupported', 'format', { version: envelope.format });
+  if ((await sha256Hex(envelope.payload)) !== envelope.checksum)
+    throw new SaveError('save_invalid', 'checksum');
   let raw: unknown;
   try {
     raw = JSON.parse(fromBase64(envelope.payload));
@@ -71,5 +84,10 @@ export async function decodeChronicleFile(text: string): Promise<DecodedChronicl
     throw new SaveError('save_invalid', 'format');
   }
   const { save, migrated } = migrateSave(raw);
-  return { save, migrated, exportedAt: envelope.exportedAt ?? 0, appVersion: envelope.appVersion ?? 'unknown' };
+  return {
+    save,
+    migrated,
+    exportedAt: envelope.exportedAt ?? 0,
+    appVersion: envelope.appVersion ?? 'unknown',
+  };
 }

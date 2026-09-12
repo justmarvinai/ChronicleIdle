@@ -1,0 +1,8 @@
+.host {
+  position: absolute;
+  inset: 0;
+}
+.screen {
+  position: absolute;
+  inset: 0;
+}

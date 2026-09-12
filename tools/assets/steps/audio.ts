@@ -26,7 +26,10 @@ const SFX_CATEGORY: Record<string, string> = {
   'Waterfalls Rivers and Streams': 'water',
 };
 
-async function wavToOgg(source: string, quality: number): Promise<{ data: Buffer; duration: number; rmsDb: number }> {
+async function wavToOgg(
+  source: string,
+  quality: number,
+): Promise<{ data: Buffer; duration: number; rmsDb: number }> {
   const decoded = decodeWav(await readFile(source));
   normalizePeak(decoded.channels, -1);
   const level = rmsDb(decoded.channels);
@@ -42,7 +45,12 @@ async function buildMusic(ctx: BuildContext): Promise<void> {
     await ctx.cached(`music:${file}`, [source], async () => {
       const data = await readFile(source);
       const out = await ctx.emit('audio/music', name, file.slice(file.lastIndexOf('.')), data);
-      const entry: AudioEntry = { kind: 'audio', group: 'music', loop: true, variants: [{ url: out.url, duration: 0, rmsDb: 0 }] };
+      const entry: AudioEntry = {
+        kind: 'audio',
+        group: 'music',
+        loop: true,
+        variants: [{ url: out.url, duration: 0, rmsDb: 0 }],
+      };
       return { outputs: [out.rel], entries: { [`music.${name}`]: entry } };
     });
   }
@@ -61,16 +69,25 @@ async function buildAmbience(ctx: BuildContext): Promise<void> {
   for (const set of await listDirs(dir)) {
     const setKey = sanitize(set);
     const files = await listFiles(join(dir, set), (f) => /\.wav$/i.test(f));
-    await pMap(files, async (file) => {
-      const source = join(dir, set, file);
-      const variant = ambienceVariant(file.replace(/\.wav$/i, ''));
-      await ctx.cached(`ambience:${set}/${file}`, [source], async () => {
-        const { data, duration, rmsDb: level } = await wavToOgg(source, Q_AMBIENCE);
-        const out = await ctx.emit('audio/ambience', `${setKey}-${variant}`, 'ogg', data);
-        const entry: AudioEntry = { kind: 'audio', group: 'ambience', loop: true, variants: [{ url: out.url, duration, rmsDb: level }] };
-        return { outputs: [out.rel], entries: { [`ambience.${setKey}.${variant}`]: entry } };
-      });
-    }, 2);
+    await pMap(
+      files,
+      async (file) => {
+        const source = join(dir, set, file);
+        const variant = ambienceVariant(file.replace(/\.wav$/i, ''));
+        await ctx.cached(`ambience:${set}/${file}`, [source], async () => {
+          const { data, duration, rmsDb: level } = await wavToOgg(source, Q_AMBIENCE);
+          const out = await ctx.emit('audio/ambience', `${setKey}-${variant}`, 'ogg', data);
+          const entry: AudioEntry = {
+            kind: 'audio',
+            group: 'ambience',
+            loop: true,
+            variants: [{ url: out.url, duration, rmsDb: level }],
+          };
+          return { outputs: [out.rel], entries: { [`ambience.${setKey}.${variant}`]: entry } };
+        });
+      },
+      2,
+    );
   }
   // Loose MP3 loops: "<Set>_ambience_…_#N-….mp3" → ambience.<set>.alt_N (names carry mis-encoded dashes; never renamed).
   const loose = await listFiles(dir, (f) => /\.mp3$/i.test(f));
@@ -86,7 +103,12 @@ async function buildAmbience(ctx: BuildContext): Promise<void> {
     await ctx.cached(`ambience:${file}`, [source], async () => {
       const data = await readFile(source);
       const out = await ctx.emit('audio/ambience', `${set}-alt-${n}`, 'mp3', data);
-      const entry: AudioEntry = { kind: 'audio', group: 'ambience', loop: true, variants: [{ url: out.url, duration: 0, rmsDb: 0 }] };
+      const entry: AudioEntry = {
+        kind: 'audio',
+        group: 'ambience',
+        loop: true,
+        variants: [{ url: out.url, duration: 0, rmsDb: 0 }],
+      };
       return { outputs: [out.rel], entries: { [`ambience.${set}.alt_${n}`]: entry } };
     });
   }
@@ -123,7 +145,12 @@ async function buildSfx(ctx: BuildContext): Promise<void> {
         const encoded: AudioVariant[] = [];
         for (const [i, source] of sources.entries()) {
           const { data, duration, rmsDb: level } = await wavToOgg(source, Q_SFX);
-          const out = await ctx.emit(`audio/sfx/${category}`, variants.length > 1 ? `${name}-${i + 1}` : name, 'ogg', data);
+          const out = await ctx.emit(
+            `audio/sfx/${category}`,
+            variants.length > 1 ? `${name}-${i + 1}` : name,
+            'ogg',
+            data,
+          );
           outputs.push(out.rel);
           encoded.push({ url: out.url, duration, rmsDb: level });
         }

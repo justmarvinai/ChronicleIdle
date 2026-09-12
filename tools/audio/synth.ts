@@ -24,11 +24,21 @@ export function osc(shape: Shape, freq: FreqFn, seconds: number, phase = 0, puls
     const p = ph - Math.floor(ph);
     let v: number;
     switch (shape) {
-      case 'sine': v = Math.sin(2 * Math.PI * p); break;
-      case 'triangle': v = 1 - 4 * Math.abs(p - 0.5); break;
-      case 'saw': v = 2 * p - 1; break;
-      case 'square': v = p < 0.5 ? 1 : -1; break;
-      case 'pulse': v = p < pulseWidth ? 1 : -1; break;
+      case 'sine':
+        v = Math.sin(2 * Math.PI * p);
+        break;
+      case 'triangle':
+        v = 1 - 4 * Math.abs(p - 0.5);
+        break;
+      case 'saw':
+        v = 2 * p - 1;
+        break;
+      case 'square':
+        v = p < 0.5 ? 1 : -1;
+        break;
+      case 'pulse':
+        v = p < pulseWidth ? 1 : -1;
+        break;
     }
     out[i] = v;
   }
@@ -41,19 +51,30 @@ export function noise(seconds: number, seed = 1): Mono {
   const out = new Float32Array(n);
   let s = seed >>> 0 || 1;
   for (let i = 0; i < n; i++) {
-    s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0;
+    s ^= s << 13;
+    s >>>= 0;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    s >>>= 0;
     out[i] = (s / 0xffffffff) * 2 - 1;
   }
   return out;
 }
 
-export interface Adsr { a: number; d: number; s: number; r: number }
+export interface Adsr {
+  a: number;
+  d: number;
+  s: number;
+  r: number;
+}
 
 /** Linear attack, exponential-ish decay to sustain, release at the end of the buffer. */
 export function adsr(seconds: number, { a, d, s, r }: Adsr): Mono {
   const n = samples(seconds);
   const out = new Float32Array(n);
-  const A = samples(a), D = samples(d), R = samples(r);
+  const A = samples(a),
+    D = samples(d),
+    R = samples(r);
   for (let i = 0; i < n; i++) {
     let v: number;
     if (i < A) v = i / A;
@@ -94,7 +115,8 @@ export function mix(parts: Array<{ at?: number; sig: Mono; gain?: number }>): Mo
   for (const p of parts) {
     const start = samples(p.at ?? 0);
     const g = p.gain ?? 1;
-    for (let i = 0; i < p.sig.length; i++) out[start + i] = (out[start + i] as number) + (p.sig[i] as number) * g;
+    for (let i = 0; i < p.sig.length; i++)
+      out[start + i] = (out[start + i] as number) + (p.sig[i] as number) * g;
   }
   return out;
 }
@@ -102,25 +124,55 @@ export function mix(parts: Array<{ at?: number; sig: Mono; gain?: number }>): Mo
 /** RBJ biquad; cutoff may sweep over time. */
 function biquad(sig: Mono, type: 'lowpass' | 'highpass' | 'bandpass', cutoff: FreqFn, q: number): Mono {
   const out = new Float32Array(sig.length);
-  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-  let b0 = 0, b1 = 0, b2 = 0, a1 = 0, a2 = 0;
+  let x1 = 0,
+    x2 = 0,
+    y1 = 0,
+    y2 = 0;
+  let b0 = 0,
+    b1 = 0,
+    b2 = 0,
+    a1 = 0,
+    a2 = 0;
   let lastFc = -1;
   const recompute = (fc: number): void => {
     const w0 = (2 * Math.PI * Math.min(fc, SR * 0.45)) / SR;
-    const cos = Math.cos(w0), sin = Math.sin(w0);
+    const cos = Math.cos(w0),
+      sin = Math.sin(w0);
     const alpha = sin / (2 * q);
-    if (type === 'lowpass') { b0 = (1 - cos) / 2; b1 = 1 - cos; b2 = (1 - cos) / 2; }
-    else if (type === 'highpass') { b0 = (1 + cos) / 2; b1 = -(1 + cos); b2 = (1 + cos) / 2; }
-    else { b0 = alpha; b1 = 0; b2 = -alpha; }
-    const a0 = 1 + alpha; a1 = -2 * cos; a2 = 1 - alpha;
-    b0 /= a0; b1 /= a0; b2 /= a0; a1 /= a0; a2 /= a0;
+    if (type === 'lowpass') {
+      b0 = (1 - cos) / 2;
+      b1 = 1 - cos;
+      b2 = (1 - cos) / 2;
+    } else if (type === 'highpass') {
+      b0 = (1 + cos) / 2;
+      b1 = -(1 + cos);
+      b2 = (1 + cos) / 2;
+    } else {
+      b0 = alpha;
+      b1 = 0;
+      b2 = -alpha;
+    }
+    const a0 = 1 + alpha;
+    a1 = -2 * cos;
+    a2 = 1 - alpha;
+    b0 /= a0;
+    b1 /= a0;
+    b2 /= a0;
+    a1 /= a0;
+    a2 /= a0;
   };
   for (let i = 0; i < sig.length; i++) {
     const fc = freqAt(cutoff, i / SR);
-    if (typeof cutoff !== 'number' ? i % 32 === 0 : lastFc < 0) { recompute(fc); lastFc = fc; }
+    if (typeof cutoff !== 'number' ? i % 32 === 0 : lastFc < 0) {
+      recompute(fc);
+      lastFc = fc;
+    }
     const x0 = sig[i] as number;
     const y0 = b0 * x0 + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
-    x2 = x1; x1 = x0; y2 = y1; y1 = y0;
+    x2 = x1;
+    x1 = x0;
+    y2 = y1;
+    y1 = y0;
     out[i] = y0;
   }
   return out;
@@ -129,7 +181,13 @@ export const lowpass = (sig: Mono, cutoff: FreqFn, q = 0.707): Mono => biquad(si
 export const highpass = (sig: Mono, cutoff: FreqFn, q = 0.707): Mono => biquad(sig, 'highpass', cutoff, q);
 export const bandpass = (sig: Mono, cutoff: FreqFn, q = 1): Mono => biquad(sig, 'bandpass', cutoff, q);
 
-export function delay(sig: Mono, seconds: number, feedback: number, wet: number, tailSeconds = seconds * 6): Mono {
+export function delay(
+  sig: Mono,
+  seconds: number,
+  feedback: number,
+  wet: number,
+  tailSeconds = seconds * 6,
+): Mono {
   const d = samples(seconds);
   const n = sig.length + samples(tailSeconds);
   const out = new Float32Array(n);
@@ -186,9 +244,11 @@ export function softclip(sig: Mono, drive = 1.5): Mono {
 
 export function fade(sig: Mono, inSeconds: number, outSeconds: number): Mono {
   const out = new Float32Array(sig);
-  const fi = samples(inSeconds), fo = samples(outSeconds);
+  const fi = samples(inSeconds),
+    fo = samples(outSeconds);
   for (let i = 0; i < Math.min(fi, out.length); i++) out[i] = (out[i] as number) * (i / fi);
-  for (let i = 0; i < Math.min(fo, out.length); i++) out[out.length - 1 - i] = (out[out.length - 1 - i] as number) * (i / fo);
+  for (let i = 0; i < Math.min(fo, out.length); i++)
+    out[out.length - 1 - i] = (out[out.length - 1 - i] as number) * (i / fo);
   return out;
 }
 
@@ -231,9 +291,16 @@ export function stereo(sig: Mono, width = 0.2): Stereo {
 /** Bell-like tone: inharmonic partials with independent decays. */
 export function bell(freq: number, seconds: number, brightness = 1): Mono {
   const partials: Array<[number, number, number]> = [
-    [1, 1, 0.9], [2.0, 0.5, 0.6], [2.76, 0.35 * brightness, 0.45], [4.07, 0.2 * brightness, 0.3], [5.4, 0.1 * brightness, 0.2],
+    [1, 1, 0.9],
+    [2.0, 0.5, 0.6],
+    [2.76, 0.35 * brightness, 0.45],
+    [4.07, 0.2 * brightness, 0.3],
+    [5.4, 0.1 * brightness, 0.2],
   ];
-  const parts = partials.map(([ratio, amp, tau]) => ({ sig: mul(osc('sine', freq * ratio, seconds), expDecay(seconds, tau * seconds * 0.6)), gain: amp }));
+  const parts = partials.map(([ratio, amp, tau]) => ({
+    sig: mul(osc('sine', freq * ratio, seconds), expDecay(seconds, tau * seconds * 0.6)),
+    gain: amp,
+  }));
   return mix(parts);
 }
 

@@ -45,9 +45,18 @@ export function addEnergy(state: EnergyState, amount: number, playerLevel: numbe
   return { value, lastTickAt: wasBelowCap && value >= energyCap(playerLevel) ? now : regenerated.lastTickAt };
 }
 
-export function spendEnergy(state: EnergyState, amount: number, playerLevel: number, now: number): Result<EnergyState> {
+export function spendEnergy(
+  state: EnergyState,
+  amount: number,
+  playerLevel: number,
+  now: number,
+): Result<EnergyState> {
   const regenerated = regenerateEnergy(state, playerLevel, now);
-  if (regenerated.value < amount) return fail('insufficient_energy', `Need ${amount} energy, have ${regenerated.value}`, { needed: amount, have: regenerated.value });
+  if (regenerated.value < amount)
+    return fail('insufficient_energy', `Need ${amount} energy, have ${regenerated.value}`, {
+      needed: amount,
+      have: regenerated.value,
+    });
   const value = regenerated.value - amount;
   const cap = energyCap(playerLevel);
   // If we were above the cap and just dropped below it, regeneration starts counting from now.

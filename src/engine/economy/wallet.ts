@@ -28,7 +28,10 @@ export function canAfford(wallet: Wallet, cost: readonly CurrencyAmount[]): bool
 }
 
 /** Adds amounts (negative amounts are not allowed; use `spend`). Returns the new wallet and per-currency changes. */
-export function grant(wallet: Wallet, amounts: readonly CurrencyAmount[]): { wallet: Wallet; changes: CurrencyChange[] } {
+export function grant(
+  wallet: Wallet,
+  amounts: readonly CurrencyAmount[],
+): { wallet: Wallet; changes: CurrencyChange[] } {
   const next: Wallet = { ...wallet };
   const changes: CurrencyChange[] = [];
   for (const { currency, amount } of amounts) {
@@ -41,9 +44,14 @@ export function grant(wallet: Wallet, amounts: readonly CurrencyAmount[]): { wal
 }
 
 /** Removes `cost`; fails without mutating if any currency is short. */
-export function spend(wallet: Wallet, cost: readonly CurrencyAmount[]): Result<{ wallet: Wallet; changes: CurrencyChange[] }> {
+export function spend(
+  wallet: Wallet,
+  cost: readonly CurrencyAmount[],
+): Result<{ wallet: Wallet; changes: CurrencyChange[] }> {
   if (!canAfford(wallet, cost)) {
-    const missing = cost.filter(({ currency, amount }) => (wallet[currency] ?? 0) < amount).map(({ currency }) => currency);
+    const missing = cost
+      .filter(({ currency, amount }) => (wallet[currency] ?? 0) < amount)
+      .map(({ currency }) => currency);
     return fail('insufficient_currency', `Not enough ${missing.join(', ')}`, { missing });
   }
   const next: Wallet = { ...wallet };

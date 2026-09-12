@@ -24,6 +24,13 @@
       "@assets/*": ["src/assets/*"]
     }
   },
-  "include": ["./**/*.ts", "../src/engine/**/*.ts", "../src/content/**/*.ts", "../src/i18n/**/*.ts", "../src/assets/**/*.ts"],
+  "include": [
+    "./**/*.ts",
+    "../src/engine/**/*.ts",
+    "../src/content/**/*.ts",
+    "../src/i18n/**/*.ts",
+    "../src/assets/manifest-types.ts",
+    "../src/assets/manifest.generated.ts"
+  ],
   "exclude": ["../src/**/*.test.ts"]
 }

@@ -11,7 +11,9 @@ const DARK = { r: 11, g: 10, b: 13, alpha: 1 };
 function squareSvg(logoSvg: string, size: number, safeFraction: number): string {
   const viewBox = /viewBox="([\d.\s-]+)"/.exec(logoSvg)?.[1]?.split(/\s+/).map(Number) ?? [0, 0, 1, 1];
   const [vx = 0, vy = 0, vw = 1, vh = 1] = viewBox;
-  const paths = [...logoSvg.matchAll(/<path class="st0" d="([^"]+)"\/>/g)].map((m) => `<path fill="#f3ecdc" d="${m[1]}"/>`).join('');
+  const paths = [...logoSvg.matchAll(/<path class="st0" d="([^"]+)"\/>/g)]
+    .map((m) => `<path fill="#f3ecdc" d="${m[1]}"/>`)
+    .join('');
   const scale = (size * safeFraction) / Math.max(vw, vh);
   const tx = (size - vw * scale) / 2 - vx * scale;
   const ty = (size - vh * scale) / 2 - vy * scale;
@@ -38,7 +40,11 @@ export async function buildLogos(ctx: BuildContext): Promise<void> {
       const favicon32 = await sharp(Buffer.from(favicon)).resize(32, 32).png().toBuffer();
       const outputs: string[] = [out.rel];
       for (const [file, data] of [
-        ['icon-192.png', icon192], ['icon-512.png', icon512], ['icon-512-maskable.png', icon512m], ['favicon-32.png', favicon32], ['favicon.svg', Buffer.from(favicon)],
+        ['icon-192.png', icon192],
+        ['icon-512.png', icon512],
+        ['icon-512-maskable.png', icon512m],
+        ['favicon-32.png', favicon32],
+        ['favicon.svg', Buffer.from(favicon)],
       ] as const) {
         const path = join(ICONS_ROOT, file);
         await writeAtomic(path, data);
@@ -53,10 +59,19 @@ export async function buildLogos(ctx: BuildContext): Promise<void> {
     const name = sanitize(pngFile.replace(/\.png$/, ''));
     await ctx.cached(`logo:${pngFile}`, [source], async () => {
       // 6848 px wide source → a 1600 px WebP is plenty for the title screen at 1920 virtual px.
-      const data = await sharp(source).resize(1600, null, { fit: 'inside', background: DARK }).webp({ quality: 90, alphaQuality: 100 }).toBuffer();
+      const data = await sharp(source)
+        .resize(1600, null, { fit: 'inside', background: DARK })
+        .webp({ quality: 90, alphaQuality: 100 })
+        .toBuffer();
       const meta = await sharp(data).metadata();
       const out = await ctx.emit('logos', `${name}-1600`, 'webp', data);
-      const entry: ImageEntry = { kind: 'image', group: 'logos', url: out.url, w: meta.width ?? 0, h: meta.height ?? 0 };
+      const entry: ImageEntry = {
+        kind: 'image',
+        group: 'logos',
+        url: out.url,
+        w: meta.width ?? 0,
+        h: meta.height ?? 0,
+      };
       return { outputs: [out.rel], entries: { [`logo.${name}_png`]: entry } };
     });
   }

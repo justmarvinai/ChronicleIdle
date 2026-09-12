@@ -1,41 +1,104 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import type { ImageEntry, ImageSetEntry, SvgEntry } from '@assets/manifest-types';
+import type { AtlasEntry, ImageEntry, ImageSetEntry, SvgEntry } from '@assets/manifest-types';
+import { packShelves, pixiAtlasJson, type PackInput } from '../lib/atlas.ts';
 import type { BuildContext } from '../lib/context.ts';
 import { SOURCE_ROOT, listFiles, sanitize } from '../lib/util.ts';
 
-async function copyImage(ctx: BuildContext, id: string, source: string, relDir: string, key: string): Promise<void> {
+type Encoding = 'png' | 'webp';
+
+/**
+ * Copies a kit texture into the generated tree. Painted kit art goes out as WebP (alpha kept,
+ * ~70 % smaller than the PNG sources); pixel deco frames stay PNG so every pixel is exact.
+ */
+async function copyImage(
+  ctx: BuildContext,
+  id: string,
+  source: string,
+  relDir: string,
+  key: string,
+  encoding: Encoding,
+): Promise<void> {
   await ctx.cached(id, [source], async () => {
     const data = await readFile(source);
     const meta = await sharp(data).metadata();
-    const out = await ctx.emit(relDir, sanitize(key.split('.').pop() ?? key), 'png', data);
-    const entry: ImageEntry = { kind: 'image', group: 'ui', url: out.url, w: meta.width ?? 0, h: meta.height ?? 0 };
+    const encoded =
+      encoding === 'webp'
+        ? await sharp(data).webp({ quality: 92, alphaQuality: 100, effort: 5 }).toBuffer()
+        : data;
+    const out = await ctx.emit(relDir, sanitize(key.split('.').pop() ?? key), encoding, encoded);
+    const entry: ImageEntry = {
+      kind: 'image',
+      group: 'ui',
+      url: out.url,
+      w: meta.width ?? 0,
+      h: meta.height ?? 0,
+    };
     return { outputs: [out.rel], entries: { [key]: entry } };
   });
 }
 
 export async function buildUi(ctx: BuildContext): Promise<void> {
-  // Kits: copied as-is (PNG keeps the crisp edges the 9-slice frames need).
+  // Kits: painted textures re-encoded as WebP (the 9-slice edges survive at quality 92).
   for (const kit of ['dark-ember', 'stone-vine']) {
     const dir = join(SOURCE_ROOT, 'ui', kit);
     for (const file of await listFiles(dir, (f) => f.endsWith('.png'))) {
       const name = sanitize(file.replace(/\.png$/, ''));
-      await copyImage(ctx, `ui:${kit}/${file}`, join(dir, file), `ui/${kit}`, `ui.${sanitize(kit)}.${name}`);
+      await copyImage(
+        ctx,
+        `ui:webp:${kit}/${file}`,
+        join(dir, file),
+        `ui/${kit}`,
+        `ui.${sanitize(kit)}.${name}`,
+        'webp',
+      );
     }
   }
-  // Pixel deco frames and dividers.
+  // Pixel deco frames and dividers: one packed sheet (one request at boot); frames are cut and
+  // tinted at runtime by `useDecoTint` (ADR-021).
   const deco = join(SOURCE_ROOT, 'ui', 'deco-frames');
-  for (const file of await listFiles(deco, (f) => f.endsWith('.png'))) {
-    const stem = file.replace(/\.png$/, '');
-    let key: string;
-    const frame = /^deco-frame-(\d+)-(solid|soft|scrim)$/.exec(stem);
-    const divider = /^deco-divider(-fade)?-(\d+)$/.exec(stem);
-    if (frame) key = `deco.${frame[1]}.${frame[2]}`;
-    else if (divider) key = `deco.${divider[1] ? 'divider_fade' : 'divider'}.${divider[2]}`;
-    else key = `deco.misc.${sanitize(stem)}`;
-    await copyImage(ctx, `deco:${file}`, join(deco, file), 'ui/deco', key);
-  }
+  const decoFiles = await listFiles(deco, (f) => f.endsWith('.png'));
+  await ctx.cached(
+    'deco:sheet',
+    decoFiles.map((f) => join(deco, f)),
+    async () => {
+      const inputs: PackInput[] = [];
+      for (const file of decoFiles) {
+        const stem = file.replace(/\.png$/, '');
+        const frame = /^deco-frame-(\d+)-(solid|soft|scrim)$/.exec(stem);
+        const divider = /^deco-divider(-fade)?-(\d+)$/.exec(stem);
+        const name = frame
+          ? `${frame[1]}.${frame[2]}`
+          : divider
+            ? `${divider[1] ? 'divider_fade' : 'divider'}.${divider[2]}`
+            : `misc.${sanitize(stem)}`;
+        const data = await readFile(join(deco, file));
+        const meta = await sharp(data).metadata();
+        inputs.push({ name, data, w: meta.width ?? 0, h: meta.height ?? 0 });
+      }
+      const packed = await packShelves(inputs, 2048);
+      const image = await ctx.emit('ui/deco', 'sheet', 'png', packed.png);
+      const json = await ctx.emit(
+        'ui/deco',
+        'sheet',
+        'json',
+        Buffer.from(pixiAtlasJson(packed.frames, {}, image.rel.split('/').pop() ?? '', packed.w, packed.h)),
+      );
+      const entry: AtlasEntry = {
+        kind: 'atlas',
+        group: 'ui',
+        url: image.url,
+        json: json.url,
+        w: packed.w,
+        h: packed.h,
+        frames: packed.frames,
+        animations: {},
+        facing: 'left',
+      };
+      return { outputs: [image.rel, json.rel], entries: { 'deco.sheet': entry } };
+    },
+  );
   // Line glyphs: SVG copied verbatim (used as CSS masks and as Pixi textures).
   const glyphs = join(SOURCE_ROOT, 'ui', 'line-glyphs');
   for (const file of await listFiles(glyphs, (f) => f.endsWith('.svg'))) {
@@ -60,8 +123,12 @@ export async function buildUi(ctx: BuildContext): Promise<void> {
       const thumbData = await sharp(data).resize(64, 64, { fit: 'cover' }).webp({ quality: 80 }).toBuffer();
       const thumb = await ctx.emit('spells', `${name}-64`, 'webp', thumbData);
       const entry: ImageSetEntry = {
-        kind: 'image-set', group: 'spells',
-        sizes: { full: { url: full.url, w: meta.width ?? 0, h: meta.height ?? 0 }, thumb: { url: thumb.url, w: 64, h: 64 } },
+        kind: 'image-set',
+        group: 'spells',
+        sizes: {
+          full: { url: full.url, w: meta.width ?? 0, h: meta.height ?? 0 },
+          thumb: { url: thumb.url, w: 64, h: 64 },
+        },
       };
       return { outputs: [full.rel, thumb.rel], entries: { [`spell.${name}`]: entry } };
     });

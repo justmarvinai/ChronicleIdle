@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import sharp, { type OverlayOptions } from 'sharp';
 import type { AtlasAnimation, AtlasEntry, AtlasFrame } from '@assets/manifest-types';
+import { pixiAtlasJson } from '../lib/atlas.ts';
 import type { BuildContext } from '../lib/context.ts';
 import { SOURCE_ROOT, listDirs, listFiles, walk } from '../lib/util.ts';
 
@@ -31,7 +32,12 @@ async function loadFrames(dir: string, animation: string): Promise<Frame[]> {
   const frames: Frame[] = [];
   for (const [i, file] of files.entries()) {
     const meta = await sharp(join(dir, file)).metadata();
-    frames.push({ name: `${animation}_${i}`, path: join(dir, file), w: meta.width ?? 0, h: meta.height ?? 0 });
+    frames.push({
+      name: `${animation}_${i}`,
+      path: join(dir, file),
+      w: meta.width ?? 0,
+      h: meta.height ?? 0,
+    });
   }
   return frames;
 }
@@ -43,7 +49,9 @@ export async function buildModels(ctx: BuildContext): Promise<void> {
     for (const folder of await listDirs(base)) {
       const dir = join(base, folder);
       const id = modelId(folder);
-      const sources = (await walk(dir)).filter((p) => !/_avatar\.(png|jpg|webp)$/i.test(p) && !p.endsWith('.gif'));
+      const sources = (await walk(dir)).filter(
+        (p) => !/_avatar\.(png|jpg|webp)$/i.test(p) && !p.endsWith('.gif'),
+      );
       await ctx.cached(`model:${root}/${folder}`, sources, async () => {
         const animations: Record<string, Frame[]> = {};
         for (const sub of await listDirs(dir)) {
@@ -58,7 +66,8 @@ export async function buildModels(ctx: BuildContext): Promise<void> {
           const meta = await sharp(path).metadata();
           still.push({ name: 'still', path, w: meta.width ?? 0, h: meta.height ?? 0 });
         }
-        if (!animations['idle'] && still.length === 0) throw new Error(`Model ${folder} has no idle frames and no still`);
+        if (!animations['idle'] && still.length === 0)
+          throw new Error(`Model ${folder} has no idle frames and no still`);
 
         // Layout: one row per animation (frames left to right), then the still.
         const rows = [...Object.values(animations), still].filter((r) => r.length);
@@ -77,28 +86,36 @@ export async function buildModels(ctx: BuildContext): Promise<void> {
           }
           y += rowH;
         }
-        const png = await sharp({ create: { width: atlasW, height: atlasH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+        const png = await sharp({
+          create: { width: atlasW, height: atlasH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+        })
           .composite(composites)
           .png({ compressionLevel: 9, palette: false })
           .toBuffer();
         const image = await ctx.emit('models', id, 'png', png);
         const anims: Record<string, AtlasAnimation> = {};
         for (const [name, list] of Object.entries(animations)) {
-          anims[name] = { frames: list.map((f) => f.name), fps: FPS[name] ?? DEFAULT_FPS, loop: LOOPING.has(name) };
+          anims[name] = {
+            frames: list.map((f) => f.name),
+            fps: FPS[name] ?? DEFAULT_FPS,
+            loop: LOOPING.has(name),
+          };
         }
-        const pixiJson = {
-          frames: Object.fromEntries(
-            Object.entries(frames).map(([name, r]) => [
-              name,
-              { frame: r, rotated: false, trimmed: false, spriteSourceSize: { x: 0, y: 0, w: r.w, h: r.h }, sourceSize: { w: r.w, h: r.h } },
-            ]),
-          ),
-          animations: Object.fromEntries(Object.entries(anims).map(([n, a]) => [n, a.frames])),
-          meta: { app: 'chronicleidle-assets', version: '1', image: image.rel.split('/').pop(), format: 'RGBA8888', size: { w: atlasW, h: atlasH }, scale: '1' },
-        };
-        const json = await ctx.emit('models', id, 'json', Buffer.from(JSON.stringify(pixiJson)));
+        const json = await ctx.emit(
+          'models',
+          id,
+          'json',
+          Buffer.from(pixiAtlasJson(frames, anims, image.rel.split('/').pop() ?? '', atlasW, atlasH)),
+        );
         const entry: AtlasEntry = {
-          kind: 'atlas', group: 'models', url: image.url, json: json.url, w: atlasW, h: atlasH, frames, animations: anims,
+          kind: 'atlas',
+          group: 'models',
+          url: image.url,
+          json: json.url,
+          w: atlasW,
+          h: atlasH,
+          frames,
+          animations: anims,
           facing: MODEL_FACING[id] ?? 'left',
         };
         return { outputs: [image.rel, json.rel], entries: { [`model.${id}`]: entry } };

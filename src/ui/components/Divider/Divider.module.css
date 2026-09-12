@@ -1,0 +1,13 @@
+.vine {
+  height: 36px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+}
+.deco {
+  height: 22px;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}

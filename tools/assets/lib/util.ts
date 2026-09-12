@@ -86,7 +86,11 @@ export function sanitize(name: string): string {
     .replace(/^_+|_+$/g, '');
 }
 
-export async function pMap<T, R>(items: readonly T[], fn: (item: T, index: number) => Promise<R>, concurrency: number): Promise<R[]> {
+export async function pMap<T, R>(
+  items: readonly T[],
+  fn: (item: T, index: number) => Promise<R>,
+  concurrency: number,
+): Promise<R[]> {
   const results: R[] = new Array(items.length);
   let next = 0;
   const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {

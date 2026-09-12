@@ -2,7 +2,8 @@ export const currencies = {
   'currency.gold.name': 'Gold',
   'currency.gold.description': 'The coin of Emberhold. Levels gear, feeds the Tavern and pays the Forge.',
   'currency.gems.name': 'Gems',
-  'currency.gems.description': 'Earned, never bought. Trades for Ancient and Sacred Shards and refills Energy.',
+  'currency.gems.description':
+    'Earned, never bought. Trades for Ancient and Sacred Shards and refills Energy.',
   'currency.energy.name': 'Energy',
   'currency.energy.description': 'Spent on campaign stages. Regenerates one point per minute below the cap.',
   'currency.key_daily.name': 'Daily Boss Key',

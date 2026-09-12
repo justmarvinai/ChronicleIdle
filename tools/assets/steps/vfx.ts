@@ -10,7 +10,10 @@ const DEFAULT_FPS = 24;
 const ALPHA_THRESHOLD = 8;
 
 /** Counts leading non-empty cells (row-major) in a grid sheet of square frames. */
-async function countGridFrames(data: Buffer, cell: number): Promise<{ cols: number; rows: number; frames: number }> {
+async function countGridFrames(
+  data: Buffer,
+  cell: number,
+): Promise<{ cols: number; rows: number; frames: number }> {
   const { data: raw, info } = await sharp(data).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const cols = Math.floor(info.width / cell);
   const rows = Math.floor(info.height / cell);
@@ -43,7 +46,18 @@ export async function buildVfx(ctx: BuildContext): Promise<void> {
       const meta = await sharp(data).metadata();
       const grid = await countGridFrames(data, 100);
       const out = await ctx.emit('vfx/pixel', name, 'png', data);
-      const entry: FxEntry = { kind: 'fx', group: 'vfx', url: out.url, w: meta.width ?? 0, h: meta.height ?? 0, frameW: 100, frameH: 100, cols: grid.cols, frames: grid.frames, fps: DEFAULT_FPS };
+      const entry: FxEntry = {
+        kind: 'fx',
+        group: 'vfx',
+        url: out.url,
+        w: meta.width ?? 0,
+        h: meta.height ?? 0,
+        frameW: 100,
+        frameH: 100,
+        cols: grid.cols,
+        frames: grid.frames,
+        fps: DEFAULT_FPS,
+      };
       return { outputs: [out.rel], entries: { [`fx.pixel.${name}`]: entry } };
     });
   }
@@ -57,10 +71,24 @@ export async function buildVfx(ctx: BuildContext): Promise<void> {
       const size = meta.height ?? 0;
       const frames = size ? Math.floor((meta.width ?? 0) / size) : 0;
       // "Explosion_2_64x64" → explosion_2; "LightCast_96" → light_cast (a bare trailing size is dropped only when it equals the frame size).
-      const stem = file.replace(/\.png$/, '').replace(/_(\d+)x\1$/, '').replace(new RegExp(`_${size}$`), '');
+      const stem = file
+        .replace(/\.png$/, '')
+        .replace(/_(\d+)x\1$/, '')
+        .replace(new RegExp(`_${size}$`), '');
       const name = sanitize(stem.replace(/([a-z])([A-Z])/g, '$1_$2'));
       const out = await ctx.emit('vfx/gamefx', name, 'png', data);
-      const entry: FxEntry = { kind: 'fx', group: 'vfx', url: out.url, w: meta.width ?? 0, h: size, frameW: size, frameH: size, cols: frames, frames, fps: DEFAULT_FPS };
+      const entry: FxEntry = {
+        kind: 'fx',
+        group: 'vfx',
+        url: out.url,
+        w: meta.width ?? 0,
+        h: size,
+        frameW: size,
+        frameH: size,
+        cols: frames,
+        frames,
+        fps: DEFAULT_FPS,
+      };
       return { outputs: [out.rel], entries: { [`fx.gamefx.${name}`]: entry } };
     });
   }

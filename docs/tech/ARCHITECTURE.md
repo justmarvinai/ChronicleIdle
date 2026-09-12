@@ -151,12 +151,19 @@ interface SaveGame {
 
 ### 4.2 Persistence
 
-- Debounced autosave (2 s) after any persisted-slice change; immediate on `visibilitychange`,
-  `pagehide`, battle end, summon, claim.
-- Rolling backups: 3 most recent autosaves + 1 "pre-migration" snapshot.
-- Export: `.chronicle` file = base64(JSON) + SHA-256 checksum header; import validates schema
-  and checksum, shows a summary (level, champions, updated date) before overwriting, and stores a
-  backup of the current save first.
+- Debounced autosave (2 s) after any change to the save; settings and profile edits (deliberate,
+  rare player actions) are written at once; explicit flushes after new game, import and reset,
+  and later after battle end, summon and claim.
+- `visibilitychange` (hidden) and `pagehide` flush asynchronously **and** write a synchronous
+  localStorage mirror (`chronicleidle.save.unload`) because an IndexedDB transaction started
+  during unload can be cut off. On boot the mirror wins when it is newer than the IndexedDB
+  record, is written back and cleared (`platform/storage.ts`, ADR-022).
+- Rolling backups: 3 most recent autosaves plus 2 per event reason (`pre-import`, `pre-reset`,
+  `pre-new-game`, `pre-migration`).
+- Export: `.chronicle` file = JSON envelope `{ format, version, checksum, payload }` with a
+  base64 payload and SHA-256 checksum; import validates format, checksum and schema, shows a
+  summary (name, level, saved date) before overwriting, and stores a backup of the current save
+  first. Damaged or foreign files are rejected with a readable toast.
 - Multiple save slots: not in EA-0.1 (Q in `USER_QUESTIONS.md`); the schema keeps a `slotId`
   key path to allow it later.
 
@@ -185,6 +192,10 @@ interface SaveGame {
 
 ## 7. Audio
 
+Music and ambience beds are fetched only after the first pointer or key event (`audio/gate.ts`):
+browsers refuse to play before a gesture, and the multi-megabyte tracks must not compete with the
+first paint. Directors remember the requested state and start it the moment audio is armed.
+
 - `MusicDirector`: states `title`, `hub`, `battle`, `summon`, `boss`; cross-fade 1.2 s; the two
   provided tracks map to `hub/title` and `battle/boss`; summon reuses hub with a low-pass filter
   until a dedicated track exists (generated or provided).
@@ -206,8 +217,8 @@ Input `/game/assets/**` → output `/public/assets/generated/**` + `src/assets/m
 | `champions/<id>/<id>_avatar.png` (1254²) | WebP at 1024 / 512 / 256 / 128 |
 | `enemies/<id>/…` | same as champions |
 | `ui/dark-ember`, `ui/stone-vine` | copied; 9-slice insets recorded in `ui-kit.json` (measured once, hand-tuned) |
-| `ui/deco-frames/*.png` (96²) | one atlas; 32 px insets |
-| `ui/line-glyphs/*.svg` | inlined SVG sprite (`<symbol>`), usable as CSS mask and as Pixi texture |
+| `ui/deco-frames/*.png` (96²) | one packed sheet (`deco.sheet`); frames cut and tinted at runtime, 32 px insets |
+| `ui/line-glyphs/*.svg` | inlined as data-URI CSS variables (CSS masks, zero requests) and emitted as files for Pixi |
 | `ui/spell-icons/*.webp` | copied + 64 px thumbs atlas |
 | `wallpapers/*` | WebP 1920 and 2560 widths + 64 px blurred placeholder |
 | `logos/*` | copied |

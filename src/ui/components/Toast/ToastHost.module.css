@@ -1,0 +1,49 @@
+.host {
+  position: absolute;
+  top: 104px;
+  right: 24px;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 420px;
+  pointer-events: none;
+}
+.toast {
+  position: relative;
+  pointer-events: auto;
+  cursor: var(--cursor-pointer);
+}
+.fill {
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+}
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 12px 18px;
+}
+.text {
+  font-size: var(--fs-body);
+  color: var(--text-1);
+}
+.reward .text,
+.reward {
+  color: var(--gold-3);
+}
+.error .text {
+  color: #ffb3a8;
+}
+.rewards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 8px;
+}
+.reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+}

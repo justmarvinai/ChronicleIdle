@@ -11,12 +11,26 @@ export interface Produced {
 export class BuildContext {
   readonly entries = new Map<string, AssetEntry>();
   readonly groups: Record<AssetGroup, string[]> = {
-    ui: [], hub: [], title: [], models: [], avatars: [], backdrops: [], spells: [], audio: [], ambience: [], music: [], vfx: [], logos: [],
+    ui: [],
+    hub: [],
+    title: [],
+    models: [],
+    avatars: [],
+    backdrops: [],
+    spells: [],
+    audio: [],
+    ambience: [],
+    music: [],
+    vfx: [],
+    logos: [],
   };
   processed = 0;
   reused = 0;
 
-  constructor(readonly cache: AssetCache, readonly log: Logger) {}
+  constructor(
+    readonly cache: AssetCache,
+    readonly log: Logger,
+  ) {}
 
   /**
    * Runs `produce` unless the cache already holds outputs for `sources` with the same signature.
