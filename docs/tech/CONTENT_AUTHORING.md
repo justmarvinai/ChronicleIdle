@@ -8,8 +8,9 @@ engine or UI changes unless a genuinely new mechanic is required.
 
 - Ids: `type.snake_case` — `champ.anuria`, `enemy.thornwood_cutpurse`, `stage.01.07`,
   `gear_set.ember_guard`, `boss.gravemaw`, `banner.featured`, `dq.login`, `m.3.4`, `tut.1.6`.
-- One object per file; file name = id without the type prefix. Files are collected by
-  `registry.ts` using `import.meta.glob('./**/*.ts', { eager: true })`.
+- One object per file; file name = id without the type prefix. Each folder lists its objects in
+  an explicit `index.ts` (`CHAMPIONS`, `CURRENCIES`, …) that `registry.ts` assembles — no glob, so
+  the same modules load identically in Vite, Vitest and the `tools/` scripts.
 - Text is an i18n key; English strings live in `src/i18n/en/<domain>.ts`. Descriptions may use
   placeholders resolved from the ability's current numbers: `"Deals {dmg} damage and has a {chance}% chance to place [DEF Down] for {turns} turns."`.
 - Numbers that are *balance* (curves, multipliers, costs, rates) live in `src/content/balance/`
@@ -20,42 +21,73 @@ engine or UI changes unless a genuinely new mechanic is required.
 
 ```ts
 // src/content/champions/anuria.ts
-import { defineChampion } from '@content/define';
+import { defineChampion, hit, status, up } from './dsl';
 
+/** Epic Justice sniper: DEF shred and a guaranteed crit on debuffed targets (CHAMPIONS.md §4.4). */
 export default defineChampion({
   id: 'champ.anuria',
-  name: 'champ.anuria.name',                 // i18n key
-  rarity: 'epic', element: 'justice', role: 'attack',
-  stats: { hp: 13200, atk: 1480, def: 880, spd: 104, critRate: 15, critDmg: 60, res: 25, acc: 10 },
-  art: { model: 'model.anuria', avatar: 'avatar.anuria', facing: 'left' },
+  rarity: 'epic',
+  element: 'justice',
+  role: 'attack',
+  stats: [13_200, 1_480, 880, 104, 15, 60, 25, 10], // hp atk def spd critRate critDmg res acc at 6★/60
+  art: { model: 'model.anuria', avatar: 'avatar.anuria', facing: 'left' }, // or { placeholderTint: '#8a5a3a' }
   obtain: ['summon'],
   abilities: [
-    { slot: 'a1', id: 'ab.anuria.silver_arrow', name: 'ab.anuria.silver_arrow.name', cooldown: 0,
-      effects: [
-        { kind: 'damage', target: 'single_enemy', mult: 3.5, stat: 'ATK' },
-        { kind: 'apply_status', target: 'single_enemy', status: 'def_down', value: 30, turns: 2, chance: 30 },
-      ],
-      upgrades: [{ type: 'damage', value: 5 }, { type: 'chance', value: 10 }],
-      ai: { priority: 1 } },
-    { slot: 'a2', id: 'ab.anuria.piercing_volley', cooldown: 4,
-      effects: [{ kind: 'damage', target: 'all_enemies', mult: 2.6, stat: 'ATK', defIgnore: 0.2 }],
-      upgrades: [{ type: 'damage', value: 5 }, { type: 'damage', value: 5 }, { type: 'cooldown', value: 1 }],
-      ai: { priority: 3, when: { enemiesAlive: { gte: 3 } } } },
-    { slot: 'a3', id: 'ab.anuria.heartseeker', cooldown: 5,
-      effects: [{ kind: 'damage', target: 'single_enemy', mult: 6.8, stat: 'ATK', guaranteedCritIf: { targetHasAnyDebuff: true } }],
-      upgrades: [{ type: 'damage', value: 5 }, { type: 'damage', value: 10 }, { type: 'cooldown', value: 1 }],
-      ai: { priority: 4 } },
+    {
+      slot: 'a1',
+      key: 'silver_arrow', // → id ab.anuria.silver_arrow, i18n ab.anuria.silver_arrow.name/.description
+      icon: 'spell.hunt_piercing_arrow',
+      effects: [hit(3.5), status('def_down', 2, { chance: 30, value: 30 })],
+      upgrades: [up.dmg(5), up.chance(10)],
+    },
+    {
+      slot: 'a2',
+      key: 'piercing_volley',
+      icon: 'spell.hunt_arrow_storm',
+      cooldown: 4,
+      effects: [hit(2.6, 'all_enemies', { defIgnore: 0.2 })],
+      upgrades: [up.dmg(5), up.dmg(5), up.cd()],
+      ai: { priority: 3, when: { enemiesAlive: { gte: 3 } } },
+    },
+    {
+      slot: 'a3',
+      key: 'heartseeker',
+      icon: 'spell.hunt_golden_bow',
+      cooldown: 5,
+      effects: [hit(6.8, 'single_enemy', { guaranteedCritIf: { targetHasAnyDebuff: true } })],
+      upgrades: [up.dmg(5), up.dmg(10), up.cd()],
+      ai: { priority: 4 },
+    },
   ],
-  passive: { id: 'ab.anuria.rangers_focus', trigger: 'static',
-    effects: [{ kind: 'damage_bonus', value: 0.15, scope: 'crit', if: { targetHas: 'def_down' } }] },
-  lore: 'champ.anuria.lore',
-  version: 1,
+  passive: {
+    key: 'rangers_focus',
+    icon: 'spell.hunt_tracking_ring',
+    trigger: 'static',
+    effects: [{ kind: 'damage_bonus', value: 0.15, scope: 'crit', if: { targetHas: 'def_down' } }],
+  },
 });
 ```
 
+`defineChampion` derives the ids and i18n keys from `id` and each ability `key`
+(`champ.<id>.name`, `champ.<id>.lore`, `ab.<id>.<key>.name` / `.description`), defaults `cooldown`
+to 0, `ai.priority` to the slot order and `version` to 1, and marks the art as a placeholder when
+`placeholderTint` is given (the lizard model and avatar are borrowed, the tint is multiplied over
+both, and every card and portrait shows "Art pending"). The DSL builders in
+`src/content/champions/dsl.ts` — `hit`, `status`, `heal`, `cleanse`, `strip`, `tm`, `revive`,
+`extraTurn`, `leech`, `when` and the `up.*` upgrade steps — produce plain `Effect` objects, so
+anything they cannot express can still be written as a literal effect (the passive above). Add the
+new file to `src/content/champions/index.ts` and the strings to `src/i18n/en/champions.ts`.
+
+Descriptions quote live numbers with `{dmg}`, `{dmg2}`, `{hits}`, `{chance}`, `{turns}`,
+`{value}`, `{heal}`, `{shield}`, `{tm}`, `{cooldown}` and `{defIgnore}`; the engine
+(`abilityNumbers`, `passiveNumbers`) fills them from the effects with the instance's skill-tome
+upgrades applied, so the text always states what the ability does *now*.
+
 Checklist: stats within ±15 % of the role template × rarity budget (validator warns), ability
-count matches rarity, every status id exists, every `mult` positive, `art` keys exist in the
-manifest (placeholder model: `model.placeholder_lizard` with `tint: '#7a8a5a'`).
+count matches rarity (Common 1, Uncommon/Rare 2, Epic 3, Legendary/Mythic 4), slots in order with
+A1 at cooldown 0, at most three upgrade steps for A1 and four elsewhere, every status id exists,
+every `mult` positive, `art` keys exist in the manifest, every placeholder token in a description
+resolves (the content test renders each one).
 
 ## 3. Enemy
 

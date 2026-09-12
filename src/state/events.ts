@@ -2,10 +2,15 @@
  * Domain events (docs/tech/ARCHITECTURE.md §3.1). Reducers describe what happened; the UI, audio
  * and later the quest tracker react. The bus is synchronous and never throws past a listener.
  */
+import type { ChampionId } from '@content/champions/types';
 import type { CurrencyChange } from '@engine/economy/wallet';
 
 export type DomainEvent =
   | { type: 'game.created'; name: string }
+  | { type: 'starter.chosen'; defId: ChampionId; instanceId: string }
+  | { type: 'champion.added'; defId: ChampionId; instanceId: string; source: string }
+  | { type: 'champion.updated'; instanceId: string; change: 'locked' | 'favourite' }
+  | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }
   | { type: 'profile.renamed'; name: string }

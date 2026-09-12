@@ -124,15 +124,21 @@ genre; a "battle in progress" flag prevents double-spend on reload).
 Selectors compute derived data (total stats, power, unlocks, quest progress) and are memoised with
 `reselect`-style helpers; React components subscribe to narrow selectors.
 
-### 4.1 Save schema (v1)
+### 4.1 Save schema (v2 — target shape)
+
+Shipped so far: v1 (Phase 0: profile, wallet, energy, settings, stats, periods, provisions) and
+v2 (Phase 1: `roster`, `counters`, `profile.avatarChampionId`; migration 1→2 drops the old
+`avatarKey`). Fields below that no phase has shipped yet are the planned shape and are added by
+their phase with a migration and a fixture in `tests/fixtures/saves/`.
 
 ```ts
 interface SaveGame {
-  saveVersion: 1; createdAt: number; updatedAt: number; seedRoot: string;
-  profile: { name: string; level: number; xp: number; avatarChampionId: string | null; titles: string[] };
+  saveVersion: 2; createdAt: number; updatedAt: number; seedRoot: string;
+  profile: { name: string; level: number; xp: number; avatarChampionId: ChampionId | null; titles: string[] };
   wallet: Record<CurrencyId, number>;
   energy: { value: number; lastTickAt: number };
-  roster: Record<string, ChampionInstance>;
+  roster: Record<string, ChampionInstance>;   // instance ids are `<def>-<n>` from `counters.instances`
+  counters: { instances: number };            // monotonic serials so ids never collide after a release
   gear: Record<string, GearInstance>;
   teams: Record<'campaign' | 'boss', { presets: string[][]; lastUsed: string[] }>;   // 3 presets per mode (Q25)
   campaign: { stages: Record<string, { stars: 0|1|2|3; clears: number; bestTurns: number | null }>;

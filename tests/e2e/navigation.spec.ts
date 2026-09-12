@@ -5,7 +5,6 @@ const LOCKED_HOTSPOTS: Record<string, RegExp> = {
   portal: /level 4/,
   tavern: /level 2/,
   forge: /level 8/,
-  champions: /later chapter/,
   hall: /level 6/,
   market: /later chapter/,
   idle: /level 5/,

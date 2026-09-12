@@ -99,9 +99,7 @@ export default function HubScreen(_props: ScreenProps) {
               label={t('hub.champions')}
               glyph="glyph.cloaked_figure"
               unlocked
-              onClick={() =>
-                actions.push({ name: 'locked', feature: 'champions', titleKey: 'hub.champions' })
-              }
+              onClick={() => actions.push({ name: 'champions' })}
               testId="nav-champions"
             />
           </>

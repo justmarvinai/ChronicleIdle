@@ -87,3 +87,60 @@
 .tabsRow {
   margin-bottom: 18px;
 }
+
+/* Avatar picker */
+.avatarGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.avatarNone {
+  position: relative;
+  width: 96px;
+  height: 123px;
+  background-size: cover;
+  background-position: center top;
+  border: 2px solid var(--stone-3);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast);
+}
+.avatarNone:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-gold);
+}
+.avatarSelected {
+  box-shadow:
+    0 0 0 3px var(--gold-2),
+    var(--glow-gold);
+}
+.avatarNoneLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  font-size: 14px;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.avatarPreview {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid var(--gold-1);
+}
+.avatarTint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+}

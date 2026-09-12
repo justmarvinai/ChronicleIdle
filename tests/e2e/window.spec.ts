@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { gotoTitle, openSettingsTab, settle } from './helpers';
+import { bindStarter, gotoTitle, openSettingsTab, settle } from './helpers';
 
 const isFullscreen = (page: Page): Promise<boolean> =>
   page.evaluate(() => document.fullscreenElement !== null);
@@ -28,8 +28,7 @@ test.describe('game window', () => {
     await page.getByTestId('btn-new-chronicle').click();
     await page.getByTestId('name-input').fill('Marvin');
     await page.getByTestId('begin-chronicle').click();
-    await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
+    await bindStarter(page);
     expect(await isFullscreen(page)).toBe(false);
     await openSettingsTab(page, 'Display');
     await expect(page.getByRole('switch', { name: 'Offer fullscreen at launch' })).toHaveAttribute(

@@ -12,17 +12,19 @@ export interface NewGameInput {
   settings?: Partial<Settings>;
 }
 
-/** A brand-new chronicle: level 1, starting gold, energy at cap, no provisions claimed yet. */
+/** A brand-new chronicle: level 1, starting gold, energy at cap, no champions until the starter is chosen. */
 export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): SaveGame {
   return {
     saveVersion: SAVE_VERSION,
     createdAt: now,
     updatedAt: now,
     seedRoot,
-    profile: { name: name.trim(), level: 1, xp: 0, avatarKey: null, titles: [] },
+    profile: { name: name.trim(), level: 1, xp: 0, avatarChampionId: null, titles: [] },
     wallet: walletWith(STARTING_WALLET),
     energy: { value: energyCap(1), lastTickAt: now },
     provisionsClaimed: [],
+    roster: {},
+    counters: { instances: 0 },
     settings: { ...DEFAULT_SETTINGS, ...settings },
     stats: {},
     periods: {

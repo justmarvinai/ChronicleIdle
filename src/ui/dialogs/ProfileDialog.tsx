@@ -5,6 +5,7 @@ import { formatDuration } from '@engine/time/clock';
 import { t } from '@i18n/index';
 import { selectActions, selectProfile } from '@state/selectors';
 import { useGameStore } from '@state/store';
+import { profileAvatar } from '@ui/champions/art';
 import { Bar } from '@ui/components/Bar/Bar';
 import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
@@ -14,6 +15,8 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
   const actions = useGameStore(selectActions);
   const profile = useGameStore(selectProfile);
   const createdAt = useGameStore((s) => s.save?.createdAt ?? 0);
+  const hasRoster = useGameStore((s) => Object.keys(s.save?.roster ?? {}).length > 0);
+  const avatar = profileAvatar(profile?.avatarChampionId ?? null, 128);
   const playtime = useGameStore((s) => s.save?.stats['playtime_ms'] ?? 0);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile?.name ?? '');
@@ -105,7 +108,39 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
           {profile.titles.length ? profile.titles.join(', ') : t('profile.noTitles')}
         </p>
       </div>
-      <p className={styles.hint}>{t('profile.avatar.none')}</p>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>{t('profile.avatar.choose')}</span>
+        <span style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <span
+            className={styles.avatarPreview}
+            style={{ backgroundImage: `url("${avatar.url}")` }}
+            aria-hidden="true"
+          >
+            {avatar.tint ? (
+              <span
+                className={styles.avatarTint}
+                style={{
+                  backgroundColor: avatar.tint,
+                  WebkitMaskImage: `url("${avatar.url}")`,
+                  maskImage: `url("${avatar.url}")`,
+                }}
+              />
+            ) : null}
+          </span>
+          {hasRoster ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => actions.openDialog({ name: 'avatar-picker' })}
+              data-testid="choose-avatar"
+            >
+              {t('profile.avatar.choose')}
+            </Button>
+          ) : (
+            <span className={styles.hint}>{t('profile.avatar.none')}</span>
+          )}
+        </span>
+      </div>
     </Dialog>
   );
 }

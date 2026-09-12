@@ -21,7 +21,9 @@
       "@engine/*": ["src/engine/*"],
       "@content/*": ["src/content/*"],
       "@i18n/*": ["src/i18n/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@state/*": ["src/state/*"],
+      "@platform/*": ["src/platform/*"]
     }
   },
   "include": [

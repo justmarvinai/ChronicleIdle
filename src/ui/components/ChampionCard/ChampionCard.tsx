@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { avatarUrl } from '@assets/manifest';
 import type { AvatarKey } from '@assets/manifest.generated';
 import { playSfx } from '@audio/index';
@@ -34,15 +35,27 @@ export interface ChampionCardProps {
   level: number;
   avatar: AvatarKey;
   size?: 96 | 128 | 192 | 256;
+  /** Placeholder art: multiply tint over the borrowed lizard avatar plus an "art pending" mark. */
+  tint?: string | null;
+  placeholder?: boolean;
+  placeholderLabel?: string;
   selected?: boolean;
   locked?: boolean;
   favourite?: boolean;
   dimmed?: boolean;
   onClick?: () => void;
+  /** Identity only (avatar picker, previews): no star row and no level badge. */
+  compact?: boolean;
+  /** Test hook for e2e specs (`roster-card-<instanceId>` in the Champions index). */
+  testId?: string;
 }
 
-/** Roster card: rarity-tinted pixel frame, avatar, stars, level badge, element and role sigils. */
-export function ChampionCard({
+/**
+ * Roster card: rarity-tinted pixel frame, avatar, stars, level badge, element and role sigils.
+ * Memoised: the virtual grid re-renders on every row-window change and most cards are unchanged
+ * (callers pass stable `onClick` handlers for that to pay off).
+ */
+export const ChampionCard = memo(function ChampionCard({
   name,
   rarity,
   element,
@@ -51,11 +64,16 @@ export function ChampionCard({
   level,
   avatar,
   size = 128,
+  tint = null,
+  placeholder = false,
+  placeholderLabel,
   selected,
   locked,
   favourite,
   dimmed,
   onClick,
+  compact = false,
+  testId,
 }: ChampionCardProps) {
   const color = RARITY_HEX[rarity];
   const interactive = !!onClick;
@@ -69,6 +87,7 @@ export function ChampionCard({
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={`${name}, ${rarity}, level ${level}, ${stars} stars`}
+      data-testid={testId}
       className={[
         styles.card,
         styles[rarity],
@@ -90,16 +109,38 @@ export function ChampionCard({
         className={styles.art}
         style={{ backgroundImage: `url("${avatarUrl(avatar, size >= 192 ? 512 : 256)}")` }}
       />
+      {tint ? (
+        <div
+          className={styles.tint}
+          style={{
+            backgroundColor: tint,
+            WebkitMaskImage: `url("${avatarUrl(avatar, size >= 192 ? 512 : 256)}")`,
+            maskImage: `url("${avatarUrl(avatar, size >= 192 ? 512 : 256)}")`,
+          }}
+          aria-hidden="true"
+        />
+      ) : null}
       <div className={styles.shade} />
+      {placeholder ? (
+        <span
+          className={`display ${styles.placeholder}`}
+          style={{ fontSize: size <= 96 ? 8 : 11 }}
+          title={placeholderLabel}
+        >
+          {placeholderLabel ?? 'ART PENDING'}
+        </span>
+      ) : null}
       {rarity === 'legendary' || rarity === 'mythic' ? (
         <div
           className={[styles.shimmer, rarity === 'mythic' ? styles.mythic : ''].join(' ')}
           aria-hidden="true"
         />
       ) : null}
-      <div className={styles.stars}>
-        <StarRow stars={stars} max={6} size={Math.max(10, size * 0.11)} tone="rarity" tint={color} />
-      </div>
+      {compact ? null : (
+        <div className={styles.stars}>
+          <StarRow stars={stars} max={6} size={Math.max(10, size * 0.11)} tone="rarity" tint={color} />
+        </div>
+      )}
       <span
         className={styles.element}
         style={{
@@ -111,7 +152,7 @@ export function ChampionCard({
       <span className={styles.role}>
         <Glyph glyph={ROLE_GLYPH[role]} size={iconSize} color="var(--text-2)" label={role} />
       </span>
-      <span className={`num ${styles.level}`}>{level}</span>
+      {compact ? null : <span className={`num ${styles.level}`}>{level}</span>}
       {locked ? (
         <Glyph
           glyph="glyph.broken_shackle"
@@ -133,4 +174,4 @@ export function ChampionCard({
       {size >= 192 ? <span className={`display ${styles.name}`}>{name}</span> : null}
     </DecoFrame>
   );
-}
+});

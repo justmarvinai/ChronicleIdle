@@ -92,6 +92,15 @@ async function run(report: ProgressReporter): Promise<void> {
     if (!document.hidden && store.getState().save) actions.touchStat('playtime_ms', PLAYTIME_TICK_MS);
   }, PLAYTIME_TICK_MS);
 
+  if (import.meta.env.DEV) {
+    // Chronicle Debug (grants for testing) — development builds only, Ctrl+Shift+D.
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        actions.openDialog({ name: 'debug' });
+      }
+    });
+  }
   // `?screen=devkit` opens the component gallery (docs/tech/UI_DESIGN.md §9) in every build.
   const screen = new URLSearchParams(window.location.search).get('screen');
   if (screen === 'devkit') actions.resetStack({ name: 'devkit' });

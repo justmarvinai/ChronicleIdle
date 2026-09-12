@@ -66,10 +66,11 @@ export async function buildUi(ctx: BuildContext): Promise<void> {
       const inputs: PackInput[] = [];
       for (const file of decoFiles) {
         const stem = file.replace(/\.png$/, '');
-        const frame = /^deco-frame-(\d+)-(solid|soft|scrim)$/.exec(stem);
+        // `deco-frame-07.png` is the bare outline (`line`); `-solid|-soft|-scrim` add a fill.
+        const frame = /^deco-frame-(\d+)(?:-(solid|soft|scrim))?$/.exec(stem);
         const divider = /^deco-divider(-fade)?-(\d+)$/.exec(stem);
         const name = frame
-          ? `${frame[1]}.${frame[2]}`
+          ? `${frame[1]}.${frame[2] ?? 'line'}`
           : divider
             ? `${divider[1] ? 'divider_fade' : 'divider'}.${divider[2]}`
             : `misc.${sanitize(stem)}`;

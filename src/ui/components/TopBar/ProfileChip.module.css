@@ -52,3 +52,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Placeholder avatars take their champion's tint (multiply masked to the art). */
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center;
+  mask-position: center;
+  pointer-events: none;
+}

@@ -1,11 +1,10 @@
-import { avatarUrl } from '@assets/manifest';
-import type { AvatarKey } from '@assets/manifest.generated';
 import { playSfx } from '@audio/index';
 import { xpToNextLevel } from '@engine/progression/player-level';
 import { t } from '@i18n/index';
 import { selectProfile } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { Bar } from '@ui/components/Bar/Bar';
+import { profileAvatar } from '@ui/champions/art';
 import { imageUrl } from '@assets/manifest';
 import styles from './ProfileChip.module.css';
 
@@ -13,17 +12,29 @@ import styles from './ProfileChip.module.css';
 export function ProfileChip({ onClick }: { onClick: () => void }) {
   const profile = useGameStore(selectProfile);
   if (!profile) return null;
-  const avatar = (profile.avatarKey as AvatarKey | null) ?? 'avatar.tutorial_npc';
+  const avatar = profileAvatar(profile.avatarChampionId, 128);
   return (
     <button
       type="button"
       className={styles.chip}
       aria-label={t('topbar.profile')}
       data-testid="profile-chip"
+      data-avatar={profile.avatarChampionId ?? 'chronicler'}
       onMouseEnter={() => playSfx('ui.hover')}
       onClick={() => (playSfx('ui.tab'), onClick())}
     >
-      <span className={styles.avatar} style={{ backgroundImage: `url("${avatarUrl(avatar, 128)}")` }}>
+      <span className={styles.avatar} style={{ backgroundImage: `url("${avatar.url}")` }}>
+        {avatar.tint ? (
+          <span
+            className={styles.tint}
+            style={{
+              backgroundColor: avatar.tint,
+              WebkitMaskImage: `url("${avatar.url}")`,
+              maskImage: `url("${avatar.url}")`,
+            }}
+            aria-hidden="true"
+          />
+        ) : null}
         <span
           className={styles.ring}
           style={{ backgroundImage: `url("${imageUrl('ui.dark_ember.frame_round_sm')}")` }}

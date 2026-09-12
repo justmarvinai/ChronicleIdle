@@ -2,6 +2,7 @@ import { SaveError } from '@engine/errors';
 import { decodeChronicleFile, type DecodedChronicle } from '@state/chronicle-file';
 import { applyOfflineElapsed } from '@state/offline';
 import { services, servicesReady } from '@state/services';
+import { entryRoute } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { pickTextFile } from '@platform/files';
 
@@ -34,7 +35,7 @@ export async function applyImportedChronicle(decoded: DecodedChronicle): Promise
   if (save && servicesReady()) await services().persistence.backup('pre-import');
   const { save: next, report } = applyOfflineElapsed(decoded.save, Date.now());
   actions.loadSave(next, report);
-  actions.resetStack({ name: 'hub' });
+  actions.resetStack(entryRoute(useGameStore.getState()));
   actions.toast('info', 'save.imported');
   if (servicesReady()) await services().persistence.flush();
 }

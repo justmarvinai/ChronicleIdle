@@ -7,6 +7,7 @@ export interface TabItem<K extends string> {
   label: string;
   badge?: number;
   disabled?: boolean;
+  testId?: string;
 }
 
 export interface TabsProps<K extends string> {
@@ -40,6 +41,7 @@ export function Tabs<K extends string>({
             type="button"
             aria-selected={active}
             disabled={item.disabled}
+            data-testid={item.testId}
             className={[styles.tab, active ? styles.active : ''].join(' ')}
             style={kitBorder(active ? 'ui.dark_ember.banner_plain' : 'ui.dark_ember.banner_dark', 0.28)}
             onMouseEnter={() => !item.disabled && playSfx('ui.hover')}

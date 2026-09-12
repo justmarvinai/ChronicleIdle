@@ -1,0 +1,96 @@
+import { useState } from 'react';
+import { CHAMPION_IDS, type ChampionId } from '@content/champions/types';
+import { content } from '@content/registry';
+import { t, translate } from '@i18n/index';
+import { selectActions } from '@state/selectors';
+import { useGameStore } from '@state/store';
+import { Button } from '@ui/components/Button/Button';
+import { Dialog } from '@ui/components/Dialog/Dialog';
+import { Dropdown } from '@ui/components/Dropdown/Dropdown';
+import styles from './dialogs.module.css';
+
+const GENERATE_COUNT = 200;
+
+/** Chronicle Debug (development builds only, Ctrl+Shift+D): grants for testing screens. */
+export default function DebugDialog({ onClose }: { onClose: () => void }) {
+  const actions = useGameStore(selectActions);
+  const [champion, setChampion] = useState<ChampionId>('champ.anuria');
+  const [seed, setSeed] = useState('perf');
+  const name = (id: ChampionId): string => {
+    const def = content.championById(id);
+    return def ? translate(def.name) : id;
+  };
+  return (
+    <Dialog title={t('debug.title')} onClose={onClose} width={720} testId="dialog-debug">
+      <p className={styles.hint}>{t('debug.body')}</p>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>{t('debug.champion')}</span>
+        <span style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Dropdown<ChampionId>
+            width={320}
+            value={champion}
+            options={CHAMPION_IDS.map((id) => ({ value: id, label: name(id) }))}
+            onChange={setChampion}
+          />
+          <Button
+            size="sm"
+            variant="primary"
+            data-testid="debug-grant"
+            onClick={() => {
+              const result = actions.grantChampion(champion, 'summon', 'debug');
+              if (result.ok) actions.toast('info', 'debug.granted', { name: name(champion) });
+            }}
+          >
+            {t('debug.grant')}
+          </Button>
+        </span>
+      </div>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>{t('debug.generate', { count: GENERATE_COUNT })}</span>
+        <span style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <input
+            className={styles.input}
+            style={{ width: 160, height: 44, fontSize: 18 }}
+            value={seed}
+            onChange={(e) => setSeed(e.target.value)}
+            aria-label="seed"
+            data-testid="debug-seed"
+          />
+          <Button
+            size="sm"
+            variant="secondary"
+            data-testid="debug-generate"
+            onClick={() => {
+              const result = actions.generateDebugRoster(GENERATE_COUNT, seed);
+              if (result.ok) actions.toast('info', 'debug.generated', { count: GENERATE_COUNT });
+            }}
+          >
+            {t('debug.generate', { count: GENERATE_COUNT })}
+          </Button>
+        </span>
+      </div>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>Wallet</span>
+        <span style={{ display: 'flex', gap: 10 }}>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => actions.grantCurrency([{ currency: 'gold', amount: 10_000 }], 'debug')}
+          >
+            {t('debug.gold')}
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => actions.grantCurrency([{ currency: 'gems', amount: 500 }], 'debug')}
+          >
+            {t('debug.gems')}
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => actions.addEnergy(100, 'debug')}>
+            {t('debug.energy')}
+          </Button>
+        </span>
+      </div>
+    </Dialog>
+  );
+}

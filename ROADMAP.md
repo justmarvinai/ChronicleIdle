@@ -10,7 +10,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | --- | --- | --- | --- |
 | P | Planning (this document set) | — | ✅ |
 | 0 | Foundation & Game Shell | 0.0.0 | ✅ shipped in 0.0.0 |
-| 1 | Champions & Collection | 0.0.1 | ⬜ |
+| 1 | Champions & Collection | 0.0.1 | ✅ shipped in 0.0.1 |
 | 2 | Battle System | 0.0.2 | ⬜ |
 | 3 | Campaign | 0.0.3 | ⬜ |
 | 4 | Player Level & Profile | 0.0.4 | ⬜ |
@@ -79,6 +79,8 @@ but everything a system will plug into.
   windowed; no browser scrollbars, text selection or context menus anywhere.
 
 ## Phase 1 — Champions & Collection (`0.0.1`)
+
+**Status.** ✅ shipped in 0.0.1 (2026-09-12). See `CHANGELOG.md` for what landed.
 
 **Goal.** The full EA-0.1 roster exists as content and the Champions screens are complete.
 

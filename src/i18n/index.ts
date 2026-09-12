@@ -11,6 +11,11 @@ export type I18nParams = Record<string, string | number>;
 const dictionary: Record<string, string> = en;
 export const I18N_KEYS: ReadonlySet<string> = new Set(Object.keys(dictionary));
 
+/** Raw English text for a key (content validation of description placeholders). */
+export function textOf(key: string): string | undefined {
+  return dictionary[key];
+}
+
 const missing = new Set<string>();
 
 export function hasKey(key: string): key is I18nKey {

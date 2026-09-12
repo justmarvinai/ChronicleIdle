@@ -1,6 +1,6 @@
 {
   "name": "chronicleidle",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "ChronicleIdle — a turn-based idle gacha champion-collection RPG for the desktop browser.",
   "type": "module",

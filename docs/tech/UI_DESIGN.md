@@ -84,7 +84,7 @@ Letter-spacing +0.02 em on display; never serif; never lighter than 400.
 
 | Component | Built from | Notes |
 | --- | --- | --- |
-| `Frame` | `deco-frames/deco-frame-NN-{solid,soft,scrim}` 9-slice (32 px inset), tinted by rarity/element | 32 pixel variants; screens choose 2–3 to keep identity |
+| `Frame` | `deco-frames/deco-frame-NN[-{solid,soft,scrim}]` 9-slice (32 px inset, drawn at 2:1 = 16 px or 1:1 = 32 px), tinted by rarity/element | 32 pixel frames × 4 variants (`line` outline, `solid` inner band for cards, `soft`, `scrim`); screens choose 2–3 to keep identity |
 | `Panel` | `stone-vine/panel-stone` (+ `panel-stone-fill`), `panel-arch` for hero panels, `dark-ember/panel-wide-ornate`, `panel-tall-ornate` | 9-slice with measured insets |
 | `Button.primary` | `dark-ember/btn-ember-wide` (+ `-on` pressed) | gold display text; hover raises 2 px + glow |
 | `Button.secondary` | `stone-vine/btn-stone-wide` / `btn-stone-med` / `btn-stone-long` | |

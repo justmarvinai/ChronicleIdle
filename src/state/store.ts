@@ -6,14 +6,24 @@ import { create, type Mutate, type StoreApi, type UseBoundStore } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { PLAYER_NAME_MAX_LENGTH, PLAYER_NAME_MIN_LENGTH } from '@content/balance/economy';
+import { CHAMPION_IDS, type ChampionId, type ObtainSource } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
+import { content } from '@content/registry';
+import { DEFAULT_ROSTER_VIEW, type RosterView } from '@engine/champions/query';
+import {
+  addChampion,
+  generateRoster,
+  seedStartingRoster,
+  setFavourite,
+  setLocked,
+} from '@engine/champions/roster';
 import { addEnergy, regenerateEnergy, spendEnergy } from '@engine/economy/energy';
 import { grant, spend } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { createNewGame } from '@engine/save/new-game';
 import type { SaveGame, Settings } from '@engine/schema/save';
 import type { Clock } from '@engine/time/clock';
-import { hashString } from '@engine/rng/rng';
+import { createRng, hashString } from '@engine/rng/rng';
 import { systemClock } from '@platform/clock';
 import { EventBus } from './events';
 import type { OfflineReport } from './offline';
@@ -44,6 +54,8 @@ export interface UiState {
   /** The one-time fullscreen offer (owner's answer Q27): asked this session / declined. */
   fullscreenOffered: boolean;
   fullscreenDeclined: boolean;
+  /** Champions index state (sort, filters, selection) — kept for the session, never saved. */
+  roster: { view: RosterView; selected: string | null };
 }
 
 export interface GameState {
@@ -79,6 +91,16 @@ export interface GameActions {
   setOfflineReady(value: boolean): void;
   setFullscreen(value: boolean): void;
   setFullscreenOffer(patch: { offered?: boolean; declined?: boolean }): void;
+  /** Seeds the roster with the chosen Rare starter and the tutorial companions, then enters Emberhold. */
+  chooseStarter(defId: ChampionId): Result<string>;
+  grantChampion(defId: ChampionId, source: ObtainSource, reason: string): Result<string>;
+  setChampionLocked(instanceId: string, locked: boolean): Result<void>;
+  setChampionFavourite(instanceId: string, favourite: boolean): Result<void>;
+  setAvatar(defId: ChampionId | null): Result<void>;
+  /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
+  generateDebugRoster(count: number, seed: string): Result<void>;
+  setRosterView(patch: Partial<RosterView>): void;
+  selectChampion(instanceId: string | null): void;
 }
 
 export type GameStore = GameState & { actions: GameActions };
@@ -142,6 +164,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             fullscreen: false,
             fullscreenOffered: false,
             fullscreenDeclined: false,
+            roster: { view: DEFAULT_ROSTER_VIEW, selected: null },
           },
 
           actions: {
@@ -180,8 +203,10 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.save = save;
                 state.lastOffline = null;
                 state.boot.hasSave = true;
-                state.ui.stack = [{ name: 'hub' }];
+                // A chronicle begins by binding a starter (TUTORIAL.md 1.2).
+                state.ui.stack = [{ name: 'starter' }];
                 state.ui.dialog = null;
+                state.ui.roster = { view: DEFAULT_ROSTER_VIEW, selected: null };
               });
               events.emit({ type: 'game.created', name: valid.value });
               return ok(undefined);
@@ -369,6 +394,139 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               set((state) => {
                 if (patch.offered !== undefined) state.ui.fullscreenOffered = patch.offered;
                 if (patch.declined !== undefined) state.ui.fullscreenDeclined = patch.declined;
+              });
+            },
+
+            chooseStarter(defId) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const seeded = seedStartingRoster(
+                { roster: current.roster, counters: current.counters },
+                content,
+                defId,
+                clock.now(),
+              );
+              if (!seeded.ok) return seeded;
+              withSave((save) => {
+                save.roster = seeded.value.state.roster;
+                save.counters = seeded.value.state.counters;
+                save.profile.avatarChampionId = defId;
+              });
+              set((state) => {
+                state.ui.stack = [{ name: 'hub' }];
+                state.ui.dialog = null;
+                state.ui.roster.selected = seeded.value.starterInstanceId;
+              });
+              for (const instance of Object.values(seeded.value.state.roster))
+                events.emit({
+                  type: 'champion.added',
+                  defId: instance.defId,
+                  instanceId: instance.instanceId,
+                  source: 'starter',
+                });
+              events.emit({ type: 'starter.chosen', defId, instanceId: seeded.value.starterInstanceId });
+              return ok(seeded.value.starterInstanceId);
+            },
+
+            grantChampion(defId, source, reason) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              // The first champion of every chronicle is the bound starter (TUTORIAL.md 1.2); a
+              // grant before that would leave the starter choice unfulfillable.
+              if (Object.keys(current.roster).length === 0)
+                return fail('invalid_argument', 'Bind a starter before granting champions');
+              const added = addChampion(
+                { roster: current.roster, counters: current.counters },
+                content,
+                defId,
+                source,
+                clock.now(),
+              );
+              if (!added.ok) return added;
+              withSave((save) => {
+                save.roster = added.value.state.roster;
+                save.counters = added.value.state.counters;
+              });
+              events.emit({
+                type: 'champion.added',
+                defId,
+                instanceId: added.value.instance.instanceId,
+                source: reason,
+              });
+              return ok(added.value.instance.instanceId);
+            },
+
+            setChampionLocked(instanceId, locked) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const next = setLocked(
+                { roster: current.roster, counters: current.counters },
+                instanceId,
+                locked,
+              );
+              if (!next.ok) return next;
+              withSave((save) => {
+                save.roster = next.value.roster;
+              });
+              events.emit({ type: 'champion.updated', instanceId, change: 'locked' });
+              return ok(undefined);
+            },
+
+            setChampionFavourite(instanceId, favourite) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const next = setFavourite(
+                { roster: current.roster, counters: current.counters },
+                instanceId,
+                favourite,
+              );
+              if (!next.ok) return next;
+              withSave((save) => {
+                save.roster = next.value.roster;
+              });
+              events.emit({ type: 'champion.updated', instanceId, change: 'favourite' });
+              return ok(undefined);
+            },
+
+            setAvatar(defId) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              if (defId !== null && !Object.values(current.roster).some((i) => i.defId === defId))
+                return fail('invalid_argument', 'Avatar must be an owned champion');
+              withSave((save) => {
+                save.profile.avatarChampionId = defId;
+              });
+              events.emit({ type: 'profile.avatarChanged', defId });
+              return ok(undefined);
+            },
+
+            generateDebugRoster(count, seed) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const generated = generateRoster(
+                { roster: current.roster, counters: current.counters },
+                content,
+                CHAMPION_IDS,
+                Math.max(0, Math.min(1000, Math.floor(count))),
+                createRng(seed),
+                clock.now(),
+              );
+              if (!generated.ok) return generated;
+              withSave((save) => {
+                save.roster = generated.value.roster;
+                save.counters = generated.value.counters;
+              });
+              return ok(undefined);
+            },
+
+            setRosterView(patch) {
+              set((state) => {
+                Object.assign(state.ui.roster.view, patch);
+              });
+            },
+            selectChampion(instanceId) {
+              set((state) => {
+                state.ui.roster.selected = instanceId;
               });
             },
           },

@@ -5,7 +5,18 @@ import type { FeatureId } from '@content/balance/unlocks';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
 import type { GameStore } from './store';
 
+import type { Roster } from '@engine/champions/instance';
+import type { Route } from './ui-types';
+
 export const selectSave = (s: GameStore) => s.save;
+const EMPTY_ROSTER: Roster = {};
+export const selectRoster = (s: GameStore): Roster => s.save?.roster ?? EMPTY_ROSTER;
+export const selectRosterView = (s: GameStore) => s.ui.roster.view;
+export const selectSelectedChampion = (s: GameStore) => s.ui.roster.selected;
+export const selectAvatarChampionId = (s: GameStore) => s.save?.profile.avatarChampionId ?? null;
+/** Where a loaded chronicle enters the game: Emberhold, or the starter choice while the roster is empty. */
+export const entryRoute = (s: GameStore): Route =>
+  s.save && Object.keys(s.save.roster).length === 0 ? { name: 'starter' } : { name: 'hub' };
 export const selectProfile = (s: GameStore) => s.save?.profile ?? null;
 export const selectSettings = (s: GameStore) => s.save?.settings ?? null;
 export const selectWallet = (s: GameStore) => s.save?.wallet ?? null;

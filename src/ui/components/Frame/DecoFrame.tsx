@@ -11,7 +11,7 @@ export interface DecoFrameProps extends HTMLAttributes<HTMLDivElement> {
   variant?: DecoVariant;
   /** CSS colour; null keeps the ivory source. */
   tint?: string | null;
-  /** Border thickness in virtual px (source corners are 32 px; 16 draws them at 2:1). */
+  /** Border thickness in virtual px (source corners are 32 px; 16 draws them at 2:1, 32 at 1:1). */
   thickness?: number;
   padding?: number | string;
   background?: string;
@@ -37,7 +37,9 @@ export function DecoFrame({
     borderWidth: thickness,
     borderImageSource: `url("${url}")`,
     borderImageSlice: String(DECO_SLICE),
-    borderImageWidth: thickness,
+    // React emits `border-image-width` without a unit, and a unitless value is a multiple of the
+    // border width (16 → 256 px slabs), so the unit is explicit here.
+    borderImageWidth: `${thickness}px`,
     borderImageRepeat: 'stretch',
     padding,
     background,

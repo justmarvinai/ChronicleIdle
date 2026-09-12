@@ -29,7 +29,10 @@ export function AbilityIcon({
   onClick,
 }: AbilityIconProps) {
   const ready = cooldown === 0 && !disabled && !passive;
-  const frame = imageUrl(ready ? 'ui.dark_ember.frame_round_sm_lit' : 'ui.dark_ember.frame_round_sm');
+  // The lit frame is a filled ember disc, so it sits *behind* the art as a glow; the plain
+  // frame is a transparent ring and always goes on top.
+  const ring = imageUrl('ui.dark_ember.frame_round_sm');
+  const glow = ready ? imageUrl('ui.dark_ember.frame_round_sm_lit') : null;
   return (
     <button
       type="button"
@@ -40,8 +43,11 @@ export function AbilityIcon({
       onMouseEnter={() => ready && playSfx('ui.hover')}
       onClick={() => ready && onClick && (playSfx('ui.tab'), onClick())}
     >
+      {glow ? (
+        <span className={styles.glow} style={{ backgroundImage: `url("${glow}")` }} aria-hidden="true" />
+      ) : null}
       <span className={styles.art} style={{ backgroundImage: `url("${imageUrl(icon, 'full')}")` }} />
-      <span className={styles.frame} style={{ backgroundImage: `url("${frame}")` }} aria-hidden="true" />
+      <span className={styles.frame} style={{ backgroundImage: `url("${ring}")` }} aria-hidden="true" />
       {cooldown > 0 ? (
         <span className={styles.cooldown}>
           <span className="num">{cooldown}</span>

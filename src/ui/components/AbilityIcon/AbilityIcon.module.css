@@ -21,12 +21,17 @@
     0 0 0 3px var(--gold-2),
     var(--glow-gold);
 }
+.glow,
 .art,
 .frame,
 .cooldown {
   position: absolute;
   inset: 0;
   border-radius: 50%;
+}
+.glow {
+  background-size: 100% 100%;
+  pointer-events: none;
 }
 .art {
   inset: 9%;

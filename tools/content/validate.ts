@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import type { AssetManifest } from '@assets/manifest-types';
 import { content } from '@content/registry';
 import { validateContentRegistry } from '@engine/schema/content';
-import { I18N_KEYS } from '@i18n/index';
+import { I18N_KEYS, textOf } from '@i18n/index';
 
 const REPO_ROOT = join(import.meta.dirname, '..', '..');
 
@@ -21,14 +21,17 @@ async function main(): Promise<void> {
     console.error('[content] asset manifest missing — run `pnpm assets:build` first.');
     process.exit(1);
   }
-  const issues = validateContentRegistry(content, { assetKeys, i18nKeys: I18N_KEYS });
-  if (issues.length) {
-    for (const issue of issues) console.error(`  ✗ ${issue.path}: ${issue.message}`);
-    console.error(`[content] ${issues.length} issue(s).`);
+  const issues = validateContentRegistry(content, { assetKeys, i18nKeys: I18N_KEYS, i18nText: textOf });
+  const errors = issues.filter((i) => i.severity === 'error');
+  const warnings = issues.filter((i) => i.severity === 'warning');
+  for (const issue of warnings) console.warn(`  ! ${issue.path}: ${issue.message}`);
+  if (errors.length) {
+    for (const issue of errors) console.error(`  ✗ ${issue.path}: ${issue.message}`);
+    console.error(`[content] ${errors.length} error(s), ${warnings.length} warning(s).`);
     process.exit(1);
   }
   console.log(
-    `[content] OK — ${content.currencies.length} currencies validated against ${assetKeys.size} assets and ${I18N_KEYS.size} strings.`,
+    `[content] OK — ${content.currencies.length} currencies and ${content.champions.length} champions validated against ${assetKeys.size} assets and ${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );
 }
 

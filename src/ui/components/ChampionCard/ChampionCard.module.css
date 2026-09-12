@@ -29,6 +29,31 @@
   background-size: cover;
   background-position: center top;
 }
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+  pointer-events: none;
+}
+.placeholder {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  padding: 2px 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text-1);
+  background: rgba(11, 10, 13, 0.7);
+  border: 1px solid rgba(201, 162, 74, 0.6);
+  white-space: nowrap;
+  pointer-events: none;
+}
 .shade {
   position: absolute;
   inset: 0;

@@ -3,11 +3,9 @@
  * (docs/tech/UI_DESIGN.md §3 tokens). Gameplay meaning lives in content; this is presentation only.
  */
 import type { GlyphKey } from '@assets/manifest.generated';
+import type { Element, GearSlot, Rarity, Role } from '@content/champions/types';
 
-export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
-export type Element = 'justice' | 'valor' | 'faith' | 'eclipse';
-export type Role = 'attack' | 'defense' | 'health' | 'support';
-export type GearSlot = 'weapon' | 'helmet' | 'shield' | 'gauntlets' | 'chestplate' | 'boots';
+export type { Element, GearSlot, Rarity, Role };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
   common: 'var(--r-common)',

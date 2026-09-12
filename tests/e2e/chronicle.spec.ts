@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { closeDialog, gotoTitle, openSettingsTab, settle, startChronicle } from './helpers';
+import { bindStarter, closeDialog, gotoTitle, openSettingsTab, settle, startChronicle } from './helpers';
 
 test.describe('chronicle lifecycle', () => {
   test('a new chronicle lands in Emberhold with the starting purse', async ({ page }) => {
@@ -59,8 +59,7 @@ test.describe('chronicle lifecycle', () => {
     await page.getByTestId('confirm-overwrite').click();
     await page.getByTestId('name-input').fill('Other');
     await page.getByTestId('begin-chronicle').click();
-    await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
+    await bindStarter(page);
     await expect(page.getByTestId('profile-chip')).toContainText('Other');
 
     await openSettingsTab(page, 'Save data');

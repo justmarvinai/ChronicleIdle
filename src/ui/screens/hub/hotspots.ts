@@ -75,6 +75,7 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     size: 130,
     glyph: 'glyph.cloaked_figure',
     feature: 'champions',
+    route: { name: 'champions' },
     color: '#4aa3df',
     labelBelow: true,
   },

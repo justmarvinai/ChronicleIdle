@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion, type Variants } from 'motion/react';
 import { imageUrl } from '@assets/manifest';
 import { t } from '@i18n/index';
-import { selectActions, selectBoot, selectProfile } from '@state/selectors';
+import { entryRoute, selectActions, selectBoot, selectProfile } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { services, servicesReady } from '@state/services';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -30,16 +30,24 @@ export default function TitleScreen(_props: ScreenProps) {
   useSceneAudio('title', 'title');
 
   // Fullscreen is offered once on the first click anywhere on the title screen (never forced).
+  // A fullscreen request spends the click's user activation, so controls that need it themselves
+  // (the file picker behind Import) opt out with `data-keeps-activation`; the offer then waits
+  // for the next click.
   useEffect(() => {
     const node = root.current;
     if (!node) return;
-    const onFirstClick = (): void => offer();
-    node.addEventListener('pointerdown', onFirstClick, { once: true });
+    const onFirstClick = (event: PointerEvent): void => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('[data-keeps-activation]')) return;
+      node.removeEventListener('pointerdown', onFirstClick);
+      offer();
+    };
+    node.addEventListener('pointerdown', onFirstClick);
     return () => node.removeEventListener('pointerdown', onFirstClick);
   }, [offer]);
 
   const continueGame = (): void => {
-    actions.resetStack({ name: 'hub' });
+    actions.resetStack(entryRoute(useGameStore.getState()));
     if (lastOffline && lastOffline.elapsedMs >= WELCOME_BACK_AFTER_MS)
       actions.openDialog({ name: 'welcome-back' });
   };
@@ -105,6 +113,7 @@ export default function TitleScreen(_props: ScreenProps) {
             className={styles.menuButton}
             onClick={() => void importChronicle()}
             data-testid="btn-import"
+            data-keeps-activation="true"
           >
             {t('title.import')}
           </Button>

@@ -18,7 +18,7 @@ recorded in `CREDITS.md`.
 | Wallpapers | `assets/wallpapers/bg1–bg9` | 9 | JPG/PNG ~1672×941 – 1774×887 | see usage map |
 | UI kit: dark-ember | `assets/ui/dark-ember/` | 42 | PNG 64²–1024×1536 | ember buttons, frames, banners, bars, ornate panels, 4 skill icons, 3 item icons, 2 silhouettes |
 | UI kit: stone-vine | `assets/ui/stone-vine/` | 37 | PNG | stone panels/slots/buttons, icon buttons, health/mana/stamina bars, 10 item icons, vine divider, dark scene bg 1920×1047 |
-| Pixel deco frames | `assets/ui/deco-frames/` | 140 | 32 frames × {solid, soft, scrim} 96² + 6 dividers + 6 fade dividers | 9-slice with 32 px insets |
+| Pixel deco frames | `assets/ui/deco-frames/` | 140 | 32 frames × {line, solid, soft, scrim} 96² + 6 dividers + 6 fade dividers | 9-slice with 32 px insets; `line` is the bare outline, `solid` adds an opaque inner band, `soft`/`scrim` are the 50 % alpha versions |
 | Line glyphs | `assets/ui/line-glyphs/` | 40 | SVG, black | recolourable via CSS mask / Pixi tint |
 | Spell icons | `assets/ui/spell-icons/` | 235 | WebP, painted | families: blood 25, crest 6, earth 40, fire 40, fx 12, hero 15, hunt 25, icon 4, orb 4, rune 19, skill 4, tech 25, weapon 16 |
 | Design references | `design_examples/` | 23 | PNG screenshots | layout references only, never shipped |

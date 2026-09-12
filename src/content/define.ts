@@ -8,3 +8,6 @@ import type { CurrencyDef } from './currencies/types';
 export function defineCurrency(def: CurrencyDef): CurrencyDef {
   return def;
 }
+
+/** Champions are built by `@content/champions/dsl` (`defineChampion`), which fills in ids and keys. */
+export { defineChampion } from './champions/dsl';

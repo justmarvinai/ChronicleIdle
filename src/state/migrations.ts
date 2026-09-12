@@ -4,7 +4,7 @@
  * downgraded destructively).
  */
 import { SaveError } from '@engine/errors';
-import { SAVE_VERSION, saveSchemaV1, type SaveGame } from '@engine/schema/save';
+import { SAVE_VERSION, saveSchema, type SaveGame } from '@engine/schema/save';
 
 export interface MigrationStep {
   from: number;
@@ -13,7 +13,24 @@ export interface MigrationStep {
 }
 
 /** Ordered list; append a step whenever SAVE_VERSION increases. */
-export const MIGRATIONS: readonly MigrationStep[] = [];
+export const MIGRATIONS: readonly MigrationStep[] = [
+  {
+    // Phase 1: the roster arrives; the profile avatar now points at a champion instead of an asset.
+    from: 1,
+    to: 2,
+    migrate: (raw) => {
+      const profile = { ...((raw['profile'] as Record<string, unknown> | undefined) ?? {}) };
+      delete profile['avatarKey'];
+      return {
+        ...raw,
+        saveVersion: 2,
+        profile: { ...profile, avatarChampionId: null },
+        roster: {},
+        counters: { instances: 0 },
+      };
+    },
+  },
+];
 
 export interface MigrationResult {
   save: SaveGame;
@@ -46,7 +63,7 @@ export function migrateSave(raw: unknown, steps: readonly MigrationStep[] = MIGR
     current = step.migrate(structuredClone(current));
     version = step.to;
   }
-  const parsed = saveSchemaV1.safeParse(current);
+  const parsed = saveSchema.safeParse(current);
   if (!parsed.success) {
     const detail = parsed.error.issues
       .slice(0, 3)

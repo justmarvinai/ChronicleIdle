@@ -1,0 +1,161 @@
+.panel {
+  position: absolute;
+  right: 24px;
+  top: 112px;
+  width: 480px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.body {
+  flex: 1;
+  min-height: 0;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+}
+.powerRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.powerLabel {
+  font-size: 20px;
+  color: var(--gold-3);
+}
+.power {
+  font-size: 34px;
+  color: var(--text-1);
+}
+.xpRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.xpLabel {
+  font-size: 14px;
+  color: var(--text-3);
+}
+.stats {
+  margin: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.statRow {
+  display: grid;
+  grid-template-columns: 1fr auto 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  margin: 0;
+}
+.statRow:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.22);
+}
+.statLabel {
+  font-size: 16px;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+.statValue {
+  font-size: 22px;
+  color: var(--text-1);
+  margin: 0;
+}
+.statBonus {
+  font-size: 16px;
+  color: var(--ok);
+  margin: 0;
+  text-align: right;
+  opacity: 0.55;
+}
+.hint {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--text-3);
+}
+.abilities {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ability {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.abilityText {
+  flex: 1;
+  min-width: 0;
+}
+.abilityHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.abilityName {
+  font-size: 20px;
+  color: var(--gold-3);
+}
+.cooldown {
+  font-size: 15px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.tag {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.abilityBody {
+  margin: 4px 0 6px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.upgrades {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  min-height: 12px;
+}
+.pip {
+  width: 12px;
+  height: 12px;
+  background: var(--stone-2);
+  border: 1px solid var(--stone-3);
+}
+.pipOn {
+  background: var(--gold-2);
+  border-color: var(--gold-3);
+  box-shadow: 0 0 6px rgba(240, 213, 122, 0.5);
+}
+.lore {
+  margin: 0 0 12px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--text-1);
+}
+.meta {
+  margin: 10px 0 0;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.metaLabel {
+  color: var(--text-3);
+}
+.slots {
+  display: grid;
+  grid-template-columns: repeat(3, 128px);
+  gap: 14px;
+  justify-content: center;
+  margin: 8px 0 12px;
+}

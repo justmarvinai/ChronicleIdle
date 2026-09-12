@@ -35,6 +35,9 @@ import { TopBar } from '@ui/components/TopBar/TopBar';
 import type { ScreenProps } from '@ui/router/screens';
 import styles from './DevKitScreen.module.css';
 
+/** Gallery tints cycle through the six rarity colours. */
+const DECO_SAMPLE_TINTS = ['#c9a24a', '#4fc267', '#3f8fe6', '#a35de3', '#f2a93b', '#ff4d6d'] as const;
+
 const RARITIES: Rarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 const PANELS: PanelKind[] = ['stone', 'arch', 'ember-wide', 'ember-tall', 'ornate-wide', 'thin', 'bevel'];
 
@@ -92,29 +95,36 @@ export default function DevKitScreen(_props: ScreenProps) {
               ))}
             </Row>
           </Section>
-          <Section title="Deco frames (32) — tinted at runtime">
+          <Section title="Deco frames (32) — line variant at 1:1, tinted at runtime">
             <Row>
               {Array.from({ length: 32 }, (_, i) => (
                 <DecoFrame
                   key={i}
                   frame={i + 1}
-                  tint={
-                    i % 6 === 5
-                      ? '#ff4d6d'
-                      : i % 6 === 4
-                        ? '#f2a93b'
-                        : i % 6 === 3
-                          ? '#a35de3'
-                          : i % 6 === 2
-                            ? '#3f8fe6'
-                            : i % 6 === 1
-                              ? '#4fc267'
-                              : '#c9a24a'
-                  }
+                  variant="line"
+                  thickness={32}
+                  tint={DECO_SAMPLE_TINTS[i % DECO_SAMPLE_TINTS.length] ?? null}
                   style={{ width: 96, height: 96 }}
                   background="var(--bg-1)"
                 >
                   <span className={`num ${styles.small}`}>{i + 1}</span>
+                </DecoFrame>
+              ))}
+            </Row>
+          </Section>
+          <Section title="Deco frames — solid variant at 2:1 (card borders)">
+            <Row>
+              {[16, 2, 7, 3, 13, 26, 10].map((frame, i) => (
+                <DecoFrame
+                  key={frame}
+                  frame={frame}
+                  variant="solid"
+                  thickness={16}
+                  tint={DECO_SAMPLE_TINTS[i % DECO_SAMPLE_TINTS.length] ?? null}
+                  style={{ width: 128, height: 164 }}
+                  background="var(--bg-1)"
+                >
+                  <span className={`num ${styles.small}`}>{frame}</span>
                 </DecoFrame>
               ))}
             </Row>

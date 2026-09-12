@@ -1,6 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { selectActions, selectDialog } from '@state/selectors';
 import { useGameStore } from '@state/store';
+import { AvatarPickerDialog } from './AvatarPickerDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { ImportConfirmDialog } from './ImportConfirmDialog';
 import { NewGameConfirmDialog } from './NewGameConfirmDialog';
@@ -10,6 +12,9 @@ import { ResetConfirmDialog } from './ResetConfirmDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { WalletDialog } from './WalletDialog';
 import { WelcomeBackDialog } from './WelcomeBackDialog';
+
+// Development-only tooling; the dynamic import sits in dead code in production builds.
+const DebugDialog = import.meta.env.DEV ? lazy(() => import('./DebugDialog')) : null;
 
 /** Renders the open dialog (one at a time) with enter/exit animation. */
 export function DialogHost() {
@@ -35,6 +40,12 @@ export function DialogHost() {
       {dialog?.name === 'credits' ? <CreditsDialog key="credits" onClose={closeDialog} /> : null}
       {dialog?.name === 'reset-confirm' ? <ResetConfirmDialog key="reset" onClose={closeDialog} /> : null}
       {dialog?.name === 'welcome-back' ? <WelcomeBackDialog key="welcome" onClose={closeDialog} /> : null}
+      {dialog?.name === 'avatar-picker' ? <AvatarPickerDialog key="avatar" onClose={closeDialog} /> : null}
+      {DebugDialog && dialog?.name === 'debug' ? (
+        <Suspense key="debug" fallback={null}>
+          <DebugDialog onClose={closeDialog} />
+        </Suspense>
+      ) : null}
     </AnimatePresence>
   );
 }

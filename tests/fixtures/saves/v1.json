@@ -1,0 +1,64 @@
+{
+  "saveVersion": 1,
+  "createdAt": 1757600000000,
+  "updatedAt": 1757603600000,
+  "seedRoot": "fixture-v1",
+  "profile": {
+    "name": "Marvin",
+    "level": 1,
+    "xp": 0,
+    "avatarKey": null,
+    "titles": []
+  },
+  "wallet": {
+    "gold": 3275,
+    "gems": 150,
+    "energy": 0,
+    "key_daily": 0,
+    "key_weekly": 0,
+    "shard_faded": 0,
+    "shard_ancient": 0,
+    "shard_sacred": 0,
+    "shard_primordial": 0,
+    "brew_justice": 0,
+    "brew_valor": 0,
+    "brew_faith": 0,
+    "brew_eclipse": 0,
+    "brew_universal": 0,
+    "tome_rare": 0,
+    "tome_epic": 0,
+    "tome_legendary": 0,
+    "tome_mythic": 0,
+    "mat_scrap_iron": 0,
+    "mat_ember_alloy": 0,
+    "mat_starsteel": 0,
+    "mat_arcane_dust": 0,
+    "mat_refining_core": 0,
+    "mat_glyph_sigil": 0
+  },
+  "energy": {
+    "value": 42,
+    "lastTickAt": 1757603540000
+  },
+  "provisionsClaimed": ["tutorial.awakening"],
+  "settings": {
+    "musicVolume": 0.5,
+    "ambienceVolume": 0.6,
+    "sfxVolume": 0.8,
+    "masterVolume": 1,
+    "muted": false,
+    "launchFullscreen": false,
+    "reducedMotion": true,
+    "battleSpeed": 1,
+    "autoBattle": false,
+    "language": "en"
+  },
+  "stats": {
+    "playtime_ms": 3600000,
+    "hub_visits": 4
+  },
+  "periods": {
+    "lastDailyKey": "2025-09-11",
+    "lastWeeklyKey": "2025-09-08"
+  }
+}

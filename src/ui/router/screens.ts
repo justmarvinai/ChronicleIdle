@@ -10,7 +10,9 @@ type Lazy = LazyExoticComponent<ComponentType<ScreenProps>>;
 
 export const SCREENS: Record<RouteName, Lazy> = {
   title: lazy(() => import('@ui/screens/title/TitleScreen')),
+  starter: lazy(() => import('@ui/screens/starter/StarterScreen')),
   hub: lazy(() => import('@ui/screens/hub/HubScreen')),
+  champions: lazy(() => import('@ui/screens/champions/ChampionsScreen')),
   'game-modes': lazy(() => import('@ui/screens/game-modes/GameModesScreen')),
   locked: lazy(() => import('@ui/screens/locked/LockedScreen')),
   devkit: lazy(() => import('@ui/screens/devkit/DevKitScreen')),

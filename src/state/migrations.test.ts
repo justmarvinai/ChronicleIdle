@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { createNewGame } from '@engine/save/new-game';
+import { SAVE_VERSION } from '@engine/schema/save';
 import { migrateSave } from './migrations';
 
 describe('migrateSave', () => {
@@ -17,15 +19,43 @@ describe('migrateSave', () => {
     expect(() => migrateSave({ ...save, wallet: { gold: -1 } })).toThrow(/validation/);
   });
 
+  it('upgrades a Phase 0 (version 1) chronicle without losing anything', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v1.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(1);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    expect(result.save.profile).toEqual({
+      name: 'Marvin',
+      level: 1,
+      xp: 0,
+      avatarChampionId: null,
+      titles: [],
+    });
+    expect(result.save.wallet.gems).toBe(150);
+    expect(result.save.wallet.gold).toBe(3_275);
+    expect(result.save.energy).toEqual({ value: 42, lastTickAt: 1_757_603_540_000 });
+    expect(result.save.provisionsClaimed).toEqual(['tutorial.awakening']);
+    expect(result.save.settings.reducedMotion).toBe(true);
+    expect(result.save.settings.launchFullscreen).toBe(false);
+    expect(result.save.stats).toEqual({ playtime_ms: 3_600_000, hub_visits: 4 });
+    expect(result.save.roster).toEqual({});
+    expect(result.save.counters).toEqual({ instances: 0 });
+    expect('avatarKey' in result.save.profile).toBe(false);
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [
       {
         from: 0,
-        to: 1,
+        to: 2,
         migrate: (raw) => ({
           ...raw,
-          saveVersion: 1,
+          saveVersion: 2,
           profile: { ...(raw['profile'] as object), name: raw['legacyName'] as string },
         }),
       },

@@ -172,3 +172,20 @@ mirror wins, written back to IndexedDB, then cleared).
 **Consequences.** A changed setting survives an immediate reload; the mirror costs one small
 synchronous write per tab hide and is invisible otherwise. Electron later replaces both stores
 with file writes behind the same adapter interface.
+
+## ADR-023 — Champion kits are authored through a small DSL and described from their effects
+**Context.** Twenty-three champions with two to four abilities each, all authored before the
+battle engine exists (Phase 2), must be validated now and must never drift from what their
+descriptions claim. Raw effect objects are verbose and easy to get subtly wrong (a missing
+`chance`, a status without a duration).
+**Decision.** `src/content/champions/dsl.ts` exposes builders (`hit`, `status`, `heal`, `cleanse`,
+`strip`, `tm`, `revive`, `extraTurn`, `leech`, `when`, `up.*`) that return plain `Effect` values;
+`defineChampion` derives ids, i18n keys and defaults. Descriptions never hard-code numbers that
+the effects already carry: the engine computes them (`abilityNumbers`, `passiveNumbers`) with the
+instance's upgrades folded in, and the content test renders every description to prove no token
+is left unresolved. Content folders list their objects in an explicit `index.ts` rather than a
+Vite glob so `tools/` scripts and Vitest load the same modules.
+**Consequences.** A new champion is one data file plus strings; a new mechanic is a new effect
+kind in the engine (with tests) before it can be used from data; descriptions stay truthful when
+balance numbers change.
+

@@ -27,13 +27,49 @@ export async function gotoTitle(page: Page): Promise<void> {
   await settle(page);
 }
 
-/** Title → New Chronicle → name → Emberhold. */
-export async function startChronicle(page: Page, name = 'Marvin'): Promise<void> {
+/** Starter slugs offered on the binding screen (`STARTER_IDS` without the `champ.` prefix). */
+export type StarterSlug = 'sister_maelis' | 'ser_corvin' | 'reva_ashblade';
+
+/** Title → New Chronicle → name → bind a starter → Emberhold. */
+export async function startChronicle(
+  page: Page,
+  name = 'Marvin',
+  starter: StarterSlug = 'ser_corvin',
+): Promise<void> {
   await gotoTitle(page);
   await page.getByTestId('btn-new-chronicle').click();
   await page.getByTestId('name-input').fill(name);
   await page.getByTestId('begin-chronicle').click();
+  await bindStarter(page, starter);
+}
+
+/** On the starter screen: bind one of the three Rares and wait for the hub. */
+export async function bindStarter(page: Page, starter: StarterSlug = 'ser_corvin'): Promise<void> {
+  await expect(page.getByTestId('screen-starter')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+  await page.getByTestId(`bind-${starter}`).click();
   await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+}
+
+/** Title → Import → `.chronicle` file → confirm → the chronicle's entry screen. */
+export async function importChronicleFile(page: Page, file: string): Promise<void> {
+  await gotoTitle(page);
+  const [chooser] = await Promise.all([
+    page.waitForEvent('filechooser'),
+    page.getByTestId('btn-import').click(),
+  ]);
+  await chooser.setFiles(file);
+  await expect(page.getByTestId('dialog-import-confirm')).toBeVisible();
+  await page.getByTestId('confirm-import').click();
+  await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+}
+
+/** Hub → Champions hotspot → the Champions index. */
+export async function openChampions(page: Page): Promise<void> {
+  await page.getByTestId('hotspot-champions').click();
+  await expect(page.getByTestId('screen-champions')).toBeVisible({ timeout: 20_000 });
   await settle(page);
 }
 

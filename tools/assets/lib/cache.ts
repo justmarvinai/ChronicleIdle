@@ -5,7 +5,7 @@ import type { AssetEntry } from '@assets/manifest-types';
 import { CACHE_ROOT, OUTPUT_ROOT, writeAtomic } from './util.ts';
 
 /** Bump when the pipeline's output format changes so every source is reprocessed. */
-export const TOOL_VERSION = 3;
+export const TOOL_VERSION = 4;
 
 export interface CacheRecord {
   /** `size:mtime` signature(s) of every source file that produced this record. */

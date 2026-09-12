@@ -94,7 +94,12 @@ export type KitKey = keyof typeof KIT;
 /** Pixel deco frames: 96 px sheets with 32 px corners. */
 export const DECO_SLICE = 32;
 
-export type DecoVariant = 'solid' | 'soft' | 'scrim';
+/**
+ * `line` is the bare ivory outline with ornate corners; `solid` adds an opaque inner band (the
+ * frame's fill starts inside the 32 px slice, so it reads as a thick rarity border); `soft` and
+ * `scrim` are the 50 % alpha versions of the outline and of the fill respectively.
+ */
+export type DecoVariant = 'line' | 'solid' | 'soft' | 'scrim';
 
 /** Manifest key of pixel deco frame 1–32 in the given variant. */
 export function decoKey(frame: number, variant: DecoVariant): DecoKey {

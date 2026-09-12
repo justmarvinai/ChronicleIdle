@@ -1,0 +1,135 @@
+.hero {
+  position: absolute;
+  left: 640px;
+  top: 112px;
+  width: 740px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.portraitFrame {
+  width: 560px;
+  height: 700px;
+  background: var(--bg-1);
+  overflow: hidden;
+}
+.portrait {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+}
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+  pointer-events: none;
+}
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 10, 13, 0.1) 0%,
+    rgba(11, 10, 13, 0) 40%,
+    rgba(11, 10, 13, 0.85) 100%
+  );
+}
+.shimmer {
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 235, 170, 0.18) 50%, transparent 58%);
+  animation: shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes shimmer {
+  0% {
+    transform: translateX(-40%);
+  }
+  60%,
+  100% {
+    transform: translateX(40%);
+  }
+}
+.placeholder {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--gold-3);
+  background: rgba(11, 10, 13, 0.75);
+  border: 1px solid rgba(201, 162, 74, 0.6);
+}
+.sprite {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.6));
+}
+.nameplate {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 620px;
+  padding: 14px 28px;
+}
+.sigils {
+  display: flex;
+  gap: 8px;
+}
+.sigil {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: rgba(11, 10, 13, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.7);
+}
+.names {
+  flex: 1;
+  min-width: 0;
+}
+.name {
+  margin: 0;
+  font-size: 30px;
+  color: var(--gold-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sub {
+  display: flex;
+  gap: 8px;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.rarity {
+  font-size: 17px;
+}
+.dot {
+  color: var(--text-3);
+}
+.rank {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.level {
+  font-size: 20px;
+  color: var(--text-1);
+}
