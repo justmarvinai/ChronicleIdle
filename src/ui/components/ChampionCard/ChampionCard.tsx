@@ -88,6 +88,7 @@ export const ChampionCard = memo(function ChampionCard({
       tabIndex={interactive ? 0 : undefined}
       aria-label={`${name}, ${rarity}, level ${level}, ${stars} stars`}
       data-testid={testId}
+      data-favourite={favourite ? 'true' : 'false'}
       className={[
         styles.card,
         styles[rarity],

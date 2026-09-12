@@ -30,15 +30,15 @@ export default function TitleScreen(_props: ScreenProps) {
   useSceneAudio('title', 'title');
 
   // Fullscreen is offered once on the first click anywhere on the title screen (never forced).
-  // A fullscreen request spends the click's user activation, so controls that need it themselves
-  // (the file picker behind Import) opt out with `data-keeps-activation`; the offer then waits
-  // for the next click.
+  // A fullscreen request spends the click's user activation and races a fullscreen toggle, so the
+  // controls that manage that themselves (Import's file picker, the Fullscreen button) opt out
+  // with `data-skip-fullscreen-offer`; the offer then waits for the next click.
   useEffect(() => {
     const node = root.current;
     if (!node) return;
     const onFirstClick = (event: PointerEvent): void => {
       const target = event.target instanceof Element ? event.target : null;
-      if (target?.closest('[data-keeps-activation]')) return;
+      if (target?.closest('[data-skip-fullscreen-offer]')) return;
       node.removeEventListener('pointerdown', onFirstClick);
       offer();
     };
@@ -113,7 +113,7 @@ export default function TitleScreen(_props: ScreenProps) {
             className={styles.menuButton}
             onClick={() => void importChronicle()}
             data-testid="btn-import"
-            data-keeps-activation="true"
+            data-skip-fullscreen-offer="true"
           >
             {t('title.import')}
           </Button>
@@ -152,7 +152,13 @@ export default function TitleScreen(_props: ScreenProps) {
 
       <div className={styles.corner}>
         {supported ? (
-          <Button variant="ghost" size="sm" onClick={() => void toggle()} data-testid="btn-fullscreen">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => void toggle()}
+            data-testid="btn-fullscreen"
+            data-skip-fullscreen-offer="true"
+          >
             {fullscreen ? t('title.exitFullscreen') : t('title.fullscreen')}
           </Button>
         ) : null}

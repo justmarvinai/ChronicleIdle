@@ -15,6 +15,7 @@ const ROSTER_204 = join(import.meta.dirname, '..', 'fixtures', 'saves', 'roster-
 
 test.describe('starter choice', () => {
   test('a new chronicle offers three Rares and binding one seeds the roster', async ({ page }) => {
+    test.slow();
     const problems = collectConsole(page);
     await gotoTitle(page);
     await page.getByTestId('btn-new-chronicle').click();
@@ -158,11 +159,19 @@ test.describe('champions index with 204 champions', () => {
       el.scrollTop = 0;
     });
     await page.waitForTimeout(300);
-    const names = await cards.evaluateAll((els) =>
-      els.map((e) => (e.getAttribute('aria-label') ?? '').split(',')[0] ?? ''),
+    // Favourites always lead; inside each group the names run Z→A after the toggle.
+    const rows = await cards.evaluateAll((els) =>
+      els.map((e) => ({
+        name: (e.getAttribute('aria-label') ?? '').split(',')[0] ?? '',
+        favourite: e.getAttribute('data-favourite') === 'true',
+      })),
     );
-    const sorted = [...names].sort((a, b) => b.localeCompare(a));
-    expect(names).toEqual(sorted);
+    const firstRegular = rows.findIndex((row) => !row.favourite);
+    expect(rows.slice(Math.max(0, firstRegular)).every((row) => !row.favourite)).toBe(true);
+    for (const group of [rows.filter((r) => r.favourite), rows.filter((r) => !r.favourite)]) {
+      const names = group.map((row) => row.name);
+      expect(names).toEqual([...names].sort((a, b) => b.localeCompare(a)));
+    }
     expect(problems).toEqual([]);
   });
 });
