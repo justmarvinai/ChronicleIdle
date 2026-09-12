@@ -124,7 +124,7 @@ level-up grants (`ECONOMY.md` §5.1), all listed in `ENERGY_PROVISIONS` for one-
 **Consequences.** Early sessions are long and satisfying; stage costs stay 4–10 (re-checked by the
 Phase 15 economy simulation, Q26); gem refills are a convenience rather than a necessity.
 
-## ADR-018 — Installable PWA and fullscreen-first window
+## ADR-018 — Installable PWA and fullscreen offered (never forced) window
 **Context.** "It should feel like a real game, not a browser window" (Q10) while staying a
 static web build.
 **Decision.** `vite-plugin-pwa` with a prompt-style update flow; fullscreen offered on the

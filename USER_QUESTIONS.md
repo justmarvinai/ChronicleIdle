@@ -20,7 +20,7 @@ _(none — new questions are added here as they arise during development)_
 | Q7 | Gear slots | Six now, accessories post-EA-0.1 | Unchanged; accessories in backlog |
 | Q8 | Skill upgrades | Tomes only (Rare/Epic/Legendary/Mythic Tomes) | Duplicates are ordinary copies (rank-up food); ADR-016 (`CHAMPIONS.md` §3/§5, `ECONOMY.md` §3.3, `SUMMONING.md` §5, ROADMAP Phases 5/8) |
 | Q9 | Ascension / Awakening | As recommended | Backlog |
-| Q10 | Window handling | Fixed viewport, but it must feel like a real game, not a browser window | Installable PWA, fullscreen-first, custom cursor, browser-chrome guards; ADR-018 (`UI_DESIGN.md` §2.1, `CLAUDE.md` §7.1, ROADMAP Phase 0) |
+| Q10 | Window handling | Fixed viewport, but it must feel like a real game, not a browser window | Installable PWA, fullscreen offered (never forced), custom cursor, browser-chrome guards; ADR-018 (`UI_DESIGN.md` §2.1, `CLAUDE.md` §7.1, ROADMAP Phase 0) |
 | Q11 | Fonts | Approved | Alegreya Sans SC / Nunito Sans / Rajdhani |
 | Q12 | Language | As recommended | English only; German first in backlog |
 | Q13 | Save slots | As recommended | One save + backups + export/import |
