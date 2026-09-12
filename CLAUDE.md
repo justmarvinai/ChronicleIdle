@@ -77,6 +77,7 @@ battle animation, music and sound.
 | CI | GitHub Actions: typecheck, lint, test, build on every push to `main` | Keeps `main` deployable |
 | Image tooling | `sharp` in `tools/` | Atlas packing, WebP/AVIF generation from `/game` |
 | Fonts | Self-hosted via `@fontsource` (sans-serif only, see §7.2) | No runtime third-party requests |
+| PWA | `vite-plugin-pwa` (Workbox precache, `registerType: 'prompt'`) | Installable standalone window, cached assets, controlled updates — the game runs like an app, not a tab |
 
 Rationale for the two-renderer approach: React owns every screen and overlay (hub, lists, panels,
 dialogs); Pixi owns the battle stage, the summoning ritual scene and ambient particle layers. They

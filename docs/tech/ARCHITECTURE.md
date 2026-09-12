@@ -244,7 +244,23 @@ Everything platform-specific is behind `platform/`: `StorageAdapter` (IndexedDB 
 later), `FileDialogAdapter` (download/upload now; native dialogs later), `WindowAdapter`
 (fullscreen API now; BrowserWindow later). No Node APIs are used anywhere in `src/`.
 
-## 11. Error handling, logging
+## 11. Game window and PWA
+
+- `vite-plugin-pwa` generates the web manifest (`display: standalone`, dark theme colour, icons
+  from the logo mark) and a Workbox service worker that precaches the build (hashed files) and
+  the generated asset manifest group `ui`; large groups (models, VFX, audio) are runtime-cached
+  on first use (cache-first, versioned by the build hash).
+- Updates: `registerType: 'prompt'` — a new build is downloaded in the background and applied only
+  when the player accepts the in-game "Update available — restart" banner or on the next cold
+  start. Mixed-version loads are impossible because every file is hashed and the service worker
+  swaps atomically. `sw.js` and the manifest are served with `no-cache` (`DEPLOYMENT.md`).
+- Fullscreen: `platform/window.ts` wraps the Fullscreen API (request on the first title click when
+  the setting is on; `F11`/`Alt+Enter`; state persisted); the Electron adapter later maps the same
+  interface to `BrowserWindow.setFullScreen`.
+- Input guards (`app/inputGuards.ts`): context menu, text selection, image drag, browser zoom
+  shortcuts and back-navigation keys are intercepted inside the viewport (`UI_DESIGN.md` §2.1).
+
+## 12. Error handling, logging
 
 - `ErrorBoundary` per screen with in-universe panel and "export save" action.
 - `log` utility with levels; in production only warnings/errors are kept in a ring buffer

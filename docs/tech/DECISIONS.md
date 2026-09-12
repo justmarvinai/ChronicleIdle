@@ -99,3 +99,51 @@ at the end, with a full e2e test.
 ## ADR-014 — Use all seven Epic models
 **Context.** Brief: 5 Epics; assets: 7 finished Epic models. **Decision.** Ship 7 Epics (confirmed by the owner).
 Reverting to 5 is a two-line content change (mark two champions `obtain: []`).
+
+## ADR-015 — Party sizes 3 (campaign) / 4 (boss)
+**Context.** The owner chose 3-champion campaign parties and 4-champion boss parties (Q2).
+**Decision.** `partySize` is a property of the encounter type; the battle engine, setup screen,
+presets and balance tables take it from data. Wave sizes were reduced to 2–4 enemies.
+**Consequences.** Campaign teams are tighter and more tactical; boss fights reward a wider roster;
+per-mode presets avoid confusion; the perf bench uses a 4 v 4 stress encounter above any real one.
+
+## ADR-016 — Skill upgrades via Skill Tomes only
+**Context.** The owner chose tomes over duplicates (Q8).
+**Decision.** One Rare/Epic/Legendary/Mythic Tome = one upgrade step for a champion of that
+rarity; duplicates are ordinary copies usable as rank-up food.
+**Consequences.** Tome supply is the pacing lever for skill power (tables in `ECONOMY.md` §3.3);
+pulling a duplicate never feels like a lost skill book, and the roster screen needs no
+"auto-convert duplicate" flow.
+
+## ADR-017 — Generous energy model
+**Context.** The owner wants +1 energy per minute, +10 cap per level and 1,000–3,000 energy over
+cap after the tutorial and first quests (Q15).
+**Decision.** Cap `60 + 10 × (level − 1)`; regen 1/min below cap; reward overflow unlimited (regen
+pauses above cap); Chronicler's Provisions (500 + 4 × 250) plus boosted mission, first-clear and
+level-up grants (`ECONOMY.md` §5.1), all listed in `ENERGY_PROVISIONS` for one-place tuning.
+**Consequences.** Early sessions are long and satisfying; stage costs stay 4–10 (re-checked by the
+Phase 15 economy simulation, Q26); gem refills are a convenience rather than a necessity.
+
+## ADR-018 — Installable PWA and fullscreen-first window
+**Context.** "It should feel like a real game, not a browser window" (Q10) while staying a
+static web build.
+**Decision.** `vite-plugin-pwa` with a prompt-style update flow; fullscreen requested on the
+first title click (setting, default on); custom cursor; browser-chrome guards; no responsive
+reflow. **Consequences.** Chrome/Edge users get a chrome-free standalone window today; the
+Electron build later reuses everything; the service worker must be treated as part of the
+release process (`DEPLOYMENT.md`).
+
+## ADR-019 — In-house generated SFX and VFX
+**Context.** The owner allows sourcing reputable CC0 assets and generating sounds/effects
+in-house (Q24) and supplied SFX, ambience and VFX packs.
+**Decision.** Priority: owner assets → generated (`tools/audio`, `tools/vfx` recipes rendered at
+build time) → CC0. Every asset is credited in `CREDITS.md`.
+**Consequences.** Complete control over the audio-visual language with reproducible outputs;
+no unclear licences ever enter the repository.
+
+## ADR-020 — Direct pushes to `main`
+**Context.** The owner granted direct pushes (Q23); the brief wants a single branch.
+**Decision.** All work is committed to `main` and pushed directly; a harness-forced working
+branch is fast-forwarded into `main` before the session ends; never force-push `main`.
+**Consequences.** CI on every push keeps `main` deployable; the changelog and roadmap status are
+updated in the same commits as the work.
