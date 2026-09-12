@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { bindStarter, gotoTitle, openSettingsTab, settle } from './helpers';
+import { bindStarter, gotoTitle, openSettingsTab } from './helpers';
 
 const isFullscreen = (page: Page): Promise<boolean> =>
   page.evaluate(() => document.fullscreenElement !== null);
