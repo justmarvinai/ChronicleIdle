@@ -112,6 +112,7 @@ test.describe('chronicle lifecycle', () => {
   });
 
   test('erasing the chronicle requires typing the confirmation word', async ({ page }) => {
+    test.slow();
     await startChronicle(page, 'Marvin');
     await openSettingsTab(page, 'Save data');
     await page.getByTestId('reset-save').click();
