@@ -3,7 +3,8 @@
 A 2D pixel-art, dark-fantasy, **turn-based idle gacha champion-collection RPG** for desktop
 browsers (and later Steam via Electron). Single player, no accounts, no monetisation.
 
-> Status: **Planning complete — Phase 0 (Foundation & Game Shell) not started.**
+> Status: **Planning complete and reviewed by the owner (all 24 questions answered) — Phase 0
+> (Foundation & Game Shell) starts on the owner's go.**
 > See `ROADMAP.md` for the phase plan to Early Access 0.1.
 
 ## Documents
@@ -24,7 +25,7 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 | `CAMPAIGN.md` — 12 settlements × 10 stages × 3 difficulties | `ASSETS.md` — inventory of `/game`, usage map, pipeline |
 | `GEAR.md` — slots, stars, stats, 14 sets, crafting | `DEPLOYMENT.md` — Ubuntu VPS (nginx) and Vercel |
 | `ECONOMY.md` — 24 currencies, energy, player level, idle chest | `DECISIONS.md` — architecture decision records |
-| `SUMMONING.md`, `BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md` | |
+| `SUMMONING.md`, `BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md` | `CREDITS.md` — asset provenance and licences |
 
 ## Assets
 

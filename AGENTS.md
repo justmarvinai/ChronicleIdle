@@ -71,6 +71,8 @@ Documentation
 | a quest / mission | `src/content/quests/*.ts` or `src/content/missions/chapter_<n>.ts` using goal types | `docs/design/QUESTS_MISSIONS.md` |
 | a banner | `src/content/banners/<id>.ts` with rate table + rotation | `docs/design/SUMMONING.md` |
 | a balance tweak | edit `src/content/balance/*.ts`, run `pnpm sim:balance`, note in CHANGELOG "Balance" | `docs/design/*` tables |
+| a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes/`; map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
+| a visual effect | owner sheet under `/game/assets/music_and_sounds/vfx/**` or a procedural recipe in `tools/vfx/recipes/`; register in `src/render/fx/registry.ts`; add a credits row | `docs/tech/UI_DESIGN.md` §6.3 |
 
 ## 5. Never do
 
@@ -81,7 +83,9 @@ Documentation
 - Never use a serif font, a `border-radius` pill, a default browser control or an unstyled scrollbar.
 - Never add PvP, social, account or payment code paths "for later".
 - Never skip or weaken a failing test to get green.
-- Never push directly to a branch other than the working branch you were assigned; never force-push `main`.
+- Never force-push `main`; never create long-lived branches — work lands on `main` (fast-forward a
+  harness-assigned working branch into `main` before the session ends).
+- Never add an asset without a `docs/tech/CREDITS.md` row (owner-provided, CC0 source, or generated in-house).
 - Never leave a phase half-done because it was "mostly working".
 
 ## 6. Asking the owner
@@ -93,6 +97,6 @@ the "Answered" section, update the affected docs and content, and note it in the
 
 ## 7. Session end
 
-Before ending any session: all work committed with conventional messages, pushed to the assigned
-branch, `CHANGELOG.md` and `ROADMAP.md` status current, and a final message that states what was
+Before ending any session: all work committed with conventional messages, pushed to `main`
+(and to any harness-assigned branch), `CHANGELOG.md` and `ROADMAP.md` status current, and a final message that states what was
 done, what is verified, and what is next.

@@ -16,7 +16,7 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | --- | --- | --- | --- | --- |
 | `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle | gear levels, refine, rank-up, tavern, crafting, Faded Shards |
 | `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups | Ancient/Sacred Shards, energy refills |
-| `energy` | Energy | spell-icons/fx-storm-bolt | time regen, level-up refill, quests, idle chest | campaign stages |
+| `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Daily Boss Key | stone-vine/icon-key | daily reset (2) | daily boss |
 | `key_weekly` | Weekly Boss Key | stone-vine/icon-key (violet tint) | weekly reset (3) | weekly boss |
 | `shard_faded` | Faded Shard | spell-icons/earth-dark-crystal | gold exchange, drops, quests | summon |
@@ -55,8 +55,9 @@ cannot be consumed. The UI shows a "food finder" that suggests the cheapest vali
 
 ### 3.3 Skill upgrades
 
-One upgrade step consumes one tome of the champion's rarity **or** one duplicate of the same
-champion (duplicate consumed). Tomes drop by rarity tier: Rare tomes are common (quests), Epic from
+One upgrade step consumes one Skill Tome of the champion's rarity (Rare, Epic, Legendary or
+Mythic Tome). Duplicates are ordinary copies (rank-up food) and never upgrade skills. Tomes drop
+by rarity tier: Rare tomes are common (quests), Epic from
 first clears and bosses, Legendary from Hard boss clears and weekly boss, Mythic from Hard
 milestones and the top weekly chest. Common/Uncommon champions have no upgrades.
 
@@ -66,7 +67,7 @@ milestones and the top weekly chest. Common/Uncommon champions have no upgrades.
   chests and missions.
 - `xpToNext(L) = round(100 × L^1.6)` (L 1→2: 100; 10: 3,981; 30: 23,000; 60: 70,000; 99: 157,000).
   Max level 100.
-- Level-up: energy refilled to cap, `+level × 200` gold; every 5 levels 50 gems; every 10 levels
+- Level-up: energy **+ new cap** added on top of the current amount (may overflow), `+level × 200` gold; every 5 levels 50 gems; every 10 levels
   1 Ancient Shard; levels 20/40/60/80/100 an extra Sacred Shard.
 - Unlock schedule: `GAME_DESIGN.md` §6.
 
@@ -77,11 +78,30 @@ stats (stages cleared, stars, champions owned, boss records), titles.
 
 | Rule | Value |
 | --- | --- |
-| Cap | `round(50 + 1.5 × level)` → 52 at Lv1, 125 at Lv50, 200 at Lv100 |
-| Regeneration | 1 energy per 180 s while below cap (online and offline, computed from timestamps) |
-| Overflow | Rewards may push energy above cap up to 2× cap; no regen while above cap |
-| Refill | 50 Gems → +60 energy (no daily limit; Q in `USER_QUESTIONS.md`) |
-| Level-up | refill to cap (added, keeps overflow) |
+| Cap | `60 + 10 × (level − 1)` → 60 at Lv1, 150 at Lv10, 550 at Lv50, 1,050 at Lv100 (+10 per level, owner's answer) |
+| Regeneration | **1 energy per 60 s** while below cap (online and offline, computed from timestamps) → 1,440 per day |
+| Overflow | Rewards always add, with **no upper limit**; regeneration pauses while above cap |
+| Refill | 50 Gems → +100 energy (no daily limit) |
+| Level-up | adds an amount equal to the new cap on top of the current value (may overflow) |
+
+### 5.1 Early-game provisions (owner: the first days must feel generous)
+
+The opening hours hand out far more energy than the cap so that the first days and weeks are
+played on a surplus of roughly 1,000–3,000 energy:
+
+| Source | Energy | When |
+| --- | --- | --- |
+| Chronicler's Provisions, tutorial chapter 1 | 500 | after clearing 1-3 (`TUTORIAL.md` 1.11) |
+| Chronicler's Provisions, chapters 2–5 | 4 × 250 = 1,000 | on finishing each chapter |
+| Missions 1.1 / 1.2 / 1.9 / 1.12 | 100 + 150 + 200 + 300 = 750 | Chapter 1 of the Chronicler's Path |
+| Intro first clears | 15 per stage, +50 per boss stage → 2,340 across Intro | while progressing |
+| Level-ups 2–10 | 70 + 80 + … + 150 = 990 | first day or two |
+| Daily quest chest "Spend 60 energy" and weekly "Claim the chest 7 times" | 40 / 100 | recurring |
+| Idle chest | up to 60 per fill | recurring |
+
+Total in the first two days for an engaged player: ≈ 3,000 energy over cap, then the +1/min
+regeneration (1,440/day) carries the routine. `ENERGY_PROVISIONS` in `balance/energy.ts` lists
+every grant so they can be tuned in one place.
 
 ## 6. Idle Chest
 
@@ -116,7 +136,7 @@ to 1–36 (Intro 1–12, Normal 13–24, Hard 25–36). Hourly yield:
 | Faded Shard | 6 % chance/hour (max 2 per fill) | |
 | Ancient Shard | 1 % chance/hour (max 1 per fill; 2 % at tier ≥ 25) | |
 | Gear piece | 8 % chance/hour of a piece at current campaign rarity table (max 2 per fill) | |
-| Energy | 2 per hour (max 30 per fill) | |
+| Energy | 4 per hour (max 60 per fill) | |
 
 Rolls are seeded from `lastClaimAt` so reloading cannot reroll. The chest UI shows fill %, time to
 full, and a preview of guaranteed contents; opening plays a burst with counted-up rewards.
@@ -126,7 +146,7 @@ Offline gains beyond capacity are lost — the "come back in time" tension the b
 
 Target weekly income for an active player mid-game: ≈ 800 gems (first clears while progressing
 250, daily quest chests 7 × 40 = 280, weekly chest 120, bosses 100, missions ~50). Spend: 2 Ancient
-Shards (600) + 4 refills (200). Early game front-loads first-clear gems so the Portal is used in
+Shards (600) + 2 refills (100). Early game front-loads first-clear gems so the Portal is used in
 the first hour.
 
 ## 8. Gold budget (sanity)
@@ -136,5 +156,6 @@ Mid-game day: income ≈ 250k (campaign 120k, idle 60k, quests/bosses 70k); spen
 
 ## 9. Daily / weekly reset
 
-Daily reset 04:00 local time; weekly reset Monday 04:00 local (Q in `USER_QUESTIONS.md`). Reset
+Daily reset 00:00 local device time; weekly reset in the night from Sunday to Monday at 00:00
+local (owner's answer, Q3). Reset
 handling uses timestamps; a missed reset while offline is applied on load exactly once per period.

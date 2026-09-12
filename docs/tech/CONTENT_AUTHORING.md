@@ -136,7 +136,20 @@ Each constant has a doc comment: what it does, what it affects, safe range.
 3. Set `art.facing` by looking at the still (left/right) so the presenter flips correctly.
 4. Replace the placeholder reference in the champion file; remove the tint.
 
-## 10. Tuning workflow
+## 10. Sounds and visual effects
+
+- Owner-provided sounds live under `/game/assets/music_and_sounds/{sfx,ambience_sounds,background_music}`
+  and VFX sheets under `/game/assets/music_and_sounds/vfx`. They are never renamed; the pipeline
+  sanitises names into manifest keys.
+- Generated sounds are recipes in `tools/audio/recipes/<key>.ts` (synth graph + envelope +
+  effects); generated VFX are recipes in `tools/vfx/recipes/<key>.ts` (procedural frames).
+  Recipes are source; rendered files are build artifacts.
+- Map game events to assets in `src/audio/registry.ts` (sound keys → variants) and
+  `src/render/fx/registry.ts` (effect keys → sheet + fps + anchor + blend). Abilities reference
+  effect keys (`fx: 'valor.fireball'`) and optional sound keys; defaults come from the element.
+- Every new asset gets a row in `docs/tech/CREDITS.md`.
+
+## 11. Tuning workflow
 
 1. Change a balance constant or an object number.
 2. `pnpm content:validate` → `pnpm test` → `pnpm sim:balance` (prints the difficulty curve and

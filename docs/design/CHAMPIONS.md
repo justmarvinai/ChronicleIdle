@@ -105,7 +105,7 @@ power = HP × 0.05 + ATK × 1.0 + DEF × 1.0 + SPD × 10 + C.RATE × 8 + C.DMG �
   e.g. "+12 % HP to all allies" or "+15 SPD in campaign".
 - **Upgrades** — each non-A1 ability has 3–4 upgrade steps; A1 has 2. Steps are typed:
   `damage +N%`, `cooldown −1`, `chance +N%`, `heal +N%`, `duration +1`, `shield +N%`. Applied via
-  tomes/duplicates in the Tavern (`GEAR.md` is unrelated; see `ECONOMY.md` §3.4).
+  Skill Tomes in the Tavern (see `ECONOMY.md` §3.3); duplicates never upgrade skills.
 
 Effect vocabulary and targeting are defined in `BATTLE.md` §6. Below, damage is written as
 `k × STAT` (e.g. `3.4 × ATK`), buffs/debuffs as `Name (turns) [chance%]`.
@@ -322,7 +322,7 @@ Kits:
 | --- | --- | --- |
 | Level | Brews (element-matching = 1.5× XP, universal = 1×) and food champions; gold cost | Tavern → Upgrade Level |
 | Rank (stars) | Consume `n` champions of `n★` to go `n★ → (n+1)★`; gold cost | Tavern → Upgrade Rank |
-| Skills | One upgrade step per tome of the champion's rarity, or a duplicate of the same champion | Tavern → Upgrade Skills |
+| Skills | One upgrade step per Skill Tome of the champion's rarity (Rare/Epic/Legendary/Mythic); duplicates are ordinary copies | Tavern → Upgrade Skills |
 | Gear | Six slots; `GEAR.md` | Champion → Gear |
 
 Champion XP curve, rank-up gold costs and food XP values are in `ECONOMY.md` §3.

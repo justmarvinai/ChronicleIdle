@@ -46,12 +46,13 @@ battle animation, music and sound.
 4. **Performance is a priority.** 60 fps on an average laptop iGPU at 1080p. Budgets in §5.6.
 5. **Fully playable without an account.** All state is local (IndexedDB) with export/import.
 6. **Use the owner's assets in `/game`.** Prefer them everywhere. Additional assets may be sourced
-   only if CC0 or otherwise commercially safe; record provenance in `docs/tech/ASSETS.md`.
+   from reputable CC0 / commercially-safe sources, or **generated in-house** (synthesised SFX,
+   procedural VFX flipbooks) — the owner allows both; record provenance in `docs/tech/CREDITS.md`.
 7. **Champions without a finished model use the `teritorial_lizard` model** as a placeholder,
    never a missing-texture box.
 8. **Never serif fonts. Never generic rounded "AI-slop" UI.** See §7.
-9. **Everything is pushed to `main`.** No long-lived development branches (see §9.4 for the one
-   exception: automated sessions may be told to use a named branch; they still target `main`).
+9. **Everything is pushed directly to `main`.** The owner granted direct pushes; there are no
+   long-lived development branches (§9.4).
 10. **Explicitly out of scope:** PvP, clans, guilds, arena, chat, friends, microtransactions,
     accounts, analytics that leave the device.
 
@@ -165,7 +166,7 @@ sum, unlock levels sane). A content error is a build error.
 
 | Budget | Value |
 | --- | --- |
-| Frame time (battle, ×4 speed, 5 v 5 with FX) | ≤ 16 ms p95 on Intel Iris Xe class iGPU |
+| Frame time (battle, ×4 speed, 4 v 4 stress encounter with FX) | ≤ 16 ms p95 on Intel Iris Xe class iGPU |
 | Initial load to hub (cold, 50 Mbit) | ≤ 4 s; hub interactive before non-critical atlases finish |
 | JS bundle (initial route) | ≤ 350 kB gzip; screens code-split |
 | Texture memory | ≤ 256 MB; atlases ≤ 2048² each; avatars served at 512/256/128 WebP |
@@ -218,6 +219,9 @@ error panel with "Return to Emberhold" and "Export save". Engine functions throw
   panel slide/fade on open, number tick-up on currency change, shimmer on legendary/mythic frames,
   idle sprite loops in every champion slot, screen transitions ≤ 350 ms.
 - Sound on interaction: hover tick, confirm, cancel, reward, level-up, summon reveal tiers.
+- It runs like an app, not a tab: installable PWA (standalone window), fullscreen-first launch,
+  custom cursor, no text selection, no context menu, no native scrollbars, browser zoom shortcuts
+  intercepted (the viewport scales itself). Details in `docs/tech/UI_DESIGN.md` §2.1.
 
 ### 7.2 Typography
 
@@ -277,9 +281,10 @@ next phase starts.
 
 ### 9.4 Branch policy
 
-`main` is the only long-lived branch and is always deployable. Automated sessions that are
-constrained to a named working branch push there and the owner merges to `main` (fast-forward);
-no other branches are created.
+`main` is the only branch and is always deployable. Every session commits to `main` and pushes
+directly (owner's decision, `USER_QUESTIONS.md` Q23). If a harness forces a named working branch,
+the session fast-forwards `main` to it before it ends; no branch outlives a session. Never
+force-push `main`.
 
 ### 9.5 Questions
 
@@ -311,6 +316,7 @@ docs/tech/CONTENT_AUTHORING.md how to add champions, gear, stages, quests, etc.
 docs/tech/ASSETS.md            inventory of /game and the asset pipeline
 docs/tech/DEPLOYMENT.md        Ubuntu VPS (nginx) and Vercel guides, CI
 docs/tech/DECISIONS.md         architecture decision records
+docs/tech/CREDITS.md           asset provenance and licences
 ```
 
 ## 11. Commands (once Phase 0 lands)

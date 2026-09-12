@@ -17,7 +17,13 @@ Short records of decisions that shape the codebase. Add a new record rather than
 | ADR-011 | Sans-serif font trio (Alegreya Sans SC / Nunito Sans / Rajdhani), self-hosted | accepted |
 | ADR-012 | Seeded RNG everywhere; no `Math.random` in engine | accepted |
 | ADR-013 | Tutorial ships last (Phase 14) although listed first in the brief | accepted |
-| ADR-014 | All seven finished Epic models are used (roster 23, not 21) | proposed (Q1) |
+| ADR-014 | All seven finished Epic models are used (roster 23, not 21) | accepted (owner, Q1) |
+| ADR-015 | Party size 3 in campaign encounters, 4 in boss encounters | accepted (owner, Q2) |
+| ADR-016 | Skill upgrades use Skill Tomes only; duplicates are ordinary copies | accepted (owner, Q8) |
+| ADR-017 | Generous energy: +1/min, cap +10 per level, unlimited reward overflow, ~3,000 early provisions | accepted (owner, Q15) |
+| ADR-018 | Installable PWA + fullscreen-first game window | accepted (owner, Q10) |
+| ADR-019 | In-house generated SFX/VFX allowed alongside owner packs and CC0 sources | accepted (owner, Q24) |
+| ADR-020 | All work is pushed directly to `main` | accepted (owner, Q23) |
 
 ---
 
@@ -64,7 +70,8 @@ Fast iteration now; clean seams preserved.
 
 ## ADR-008 — Deterministic schedules
 **Context.** No server, but rotating banners and daily/weekly resets are wanted. **Decision.**
-Compute rotations from a fixed epoch and the device clock; resets keyed by local date.
+Compute rotations from a fixed epoch and the device clock; resets keyed by the local date at
+00:00 device time (weekly: the night from Sunday to Monday, 00:00).
 **Consequences.** Clock manipulation is possible; accepted for a single-player free game.
 
 ## ADR-009 — No gear upgrade failure
@@ -90,5 +97,5 @@ phase still ships an in-screen "?" help panel. **Consequences.** New-player flow
 at the end, with a full e2e test.
 
 ## ADR-014 — Use all seven Epic models
-**Context.** Brief: 5 Epics; assets: 7 finished Epic models. **Decision (proposed).** Ship 7 Epics.
+**Context.** Brief: 5 Epics; assets: 7 finished Epic models. **Decision.** Ship 7 Epics (confirmed by the owner).
 Reverting to 5 is a two-line content change (mark two champions `obtain: []`).

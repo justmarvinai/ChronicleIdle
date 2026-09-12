@@ -46,6 +46,8 @@ but everything a system will plug into.
   Prettier, Vitest, Playwright, CI workflow, `vercel.json`, `.nvmrc`.
 - `tools/assets` pipeline → generated atlases/WebP/manifest; typed `AssetKey`.
 - `GameViewport` (1920×1080 scaling, letterbox backdrop), router with screen stack, loading screen.
+- Game window: installable PWA (web manifest + versioned service-worker precache with an update
+  prompt), fullscreen-first launch, custom cursor, browser-chrome guards (`docs/tech/UI_DESIGN.md` §2.1).
 - Design system: tokens, fonts, the full component library of `UI_DESIGN.md` §4 with a `/dev/kit`
   gallery route (dev only) showing every component in every state.
 - State: Zustand store, slices skeleton (`profile`, `wallet`, `settings`, `ui`), persistence
@@ -54,7 +56,8 @@ but everything a system will plug into.
   are earned only in later phases.
 - Screens: Title, Hub (all hotspots present; locked ones show "unlocks at level N"), Settings,
   Profile dialog (name, avatar placeholder), Game Modes (cards locked as appropriate).
-- Audio: MusicDirector with the two tracks, SFX bus with the CC0 UI set, mixer settings.
+- Audio: MusicDirector with the two tracks, AmbienceDirector (the owner's ambience sets per screen),
+  SFX bus fed by the owner's SFX packs plus in-house generated UI sounds (`tools/audio`), mixer settings.
 - Ambient layers: hub fog/lanterns/fireflies, title fog; reduced-motion handling.
 - Content framework: `define*` helpers, registry, Zod validation, `pnpm content:validate`,
   balance folder with the constants documented in `CONTENT_AUTHORING.md` §8.
@@ -67,6 +70,8 @@ but everything a system will plug into.
 - Component gallery renders all components in all states without console warnings.
 - `pnpm build` output deploys on a local nginx container and on Vercel preview.
 - Lighthouse performance ≥ 90 on the title screen; no layout shift.
+- Installs as a standalone app from Chrome/Edge; fullscreen toggles with F11 and the title button;
+  no browser scrollbars, text selection or context menus anywhere.
 
 ## Phase 1 — Champions & Collection (`0.0.1`)
 
@@ -98,12 +103,14 @@ temporary "Training Grounds" entry on Game Modes (removed in Phase 3 when Campai
 **Scope**
 - Engine: `engine/battle/*` per `BATTLE.md` and `ARCHITECTURE.md` §3.2–3.3 with ≥ 90 % test
   coverage; replay from seed + decision log; `sim` harness.
-- Render: Pixi battle stage, sprite atlases, synthesised attack choreography, FX library (element
-  projectiles, impacts, statuses, death, revive), damage numbers, camera, ultimate cut-ins,
+- Render: Pixi battle stage, sprite atlases, synthesised attack choreography, FX library built from the
+  owner's VFX packs (Free Pixel Effects Pack, GameFX strips), in-house procedural flipbooks
+  (`tools/vfx`) and Pixi particles (element projectiles, impacts, statuses, death, revive), damage numbers, camera, ultimate cut-ins,
   parallax backdrops with colour grading.
 - UI: Battle HUD (unit plates, TM bars, status rows, wave/turn/timer, ability bar, target
   reticle, Info panel with battle log), pause menu (retreat, settings), Battle result (victory/
   defeat), speed & auto toggles, hotkeys.
+- Party sizes per encounter type (3 in campaign-type encounters, 4 in boss-type) with per-mode team presets.
 - Content: enemy archetypes and a Training Grounds encounter set (3 encounters incl. a boss-style
   one) used only until Phase 3.
 - Audio: battle SFX map, victory/defeat stingers, music switch.
@@ -112,7 +119,7 @@ temporary "Training Grounds" entry on Game Modes (removed in Phase 3 when Campai
 - Same seed + decisions → identical event log (test); 1,000 random auto battles run headless
   in < 10 s without errors.
 - All statuses and effects covered by tests and demonstrable in Training Grounds.
-- ×4 5 v 5 with FX: p95 frame ≤ 16 ms on the perf bench.
+- ×4 stress battle (4 v 4 with FX, above any real encounter): p95 frame ≤ 16 ms on the perf bench.
 - Manual mode works fully with mouse and keyboard; auto beats Training Grounds encounters 1–2
   with the starter team.
 
@@ -124,7 +131,8 @@ lists, battle setup, energy, drops, stars, first-clear and star chests, speed un
 **Scope**
 - Content: 12 settlements with named factions/enemies/bosses, 120 stage definitions, drop tables,
   difficulty overrides; energy costs; reward formulas (`CAMPAIGN.md`).
-- Engine: energy (regen, cap by level placeholder until Phase 4 — uses level 1 cap), stage
+- Engine: energy (+1/min regen, cap 60 + 10 per level — level-1 cap until Phase 4 — unlimited reward
+  overflow, Chronicler's Provisions hooks), stage
   unlock logic, star evaluation, reward rolls, first-clear/star-chest tracking, difficulty and
   speed unlocks, auto-repeat loop.
 - Screens: Campaign map, Settlement stages, Battle setup (team slots, presets, waves preview,
@@ -154,7 +162,7 @@ level change; fixture save `v4.json`; profile stats reflect lifetime counters.
 
 ## Phase 5 — Tavern: Champion Upgrading (`0.0.5`)
 
-**Goal.** Level up (brews + food), rank up (stars), skill upgrades (tomes + duplicates) with the
+**Goal.** Level up (brews + food), rank up (stars), skill upgrades (Skill Tomes only) with the
 full Tavern screen and animations.
 
 **Scope**: reducers and costs (`ECONOMY.md` §3), food finder/auto-fill with safety rules, level
@@ -192,7 +200,7 @@ exchange, the full reveal ritual (Pixi) with ×1/×10, history and rates panel.
 
 **Acceptance criteria**: 100k-roll rate test within tolerance; pity guarantees hold in tests;
 rotation computed identically across reloads and time zones for the same instant; duplicates
-route to Tavern skill upgrades; reveal skippable; new-champion badge.
+are ordinary roster copies (rank-up food) and are never auto-converted; reveal skippable; new-champion badge.
 
 ## Phase 9 — Idle Chest (`0.0.9`)
 
@@ -204,10 +212,10 @@ offline computation, hub presence and claim dialog.
 
 ## Phase 10 — Daily Boss (`0.0.10`)
 
-**Goal.** Gravemaw with four tiers, keys, damage accumulation, threshold chests, records panel,
+**Goal.** Gravemaw with four tiers, 4-champion parties, keys, damage accumulation, threshold chests, records panel,
 enrage, immunities, boss HUD and arena presentation.
 
-**Acceptance criteria**: keys reset at 04:00 local (test with FixedClock across DST); damage
+**Acceptance criteria**: keys reset at 00:00 local (test with FixedClock across DST); damage
 persists across two fights; chests claim once; records store team; boss rotation deterministic.
 
 ## Phase 11 — Weekly Boss (`0.0.11`)
@@ -216,7 +224,7 @@ persists across two fights; chests claim once; records store team; boss rotation
 chests, phase-driven kit, weekly reset.
 
 **Acceptance criteria**: phase transitions at HP thresholds; adds revive on schedule; Ally
-Protection split verified; weekly reset Monday 04:00 local; six chests per tier.
+Protection split verified; weekly reset Monday 00:00 local; six chests per tier.
 
 ## Phase 12 — Daily & Weekly Quests (`0.0.12`)
 
@@ -240,7 +248,7 @@ completed chapters 1–6 loads and continues.
 
 **Goal.** The interactive scripted onboarding of `TUTORIAL.md` across six chapters, spotlight
 overlay, Eldric dialogue with typewriter, forced actions, deterministic first battle and first
-summon, resume after reload, per-chapter skip.
+summon, Chronicler's Provisions energy grants per chapter, resume after reload, per-chapter skip.
 
 **Acceptance criteria**: Playwright e2e completes chapter 1 in < 6 minutes of scripted play;
 every later chapter triggers on its unlock; skipping never leaves the game in a locked state;

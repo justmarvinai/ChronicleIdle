@@ -58,6 +58,9 @@ server {
         add_header Cache-Control "public, max-age=31536000, immutable";
         try_files $uri =404;
     }
+    # service worker and web manifest: never cached (they gate updates)
+    location = /sw.js { add_header Cache-Control "no-cache"; try_files $uri =404; }
+    location = /manifest.webmanifest { add_header Cache-Control "no-cache"; try_files $uri =404; }
     # everything else: SPA fallback, no cache for index.html
     location / {
         add_header Cache-Control "no-cache";
@@ -129,7 +132,9 @@ symlink — this keeps the VPS build-free (1 GB RAM is then plenty).
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
-    { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+    { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/manifest.webmanifest", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
   ]
 }
 ```

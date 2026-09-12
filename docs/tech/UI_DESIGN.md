@@ -32,6 +32,17 @@ Windows narrower than 16:9 pillarbox; wider than 16:9 letterbox — no responsiv
 window 1280 × 720 (scale 0.667); UI text minimum 14 virtual px (≈ 9.3 real px at min scale, so
 labels use ≥ 16 virtual px).
 
+### 2.1 Game window, not browser tab (owner: "it should feel like a real game")
+
+| Rule | Implementation |
+| --- | --- |
+| Installable app | Web manifest (`display: standalone`, dark `theme_color`, logo icons) + service worker precache (versioned; shows an in-game "Update available — restart" banner, never silently mixes versions). Installing from Chrome/Edge removes all browser chrome. |
+| Fullscreen-first | Setting "Launch in fullscreen" (default on): the first click on the title screen requests fullscreen; `F11`/`Alt+Enter` toggle; the title and settings screens carry a fullscreen button. Exiting fullscreen never breaks layout (letterbox fills). |
+| Custom cursor | Kit-styled cursor set (pointer, hand, grab, disabled, target reticle in battle) as `cursor: url()` SVGs at 32 px; system cursor never shows inside the viewport. |
+| No page behaviour | `user-select: none` (except text inputs), context menu suppressed, image drag disabled, `overscroll-behavior: none`, no native scrollbars anywhere, pinch/ctrl-zoom and `Ctrl +/−/0` intercepted (the viewport scales itself), `Backspace`/`Alt+←` never navigate. |
+| Identity | `<title>` ChronicleIdle, favicon and app icons from the logo mark, splash/loading screen on cold start, no visible URLs or links except the credits panel. |
+| Later | The Electron/Steam build reuses all of this; only the window frame changes. |
+
 ## 3. Design tokens (`src/ui/styles/tokens.css`)
 
 ### Colours
@@ -169,7 +180,7 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 
 ### 5.8 Battle setup
 - Reference: `battle_setup_screen.png`, `_alternative_2.png`.
-- Layout: title "Stage 3-7 · Normal"; left half: 5 team slots (leader slot marked, aura text),
+- Layout: title "Stage 3-7 · Normal"; left half: team slots — 3 in campaign, 4 in boss fights — (leader slot marked, aura text),
   team power; centre "VS" with element wheel and 3-star conditions; right half: enemy waves
   preview (tabs Wave 1/2/3) with element sigils and levels; bottom: roster strip (virtualised,
   filter/sort), presets (3), *Auto-repeat ×N* selector, **Start ⚡cost**.
@@ -259,6 +270,27 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 7. Camera: subtle push-in on single-target ultimates; wave transitions pan.
 8. At ×4: hit-stops removed, durations ÷4, cut-ins ÷2 (still shown), numbers persist 600 ms.
 
+### 6.3 VFX library (flipbooks from the owner's packs + generated)
+
+Element FX are picked from the two provided packs; the presenter tints and scales them. Missing
+shapes (slashes, rune rings, smoke, speed lines) are generated procedurally by `tools/vfx` into
+the same atlas format. All keys live in `src/render/fx/registry.ts`.
+
+| Use | Sheets (Free Pixel Effects Pack = FPEP, 100 px grids; GameFX = 64/96/133 px strips) |
+| --- | --- |
+| Justice (gold / holy) casts and hits | GameFX `LightCast_96`, `HolyExplosion_96x96`, FPEP `16_sunburn`, `9_brightfire` |
+| Valor (crimson / fire) casts, projectiles, hits | GameFX `FireCast_96x96`, `FireBall_64x64`, `FireBall_2_64x64`, `FireBall_3_64x64`, `FireBurst_64x64`, FPEP `11_fire`, `6_flamelash`, `7_firespin` |
+| Faith (azure / frost) casts, projectiles, hits | GameFX `IceCast_96x96`, `IcePick_64x64`, `IceShatter_96x96`, `IceShatter_2_96x96`, FPEP `3_bluefire`, `19_freezing` |
+| Eclipse (violet / void) casts and hits | FPEP `18_midnight`, `14_phantom`, `13_vortex`, `17_felspell`, `2_magic8`, `12_nebula` |
+| Poison / DoT ticks | GameFX `PoisonCast_96x96`, `PoisonClaw_96x96`; Burn uses `11_fire` small; Bleed uses generated droplets |
+| Physical hits (A1s, counters) | FPEP `10_weaponhit`, `5_magickahit` + generated slash arcs |
+| Buffs / shields / block | FPEP `8_protectioncircle`, GameFX `MagicBarrier_64x64`; ATK/DEF/SPD Up use tinted `4_casting` |
+| Heal / revive | FPEP `20_magicbubbles`, `1_magicspell` (green), GameFX `SmallStar_64x64`, `MediumStar_64x64` |
+| Explosions (ultimates, boss abilities) | GameFX `Explosion_96x96`, `Explosion_2_64x64`, `Explosion_3_133x133` |
+| Wind / TM effects | GameFX `TornadoLoop_96x96`, `TornadoMoving_96x96`, `TornadoStatic_96x96` |
+| Loading / portal ambience | FPEP `15_loading` (ring), `13_vortex` (summon ring), Pixi particle embers |
+| Generated (`tools/vfx`) | slash arcs, impact sparks, rune rings, smoke puffs, speed lines, ash dissolve, gold pillar, rarity bursts |
+
 ## 7. Sound map (keys)
 
 `ui.hover`, `ui.confirm`, `ui.cancel`, `ui.tab`, `ui.error`, `reward.small/medium/large`,
@@ -266,7 +298,38 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 `forge.reveal`, `summon.place`, `summon.crack`, `summon.burst.{rarity}`, `battle.start`,
 `battle.hit.{light,heavy,crit}`, `battle.cast.{element}`, `battle.heal`, `battle.buff`,
 `battle.debuff`, `battle.death`, `battle.victory`, `battle.defeat`, `chest.open`, `quest.claim`.
-SFX are CC0-sourced (see `ASSETS.md` §6) until the owner provides a pack.
+Sources: the owner's SFX packs under `/game/assets/music_and_sounds/sfx` (44.1 kHz stereo WAV,
+transcoded by the pipeline) and in-house generated sounds (`tools/audio`, deterministic synth
+recipes). Variants are chosen round-robin with slight pitch jitter.
+
+| Key group | Source |
+| --- | --- |
+| `ui.*` | generated (short synthesised ticks/clicks in the ember palette) |
+| `reward.*`, `levelup.*`, `rankup`, `battle.victory/defeat`, `summon.burst.*` | generated stingers, layered with `Spells/Firebuff 1–2`, `Spells/Spell Impact 1–3`, `Spells/Wave Attack 1–2` (mythic) |
+| `chest.open` / `chest.close` | `Doors Gates and Chests/Chest Open 1–2`, `Chest Close 1–2` |
+| `quest.claim` | `Doors Gates and Chests/Lock Unlock` + generated chime |
+| `battle.start` | `Doors Gates and Chests/Gate Open`, `Portcullis Gate` |
+| `battle.attack.melee` / `.ranged` | `Attacks/Sword Attack 1–3` / `Attacks/Bow Attack 1–2` |
+| `battle.hit.light` / `.heavy` / `.crit` | `Attacks/Sword Impact Hit 1–3` / `Torch/Torch Impact 1–2` / impact + `Spells/Spell Impact` |
+| `battle.block` (shield absorb) | `Attacks/Sword Blocked 1–3`, `Bow Blocked 1–3` |
+| `battle.cast.valor` | `Spells/Fireball 1–3`, `Firespray 1–2` |
+| `battle.cast.faith` | `Spells/Ice Throw 1–2`, `Ice Barrage 1–2`, `Waterspray 1–2` |
+| `battle.cast.justice` | `Spells/Firebuff 1–2` (bright layer) + generated holy chime |
+| `battle.cast.eclipse` | `Spells/Ice Freeze 1–2` pitched down + generated void layer |
+| `battle.cast.earth` (bosses, Sethlurias) | `Spells/Rock Meteor Throw 1–2`, `Rock Meteor Swarm 1–2`, `Rock Wall 1–2` |
+| `battle.heal` / `battle.buff` / `battle.debuff` | `Spells/Waterspray` / `Spells/Firebuff` / `Spells/Ice Freeze` |
+| `battle.death` | `Torch/Torch Impact` + generated dissolve |
+| `battle.step.{dirt,stone,water,wood}` | `Footsteps/*` (lunge steps, surface per settlement) |
+| `forge.hammer` / `gear.upgrade` | `Chopping and Mining/mine 1–5` |
+| `gear.equip` | `Attacks/Sword Unsheath 1–2` |
+| `summon.place` / `summon.crack` | `Spells/Rock Wall 1–2` / `Spells/Ice Freeze 1–2` |
+| `torch.*` (hub lanterns) | `Torch/Light Torch 1–2`, `Torch Loop` |
+
+Ambience (`AmbienceDirector`, per screen, cross-faded): hub → `Town ambience` + `Night ambience`;
+Tavern/Forge → `Interior Night` / `Interior Day`; forest settlements → `Forest Day` / `Forest
+Night`; Greyhaven Harbor → `Sea` / `Beach`; Barrowdeep, Daily Boss → `Cave` / `Dungeon ambience`;
+Old Kingsroad → `River Loop` / `Waterfall Loop`; Ironcrag Citadel → `Torch Loop`; rain/storm
+variants are used for Duskmere Marsh and Frostvein Pass.
 
 ## 8. Input & accessibility
 

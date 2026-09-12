@@ -5,8 +5,9 @@ implementation), `docs/tech/UI_DESIGN.md` §5.9 (battle screen).
 
 ## 1. Overview
 
-- Party: up to **5 champions** (slot 1 = leader; the leader's aura applies).
-- Enemies: 1–3 **waves**, 1–5 enemies each; a boss wave may have adds.
+- Party: **3 champions** in campaign encounters, **4** in boss encounters (`partySize` per
+  encounter type; slot 1 = leader; the leader's aura applies). Team presets are kept per mode.
+- Enemies: 1–3 **waves**, 2–4 enemies each; a boss wave may have adds.
 - Turn order is driven by a **turn meter** filled by SPD. No initiative rounds.
 - Two control modes, one simulation: **Manual** (player picks ability + target on each ally turn)
   and **Auto** (AI policy picks). The player can toggle at any time; auto is remembered per mode.
@@ -234,6 +235,7 @@ result screen.
 
 | Constant | Default |
 | --- | --- |
+| `PARTY_SIZE_CAMPAIGN`, `PARTY_SIZE_BOSS` | 3, 4 |
 | `TM_PER_SPD` | 0.001 |
 | `TM_OVERFLOW_CAP` | 1.5 |
 | `DEF_K_BASE`, `DEF_K_PER_LEVEL` | 1800, 15 |

@@ -34,7 +34,7 @@ at most 143 more Ancient Shards").
 Always available; the four shard types above.
 
 ### Featured Banner
-A 14-day rotation computed from a fixed epoch (`ROTATION_EPOCH = 2026-01-05T04:00 local`) so no
+A 14-day rotation computed from a fixed epoch (`ROTATION_EPOCH = 2026-01-05T00:00 local`) so no
 server is needed. Each rotation features **1 Legendary + 2 Epics**; featured champions get ×2 weight
 inside their rarity bucket for Ancient and Sacred pulls. Every 4th rotation is a **Primordial
 Rotation**: Varkos is featured (Mythic chance stays 5 % but the pity counter accelerates: +1 pp
@@ -70,7 +70,7 @@ Pixi scene on backdrop `bg9` (the violet gate) with the shard hovering in the ri
    colour is only fully revealed on burst (0.5 s). Legendary: gold pillar + screen flash + bass hit;
    Mythic: rose pillar, slow-motion, shockwave, particles, unique chime.
 3. Champion card slams in (rarity frame, element sigil, name, role); sprite idles; "NEW" ribbon if
-   first copy; duplicates show "+1 Skill upgrade".
+   first copy; duplicates show "Duplicate — rank-up material".
 4. ×10: cards reveal in a 5×2 grid in sequence (fast-tap skips to results); best rarity reveals last.
 5. Results panel: "Continue", "Summon again" (if shards remain), "View champion".
 
@@ -85,7 +85,7 @@ defineBanner({
   shards: { faded: { table: [['common',60],['uncommon',30],['rare',10]] }, ... },
 });
 defineBanner({
-  id: 'banner.featured', kind: 'featured', rotationDays: 14, epoch: '2026-01-05T04:00',
+  id: 'banner.featured', kind: 'featured', rotationDays: 14, epoch: '2026-01-05T00:00',
   rotations: [{ legendary: 'champ.aurelia_dawnwarden', epics: ['champ.khazgor','champ.maruan'] }, ...],
   featuredWeight: 2,
 });

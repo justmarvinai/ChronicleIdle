@@ -6,6 +6,7 @@ Related: `BATTLE.md`, `GEAR.md` (sets and drops), `ECONOMY.md` (energy, XP), `do
 ## 1. Structure
 
 - **12 settlements × 10 stages × 3 difficulties** (Intro, Normal, Hard) = 360 stages.
+- Party size **3 champions** in every campaign battle (boss fights elsewhere use 4; `BATTLE.md` §1).
 - Stages are farmable forever; there are no one-time battles.
 - Stage 10 of every settlement is a **boss stage** (named boss + adds).
 - Global stage index `g = (settlement − 1) × 10 + (stage − 1)` ∈ 0..119 drives enemy scaling.
@@ -43,11 +44,11 @@ Settlement rewards: at 10/20/30 total stars per settlement+difficulty a **star c
 
 | Stage | Waves | Enemies per wave | Notes |
 | --- | --- | --- | --- |
-| 1–3 (Settlement 1 only) | 2 | 2, 3 | tutorial-friendly |
-| 1–3 | 3 | 3, 3, 4 | |
-| 4–6 | 3 | 3, 4, 4 | first Hexer/Mender appear |
-| 7–9 | 3 | 4, 4, 5 | |
-| 10 (boss) | 3 | 4, 5, boss + 2 adds | boss is `×1.8 HP, ×1.25 ATK/DEF` of its archetype, own kit |
+| 1–3 (Settlement 1 only) | 2 | 2, 2 | tutorial-friendly |
+| 1–3 | 3 | 2, 3, 3 | |
+| 4–6 | 3 | 3, 3, 4 | first Hexer/Mender appear |
+| 7–9 | 3 | 3, 4, 4 | |
+| 10 (boss) | 3 | 3, 4, boss + 2 adds | boss is `×1.8 HP, ×1.25 ATK/DEF` of its archetype, own kit |
 
 Composition is declared per stage in content (`waves: [[...enemyIds], ...]`). Authoring rule:
 each settlement introduces its faction's units progressively (see §6) so the player learns them.
@@ -114,9 +115,9 @@ Faction unit names (examples, content decides): Thornwood Bandits → Cutpurse (
 
 | Difficulty | Stage 1–9 | Stage 10 |
 | --- | --- | --- |
-| Intro | 5 Gems | 20 Gems + 1 Ancient Shard |
-| Normal | 10 Gems | 40 Gems + 1 Ancient Shard + 2 Epic Tomes |
-| Hard | 20 Gems | 80 Gems + 1 Sacred Shard + 1 Legendary Tome |
+| Intro | 5 Gems + 15 Energy | 20 Gems + 1 Ancient Shard + 50 Energy |
+| Normal | 10 Gems + 25 Energy | 40 Gems + 1 Ancient Shard + 2 Epic Tomes + 100 Energy |
+| Hard | 20 Gems + 40 Energy | 80 Gems + 1 Sacred Shard + 1 Legendary Tome + 150 Energy |
 
 ### Star chests (per settlement + difficulty)
 

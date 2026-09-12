@@ -110,7 +110,7 @@ checks) are helpers in `engine/progression/unlocks.ts` and `engine/economy/walle
 ### 3.6 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
-`FixedClock` (tests). Daily/weekly boundaries: 04:00 local by default (`balance/economy.ts`).
+`FixedClock` (tests). Daily boundary 00:00 local, weekly boundary Monday 00:00 local, by default (`balance/economy.ts`).
 `applyOfflineElapsed` is idempotent and records the last applied period keys.
 
 ## 4. State (Zustand)
@@ -187,9 +187,14 @@ interface SaveGame {
 
 - `MusicDirector`: states `title`, `hub`, `battle`, `summon`, `boss`; cross-fade 1.2 s; the two
   provided tracks map to `hub/title` and `battle/boss`; summon reuses hub with a low-pass filter
-  until a dedicated track is sourced.
-- `Sfx.play(key, { variant, pitchJitter })` with per-key pools and a limiter (max 8 voices).
-- Mixer: master/music/sfx volumes persisted in settings; ducking of music during summon burst.
+  until a dedicated track exists (generated or provided).
+- `AmbienceDirector`: one looping ambience bed per screen from the owner's ambience sets (town,
+  interior day/night, forest day/night, sea/beach, cave/dungeon, river/waterfall, torch), with
+  rain/storm variants per settlement; cross-fades on screen change; ducks under battle music.
+- `Sfx.play(key, { variant, pitchJitter })` with per-key pools, round-robin variants and a limiter
+  (max 8 voices); keys map to the owner's WAV packs or generated sounds (`UI_DESIGN.md` §7).
+- Mixer: master/music/ambience/sfx volumes persisted in settings; ducking of music during the
+  summon burst and level-up stingers.
 
 ## 8. Asset pipeline (`tools/assets`)
 
@@ -206,7 +211,12 @@ Input `/game/assets/**` → output `/public/assets/generated/**` + `src/assets/m
 | `ui/spell-icons/*.webp` | copied + 64 px thumbs atlas |
 | `wallpapers/*` | WebP 1920 and 2560 widths + 64 px blurred placeholder |
 | `logos/*` | copied |
-| `music_and_sounds/**` | copied; loudness-normalised (−16 LUFS) |
+| `music_and_sounds/background_music/*.mp3` | copied; loudness-normalised (−16 LUFS) |
+| `music_and_sounds/ambience_sounds/**` (WAV 60 s loops + MP3) | transcoded to OGG (+ MP3 fallback), loop points trimmed, −20 LUFS; file names sanitised into manifest keys (the MP3 names contain mis-encoded dashes — never renamed in `/game`) |
+| `music_and_sounds/sfx/**/*.wav` | transcoded to OGG (+ MP3 fallback), peak-normalised, grouped into per-category audio sprites |
+| `music_and_sounds/vfx/Free Pixel Effects Pack/*.png` (100 px grids) | sliced into frame atlases with frame counts detected from the grid; per-effect JSON (frame size, fps 24) |
+| `music_and_sounds/vfx/GameFXExport/SPRITESHEET_Files/*.png` (64/96/133 px strips) | packed into atlases; frame count = width / frame size; GIFs ignored (strips are canonical) |
+| `tools/audio` and `tools/vfx` recipes | rendered into the same output folders and manifest groups as owner assets |
 
 The manifest is typed (`AssetKey` union) so a typo in a content file is a compile error. Groups
 (`ui`, `hub`, `battle`, `summon`, `model:<id>`) drive preloading.
@@ -221,7 +231,12 @@ The manifest is typed (`AssetKey` union) so a typo in a content file is a compil
   win rate, average turns, and a difficulty curve; fails CI if a stage's win rate for its intended
   tier falls outside the band declared in `CAMPAIGN.md` §5 notes.
 - `tools/perf/battle-bench.ts`: headless Chromium via Playwright records frame times for a ×4
-  5 v 5 battle with FX; reports p50/p95.
+  4 v 4 stress battle with FX; reports p50/p95.
+- `tools/audio`: deterministic synth recipes (oscillators, noise, envelopes, filters, convolution
+  reverb) rendered to OGG/MP3 at build time for UI ticks, stingers and layered impacts; recipes are
+  code, outputs are build artifacts.
+- `tools/vfx`: procedural flipbook generator (slash arcs, rune rings, sparks, smoke, speed lines,
+  rarity bursts) rendered to atlases at build time, same format as the owner's packs.
 
 ## 10. Electron readiness (backlog)
 

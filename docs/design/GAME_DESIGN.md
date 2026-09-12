@@ -31,7 +31,9 @@ short sessions of decisions, long tails of accumulation.
 ### Session shape (target)
 
 - **First session (30–40 min):** tutorial, choose starter, first 8–10 stages, first summon, first
-  gear, first level-ups, see the idle chest and the mission line.
+  gear, first level-ups, see the idle chest and the mission line. Energy is deliberately abundant:
+  the tutorial, early missions and first clears hand out roughly 3,000 energy over the first days
+  so the opening weeks feel generous (`ECONOMY.md` §5.1).
 - **Daily session (15–25 min):** claim idle chest, daily boss ×2 keys, daily quests, spend energy
   farming a target stage/set on auto-repeat, tavern upgrades, summon if shards.
 - **Weekly:** weekly boss ×3 keys, weekly quests, featured banner rotation, push a new
@@ -58,7 +60,7 @@ crafting and summoning, which feed back into the campaign.
 | System | One-line summary | Doc |
 | --- | --- | --- |
 | Champions | 6 rarities, base/max stars, 4 elements, 4 roles, 8 stats, 1–4 abilities + passive (+ aura) | `CHAMPIONS.md` |
-| Battle | Turn-meter combat, 5 v up to 5, waves, status effects, manual/auto, ×1–×4 speed | `BATTLE.md` |
+| Battle | Turn-meter combat, 3 v up to 4 in campaign and 4 v boss + adds, waves, status effects, manual/auto, ×1–×4 speed | `BATTLE.md` |
 | Campaign | 12 settlements × 10 stages × Intro/Normal/Hard, farmable, 3-star ratings, drops | `CAMPAIGN.md` |
 | Gear | 6 slots, 6 rarities, 1–6 stars, +0…+16, main/sub stats, 14 sets, refine, craft, dismantle | `GEAR.md` |
 | Economy | 24 wallet currencies, energy, player level 1–100, idle chest, sources/sinks | `ECONOMY.md` |
@@ -101,8 +103,8 @@ crafting and summoning, which feed back into the campaign.
 | Legendary | 5 → 6 | 4 + passive + aura | Good champions with a clear job; team-defining. |
 | Mythic | 6 → 6 | 4 + passive + aura | All-rounders. One exists in EA-0.1. |
 
-EA-0.1 roster: 3 Common, 3 Uncommon, 3 Rare, **7 Epic** (all seven finished models; see
-`USER_QUESTIONS.md` Q1 — the brief said 5), 6 Legendary (one obtainable only from the mission
+EA-0.1 roster: 3 Common, 3 Uncommon, 3 Rare, **7 Epic** (all seven finished models —
+confirmed by the owner, Q1), 6 Legendary (one obtainable only from the mission
 line), 1 Mythic. Total **23**.
 
 ## 6. Progression map (what unlocks when)
@@ -149,3 +151,4 @@ Idle-chest capacity bands are level driven (`ECONOMY.md` §5).
 | Refine | Gear star-up |
 | Idle chest | Offline/online accumulating reward chest |
 | Chronicler's Path | Long mission line with escalating rewards |
+| Chronicler's Provisions | Energy bundles granted by the tutorial chapters (500 + 4 × 250) |

@@ -37,7 +37,7 @@ Progress for `count`-style goals is measured from the moment the quest/mission b
 is a state predicate (`champion_reach_level`, `player_level`, `equip_full_set`…), which is checked
 live.
 
-## 2. Daily quests (reset 04:00 local)
+## 2. Daily quests (reset 00:00 local)
 
 Ten quests; each completes for points and a small reward; points unlock five chests.
 
@@ -46,7 +46,7 @@ Ten quests; each completes for points and a small reward; points unlock five che
 | 1 | Log in | automatic | 10 | 1 Faded Shard |
 | 2 | Claim the Idle Chest | `claim_idle 1` | 10 | 5,000 Gold |
 | 3 | Clear 5 campaign stages | `clear_stages 5` | 10 | 2 Elemental Brews (random) |
-| 4 | Spend 60 energy | `spend_energy 60` | 10 | 20 Energy |
+| 4 | Spend 60 energy | `spend_energy 60` | 10 | 40 Energy |
 | 5 | Level up champions 3 times | `level_champion_times 3` | 10 | 3,000 Gold |
 | 6 | Upgrade gear 5 levels | `gear_levels 5` | 10 | 5 Arcane Dust |
 | 7 | Fight the Daily Boss twice | `boss_fights gravemaw 2` | 10 | 1 Rare Tome |
@@ -59,7 +59,7 @@ Chests: 20 pts → 3,000 Gold; 40 → 10 Gems + 2 Brews; 60 → 1 Faded Shard + 
 reference locked features are hidden until unlocked (their points come from a replacement quest
 "Win 3 battles" until then), so 100 points are always reachable.
 
-## 3. Weekly quests (reset Monday 04:00 local)
+## 3. Weekly quests (reset Monday 00:00 local)
 
 | # | Quest | Goal | Points | Reward |
 | --- | --- | --- | --- | --- |
@@ -70,7 +70,7 @@ reference locked features are hidden until unlocked (their points come from a re
 | 5 | Summon 10 champions | `summon 10` | 10 | 1 Ancient Shard |
 | 6 | Rank up a champion | `rank_up_times 1` | 10 | 20,000 Gold |
 | 7 | Bring a gear piece to +12 | `gear_reach_level 12 1` | 10 | 10 Refining Cores |
-| 8 | Claim the Idle Chest 7 times | `claim_idle 7` | 5 | 30 Energy |
+| 8 | Claim the Idle Chest 7 times | `claim_idle 7` | 5 | 100 Energy |
 
 Chests: 25 → 20k Gold; 50 → 1 Ancient Shard; 75 → 60 Gems + 1 Epic Tome; 100 → 1 Sacred Shard.
 
@@ -88,18 +88,18 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 ### Chapter 1 — First Steps
 | # | Mission | Reward |
 | --- | --- | --- |
-| 1.1 | Clear Thornwood Crossing 1-1 (Intro) | 2,000 G |
-| 1.2 | Win a battle in Manual mode | 1,000 G, 10 E |
+| 1.1 | Clear Thornwood Crossing 1-1 (Intro) | 2,000 G, 100 E |
+| 1.2 | Win a battle in Manual mode | 1,000 G, 150 E |
 | 1.3 | Level a champion to 5 | 2 Br |
 | 1.4 | Clear Thornwood Crossing 1-3 | 3,000 G |
 | 1.5 | Equip 3 gear pieces on one champion | 20 Scrap Iron |
 | 1.6 | Upgrade a gear piece to +4 | 3,000 G |
 | 1.7 | Summon a champion with a Faded Shard | 1 Faded Shard |
 | 1.8 | Clear Thornwood Crossing 1-6 | 10 Gm |
-| 1.9 | Reach player level 4 | 20 E |
+| 1.9 | Reach player level 4 | 200 E |
 | 1.10 | Claim the Idle Chest | 5,000 G |
 | 1.11 | Complete 5 daily quests in one day | 20 Gm |
-| 1.12 | Defeat Redcap Halvar (1-10 Intro) | 1 AS, 5,000 G |
+| 1.12 | Defeat Redcap Halvar (1-10 Intro) | 1 AS, 5,000 G, 300 E |
 
 ### Chapter 2 — The Fields and the Harbor
 | # | Mission | Reward |
@@ -114,7 +114,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 2.8 | Fight the Daily Boss (Easy) once | 1 RT |
 | 2.9 | Equip a full 2-piece set | 5,000 G |
 | 2.10 | Clear Greyhaven Harbor 3-5 | 20 Gm |
-| 2.11 | Reach player level 10 | 30 E |
+| 2.11 | Reach player level 10 | 250 E |
 | 2.12 | Defeat Captain Morwenna Tide (3-10) | 1 AS, 1 ET |
 
 ### Chapter 3 — Sand and Road
@@ -130,7 +130,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 3.8 | Earn 30 stars in Millbrook Fields (Intro) | 25 Gm |
 | 3.9 | Level a champion to 25 | 5 Br |
 | 3.10 | Summon with an Ancient Shard | 1 AS |
-| 3.11 | Reach player level 15 | 40 E |
+| 3.11 | Reach player level 15 | 300 E |
 | 3.12 | Defeat Ser Dagan the Oathbreaker (5-10) | 1 SS |
 
 ### Chapter 4 — Into the Barrow
@@ -162,7 +162,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 5.8 | Rank up a champion to 5★ | 30,000 G |
 | 5.9 | Level a champion to 40 | 8 Br |
 | 5.10 | Upgrade 5 skills | 2 ET |
-| 5.11 | Reach player level 25 | 60 E |
+| 5.11 | Reach player level 25 | 400 E |
 | 5.12 | Defeat The Undefeated (9-10) | 1 SS |
 
 ### Chapter 6 — Marsh, Citadel, Gate
@@ -178,7 +178,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 6.8 | Defeat Castellan Vaughn (11-10) | 1 SS |
 | 6.9 | Own 3 Epic champions | 2 ET |
 | 6.10 | Clear The Eclipse Gate 12-5 | 30,000 G |
-| 6.11 | Reach player level 30 | 80 E |
+| 6.11 | Reach player level 30 | 500 E |
 | 6.12 | Defeat The Gatekeeper (12-10 Intro) — unlocks Normal | 1 PS, 100 Gm |
 
 ### Chapter 7 — Normal
@@ -210,7 +210,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 8.8 | Clear Ironcrag Citadel 11-10 (Normal) | 1 SS |
 | 8.9 | Have 3 champions at 6★ | 150,000 G |
 | 8.10 | Earn 200 stars in Normal | 200 Gm |
-| 8.11 | Reach player level 50 | 150 E |
+| 8.11 | Reach player level 50 | 600 E |
 | 8.12 | Defeat The Gatekeeper (12-10 Normal) — unlocks Hard and ×3 speed | 1 PS, 200 Gm |
 
 ### Chapter 9 — Hard
@@ -226,7 +226,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 9.8 | Defeat Gravemaw (Brutal, 100 %) | 300 Gm |
 | 9.9 | Clear Duskmere Marsh 10-10 (Hard) | 1 SS |
 | 9.10 | Earn all 360 stars in Normal | 1 PS |
-| 9.11 | Reach player level 60 | 200 E |
+| 9.11 | Reach player level 60 | 800 E |
 | 9.12 | Defeat The Gatekeeper (12-10 Hard) — unlocks ×4 speed | 1 PS, 400 Gm |
 
 ### Chapter 10 — The Last Page
@@ -241,7 +241,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 10.7 | Reach 25 % on Nyxara (Nightmare) | 1 PS |
 | 10.8 | Team power 150,000 | 400 Gm |
 | 10.9 | Earn all 360 stars in Hard | 1 PS |
-| 10.10 | Reach player level 75 | 300 E |
+| 10.10 | Reach player level 75 | 1,000 E |
 | 10.11 | Defeat Nyxara (Nightmare, 100 %) | 1 MT, 500 Gm |
 | 10.12 | Complete every previous mission | **Eldric the Chronicler**, 6★ Legendary gear (choice), 500 Gm |
 
