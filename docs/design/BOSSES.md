@@ -1,0 +1,105 @@
+# Daily Boss and Weekly Boss
+
+Related: `BATTLE.md`, `ECONOMY.md`, `docs/tech/UI_DESIGN.md` §5.13.
+
+Both bosses are damage races in the style of Raid's Demon Lord / Hydra, single player: the boss has
+a colossal HP pool per tier, the player has a few keys per period, **damage accumulates across the
+period**, and reward chests unlock at damage thresholds. There is no leaderboard; the "rank" panel
+of the reference screen becomes a **personal records** panel (best damage per tier, best team).
+
+## 1. Shared rules
+
+- Battle uses the full battle system with the boss encounter's own turn limit; the fight ends when
+  the team dies, the boss dies (100 % chest) or the turn limit is hit. Damage dealt is added to the
+  period total for that tier regardless.
+- Each key is one fight on a chosen tier. Keys reset at the period boundary and do not accumulate
+  beyond the cap.
+- Boss stats are fixed per tier (no campaign scaling). Bosses have high RES and ACC, immunity to
+  Stun/Freeze/Sleep/Provoke/Fear (shown as "Unshakeable"), and take DoTs at full value —
+  Poison/Bleed/Burn builds are the classic answer, as are DEF Down and Weaken.
+- Both bosses **enrage**: after `enrageTurn`, boss ATK grows +10 % per own turn, so fights end.
+- Reward chests are claimed per tier once per period; unclaimed chests auto-claim at reset to the
+  mailbox-free "Rewards" panel on next login.
+- Records: best damage per tier and the team used; personal best banner in the UI.
+
+## 2. Daily Boss — Gravemaw, the Bone Tyrant
+
+Unlocks at player level 10. Two keys per day. Backdrop: `bg3` (the dungeon gate) with bone-dust
+particles; boss model: placeholder lizard ×2.0 scale, bone-white tint until a model exists.
+
+| Tier | HP | ATK | DEF | SPD | RES | ACC | Turn limit | Enrage turn |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | 250,000 | 900 | 700 | 100 | 60 | 60 | 50 | 20 |
+| Normal | 2,000,000 | 1,600 | 1,100 | 105 | 90 | 90 | 50 | 20 |
+| Hard | 12,000,000 | 2,600 | 1,500 | 110 | 120 | 120 | 50 | 20 |
+| Brutal | 60,000,000 | 4,000 | 2,100 | 115 | 160 | 160 | 50 | 20 |
+
+Kit (rotation `A1, A1, A2, A1, A3` then repeat; A3 starts on cooldown 4):
+- A1 *Bone Crush* — `4.0 × ATK` single (highest-ATK ally), 50 % DEF Down 30 % (2).
+- A2 *Grave Quake* — `2.2 × ATK` all allies, 40 % Stun (1) — only lands on one target max.
+- A3 *Devour* — `6.0 × ATK` single; heals Gravemaw 3 % of max HP per debuff on the target; places
+  Heal Reduction 100 % (2).
+- Passive *Tyrant's Hide* — takes 20 % less damage from crits; loses this after receiving 5
+  distinct debuffs (once per fight; "Hide broken" callout).
+
+Reward chests (per tier per day; thresholds as % of tier HP): 5 / 15 / 30 / 60 / 100 %.
+
+| Tier | Chest 5 % | Chest 15 % | Chest 30 % | Chest 60 % | Chest 100 % |
+| --- | --- | --- | --- | --- | --- |
+| Easy | 5k Gold, 2 Justice/Valor Brews | 10k Gold, 1 Rare Tome | 20k Gold, 5 Ember Alloy | 30 Gems, 1 Faded Shard | 1 Ancient Shard, Rare gear 3★ |
+| Normal | 15k Gold, 3 Brews | 25k Gold, 2 Rare Tomes | 40k Gold, 10 Ember Alloy, 3 Refining Cores | 60 Gems, 1 Epic Tome | 1 Ancient Shard, Epic gear 4★ |
+| Hard | 40k Gold, 4 Brews | 60k Gold, 1 Epic Tome | 90k Gold, 15 Ember Alloy, 5 Refining Cores | 100 Gems, 2 Epic Tomes | 1 Sacred Shard, Legendary gear 5★ |
+| Brutal | 100k Gold, 6 Brews | 150k Gold, 2 Epic Tomes | 200k Gold, 10 Starsteel, 8 Refining Cores | 200 Gems, 1 Legendary Tome | 1 Sacred Shard, 1 Glyph Sigil, Legendary gear 6★ |
+
+Gear from bosses draws from all sets. Player XP per key: 150 / 300 / 600 / 1,200 by tier.
+
+## 3. Weekly Boss — Nyxara, Mother of Shadows
+
+Unlocks at player level 15. Three keys per week. Backdrop: `bg9` (the Eclipse Gate) with violet
+fog; boss model: placeholder ×2.4 scale, violet tint; her two **Choristers** (adds) at ×1.2.
+
+| Tier | HP | ATK | DEF | SPD | RES | ACC | Turn limit | Enrage turn |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Normal | 5,000,000 | 2,200 | 1,300 | 108 | 100 | 100 | 100 | 40 |
+| Hard | 40,000,000 | 3,600 | 1,900 | 114 | 140 | 140 | 100 | 40 |
+| Nightmare | 250,000,000 | 5,500 | 2,600 | 120 | 180 | 180 | 100 | 40 |
+
+Phases (by boss HP): **I ≥ 70 %**, **II 70–35 %**, **III < 35 %**. Choristers revive at the start of
+each phase and every 12 boss turns; while a Chorister lives, Nyxara has Ally Protection 50 % from
+them (kill the adds first or accept the split).
+
+- A1 *Shadow Verse* — `3.6 × ATK` on two random allies, 40 % Weaken 25 % (2).
+- A2 *Dirge* (CD 3) — `2.6 × ATK` all allies; steals one buff from each.
+- A3 *Eclipse Hymn* (CD 5, phase II+) — Fear (2) on all allies (50 % skip), Decrease TM 30 %.
+- A4 *Mother's Embrace* (CD 6, phase III) — heals 5 % max HP, Block Debuffs (2) self; Choristers
+  gain Counterattack (3).
+- Choristers: A1 `2.8 × ATK` single; A2 (CD 4) heal Nyxara 2 % max HP.
+- Passive *Un-light* — allies' healing is reduced by 30 % during phase III.
+
+Reward chests (per tier per week; thresholds as % of tier HP): 2 / 5 / 12 / 25 / 50 / 100 %.
+
+| Tier | 2 % | 5 % | 12 % | 25 % | 50 % | 100 % |
+| --- | --- | --- | --- | --- | --- | --- |
+| Normal | 30k Gold, 4 Universal Brews | 60 Gems, 2 Epic Tomes | 1 Ancient Shard, 10 Refining Cores | 120 Gems, 1 Glyph Sigil | 1 Sacred Shard, 15 Starsteel | Legendary gear 6★, 1 Legendary Tome |
+| Hard | 80k Gold, 8 Universal Brews | 120 Gems, 1 Legendary Tome | 2 Ancient Shards, 15 Refining Cores | 200 Gems, 2 Glyph Sigils | 1 Sacred Shard, 30 Starsteel | 1 Primordial Shard, Legendary gear 6★ |
+| Nightmare | 200k Gold, 12 Universal Brews | 250 Gems, 2 Legendary Tomes | 1 Sacred Shard, 25 Refining Cores | 400 Gems, 3 Glyph Sigils | 2 Sacred Shards, 50 Starsteel | 1 Primordial Shard, 1 Mythic Tome, Mythic gear 6★ |
+
+Player XP per key: 800 / 1,600 / 3,200.
+
+## 4. Screen (clones `daily_weekly_boss_screen.png`)
+
+Left: records panel (per tier: best damage, team avatars, date). Right: tier cards with the boss
+portrait, HP bar showing the period's accumulated damage, "Damage: X / Y", chest row with claim
+states (locked / claimable / claimed), the period timer ("Resets in 6h 21m"). Bottom-right:
+**Battle (key icon ×1)**. An "i" opens the mechanics sheet (abilities, immunities, tips).
+
+## 5. Content shape
+
+```ts
+defineBoss({
+  id: 'boss.gravemaw', period: 'daily', keysPerPeriod: 2, unlockLevel: 10, backdrop: 'bg3',
+  tiers: [{ id: 'easy', stats: {...}, turnLimit: 50, enrageTurn: 20, chests: [{ pct: 5, rewards: [...] }, ...] }, ...],
+  kit: { abilities: [...], rotation: ['a1','a1','a2','a1','a3'], passives: [...] , immunities: ['stun','freeze','sleep','provoke','fear'] },
+  adds: [], phases: [],
+});
+```

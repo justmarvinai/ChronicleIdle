@@ -1,0 +1,98 @@
+# AGENTS.md — How to work in the ChronicleIdle repository
+
+Operational guide for any AI agent or contributor. `CLAUDE.md` holds the rules; this file holds
+the procedure. Read both before starting.
+
+## 1. Start-of-session checklist
+
+1. Read `CLAUDE.md`, then `ROADMAP.md` to find the current phase and its status line.
+2. Read the design doc(s) the phase references (`docs/design/*`) and `docs/tech/ARCHITECTURE.md`.
+3. Read `USER_QUESTIONS.md` — answered questions change defaults; unanswered ones have defaults.
+4. Read the latest `CHANGELOG.md` entries to learn what shipped last.
+5. Run `pnpm install && pnpm typecheck && pnpm test` (after Phase 0) and confirm green before
+   changing anything. A red baseline is fixed first and noted in the changelog.
+
+## 2. Phase execution protocol
+
+```
+PLAN     → write the phase's task list (screens, engine modules, content, tests) before coding
+BUILD    → engine first (with tests), then content, then state, then UI/render, then audio/FX
+VERIFY   → run the Definition of Done (below); play the feature in the browser end-to-end
+DOCUMENT → CHANGELOG.md entry, ROADMAP.md status line, docs updated if behaviour changed
+SHIP     → conventional commit(s), push, tag `0.0.<phase>` (or `0.1.0` for EA-0.1)
+CHECK-IN → post summary; ask the owner (optionally) for improvements/bugs before the next phase
+```
+
+Never start the next phase while the current one has an open acceptance criterion.
+
+## 3. Definition of Done (every phase)
+
+Feature completeness
+- [ ] Every acceptance criterion listed for the phase in `ROADMAP.md` is demonstrated in-game.
+- [ ] No placeholder text, no disabled "coming soon" buttons, no console errors or warnings.
+- [ ] All new content is data in `src/content/**`, validated by `pnpm content:validate`.
+- [ ] New systems are reachable from the hub through real navigation (no dev-only URLs).
+
+Quality
+- [ ] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e`, `pnpm build` all green.
+- [ ] Engine changes have unit tests covering formulas, edge cases and determinism (same seed →
+      same events).
+- [ ] UI flows that spend/grant currency or mutate roster have interaction tests.
+- [ ] Save/load round-trips the new state; a migration exists if the save schema changed; an old
+      save from the previous phase loads without data loss (fixture in `tests/fixtures/saves/`).
+
+Game feel
+- [ ] Every new screen follows `docs/tech/UI_DESIGN.md` (kit frames, tokens, fonts, motion, sound).
+- [ ] Every new interactive element has hover, press, disabled and focus states.
+- [ ] Every reward, unlock and level-up has a visible + audible moment.
+- [ ] Reduced-motion preference respected for non-battle UI.
+
+Performance
+- [ ] Battle at ×4 speed stays within the frame budget (`tools/perf` report attached in the
+      changelog entry when battle rendering changed).
+- [ ] No new synchronous work > 16 ms on the main thread during play (autosave is deferred).
+
+Documentation
+- [ ] `CHANGELOG.md` updated (Added / Changed / Fixed / Balance).
+- [ ] `ROADMAP.md` phase status set to `✅ shipped in x.y.z`.
+- [ ] Any new tunable documented in the relevant `docs/design/*.md` table.
+- [ ] Any new question added to `USER_QUESTIONS.md` with its default.
+
+## 4. Adding content — quick recipes
+
+| I want to add… | Do this | Reference |
+| --- | --- | --- |
+| a champion | `src/content/champions/<id>.ts` with `defineChampion`, abilities via the effect DSL, add sprite/avatar to `/game/assets/champions/<id>` (or use placeholder), run validate | `docs/tech/CONTENT_AUTHORING.md` §2 |
+| an ability effect that does not exist | add a new effect type in `src/engine/battle/effects/`, register in the effect resolver, write tests, document in `docs/design/BATTLE.md` §6 | `docs/design/BATTLE.md` |
+| an enemy | `src/content/enemies/<id>.ts` with `defineEnemy` (archetype + stat curve + abilities) | `docs/design/CAMPAIGN.md` §5 |
+| a settlement / stages | `src/content/stages/<nn>_<slug>.ts` with waves, drop table, star rules | `docs/design/CAMPAIGN.md` |
+| a gear set | `src/content/sets/<id>.ts` (2-piece / 4-piece bonus from the set-bonus DSL) | `docs/design/GEAR.md` §5 |
+| a currency | `src/content/currencies/index.ts` + icon manifest key | `docs/design/ECONOMY.md` §2 |
+| a quest / mission | `src/content/quests/*.ts` or `src/content/missions/chapter_<n>.ts` using goal types | `docs/design/QUESTS_MISSIONS.md` |
+| a banner | `src/content/banners/<id>.ts` with rate table + rotation | `docs/design/SUMMONING.md` |
+| a balance tweak | edit `src/content/balance/*.ts`, run `pnpm sim:balance`, note in CHANGELOG "Balance" | `docs/design/*` tables |
+
+## 5. Never do
+
+- Never modify files under `/game` (generate derived assets into `public/assets/generated`).
+- Never use `Math.random()` or `Date.now()` in `src/engine`.
+- Never special-case a champion, item or stage by id in engine or UI code.
+- Never ship a screen without a backdrop, motion and kit chrome.
+- Never use a serif font, a `border-radius` pill, a default browser control or an unstyled scrollbar.
+- Never add PvP, social, account or payment code paths "for later".
+- Never skip or weaken a failing test to get green.
+- Never push directly to a branch other than the working branch you were assigned; never force-push `main`.
+- Never leave a phase half-done because it was "mostly working".
+
+## 6. Asking the owner
+
+Write questions into `USER_QUESTIONS.md` under the correct section with:
+`Q<id>`, the question, why it matters, the default you are proceeding with, and what would change
+if answered differently. Keep coding under the default. When the owner answers, move the entry to
+the "Answered" section, update the affected docs and content, and note it in the changelog.
+
+## 7. Session end
+
+Before ending any session: all work committed with conventional messages, pushed to the assigned
+branch, `CHANGELOG.md` and `ROADMAP.md` status current, and a final message that states what was
+done, what is verified, and what is next.
