@@ -21,7 +21,7 @@ Short records of decisions that shape the codebase. Add a new record rather than
 | ADR-015 | Party size 3 in campaign encounters, 4 in boss encounters | accepted (owner, Q2) |
 | ADR-016 | Skill upgrades use Skill Tomes only; duplicates are ordinary copies | accepted (owner, Q8) |
 | ADR-017 | Generous energy: +1/min, cap +10 per level, unlimited reward overflow, ~3,000 early provisions | accepted (owner, Q15) |
-| ADR-018 | Installable PWA + fullscreen-first game window | accepted (owner, Q10) |
+| ADR-018 | Installable PWA + fullscreen offered at launch, never forced | accepted (owner, Q10, Q27) |
 | ADR-019 | In-house generated SFX/VFX allowed alongside owner packs and CC0 sources | accepted (owner, Q24) |
 | ADR-020 | All work is pushed directly to `main` | accepted (owner, Q23) |
 
@@ -127,8 +127,9 @@ Phase 15 economy simulation, Q26); gem refills are a convenience rather than a n
 ## ADR-018 — Installable PWA and fullscreen-first window
 **Context.** "It should feel like a real game, not a browser window" (Q10) while staying a
 static web build.
-**Decision.** `vite-plugin-pwa` with a prompt-style update flow; fullscreen requested on the
-first title click (setting, default on); custom cursor; browser-chrome guards; no responsive
+**Decision.** `vite-plugin-pwa` with a prompt-style update flow; fullscreen offered on the
+first title click (setting, default on) but never forced — declining is remembered and the game
+is fully playable windowed (Q27); custom cursor; browser-chrome guards; no responsive
 reflow. **Consequences.** Chrome/Edge users get a chrome-free standalone window today; the
 Electron build later reuses everything; the service worker must be treated as part of the
 release process (`DEPLOYMENT.md`).

@@ -20,7 +20,9 @@ All notable changes to ChronicleIdle are documented here. The format follows
   local; skill upgrades via Skill Tomes only; generous energy model (+1/min, cap 60 + 10 per level,
   unlimited reward overflow, ≈ 3,000 early-game provisions); installable PWA + fullscreen-first game
   window; direct pushes to `main`; in-house SFX/VFX generation allowed; ADR-014 accepted and
-  ADR-015…020 recorded.
+  ADR-015…020 recorded. Follow-up answers Q25–Q27: team presets per mode in the save schema,
+  stage energy costs kept for EA-0.1 (re-checked in Phase 15), fullscreen offered but never
+  forced.
 - `docs/tech/ASSETS.md` and `docs/tech/CREDITS.md` now inventory the newly added ambience sets,
   SFX packs and the two VFX packs; the sound map and VFX library in `docs/tech/UI_DESIGN.md` map
   game events to the real files.

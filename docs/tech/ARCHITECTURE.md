@@ -134,7 +134,7 @@ interface SaveGame {
   energy: { value: number; lastTickAt: number };
   roster: Record<string, ChampionInstance>;
   gear: Record<string, GearInstance>;
-  teams: { presets: Record<string, string[]>; lastUsed: Record<string, string[]> };
+  teams: Record<'campaign' | 'boss', { presets: string[][]; lastUsed: string[] }>;   // 3 presets per mode (Q25)
   campaign: { stages: Record<string, { stars: 0|1|2|3; clears: number; bestTurns: number | null }>;
               unlocked: { normal: boolean; hard: boolean }; speeds: { x3: boolean; x4: boolean }; starChests: string[] };
   bosses: Record<BossId, { periodKey: string; keys: number; damage: Record<string, number>; chests: Record<string, number[]>; records: Record<string, { damage: number; team: string[]; at: number }> }>;
@@ -254,9 +254,10 @@ later), `FileDialogAdapter` (download/upload now; native dialogs later), `Window
   when the player accepts the in-game "Update available — restart" banner or on the next cold
   start. Mixed-version loads are impossible because every file is hashed and the service worker
   swaps atomically. `sw.js` and the manifest are served with `no-cache` (`DEPLOYMENT.md`).
-- Fullscreen: `platform/window.ts` wraps the Fullscreen API (request on the first title click when
-  the setting is on; `F11`/`Alt+Enter`; state persisted); the Electron adapter later maps the same
-  interface to `BrowserWindow.setFullScreen`.
+- Fullscreen: `platform/window.ts` wraps the Fullscreen API (request once on the first title click
+  when the setting is on; `F11`/`Alt+Enter`; state persisted). Never forced: a declined or exited
+  request flips the setting off, no re-prompt, and the game is fully playable windowed. The
+  Electron adapter later maps the same interface to `BrowserWindow.setFullScreen`.
 - Input guards (`app/inputGuards.ts`): context menu, text selection, image drag, browser zoom
   shortcuts and back-navigation keys are intercepted inside the viewport (`UI_DESIGN.md` §2.1).
 

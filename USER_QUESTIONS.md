@@ -5,24 +5,7 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-### Q25 — Team presets per mode
-**Why.** Campaign parties have 3 slots and boss parties 4, so one preset cannot serve both.
-**Default.** Separate preset sets per mode (3 campaign presets, 3 boss presets), plus "last used"
-per mode. The battle setup screen shows only the presets of its mode.
-
-### Q26 — Stage energy costs under the generous energy model
-**Why.** With +1 energy/min and a cap that grows +10 per level, the campaign costs (4–10 per
-stage) from `docs/design/CAMPAIGN.md` §2 might feel trivial late; raising them changes the
-first-hours pacing you asked to keep generous.
-**Default.** Keep 4–10 for EA-0.1 and re-check with the 30-day economy simulation in Phase 15;
-only auto-repeat batch sizes (×10/×25/×50) scale with progress.
-
-### Q27 — Fullscreen on first launch
-**Why.** Browsers only allow fullscreen after a user gesture; we can request it on the first
-click of the title screen.
-**Default.** Setting "Launch in fullscreen" is on by default; the first title-screen click
-requests fullscreen; `F11`/`Alt+Enter` toggle; installing the PWA gives a chrome-free window
-even outside fullscreen.
+_(none — new questions are added here as they arise during development)_
 
 ## 2. Answered
 
@@ -52,3 +35,6 @@ even outside fullscreen.
 | Q22 | Placeholder look | As recommended | Tinted lizard + rarity ring + sigils; bosses scaled |
 | Q23 | Branching | Direct pushes to `main` granted | `CLAUDE.md` §2.9/§9.4, `AGENTS.md`; ADR-020 |
 | Q24 | Additional assets | More assets added to `/game`; sourcing from reputable CC0/commercially-safe sources allowed; generating high-quality RPG sounds and VFX in-house allowed | `CLAUDE.md` §2.6, `ASSETS.md`, `CREDITS.md`, `tools/audio` + `tools/vfx` in the architecture; ADR-019 |
+| Q25 | Team presets per mode | Yes, as recommended | 3 campaign presets + 3 boss presets with "last used" per mode; save schema `teams` keyed by mode (`ARCHITECTURE.md` §4.1, `UI_DESIGN.md` §5.8) |
+| Q26 | Stage energy costs under the generous model | As recommended | Costs stay 4–10 for EA-0.1; re-checked by the Phase 15 30-day economy simulation |
+| Q27 | Fullscreen on first launch | As recommended, but never force fullscreen | Offered once on the first title click (setting, default on); declining or exiting is remembered, never re-prompted, fully playable windowed (`UI_DESIGN.md` §2.1, `ARCHITECTURE.md` §11, ADR-018) |

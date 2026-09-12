@@ -47,7 +47,7 @@ but everything a system will plug into.
 - `tools/assets` pipeline → generated atlases/WebP/manifest; typed `AssetKey`.
 - `GameViewport` (1920×1080 scaling, letterbox backdrop), router with screen stack, loading screen.
 - Game window: installable PWA (web manifest + versioned service-worker precache with an update
-  prompt), fullscreen-first launch, custom cursor, browser-chrome guards (`docs/tech/UI_DESIGN.md` §2.1).
+  prompt), fullscreen offered at launch (never forced), custom cursor, browser-chrome guards (`docs/tech/UI_DESIGN.md` §2.1).
 - Design system: tokens, fonts, the full component library of `UI_DESIGN.md` §4 with a `/dev/kit`
   gallery route (dev only) showing every component in every state.
 - State: Zustand store, slices skeleton (`profile`, `wallet`, `settings`, `ui`), persistence
@@ -71,7 +71,8 @@ but everything a system will plug into.
 - `pnpm build` output deploys on a local nginx container and on Vercel preview.
 - Lighthouse performance ≥ 90 on the title screen; no layout shift.
 - Installs as a standalone app from Chrome/Edge; fullscreen toggles with F11 and the title button;
-  no browser scrollbars, text selection or context menus anywhere.
+  declining or leaving fullscreen is remembered and never re-prompted; everything is playable
+  windowed; no browser scrollbars, text selection or context menus anywhere.
 
 ## Phase 1 — Champions & Collection (`0.0.1`)
 
@@ -259,7 +260,7 @@ tutorial state migrates.
 **Goal.** Turn the feature-complete game into the release.
 
 **Scope**: full `sim:balance` pass and tuning; economy sanity vs `ECONOMY.md` §7–8 using a
-30-day simulated player script; perf pass on all screens (bundle budget, atlas memory, frame
+30-day simulated player script (including the stage energy costs, Q26); perf pass on all screens (bundle budget, atlas memory, frame
 times); audio mix; copy review of every string; accessibility pass; error-panel review; save
 migration test matrix (every fixture from v1–v14 → v15); deployment verified on VPS and Vercel
 with the guide followed literally; `CHANGELOG.md` release notes; tag `0.1.0`.

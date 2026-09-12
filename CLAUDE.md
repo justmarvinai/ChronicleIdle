@@ -220,7 +220,7 @@ error panel with "Return to Emberhold" and "Export save". Engine functions throw
   panel slide/fade on open, number tick-up on currency change, shimmer on legendary/mythic frames,
   idle sprite loops in every champion slot, screen transitions ≤ 350 ms.
 - Sound on interaction: hover tick, confirm, cancel, reward, level-up, summon reveal tiers.
-- It runs like an app, not a tab: installable PWA (standalone window), fullscreen-first launch,
+- It runs like an app, not a tab: installable PWA (standalone window), fullscreen offered at launch (never forced),
   custom cursor, no text selection, no context menu, no native scrollbars, browser zoom shortcuts
   intercepted (the viewport scales itself). Details in `docs/tech/UI_DESIGN.md` §2.1.
 

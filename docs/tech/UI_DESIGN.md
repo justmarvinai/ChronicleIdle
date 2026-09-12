@@ -37,7 +37,7 @@ labels use ≥ 16 virtual px).
 | Rule | Implementation |
 | --- | --- |
 | Installable app | Web manifest (`display: standalone`, dark `theme_color`, logo icons) + service worker precache (versioned; shows an in-game "Update available — restart" banner, never silently mixes versions). Installing from Chrome/Edge removes all browser chrome. |
-| Fullscreen-first | Setting "Launch in fullscreen" (default on): the first click on the title screen requests fullscreen; `F11`/`Alt+Enter` toggle; the title and settings screens carry a fullscreen button. Exiting fullscreen never breaks layout (letterbox fills). |
+| Fullscreen offered, never forced | Setting "Launch in fullscreen" (default on): the first click on the title screen requests fullscreen once; if the player declines or leaves fullscreen, the setting flips off and the game never asks again; everything is fully playable windowed; `F11`/`Alt+Enter` toggle, `Esc` always leaves fullscreen; the title and settings screens carry a fullscreen button. Exiting fullscreen never breaks layout (letterbox fills). |
 | Custom cursor | Kit-styled cursor set (pointer, hand, grab, disabled, target reticle in battle) as `cursor: url()` SVGs at 32 px; system cursor never shows inside the viewport. |
 | No page behaviour | `user-select: none` (except text inputs), context menu suppressed, image drag disabled, `overscroll-behavior: none`, no native scrollbars anywhere, pinch/ctrl-zoom and `Ctrl +/−/0` intercepted (the viewport scales itself), `Backspace`/`Alt+←` never navigate. |
 | Identity | `<title>` ChronicleIdle, favicon and app icons from the logo mark, splash/loading screen on cold start, no visible URLs or links except the credits panel. |
@@ -183,7 +183,7 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Layout: title "Stage 3-7 · Normal"; left half: team slots — 3 in campaign, 4 in boss fights — (leader slot marked, aura text),
   team power; centre "VS" with element wheel and 3-star conditions; right half: enemy waves
   preview (tabs Wave 1/2/3) with element sigils and levels; bottom: roster strip (virtualised,
-  filter/sort), presets (3), *Auto-repeat ×N* selector, **Start ⚡cost**.
+  filter/sort), presets (3 per mode: campaign / boss), *Auto-repeat ×N* selector, **Start ⚡cost**.
 - Drag-and-drop or click-to-place; slot swap animation; energy insufficient → refill dialog.
 
 ### 5.9 Battle
