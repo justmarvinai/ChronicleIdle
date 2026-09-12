@@ -1,0 +1,50 @@
+/**
+ * Feature unlocks by player level (docs/design/GAME_DESIGN.md §6). Progress-based unlocks
+ * (Normal/Hard difficulty, ×3/×4 speed) are evaluated by the campaign engine, not by level.
+ */
+export const FEATURE_IDS = [
+  'campaign',
+  'champions',
+  'tavern_level',
+  'gear',
+  'summoning',
+  'quests_daily',
+  'idle_chest',
+  'missions',
+  'tavern_rank',
+  'forge',
+  'tavern_skills',
+  'daily_boss',
+  'quests_weekly',
+  'weekly_boss',
+  'gear_refine',
+  'auto_repeat_10',
+  'auto_repeat_25',
+  'auto_repeat_50',
+] as const;
+
+export type FeatureId = (typeof FEATURE_IDS)[number];
+
+export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
+  campaign: 1,
+  champions: 1,
+  tavern_level: 2,
+  gear: 3,
+  summoning: 4,
+  quests_daily: 5,
+  idle_chest: 5,
+  missions: 6,
+  tavern_rank: 7,
+  forge: 8,
+  tavern_skills: 9,
+  daily_boss: 10,
+  quests_weekly: 12,
+  weekly_boss: 15,
+  gear_refine: 18,
+  auto_repeat_10: 5,
+  auto_repeat_25: 20,
+  auto_repeat_50: 30,
+};
+
+/** Player level cap. */
+export const PLAYER_MAX_LEVEL = 100;

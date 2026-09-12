@@ -122,8 +122,8 @@ Path aliases: `@engine/*`, `@content/*`, `@state/*`, `@ui/*`, `@render/*`, `@aud
 ### 5.1 Module boundaries (lint-enforced)
 
 ```
-content  →  engine/schema only
-engine   →  engine only (+ content types)
+content  →  engine/schema (types), balance, assets, i18n
+engine   →  engine, content/balance (tunables) and content/**/types.ts (ids); other content only as types
 state    →  engine, content
 render   →  engine (events/types), state (read), content (asset refs)
 ui       →  state, engine (pure helpers), content (display data), render (mount points), audio

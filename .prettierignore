@@ -1,0 +1,12 @@
+dist
+node_modules
+public/assets/generated
+game
+pnpm-lock.yaml
+playwright-report
+test-results
+coverage
+*.generated.ts
+CHANGELOG.md
+docs
+*.md

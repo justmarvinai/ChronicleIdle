@@ -9,8 +9,10 @@ dist-electron/
 .vercel/
 *.tsbuildinfo
 
-# Generated assets (rebuilt by `pnpm assets:build` from /game)
+# Generated assets (rebuilt by `pnpm assets:build` from /game); the typed manifest IS committed
 public/assets/generated/
+public/icons/
+.assets-cache/
 
 # Test artifacts
 coverage/
