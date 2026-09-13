@@ -4,11 +4,15 @@ import { CHAMPION_IDS, STARTER_IDS, type ChampionDef } from '@content/champions/
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { PARTY_SIZE_BOSS, PARTY_SIZE_CAMPAIGN } from '@content/balance/battle';
 import type { EncounterDef } from '@content/encounters/types';
-import type { EnemyDef } from '@content/enemies/types';
+import { FACTION_ARCHETYPES, type EnemyDef } from '@content/enemies/types';
+import type { FactionDef } from '@content/enemies/faction';
+import type { SettlementDef } from '@content/stages/types';
+import { SETTLEMENT_COUNT } from '@content/balance/campaign';
 import { statDeviation } from '@engine/champions/stats';
 import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
 import { enemySchema } from './enemy';
+import { settlementSchema, stageShapeIssues } from './stage';
 
 export const currencySchema = z.object({
   id: z.enum(CURRENCY_IDS),
@@ -60,16 +64,157 @@ export function validateContentRegistry(
     champions: readonly unknown[];
     enemies: readonly unknown[];
     encounters: readonly unknown[];
+    factions: readonly FactionDef[];
+    settlements: readonly unknown[];
   },
   refs: ContentRefs,
 ): ValidationIssue[] {
   const enemies = validateEnemies(registry.enemies, refs);
+  const factions = validateFactions(registry.factions, enemies.ids, refs);
+  const settlements = validateSettlements(registry.settlements, registry.factions, enemies.ids, refs);
   return [
     ...validateCurrencies(registry.currencies, refs),
     ...validateChampions(registry.champions, refs),
     ...enemies.issues,
     ...validateEncounters(registry.encounters, enemies.ids, refs),
+    ...factions,
+    ...settlements.issues,
+    ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters),
   ];
+}
+
+/** A faction fields the six rank-and-file archetypes plus one named boss (CAMPAIGN.md §5–§6). */
+function validateFactions(
+  factions: readonly FactionDef[],
+  enemyIds: ReadonlySet<string>,
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const seen = new Set<string>();
+  for (const faction of factions) {
+    const path = `factions.${faction.id}`;
+    if (!/^faction\.[a-z0-9_]+$/.test(faction.id)) error(path, 'id must be `faction.<snake_case>`');
+    if (seen.has(faction.id)) error(path, 'duplicate id');
+    seen.add(faction.id);
+    if (!refs.i18nKeys.has(faction.name)) error(`${path}.name`, `missing i18n key ${faction.name}`);
+    if (!/^#[0-9a-f]{6}$/i.test(faction.tint)) error(`${path}.tint`, `not a hex colour: ${faction.tint}`);
+    const roster = new Set(faction.units.map((u) => u.id));
+    for (const archetype of FACTION_ARCHETYPES) {
+      const id = faction.byArchetype[archetype];
+      if (!id) error(`${path}.byArchetype`, `no unit fields the ${archetype} archetype`);
+      else if (!roster.has(id)) error(`${path}.byArchetype`, `${archetype} names ${id}, not in the roster`);
+    }
+    for (const unit of faction.units) {
+      if (!enemyIds.has(unit.id)) error(`${path}.units`, `${unit.id} is not a registered enemy`);
+      if (unit.archetype === 'boss') error(`${path}.units`, `${unit.id} is rank and file, not a boss`);
+    }
+    if (!enemyIds.has(faction.boss.id)) error(`${path}.boss`, `${faction.boss.id} is not a registered enemy`);
+    if (faction.boss.archetype !== 'boss') error(`${path}.boss`, `${faction.boss.id} is not a boss`);
+  }
+  return issues;
+}
+
+/**
+ * Settlements and their ten stages. The three difficulties are derived at run time, so a stage is
+ * validated once: its waves may only field its own faction, and only stage 10 fields the boss.
+ */
+function validateSettlements(
+  settlements: readonly unknown[],
+  factions: readonly FactionDef[],
+  enemyIds: ReadonlySet<string>,
+  refs: ContentRefs,
+): { issues: ValidationIssue[]; spawned: Set<string> } {
+  const issues: ValidationIssue[] = [];
+  const spawned = new Set<string>();
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const factionById = new Map(factions.map((f) => [f.id, f]));
+  const indices = new Set<number>();
+  const stageIds = new Set<string>();
+  const usedFactions = new Set<string>();
+  const pad = (n: number): string => String(n).padStart(2, '0');
+
+  settlements.forEach((raw, index) => {
+    const parsed = settlementSchema.safeParse(raw);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues)
+        error(`settlements[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = parsed.data as SettlementDef;
+    const path = `settlements.${def.id}`;
+    if (indices.has(def.index)) error(path, `duplicate settlement index ${def.index}`);
+    indices.add(def.index);
+    if (!def.id.startsWith(`settlement.${pad(def.index)}.`))
+      error(`${path}.id`, `id must carry its index (settlement.${pad(def.index)}.…)`);
+    for (const key of [def.name, def.description])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (!refs.assetKeys.has(def.backdrop)) error(`${path}.backdrop`, `unknown asset key ${def.backdrop}`);
+
+    const faction = factionById.get(def.faction);
+    if (!faction) {
+      error(`${path}.faction`, `unknown faction ${def.faction}`);
+      return;
+    }
+    if (usedFactions.has(faction.id)) error(`${path}.faction`, `${faction.id} already fields a settlement`);
+    usedFactions.add(faction.id);
+    if (def.element !== faction.element)
+      error(`${path}.element`, `${def.element} does not match the faction's ${faction.element}`);
+    const roster = new Set<string>([...faction.units.map((u) => u.id), faction.boss.id]);
+
+    def.stages.forEach((stage, i) => {
+      const stagePath = `${path}.${stage.id}`;
+      if (stage.number !== i + 1) error(stagePath, `stage ${stage.number} sits at position ${i + 1}`);
+      if (stage.id !== `stage.${pad(def.index)}.${pad(stage.number)}`)
+        error(stagePath, `id must be stage.${pad(def.index)}.${pad(stage.number)}`);
+      if (stageIds.has(stage.id)) error(stagePath, 'duplicate stage id');
+      stageIds.add(stage.id);
+      for (const problem of stageShapeIssues(stage)) error(stagePath, problem);
+      const lastWave = stage.waves.length - 1;
+      stage.waves.forEach((wave, w) => {
+        wave.forEach((enemyId, slot) => {
+          spawned.add(enemyId);
+          if (!enemyIds.has(enemyId)) error(`${stagePath}.waves[${w}]`, `unknown enemy ${enemyId}`);
+          else if (!roster.has(enemyId))
+            error(`${stagePath}.waves[${w}]`, `${enemyId} does not belong to ${faction.id}`);
+          if (enemyId !== faction.boss.id) return;
+          if (!stage.boss || w !== lastWave || slot !== 0)
+            error(`${stagePath}.waves[${w}]`, `${enemyId} may only lead the boss stage's last wave`);
+        });
+      });
+      if (stage.boss && stage.waves[lastWave]?.[0] !== faction.boss.id)
+        error(stagePath, `the last wave must be led by ${faction.boss.id}`);
+    });
+  });
+
+  for (let index = 1; index <= SETTLEMENT_COUNT; index += 1)
+    if (!indices.has(index)) error(`settlements[${index}]`, 'settlement index declared but not defined');
+  for (const faction of factions)
+    if (!usedFactions.has(faction.id)) error(`factions.${faction.id}`, 'no settlement fields this faction');
+  return { issues, spawned };
+}
+
+/** Every authored enemy must be fightable somewhere: a campaign wave or a standalone encounter. */
+function validateEnemyReach(
+  enemyIds: ReadonlySet<string>,
+  spawned: ReadonlySet<string>,
+  encounters: readonly unknown[],
+): ValidationIssue[] {
+  const reachable = new Set(spawned);
+  for (const raw of encounters) {
+    const parsed = encounterSchema.safeParse(raw);
+    if (!parsed.success) continue;
+    for (const wave of parsed.data.waves) for (const spawn of wave.enemies) reachable.add(spawn.enemyId);
+  }
+  return [...enemyIds]
+    .filter((id) => !reachable.has(id))
+    .map((id) => ({
+      path: `enemies.${id}`,
+      message: 'no stage or encounter fields this enemy',
+      severity: 'error' as const,
+    }));
 }
 
 function validateEnemies(

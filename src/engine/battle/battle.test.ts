@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
+import type { Difficulty } from '@content/balance/battle';
 import { STARTER_IDS } from '@content/champions/types';
 import { createInstance } from '@engine/champions/instance';
 import { createRng } from '@engine/rng/rng';
@@ -30,6 +31,9 @@ function setup(
 }
 
 const STARTERS = ['champ.ser_corvin', 'champ.bran_militia', 'champ.wenna_novice'];
+/** The campaign's opening stages on Intro: two waves of two, the gentlest fights in the game. */
+const STAGE_1 = 'encounter.stage.01.01.intro';
+const STAGE_2 = 'encounter.stage.01.02.intro';
 
 function checkInvariants(state: BattleState, events: readonly BattleEvent[]): void {
   for (const unit of Object.values(state.units)) {
@@ -50,8 +54,8 @@ function checkInvariants(state: BattleState, events: readonly BattleEvent[]): vo
 }
 
 describe('battle lifecycle', () => {
-  it('runs Training Grounds 1 to a victory for the starter team on auto', () => {
-    const state = createBattle(setup('encounter.training.1', STARTERS), 'seed-1');
+  it('runs Thornwood Crossing 1 to a victory for the starter team on auto', () => {
+    const state = createBattle(setup(STAGE_1, STARTERS), 'seed-1');
     const { events, outcome } = runAuto(state);
     expect(outcome.kind).toBe('victory');
     expect(outcome.wavesCleared).toBe(2);
@@ -62,11 +66,11 @@ describe('battle lifecycle', () => {
     expect(snapshot(state).outcome?.kind).toBe('victory');
   });
 
-  it('lets every level-1 starting roster beat Training Grounds 1 and 2 on auto (ROADMAP Phase 2)', () => {
+  it('lets every level-1 starting roster clear the first two stages on auto (CAMPAIGN.md §4)', () => {
     // The setup screen suggests the three strongest by power: the starter, Wenna and Gil.
     for (const starter of STARTER_IDS) {
       const trio = [starter, 'champ.wenna_novice', 'champ.gil_scrapper'];
-      for (const encounterId of ['encounter.training.1', 'encounter.training.2']) {
+      for (const encounterId of [STAGE_1, STAGE_2]) {
         let wins = 0;
         for (let i = 0; i < 20; i++) {
           const { outcome } = runAuto(createBattle(setup(encounterId, trio), `starter-${i}`));
@@ -78,15 +82,15 @@ describe('battle lifecycle', () => {
   });
 
   it('is deterministic: the same seed and setup produce identical events', () => {
-    const a = runAuto(createBattle(setup('encounter.training.2', STARTERS, 'auto', 10), 'det')).events;
-    const b = runAuto(createBattle(setup('encounter.training.2', STARTERS, 'auto', 10), 'det')).events;
+    const a = runAuto(createBattle(setup(STAGE_2, STARTERS, 'auto', 10), 'det')).events;
+    const b = runAuto(createBattle(setup(STAGE_2, STARTERS, 'auto', 10), 'det')).events;
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
-    const c = runAuto(createBattle(setup('encounter.training.2', STARTERS, 'auto', 10), 'other')).events;
+    const c = runAuto(createBattle(setup(STAGE_2, STARTERS, 'auto', 10), 'other')).events;
     expect(JSON.stringify(c)).not.toBe(JSON.stringify(a));
   });
 
   it('replays a manual battle from its decision log with the same events', () => {
-    const s = setup('encounter.training.1', STARTERS, 'manual', 5);
+    const s = setup(STAGE_1, STARTERS, 'manual', 5);
     const state = createBattle(s, 'replay');
     const events: BattleEvent[] = [];
     const rng = createRng('choices');
@@ -112,7 +116,7 @@ describe('battle lifecycle', () => {
   });
 
   it('rejects illegal decisions', () => {
-    const state = createBattle(setup('encounter.training.1', STARTERS, 'manual'), 'illegal');
+    const state = createBattle(setup(STAGE_1, STARTERS, 'manual'), 'illegal');
     let result = step(state);
     while (!result.request) result = step(state);
     const request = result.request;
@@ -128,8 +132,11 @@ describe('battle lifecycle', () => {
     const rng = createRng('thousand');
     const started = process.hrtime.bigint();
     const outcomes = new Map<string, number>();
+    const difficulties: Difficulty[] = ['intro', 'normal', 'hard'];
     for (let i = 0; i < 1000; i++) {
-      const encounter = rng.pick(content.encounters);
+      const stage = rng.pick(content.stages);
+      const encounter = content.stageEncounter(stage.id, rng.pick(difficulties));
+      if (!encounter) throw new Error(stage.id);
       const size = encounter.partySize;
       const chosen = rng.shuffle(ids).slice(0, size);
       const level = rng.int(1, 40);

@@ -5,7 +5,7 @@ import { createBattle, runAuto, snapshot } from '@engine/battle/index';
 import { applyEventToView } from './view';
 
 function setup() {
-  const encounter = content.encounterById('encounter.training.1');
+  const encounter = content.encounterById('encounter.stage.01.01.intro');
   if (!encounter) throw new Error('missing encounter');
   const party = ['champ.ser_corvin', 'champ.wenna_novice', 'champ.gil_scrapper'].map((id, i) => {
     const def = content.championById(id as never);

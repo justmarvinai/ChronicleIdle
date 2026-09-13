@@ -31,7 +31,10 @@ async function main(): Promise<void> {
     process.exit(1);
   }
   console.log(
-    `[content] OK — ${content.currencies.length} currencies and ${content.champions.length} champions validated against ${assetKeys.size} assets and ${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
+    `[content] OK — ${content.currencies.length} currencies, ${content.champions.length} champions, ` +
+      `${content.enemies.length} enemies and ${content.settlements.length} settlements ` +
+      `(${content.stages.length} stages) validated against ${assetKeys.size} assets and ` +
+      `${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );
 }
 

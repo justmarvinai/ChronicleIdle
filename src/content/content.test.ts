@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
+import { BOSS_STAGE_NUMBER, SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
 import { CHAMPION_IDS, STARTER_IDS } from '@content/champions/types';
+import { FACTION_ARCHETYPES } from '@content/enemies/types';
 import { STATUSES } from '@content/statuses/index';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import { validateContentRegistry } from '@engine/schema/content';
@@ -22,24 +24,46 @@ describe('content registry', () => {
     ]);
     expect(content.currencies).toHaveLength(24);
     expect(content.currencies.filter((c) => c.topBar).map((c) => c.id)).toEqual(['gold', 'gems', 'energy']);
-    expect(content.enemies.map((e) => e.archetype)).toEqual([
-      'raider',
-      'marksman',
-      'brute',
-      'warden',
-      'hexer',
-      'mender',
-      'boss',
-    ]);
+    // Twelve factions, each fielding the six archetypes plus one named stage boss.
+    expect(content.factions).toHaveLength(SETTLEMENT_COUNT);
+    for (const faction of content.factions) {
+      expect(
+        faction.units.map((u) => u.archetype),
+        faction.id,
+      ).toEqual([...FACTION_ARCHETYPES]);
+      expect(faction.boss.archetype, faction.id).toBe('boss');
+    }
+    expect(content.enemies).toHaveLength(SETTLEMENT_COUNT * (FACTION_ARCHETYPES.length + 1));
+    // The only authored encounter left is the perf bench; campaign fights are derived from stages.
     expect(content.encounters.map((e) => [e.id, e.partySize, e.waves.length])).toEqual([
-      ['encounter.training.1', 3, 2],
-      ['encounter.training.2', 3, 3],
-      ['encounter.training.3', 4, 2],
       ['encounter.bench.stress', 4, 2],
     ]);
-    // The Training Grounds list is everything but the bench: three drills, the last a boss fight.
-    const drills = content.encounters.filter((e) => e.kind !== 'bench');
-    expect(drills.map((e) => e.kind)).toEqual(['training', 'training', 'boss']);
+  });
+
+  it('ships twelve settlements of ten stages each (CAMPAIGN.md §1)', () => {
+    expect(content.settlements.map((s) => s.index)).toEqual(
+      Array.from({ length: SETTLEMENT_COUNT }, (_, i) => i + 1),
+    );
+    expect(content.stages).toHaveLength(SETTLEMENT_COUNT * STAGES_PER_SETTLEMENT);
+    for (const settlement of content.settlements) {
+      expect(settlement.stages, settlement.id).toHaveLength(STAGES_PER_SETTLEMENT);
+      expect(
+        settlement.stages.filter((s) => s.boss).map((s) => s.number),
+        settlement.id,
+      ).toEqual([BOSS_STAGE_NUMBER]);
+      // Waves fill out as a settlement goes on: never fewer enemies than the stage before.
+      const sizes = settlement.stages.map((s) => s.waves.flat().length);
+      for (let i = 1; i < sizes.length - 1; i += 1)
+        expect(sizes[i], `${settlement.id} stage ${i + 1}`).toBeGreaterThanOrEqual(sizes[i - 1] ?? 0);
+      for (const stage of settlement.stages) {
+        expect(content.stageById(stage.id), stage.id).toBe(stage);
+        expect(content.settlementOfStage(stage.id), stage.id).toBe(settlement);
+      }
+    }
+    // Every settlement is reachable in one straight line: index 1 first, no gaps.
+    expect(content.settlementByIndex(1)?.id).toBe('settlement.01.thornwood_crossing');
+    expect(content.settlementByIndex(SETTLEMENT_COUNT)?.id).toBe('settlement.12.eclipse_gate');
+    expect(content.settlementByIndex(SETTLEMENT_COUNT + 1)).toBeUndefined();
   });
 
   it('ships all 23 champions of CHAMPIONS.md §4 with the three Rare starters', () => {

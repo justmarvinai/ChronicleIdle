@@ -165,10 +165,16 @@ export interface AbilityUpgrade {
   value: number;
 }
 
+/** Which enemy the AI should single out when an ability has a choice (BATTLE.md §7). */
+export const TARGET_PREFERENCES = ['lowest_hp', 'lowest_hp_percent', 'highest_atk', 'lowest_def'] as const;
+export type TargetPreference = (typeof TARGET_PREFERENCES)[number];
+
 export interface AbilityAi {
   priority: number;
   when?: Condition;
   avoid?: Condition;
+  /** Overrides the side's default target choice (enemies otherwise pick by threat). */
+  prefer?: TargetPreference;
 }
 
 export interface AbilityDef {

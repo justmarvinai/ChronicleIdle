@@ -180,9 +180,15 @@ export const passiveEffectSchema: z.ZodType<Loosen<PassiveEffect>> = z.lazy(() =
 const i18nKey = z.string().min(1);
 const assetKey = z.string().min(1);
 
+/**
+ * `ab.<owner>.<key>`, where the owner is a champion (`ab.anuria.emberlash`) or a shared enemy
+ * archetype kit (`ab.arch.raider.cleave`, one key for every faction that fields it).
+ */
+const ABILITY_ID = /^ab\.[a-z0-9_]+(\.[a-z0-9_]+){1,2}$/;
+
 export const abilitySchema = z.object({
   slot: z.enum(ABILITY_SLOTS),
-  id: z.string().regex(/^ab\.[a-z0-9_]+\.[a-z0-9_]+$/),
+  id: z.string().regex(ABILITY_ID),
   name: i18nKey,
   description: i18nKey,
   icon: assetKey,
@@ -198,7 +204,7 @@ export const abilitySchema = z.object({
 });
 
 export const passiveSchema = z.object({
-  id: z.string().regex(/^ab\.[a-z0-9_]+\.[a-z0-9_]+$/),
+  id: z.string().regex(ABILITY_ID),
   name: i18nKey,
   description: i18nKey,
   icon: assetKey,
@@ -208,7 +214,7 @@ export const passiveSchema = z.object({
 });
 
 export const auraSchema = z.object({
-  id: z.string().regex(/^ab\.[a-z0-9_]+\.[a-z0-9_]+$/),
+  id: z.string().regex(ABILITY_ID),
   name: i18nKey,
   description: i18nKey,
   icon: assetKey,

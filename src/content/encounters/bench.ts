@@ -28,8 +28,8 @@ export const BENCH_ENCOUNTERS: readonly EncounterDef[] = [
     surface: 'stone',
     version: 1,
     waves: [
-      wave('enemy.remnant_warlord', 'enemy.remnant_hexer', 'enemy.remnant_mender', 'enemy.remnant_marksman'),
-      wave('enemy.remnant_warden', 'enemy.remnant_brute', 'enemy.remnant_raider', 'enemy.remnant_hexer'),
+      wave('enemy.the_gatekeeper', 'enemy.nightbinder', 'enemy.soul_tender', 'enemy.star_caller'),
+      wave('enemy.eclipse_warden', 'enemy.rift_hulk', 'enemy.void_acolyte', 'enemy.nightbinder'),
     ],
   },
 ];

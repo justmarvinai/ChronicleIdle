@@ -9,7 +9,20 @@ import type { CurrencyDef, CurrencyId } from '@content/currencies/types';
 import { ENCOUNTERS, ENCOUNTER_BY_ID } from '@content/encounters/index';
 import type { EncounterDef } from '@content/encounters/types';
 import { ENEMIES, ENEMY_BY_ID } from '@content/enemies/index';
+import { FACTIONS, FACTION_BY_ID } from '@content/enemies/factions/index';
+import type { FactionDef } from '@content/enemies/faction';
 import type { EnemyDef } from '@content/enemies/types';
+import {
+  SETTLEMENTS,
+  SETTLEMENT_BY_ID,
+  SETTLEMENT_BY_INDEX,
+  SETTLEMENT_OF_STAGE,
+  STAGES,
+  STAGE_BY_ID,
+} from '@content/stages/index';
+import type { SettlementDef, StageDef } from '@content/stages/types';
+import type { Difficulty } from '@content/balance/battle';
+import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounter';
 
 export interface ContentRegistry {
   currencies: readonly CurrencyDef[];
@@ -18,11 +31,38 @@ export interface ContentRegistry {
   championById(id: ChampionId): ChampionDef | undefined;
   enemies: readonly EnemyDef[];
   enemyById(id: string): EnemyDef | undefined;
+  /** Authored encounters only; campaign fights are derived from their stage. */
   encounters: readonly EncounterDef[];
+  /** Resolves authored ids and, on demand, `encounter.stage.<nn>.<nn>.<difficulty>`. */
   encounterById(id: string): EncounterDef | undefined;
+  /** The encounter fought when a stage is run on a difficulty (CAMPAIGN.md §8). */
+  stageEncounter(stageId: string, difficulty: Difficulty): EncounterDef | undefined;
+  factions: readonly FactionDef[];
+  factionById(id: string): FactionDef | undefined;
+  settlements: readonly SettlementDef[];
+  settlementById(id: string): SettlementDef | undefined;
+  /** 1..12 (docs/design/CAMPAIGN.md §1). */
+  settlementByIndex(index: number): SettlementDef | undefined;
+  stages: readonly StageDef[];
+  stageById(id: string): StageDef | undefined;
+  /** The settlement a stage belongs to, for scaling, energy cost and drops. */
+  settlementOfStage(stageId: string): SettlementDef | undefined;
 }
 
 export function buildContentRegistry(): ContentRegistry {
+  // Derived encounters are memoised: 360 of them exist in principle, a handful in a session.
+  const derived = new Map<string, EncounterDef>();
+  const stageEncounterOf = (stageId: string, difficulty: Difficulty): EncounterDef | undefined => {
+    const id = `encounter.${stageId}.${difficulty}`;
+    const cached = derived.get(id);
+    if (cached) return cached;
+    const stage = STAGE_BY_ID[stageId];
+    const settlement = SETTLEMENT_OF_STAGE[stageId];
+    if (!stage || !settlement) return undefined;
+    const encounter = stageEncounter(settlement, stage, difficulty);
+    derived.set(id, encounter);
+    return encounter;
+  };
   return {
     currencies: CURRENCIES,
     currencyById: CURRENCY_BY_ID,
@@ -31,7 +71,21 @@ export function buildContentRegistry(): ContentRegistry {
     enemies: ENEMIES,
     enemyById: (id) => ENEMY_BY_ID[id],
     encounters: ENCOUNTERS,
-    encounterById: (id) => ENCOUNTER_BY_ID[id],
+    encounterById: (id) => {
+      const authored = ENCOUNTER_BY_ID[id];
+      if (authored) return authored;
+      const stage = parseStageEncounterId(id);
+      return stage ? stageEncounterOf(stage.stageId, stage.difficulty) : undefined;
+    },
+    stageEncounter: stageEncounterOf,
+    factions: FACTIONS,
+    factionById: (id) => FACTION_BY_ID[id],
+    settlements: SETTLEMENTS,
+    settlementById: (id) => SETTLEMENT_BY_ID[id],
+    settlementByIndex: (index) => SETTLEMENT_BY_INDEX[index],
+    stages: STAGES,
+    stageById: (id) => STAGE_BY_ID[id],
+    settlementOfStage: (id) => SETTLEMENT_OF_STAGE[id],
   };
 }
 

@@ -6,7 +6,34 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
+### Added — Phase 3 (Campaign), in progress
+
+- **Twelve faction rosters (84 enemies).** Every settlement fields its own faction: six
+  rank-and-file units re-skinning the shared archetype kits (`ab.arch.<archetype>.<key>`, so a
+  faction file is names, element and tint — never a copy of a kit) plus one named stage boss with
+  its own kit, rotation, immunities and enrage (`CAMPAIGN.md` §5–§6).
+- **Twelve settlements, 120 stages.** Each settlement is authored once — faction, dominant element,
+  backdrop, colour grade, surface, gear-set pool and ten wave lines — and `defineSettlement`
+  derives the wave shape from the design table (`CAMPAIGN.md` §4), leading the boss stage's last
+  wave with the faction's boss. Stage ids are `stage.<settlement>.<stage>`.
+- **Campaign balance tunables** in `src/content/balance/campaign.ts`: energy per band and
+  difficulty, star and defeat turn limits, star-chest thresholds, plate levels, gold/XP/drop/shard
+  /brew rates, material ranges, first-clear and star-chest bundles, auto-repeat tiers
+  (`CAMPAIGN.md` §2, §3, §7, §9).
+- **Stage encounters are derived, not stored.** `stageEncounter(settlement, stage, difficulty)`
+  builds the encounter for any of the 360 stage/difficulty pairs — scaling index, plate level,
+  limits, backdrop and music included — and the registry resolves and memoises them by id, so a
+  save only remembers a stage and a difficulty. Settlement 1's opening three stages fight at
+  80–90 % of the archetype base: the tutorial stands there and an ungeared level-1 trio must win
+  with any starter.
+- **Campaign content validation.** Settlements, stages and factions are Zod-validated with their
+  cross-references: ids carry their index, stage waves may only field their own faction, the boss
+  leads only the boss stage's last wave, every faction fields all six archetypes and every
+  authored enemy is fightable somewhere.
+
+### Removed
+- The three Training Grounds encounters and the seven Remnant enemies they fielded: the campaign
+  replaces them, and the battle tests now fight Thornwood Crossing on Intro.
 
 ## [0.0.2.1] — 2026-09-13 — UI pass
 

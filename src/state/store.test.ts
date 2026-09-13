@@ -157,11 +157,11 @@ describe('teams and battle records', () => {
         seed: 's',
         decisions: [],
       },
-      'encounter.training.1',
+      'encounter.stage.01.01.intro',
     );
     expect(store.getState().save?.stats['battles.fought']).toBe(1);
     expect(store.getState().save?.stats['battles.victory']).toBe(1);
-    expect(store.getState().save?.stats['battles.won.encounter.training.1']).toBe(1);
+    expect(store.getState().save?.stats['battles.won.encounter.stage.01.01.intro']).toBe(1);
     expect(seen).toContain('battle.ended');
     expect(saveSchema.safeParse(store.getState().save).success).toBe(true);
   });

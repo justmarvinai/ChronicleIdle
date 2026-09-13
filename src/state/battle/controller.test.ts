@@ -34,7 +34,7 @@ describe('battle controller', () => {
     const ended: string[] = [];
     controller.onEnded((o) => ended.push(o.kind));
     const result = controller.start({
-      encounterId: 'encounter.training.1',
+      encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
       control: 'auto',
@@ -56,7 +56,7 @@ describe('battle controller', () => {
     const controller = createBattleController();
     const roster = rosterOf(STARTERS);
     controller.start({
-      encounterId: 'encounter.training.1',
+      encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
       control: 'auto',
@@ -89,7 +89,7 @@ describe('battle controller', () => {
     const controller = createBattleController();
     const roster = rosterOf(STARTERS);
     controller.start({
-      encounterId: 'encounter.training.1',
+      encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
       control: 'manual',
@@ -118,7 +118,7 @@ describe('battle controller', () => {
     const roster = rosterOf(STARTERS);
     expect(
       controller.start({
-        encounterId: 'encounter.training.1',
+        encounterId: 'encounter.stage.01.01.intro',
         instanceIds: ['ghost-9'],
         roster,
         control: 'auto',
@@ -137,7 +137,7 @@ describe('battle controller', () => {
       }).ok,
     ).toBe(false);
     controller.start({
-      encounterId: 'encounter.training.2',
+      encounterId: 'encounter.stage.01.02.intro',
       instanceIds: Object.keys(roster),
       roster,
       control: 'manual',
@@ -168,7 +168,7 @@ describe('battle controller', () => {
     };
     controller.attachPresenter(presenter);
     controller.start({
-      encounterId: 'encounter.training.1',
+      encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
       control: 'auto',

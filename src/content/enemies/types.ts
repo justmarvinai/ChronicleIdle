@@ -14,7 +14,11 @@ import type {
   StatusId,
 } from '@content/champions/types';
 
-export const ENEMY_ARCHETYPES = ['raider', 'marksman', 'brute', 'warden', 'hexer', 'mender', 'boss'] as const;
+/** Archetypes a faction fields as rank and file; `boss` enemies are authored one by one. */
+export const FACTION_ARCHETYPES = ['raider', 'marksman', 'brute', 'warden', 'hexer', 'mender'] as const;
+export type FactionArchetype = (typeof FACTION_ARCHETYPES)[number];
+
+export const ENEMY_ARCHETYPES = [...FACTION_ARCHETYPES, 'boss'] as const;
 export type EnemyArchetype = (typeof ENEMY_ARCHETYPES)[number];
 
 export interface EnemyBossConfig {

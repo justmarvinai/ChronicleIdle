@@ -21,8 +21,10 @@ export interface EncounterWave {
 }
 
 export interface EncounterDef {
-  /** `encounter.<snake_case>` (campaign stages use `stage.<nn>.<nn>.<difficulty>`). */
+  /** `encounter.<snake_case>`; campaign stages derive `encounter.stage.<nn>.<nn>.<difficulty>`. */
   id: string;
+  /** Campaign encounters only: the stage they were derived from (`@engine/campaign/encounter`). */
+  stageId?: string;
   /** i18n keys. */
   name: string;
   description: string;

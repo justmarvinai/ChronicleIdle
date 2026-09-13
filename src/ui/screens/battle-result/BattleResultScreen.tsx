@@ -40,11 +40,10 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const hints: I18nKey[] = [];
   if (!victory && outcome.kind !== 'retreat') {
     if (enemyTurns > outcome.allyTurns * 1.4) hints.push('battleResult.hint.outsped');
-    if (
-      encounter.waves.some((w) => w.enemies.some((e) => e.enemyId === 'enemy.remnant_mender')) &&
-      outcome.wavesCleared < outcome.waveCount
-    )
-      hints.push('battleResult.hint.healer');
+    const healers = encounter.waves.some((w) =>
+      w.enemies.some((e) => content.enemyById(e.enemyId)?.archetype === 'mender'),
+    );
+    if (healers && outcome.wavesCleared < outcome.waveCount) hints.push('battleResult.hint.healer');
     if (outcome.kind === 'timeout') hints.push('battleResult.hint.turns');
     hints.push('battleResult.hint.level');
   }
