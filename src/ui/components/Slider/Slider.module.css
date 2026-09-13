@@ -3,10 +3,11 @@
   grid-template-columns: 200px 1fr 70px;
   align-items: center;
   gap: 18px;
-  padding: 8px 0;
+  padding: 10px 0;
 }
 .disabled {
   opacity: 0.5;
+  pointer-events: none;
 }
 .label {
   color: var(--text-1);
@@ -15,33 +16,97 @@
   text-align: right;
   color: var(--gold-3);
   font-size: var(--fs-num);
+  font-variant-numeric: tabular-nums;
 }
+.control {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+.track {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* The track's carved rim is its border-image, so the padding box is exactly the groove. */
+.groove {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.4));
+}
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  overflow: hidden;
+}
+.fillTexture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-width: 30px;
+  filter: brightness(1.12) saturate(1.08);
+}
+/* Glass highlight over the fill, so the level reads as lit liquid in the channel. */
+.fill::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 55% 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+/* Round knob: the kit's round ember frame over a gold orb. */
+.knob {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  background: radial-gradient(circle at 38% 32%, #fff5cf, var(--gold-3) 42%, var(--gold-1) 78%, #6b4c14);
+  background-clip: padding-box;
+  border-radius: 50%;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.75),
+    inset 0 0 4px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  transition: filter var(--t-fast);
+}
+/* The real control sits on top, invisible, so keyboard and drag behaviour stay native. */
 .input {
+  position: absolute;
+  inset: -6px 0;
+  width: 100%;
+  margin: 0;
   -webkit-appearance: none;
   appearance: none;
-  width: 100%;
-  height: 14px;
-  border: 2px solid var(--stone-3);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7);
+  background: transparent;
   cursor: var(--cursor-pointer);
 }
 .input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 22px;
-  height: 30px;
-  background: linear-gradient(to bottom, var(--gold-3), var(--gold-1));
-  border: 1px solid rgba(0, 0, 0, 0.7);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 0;
   cursor: var(--cursor-grab);
 }
 .input::-moz-range-thumb {
-  width: 22px;
-  height: 30px;
-  border-radius: 0;
-  background: linear-gradient(to bottom, var(--gold-3), var(--gold-1));
-  border: 1px solid rgba(0, 0, 0, 0.7);
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 0;
   cursor: var(--cursor-grab);
+}
+.input::-moz-range-track {
+  background: transparent;
+}
+.control:hover .knob {
+  filter: brightness(1.12);
 }
 .input:focus-visible {
   outline: 2px solid var(--gold-2);
+  outline-offset: 2px;
 }

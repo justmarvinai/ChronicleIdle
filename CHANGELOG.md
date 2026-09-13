@@ -6,7 +6,40 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing yet — Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
+_Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
+
+## [0.0.2.1] — 2026-09-13 — UI pass
+
+### Fixed
+- **Panel textures now reach their frames.** Every kit surface drew the frame as the element's own
+  `border-image` and the fill as a positioned child: a child always paints above its parent's
+  border, so the fill could never reach under the ring and each panel, dialog, slot, pill, tooltip
+  and toast showed a ring of backdrop between frame and texture (worst on the arch panel, whose
+  top band is a real arch with a part-transparent ring). Frame and fill are now sibling layers
+  (`KitSurface`), the fill bleeds under the ring up to each frame's measured transparent corner
+  (`KIT_CORNER`, from an alpha scan of the textures), and the frame hides its edge.
+- **Bars read as carved tracks again.** The groove was inset inside the track's own border, so at
+  16–24 px it collapsed to a 4 px hairline: unit-plate HP, the profile XP chip and the locked-gate
+  progress bar looked empty and their labels were unreadable. The groove is now the track's padding
+  box, the stone and ember tracks are used at 40 px and up (where their carved rim fits) with a
+  hairline frame in the same materials below that, labels and values are dropped below 20 px, and
+  numbers are tabular gold on a hard shadow.
+- **The gear tab.** A scrollbar thumb the full height of the panel (a few px of rounding counted as
+  overflow) read as a bare orange line; the thumb now needs real overflow, is capped so it always
+  reads as a handle, and sits in a carved channel with grip ridges. The six slots are labelled and
+  the locked notice is a framed note.
+- **Unit plates no longer collide.** Fixed 250 px plates overlapped at the 130–170 px enemy slot
+  spacing and truncated each other's names; plates shrink to their content and the acting or
+  targeted plate layers on top.
+- The Training Grounds list dropped the Warlord drill when it was filtered to `kind: 'training'`
+  (that encounter is boss-kind); it lists everything but the perf bench, with a content test.
+
+### Changed
+- Settings sliders are the kit's carved stone channel with an ember level, a glass highlight and a
+  gold orb knob in the round kit frame, driven by a transparent range input so keyboard and drag
+  stay native. The toggle track gained the gold hairline and its knob a grip.
+- `Panel` and `KitFrame` take `contentClassName` (layout for the content box) and a numeric
+  `padding` measured from inside the frame's ring.
 
 ## [0.0.2] — 2026-09-13 — Phase 2: Battle System
 

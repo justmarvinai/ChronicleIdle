@@ -6,28 +6,50 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 18px;
+  padding-right: 22px;
   overscroll-behavior: contain;
 }
 .inner {
   min-height: 100%;
 }
+/* Carved stone channel with a gold hairline, matching the kit's grooves. */
 .track {
   position: absolute;
-  top: 4px;
-  right: 2px;
-  bottom: 4px;
-  width: 10px;
-  background: linear-gradient(to right, var(--stone-1), var(--stone-2), var(--stone-1));
-  border: 1px solid rgba(0, 0, 0, 0.6);
+  top: 2px;
+  right: 0;
+  bottom: 2px;
+  width: 14px;
+  background: linear-gradient(to right, #14121a, #26232e 45%, #14121a);
+  border: 1px solid rgba(240, 213, 122, 0.28);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.9);
 }
 .thumb {
+  position: relative;
   width: 100%;
-  background: linear-gradient(to bottom, var(--ember-3), var(--ember-2));
-  border: 1px solid var(--gold-1);
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.12) 40%, rgba(0, 0, 0, 0.35)),
+    linear-gradient(to bottom, var(--ember-3), var(--ember-2) 60%, var(--ember-1));
+  border: 1px solid var(--gold-2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.8);
   cursor: var(--cursor-grab);
   will-change: transform;
 }
+/* Grip ridges so the thumb reads as a handle, not a painted line. */
+.thumb::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 50%;
+  height: 7px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0 1px, transparent 1px 3px);
+}
 .thumb:hover {
-  filter: brightness(1.2);
+  filter: brightness(1.22);
+}
+.thumb:active {
+  filter: brightness(1.35);
 }

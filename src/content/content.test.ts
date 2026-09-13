@@ -37,6 +37,9 @@ describe('content registry', () => {
       ['encounter.training.3', 4, 2],
       ['encounter.bench.stress', 4, 2],
     ]);
+    // The Training Grounds list is everything but the bench: three drills, the last a boss fight.
+    const drills = content.encounters.filter((e) => e.kind !== 'bench');
+    expect(drills.map((e) => e.kind)).toEqual(['training', 'training', 'boss']);
   });
 
   it('ships all 23 champions of CHAMPIONS.md §4 with the three Rare starters', () => {

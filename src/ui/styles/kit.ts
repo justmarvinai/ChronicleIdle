@@ -91,6 +91,31 @@ export const KIT = {
 /** Kit textures with slice metadata — the only keys `kitBorder` accepts, so a typo is a type error. */
 export type KitKey = keyof typeof KIT;
 
+/**
+ * Transparent rounded-corner inset of each texture, in source pixels (measured by an alpha scan:
+ * the smallest inset at which all four corners are opaque). A fill layer may bleed under a frame's
+ * ring up to this inset without poking out past the artwork's silhouette, which is how a panel's
+ * texture reaches the frame instead of leaving a ring of backdrop. Keys not listed have square,
+ * opaque corners (inset 0).
+ */
+export const KIT_CORNER: Partial<Record<KitKey, number>> = {
+  'ui.dark_ember.frame_wide': 1,
+  'ui.dark_ember.frame_wide_alt': 1,
+  'ui.dark_ember.frame_sm_bevel': 1,
+  'ui.dark_ember.frame_sm_double': 1,
+  'ui.dark_ember.frame_round_lg': 60,
+  'ui.dark_ember.frame_round_sm': 9,
+  'ui.dark_ember.btn_ember_frame': 1,
+  'ui.dark_ember.bar_track_ember': 4,
+  'ui.stone_vine.panel_stone': 6,
+  // The arch's top band is a real arch: its inner edge sits 53 px down at the centre and 114 px at
+  // the corners, so the ring is part transparent and the fill has to bleed under it.
+  'ui.stone_vine.panel_arch': 31,
+  'ui.stone_vine.slot_stone_sm': 4,
+  'ui.stone_vine.slot_stone_md': 9,
+  'ui.stone_vine.slot_stone_lg': 18,
+};
+
 /** Pixel deco frames: 96 px sheets with 32 px corners. */
 export const DECO_SLICE = 32;
 
@@ -114,6 +139,21 @@ export function cssVar(key: UiKey | GlyphKey): string {
  * Inline style for a 9-sliced kit texture. `scale` maps source pixels to on-screen pixels
  * (0.5 = kit drawn at half its source size, which keeps the ember frames crisp at 1080p).
  */
+/** Border widths of a 9-sliced texture in screen px, `[top, right, bottom, left]`. */
+export function kitWidths(key: KitKey, scale = 0.5): [number, number, number, number] {
+  const meta: KitSlice = KIT[key];
+  const slice = Array.isArray(meta.slice) ? meta.slice : [meta.slice, meta.slice, meta.slice, meta.slice];
+  return slice.map((v) => Math.round(v * scale)) as [number, number, number, number];
+}
+
+/**
+ * How far inside a frame's outer edge its fill layer starts, in screen px. Zero for square-cornered
+ * frames (the fill then bleeds under the whole ring); a few px for rounded or ornate ones.
+ */
+export function kitFillInset(key: KitKey, scale = 0.5): number {
+  return Math.round((KIT_CORNER[key] ?? 0) * scale);
+}
+
 export function kitBorder(key: KitKey, scale = 0.5): KitStyle {
   const meta: KitSlice = KIT[key];
   const slice = Array.isArray(meta.slice) ? meta.slice : [meta.slice, meta.slice, meta.slice, meta.slice];

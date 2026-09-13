@@ -59,8 +59,8 @@ export function ChampionPanel({
         value={tab}
         onChange={onTab}
       />
-      <Panel kind="stone" className={styles.body} padding={22}>
-        <ScrollArea height={560}>
+      <Panel kind="stone" className={styles.body} contentClassName={styles.bodyContent} padding={22}>
+        <ScrollArea height="100%">
           {tab === 'info' ? <InfoTab entry={entry} /> : null}
           {tab === 'abilities' ? <AbilitiesTab def={def} instance={instance} /> : null}
           {tab === 'lore' ? <LoreTab def={def} instance={instance} copies={copies} /> : null}
@@ -119,7 +119,7 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
           value={canLevel(instance.level, instance.stars) ? instance.xp : 1}
           max={canLevel(instance.level, instance.stars) ? next : 1}
           kind="xp"
-          height={18}
+          height={22}
           width="100%"
           label={t('champions.level', { level: instance.level, cap })}
         />
@@ -255,19 +255,26 @@ function LoreTab({
 
 function GearTab() {
   return (
-    <div data-testid="panel-gear">
+    <div className={styles.gear} data-testid="panel-gear">
       <div className={styles.slots}>
         {GEAR_SLOTS.map((slot) => (
-          <Slot
-            key={slot}
-            size="md"
-            locked
-            emptyGlyph={SLOT_GLYPH[slot]}
-            label={t(`champions.gear.slot.${slot}` as I18nKey)}
-          />
+          <div key={slot} className={styles.gearSlot}>
+            <Slot
+              size="md"
+              locked
+              emptyGlyph={SLOT_GLYPH[slot]}
+              label={t(`champions.gear.slot.${slot}` as I18nKey)}
+            />
+            <span className={`display ${styles.slotName}`}>
+              {t(`champions.gear.slot.${slot}` as I18nKey)}
+            </span>
+          </div>
         ))}
       </div>
-      <p className={styles.hint}>{t('champions.gear.locked', { level: unlockLevel('gear') })}</p>
+      <p className={styles.note}>
+        <Glyph glyph="glyph.broken_shackle" size={22} color="var(--gold-2)" />
+        <span>{t('champions.gear.locked', { level: unlockLevel('gear') })}</span>
+      </p>
     </div>
   );
 }

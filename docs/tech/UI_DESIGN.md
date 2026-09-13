@@ -82,6 +82,18 @@ Letter-spacing +0.02 em on display; never serif; never lighter than 400.
 
 ## 4. Component library (kit mapping)
 
+**How a framed surface is built.** A kit frame is hollow: its ring is artwork with transparent
+parts, and on some frames (the stone arch) the ring's inner edge moves along the edge. A fill can
+therefore not be a child of the framed element — a positioned child always paints above its
+parent's `border-image`, so the fill stops at the ring's inner edge and the backdrop shows through
+the ring. Every framed surface is instead three layers (`ui/components/Frame/KitSurface.tsx`):
+the fill, the frame, then the content. The fill starts at the frame's measured transparent-corner
+inset (`KIT_CORNER` in `ui/styles/kit.ts`, from an alpha scan of the texture) so it bleeds under
+the ring without poking past the artwork's silhouette, and the content box is padded by the ring's
+thickness plus the surface's own padding. Bars are the exception: their tracks are carved grooves
+whose middles are opaque, so the progress fill lives *inside* the track's padding box, and the
+carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below).
+
 | Component | Built from | Notes |
 | --- | --- | --- |
 | `Frame` | `deco-frames/deco-frame-NN[-{solid,soft,scrim}]` 9-slice (32 px inset, drawn at 2:1 = 16 px or 1:1 = 32 px), tinted by rarity/element | 32 pixel frames × 4 variants (`line` outline, `solid` inner band for cards, `soft`, `scrim`); screens choose 2–3 to keep identity |
@@ -92,8 +104,9 @@ Letter-spacing +0.02 em on display; never serif; never lighter than 400.
 | `Button.square` | `dark-ember/btn-ember-square` (+ `-on`/`-off`) | toggles (Auto, speed) |
 | `Tab` | `dark-ember/banner-plain` / `banner-dark` (active = ember, inactive = dark) | |
 | `CurrencyPill` | `dark-ember/frame-wide-alt` + icon + `--font-num` + "+" button | top bar |
-| `Bar` | `stone-vine/bar-track-stone-*` + `bar-fill-health` / `bar-fill-mana` / `bar-fill-stamina`; `dark-ember/bar-track-ember` + `bar-fill-ember` for boss HP | fills are masked and animated |
+| `Bar` | `stone-vine/bar-track-stone-*` + `bar-fill-health` / `bar-fill-mana` / `bar-fill-stamina`; `dark-ember/bar-track-ember` + `bar-fill-ember` for boss HP | fills are masked and animated; the carved track is used from 40 px (its rim is 30–40 source px), shorter bars get a hairline frame in the same materials; labels and values only above 20 px |
 | `Slot` | `stone-vine/slot-stone-sm/md/lg/long` (+ `-fill`) | team slots, gear slots, brew slots |
+| `Slider` | `stone-vine/bar-track-stone` channel + `dark-ember/bar-fill-ember` level + gold orb in `frame-round-sm` | a transparent range input on top keeps native keyboard and drag |
 | `ChampionCard` | `Frame` (rarity) + avatar 256 + star row + level badge (`frame-round-sm`) + element sigil (glyph) + role glyph + lock/favourite marks | sizes: 96 / 128 / 192 / 256 |
 | `ChampionPortrait` | avatar 512/1024 in `panel-arch` with parallax tilt on hover | detail screens |
 | `SpriteView` | Pixi-less DOM sprite: atlas frame stepping via CSS `steps()` animation | idle loops in menus; cheap |
@@ -107,7 +120,7 @@ Letter-spacing +0.02 em on display; never serif; never lighter than 400.
 | `RewardBurst` | item cards flying to the wallet with count-up | used everywhere |
 | `NotificationDot` | ember dot with pulse | on hub buildings/buttons |
 | `Timer` | `--font-num`, hourglass glyph | resets, chest |
-| `Scrollbar` | custom thin stone track + ember thumb | never native |
+| `Scrollbar` | custom stone channel (14 px, gold hairline) + ember thumb with grip ridges | never native; shown only past 8 px of real overflow and capped so it always reads as a handle |
 | `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters |
 | `TopBar`, `BottomBar` | `dark-ember/bg-wide` strips with gold hairline | |
 

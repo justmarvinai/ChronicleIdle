@@ -14,7 +14,7 @@ export function LoadingScreen({ progress, label }: { progress: number; label?: s
           value={pct}
           max={100}
           kind="ember"
-          height={22}
+          height={40}
           width={520}
           label={label ?? t('app.loading.assets', { percent: pct })}
         />

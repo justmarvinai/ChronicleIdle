@@ -12,11 +12,16 @@
   position: absolute;
   inset: 0;
   z-index: var(--z-scene);
+  isolation: isolate;
   pointer-events: none;
 }
 .plate {
   position: absolute;
-  width: 250px;
+  /* Enemy slots sit 130–170 px apart, so a fixed 250 px plate collided with its neighbours and
+     truncated their names; the plate now shrinks to its content. */
+  width: max-content;
+  min-width: 170px;
+  max-width: 240px;
   transform: translate(-50%, -100%);
   padding: 6px 8px 6px;
   background: linear-gradient(to bottom, rgba(11, 10, 13, 0.82), rgba(11, 10, 13, 0.6));
@@ -31,11 +36,13 @@
   border-color: rgba(255, 77, 109, 0.28);
 }
 .plateActive {
+  z-index: 2;
   box-shadow:
     0 0 0 2px var(--gold-2),
     0 0 24px rgba(240, 213, 122, 0.5);
 }
 .plateTargetable {
+  z-index: 3;
   pointer-events: auto;
   cursor: var(--cursor-pointer);
   animation: pulse 1.2s ease-in-out infinite;

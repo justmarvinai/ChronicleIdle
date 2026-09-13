@@ -28,7 +28,8 @@ export default function TrainingScreen(_props: ScreenProps) {
       <p className={styles.intro}>{t('training.body')}</p>
       <div className={styles.cards}>
         {content.encounters
-          .filter((encounter) => encounter.kind === 'training')
+          // Everything but the perf bench: the Warlord drill is a boss-kind encounter.
+          .filter((encounter) => encounter.kind !== 'bench')
           .map((encounter, index) => (
             <EncounterCard
               key={encounter.id}

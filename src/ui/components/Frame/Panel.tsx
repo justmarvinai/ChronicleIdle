@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import { kitBorder, type KitKey } from '@ui/styles/kit';
-import styles from './Frame.module.css';
+import type { KitKey } from '@ui/styles/kit';
+import { KitSurface } from './KitSurface';
 
 export type PanelKind =
   'stone' | 'arch' | 'ember-wide' | 'ember-tall' | 'ornate-wide' | 'ornate-tall' | 'thin' | 'bevel';
@@ -57,25 +57,24 @@ const PANELS: Record<
 
 export interface PanelProps extends HTMLAttributes<HTMLDivElement> {
   kind?: PanelKind;
-  padding?: number | string;
+  /** Padding inside the frame's ring (the ring's thickness is added). */
+  padding?: number;
+  /** Layout classes for the content box. */
+  contentClassName?: string | undefined;
   children?: ReactNode;
 }
 
 /** Textured panel: a kit frame over a kit fill (docs/tech/UI_DESIGN.md §4). */
-export function Panel({ kind = 'stone', padding, className, style, children, ...rest }: PanelProps) {
+export function Panel({ kind = 'stone', padding, ...rest }: PanelProps) {
   const meta = PANELS[kind];
   return (
-    <div
-      className={[styles.panel, className ?? ''].join(' ')}
-      style={{ ...kitBorder(meta.frame, meta.scale), ...style }}
+    <KitSurface
+      frame={meta.frame}
+      fill={meta.fill}
+      scale={meta.scale}
+      fillScale={meta.fillScale}
+      padding={padding ?? meta.pad}
       {...rest}
-    >
-      {meta.fill ? (
-        <div className={styles.fill} style={kitBorder(meta.fill, meta.fillScale)} aria-hidden="true" />
-      ) : null}
-      <div className={styles.content} style={{ padding: padding ?? meta.pad }}>
-        {children}
-      </div>
-    </div>
+    />
   );
 }

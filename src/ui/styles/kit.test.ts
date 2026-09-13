@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { KIT, cssVar, decoKey, kitBorder } from './kit';
+import { KIT, KIT_CORNER, cssVar, decoKey, kitBorder, kitFillInset, kitWidths } from './kit';
 
 describe('kit slices', () => {
   it('declares sane 9-slice metadata for every kit texture', () => {
@@ -20,6 +20,20 @@ describe('kit slices', () => {
     expect(style.borderImageSource).toBe('var(--ui-dark-ember-frame-wide)');
     const filled = kitBorder('ui.dark_ember.btn_ember_wide', 1);
     expect(filled.borderImageSlice).toContain(' fill');
+  });
+
+  it('reports border widths and the fill inset a frame can hide', () => {
+    expect(kitWidths('ui.stone_vine.panel_stone', 0.5)).toEqual([29, 27, 29, 27]);
+    expect(kitWidths('ui.dark_ember.frame_wide', 0.7)).toEqual([9, 9, 9, 9]);
+    // A fill bleeds under the ring up to the frame's transparent rounded corner, never past it.
+    expect(kitFillInset('ui.stone_vine.panel_arch', 0.5)).toBe(16);
+    expect(kitFillInset('ui.stone_vine.panel_stone', 0.5)).toBe(3);
+    expect(kitFillInset('ui.dark_ember.frame_tall', 0.7)).toBe(0);
+    for (const [key, corner] of Object.entries(KIT_CORNER)) {
+      const meta = KIT[key as keyof typeof KIT];
+      expect(corner, key).toBeGreaterThan(0);
+      expect(corner, `${key} corner is wider than the texture`).toBeLessThan(Math.min(meta.w, meta.h) / 3);
+    }
   });
 
   it('maps manifest keys to CSS custom properties and deco frame ids', () => {

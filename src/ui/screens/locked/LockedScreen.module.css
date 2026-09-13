@@ -14,7 +14,7 @@
   width: 720px;
   text-align: center;
 }
-.panel > div {
+.panelBody {
   display: flex;
   flex-direction: column;
   align-items: center;

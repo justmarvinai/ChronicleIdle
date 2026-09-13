@@ -328,7 +328,7 @@ export default function BattleScreen({ route }: ScreenProps) {
       {boss ? (
         <div className={styles.bossBar} data-testid="boss-bar">
           <span className={`display ${styles.bossName}`}>{translate(boss.name)}</span>
-          <Bar value={boss.hp} max={boss.maxHp} kind="ember" height={22} width={640} showNumbers />
+          <Bar value={boss.hp} max={boss.maxHp} kind="ember" height={40} width={640} showNumbers />
           <div className={styles.bossStatuses}>
             {boss.statuses.slice(0, 10).map((s) => {
               const meta = STATUS_BY_ID[s.id];

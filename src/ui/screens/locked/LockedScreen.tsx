@@ -33,7 +33,7 @@ export default function LockedScreen({ route }: ScreenProps) {
       <AmbientLayer preset="interior" />
       <TopBar title={t(locked.titleKey)} onBack={() => actions.pop()} />
       <div className={styles.center}>
-        <Panel kind="arch" className={styles.panel} padding={40}>
+        <Panel kind="arch" className={styles.panel} contentClassName={styles.panelBody} padding={40}>
           <Glyph glyph="glyph.broken_shackle" size={96} color="var(--gold-2)" />
           <h2 className={`display ${styles.title}`}>{t('locked.title')}</h2>
           <Divider kind="deco" index={3} width={320} />
@@ -45,7 +45,7 @@ export default function LockedScreen({ route }: ScreenProps) {
                 max={needed}
                 kind="xp"
                 width={420}
-                height={24}
+                height={40}
                 showNumbers
                 label={t('common.level', { level })}
               />

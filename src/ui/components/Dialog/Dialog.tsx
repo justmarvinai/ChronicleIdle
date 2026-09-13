@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { playSfx } from '@audio/index';
 import { t } from '@i18n/index';
 import { IconButton } from '@ui/components/Button/IconButton';
+import { KitSurface } from '@ui/components/Frame/KitSurface';
 import { kitBorder } from '@ui/styles/kit';
 import styles from './Dialog.module.css';
 
@@ -83,32 +84,41 @@ export function Dialog({
         aria-label={title}
         data-testid={testId}
         tabIndex={-1}
-        className={styles.panel}
-        style={{ width, ...kitBorder('ui.dark_ember.frame_wide', 0.7) }}
+        className={styles.shell}
+        style={{ width }}
         initial={{ opacity: 0, scale: 0.94, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.22, ease: [0.2, 0.8, 0.2, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles.fill} style={kitBorder('ui.dark_ember.bg_wide', 0.5)} aria-hidden="true" />
-        <header className={styles.header}>
-          <div className={styles.banner} style={kitBorder('ui.dark_ember.banner_plain', 0.3)}>
-            <h2 className={`display ${styles.title}`}>{title}</h2>
-          </div>
-          {dismissible && onClose ? (
-            <IconButton
-              kind="close"
-              label={t('common.close')}
-              size={56}
-              sound="ui.close"
-              onClick={onClose}
-              className={styles.close}
-            />
-          ) : null}
-        </header>
-        <div className={styles.body}>{children}</div>
-        {footer ? <footer className={styles.footer}>{footer}</footer> : null}
+        <KitSurface
+          frame="ui.dark_ember.frame_wide"
+          scale={0.7}
+          fill="ui.dark_ember.bg_wide"
+          fillScale={0.5}
+          padding={12}
+          className={styles.panel}
+          contentClassName={styles.stack}
+        >
+          <header className={styles.header}>
+            <div className={styles.banner} style={kitBorder('ui.dark_ember.banner_plain', 0.3)}>
+              <h2 className={`display ${styles.title}`}>{title}</h2>
+            </div>
+            {dismissible && onClose ? (
+              <IconButton
+                kind="close"
+                label={t('common.close')}
+                size={56}
+                sound="ui.close"
+                onClick={onClose}
+                className={styles.close}
+              />
+            ) : null}
+          </header>
+          <div className={styles.body}>{children}</div>
+          {footer ? <footer className={styles.footer}>{footer}</footer> : null}
+        </KitSurface>
       </motion.div>
     </motion.div>
   );

@@ -2,27 +2,24 @@
   position: relative;
   box-sizing: border-box;
 }
-.inner {
-  position: absolute;
-  inset: 2px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.45);
-}
-/* Hairline frame for thin bars: dark stone track, gold edge, inner shadow (kit materials). */
+/*
+ * Hairline frame for short bars: a recess in the same materials as the carved tracks. The gold
+ * edge stays quiet and the gradient runs dark-to-light downwards so an empty bar reads as a
+ * groove rather than an empty input field.
+ */
 .thin {
-  border: 1px solid rgba(240, 213, 122, 0.42);
-  background: linear-gradient(to bottom, #16141b, #2a2831);
+  border: 1px solid rgba(201, 162, 74, 0.34);
+  background: linear-gradient(to bottom, #0c0b10, #1d1b24);
   box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.8),
-    0 1px 0 rgba(0, 0, 0, 0.6);
+    inset 0 2px 3px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.thin .inner {
+.groove {
+  position: absolute;
   inset: 1px;
-  background: rgba(0, 0, 0, 0.35);
-}
-.thin .text {
-  font-size: 11px;
-  padding: 0 6px;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.3));
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 .fill {
   position: absolute;
@@ -35,7 +32,7 @@
   inset: 0;
   width: 100%;
   min-width: 40px;
-  filter: brightness(1.05);
+  filter: brightness(1.15) saturate(1.1);
 }
 .text {
   position: absolute;
@@ -43,13 +40,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   padding: 0 10px;
-  font-size: 14px;
-  color: var(--text-1);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.textLarge {
+  font-size: 17px;
+  padding: 0 16px;
 }
 .label {
-  font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.04em;
+  color: var(--text-1);
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.95),
+    0 0 6px rgba(0, 0, 0, 0.9);
+}
+.value {
+  color: var(--gold-3);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.95),
+    0 0 6px rgba(0, 0, 0, 0.9);
 }

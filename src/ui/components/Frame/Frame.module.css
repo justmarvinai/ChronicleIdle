@@ -1,17 +1,28 @@
 .kit,
 .panel,
-.deco {
+.deco,
+.surface {
   position: relative;
   box-sizing: border-box;
 }
+/*
+ * Fill and frame are siblings so the fill can bleed under the frame's ring (a child never paints
+ * under its parent's border-image). `inset` is set per frame from its measured corner inset.
+ */
 .fill {
   position: absolute;
-  inset: 2px;
   z-index: 0;
+  pointer-events: none;
+}
+.frame {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
 }
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   height: 100%;
+  min-height: 0;
 }
