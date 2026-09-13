@@ -1,22 +1,13 @@
 .slot {
-  position: relative;
-  box-sizing: border-box;
   transition:
     transform var(--t-fast) var(--ease-out),
     filter var(--t-fast);
 }
-.fill {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-.content {
-  position: absolute;
-  inset: 4px;
-  z-index: 1;
+/* The frame's ring is the surface's padding, so the inner box is exactly the carved recess. */
+.inner {
   display: grid;
   place-items: center;
-  overflow: hidden;
+  overflow: visible;
 }
 .interactive {
   cursor: var(--cursor-pointer);
@@ -33,9 +24,11 @@
 .locked {
   filter: grayscale(0.5) brightness(0.7);
 }
+/* A badge in the recess's corner: a dark disc keeps it off the frame's bracket. */
 .lock {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  z-index: 2;
+  right: 2px;
+  bottom: 2px;
+  padding: 3px;
+  background: radial-gradient(circle, rgba(11, 10, 13, 0.92) 55%, rgba(11, 10, 13, 0) 100%);
 }

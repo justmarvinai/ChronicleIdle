@@ -46,6 +46,12 @@ _Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
 - The "art pending" mark only appears on cards 128 px and up; on team slots and pickers it was
   clipped to a fragment ("…inding") and the placeholder tint already carries the meaning.
 - The starter screen's bind button names the champion in full ("Bind Ser Corvin", not "Bind Ser").
+- Gear and team slots are layered surfaces too: their recess texture reached only the ring's inner
+  edge, so the panel behind showed through each frame's ornate corners. The locked marker is a
+  badge inside the recess instead of a scribble across the frame's bracket, and the gear tab's
+  slots and notice sit centred in the panel rather than above a long empty tail.
+- Pixel dividers draw the ornament half first and the mirror second; reversed, the two motifs sat
+  at the ends and the bare lines met in the middle, which read as a plain rectangle.
 - `Panel` and `KitFrame` take `contentClassName` (layout for the content box) and a numeric
   `padding` measured from inside the frame's ring.
 

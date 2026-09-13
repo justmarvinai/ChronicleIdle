@@ -9,8 +9,15 @@
   padding-right: 22px;
   overscroll-behavior: contain;
 }
+/*
+ * A flex column so a tab can stretch to the viewport: `min-height: 100%` gives this box a used
+ * height but leaves its computed height `auto`, against which a child's percentage height would
+ * resolve to nothing.
+ */
 .inner {
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 /* Carved stone channel with a gold hairline, matching the kit's grooves. */
 .track {

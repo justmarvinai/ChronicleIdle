@@ -158,9 +158,12 @@
   color: var(--text-3);
 }
 .gear {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  justify-content: center;
+  gap: 22px;
+  padding-bottom: 16px;
 }
 .slots {
   display: grid;
