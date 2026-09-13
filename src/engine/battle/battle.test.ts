@@ -61,6 +61,17 @@ describe('battle lifecycle', () => {
     expect(snapshot(state).outcome?.kind).toBe('victory');
   });
 
+  it('lets the level-1 starter team beat Training Grounds 1 and 2 on auto (ROADMAP Phase 2)', () => {
+    for (const encounterId of ['encounter.training.1', 'encounter.training.2']) {
+      let wins = 0;
+      for (let i = 0; i < 20; i++) {
+        const { outcome } = runAuto(createBattle(setup(encounterId, STARTERS), `starter-${i}`));
+        if (outcome.kind === 'victory') wins++;
+      }
+      expect(wins, encounterId).toBeGreaterThanOrEqual(18);
+    }
+  });
+
   it('is deterministic: the same seed and setup produce identical events', () => {
     const a = runAuto(createBattle(setup('encounter.training.2', STARTERS, 'auto', 10), 'det')).events;
     const b = runAuto(createBattle(setup('encounter.training.2', STARTERS, 'auto', 10), 'det')).events;

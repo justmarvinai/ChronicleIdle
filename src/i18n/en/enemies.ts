@@ -59,8 +59,8 @@ export const enemies = {
     'Two waves of Remnant raiders on the practice field. Learn the turn meter and the basics of targeting.',
   'encounter.training.2.name': 'Remnant Ambush',
   'encounter.training.2.description':
-    'Three waves with a hexer, a brute and a mender in the mix. Focus the healer, cleanse the poison, watch your DEF.',
+    'Three waves with a hexer and a mender in the mix. Focus the healer and mind the poison.',
   'encounter.training.3.name': "The Warlord's Pit",
   'encounter.training.3.description':
-    'A four-champion fight against a wall of Remnants and their enraging Warlord. Bring a leader with an aura.',
+    'A four-champion fight: a warden and a mender hold the line, then the Warlord and his raider. He enrages if you stall.',
 } as const;

@@ -1,0 +1,443 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0b0a0d;
+}
+.stage {
+  position: absolute;
+  inset: 0;
+}
+.plates {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scene);
+  pointer-events: none;
+}
+.plate {
+  position: absolute;
+  width: 250px;
+  transform: translate(-50%, -100%);
+  padding: 6px 8px 6px;
+  background: linear-gradient(to bottom, rgba(11, 10, 13, 0.82), rgba(11, 10, 13, 0.6));
+  border: 1px solid rgba(201, 162, 74, 0.28);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  transition:
+    box-shadow var(--t-fast),
+    opacity var(--t-base),
+    transform var(--t-fast);
+}
+.plateEnemy {
+  border-color: rgba(255, 77, 109, 0.28);
+}
+.plateActive {
+  box-shadow:
+    0 0 0 2px var(--gold-2),
+    0 0 24px rgba(240, 213, 122, 0.5);
+}
+.plateTargetable {
+  pointer-events: auto;
+  cursor: var(--cursor-pointer);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.plateTargetable:hover {
+  transform: translate(-50%, -100%) translateY(-3px);
+}
+.plateTargeted {
+  box-shadow:
+    0 0 0 3px var(--debuff),
+    0 0 30px rgba(255, 77, 109, 0.55);
+  animation: none;
+}
+.plateDead {
+  opacity: 0.35;
+  filter: grayscale(0.8);
+}
+.plateHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.plateLevel {
+  min-width: 30px;
+  padding: 0 6px;
+  font-size: 16px;
+  text-align: center;
+  color: var(--gold-3);
+  background: rgba(11, 10, 13, 0.9);
+  border: 1px solid rgba(201, 162, 74, 0.6);
+}
+.plateName {
+  flex: 1;
+  font-size: 17px;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.bossTag {
+  padding: 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gold-3);
+  border: 1px solid rgba(201, 162, 74, 0.6);
+}
+.plateHp {
+  position: relative;
+}
+.shieldBar {
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  height: 10px;
+  max-width: calc(100% - 8px);
+  background: linear-gradient(to bottom, rgba(143, 208, 255, 0.9), rgba(60, 140, 220, 0.9));
+  box-shadow: 0 0 8px rgba(143, 208, 255, 0.8);
+  pointer-events: none;
+}
+.plateTm {
+  height: 6px;
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.tmFill {
+  height: 100%;
+  background: linear-gradient(to right, #7a5cff, #c58cff);
+  transition: width 220ms linear;
+}
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 5px;
+}
+.reticle {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  width: 34px;
+  height: 34px;
+  transform: translateX(-50%) rotate(45deg);
+  border: 3px solid var(--debuff);
+  box-shadow: 0 0 16px rgba(255, 77, 109, 0.8);
+  pointer-events: none;
+}
+.topLeft {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.counters {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 14px;
+  background: rgba(11, 10, 13, 0.7);
+  border: 1px solid rgba(201, 162, 74, 0.28);
+}
+.counter {
+  font-size: 22px;
+  color: var(--gold-3);
+}
+.counterSmall {
+  font-size: 15px;
+  color: var(--text-2);
+}
+.bossBar {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.bossName {
+  font-size: 22px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.bossStatuses {
+  display: flex;
+  gap: 4px;
+}
+.turnBanner {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-scene);
+  min-height: 34px;
+  pointer-events: none;
+}
+.turnText {
+  padding: 4px 18px;
+  font-size: 22px;
+  color: var(--gold-3);
+  background: rgba(11, 10, 13, 0.7);
+  border: 1px solid rgba(201, 162, 74, 0.4);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.turnTextEnemy {
+  padding: 4px 18px;
+  font-size: 20px;
+  color: var(--text-2);
+  background: rgba(11, 10, 13, 0.6);
+  border: 1px solid rgba(255, 77, 109, 0.3);
+}
+.forced {
+  font-size: 16px;
+  color: var(--debuff);
+}
+.bottomLeft {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  gap: 12px;
+}
+.bottomLeft button {
+  min-width: 96px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+}
+.speedLabel {
+  font-size: 26px;
+  color: var(--gold-3);
+}
+.abilityBar {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(to bottom, rgba(11, 10, 13, 0.55), rgba(11, 10, 13, 0.85));
+  border: 1px solid rgba(201, 162, 74, 0.28);
+}
+.portrait {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  background-size: cover;
+  background-position: center top;
+  border: 2px solid rgba(201, 162, 74, 0.6);
+  overflow: hidden;
+}
+.portraitTint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+}
+.abilityRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.abilitySlot {
+  display: inline-block;
+  padding: 3px;
+  transition: transform var(--t-fast);
+}
+.abilitySelected {
+  transform: translateY(-6px);
+}
+.tip {
+  max-width: 340px;
+  font-size: 15px;
+}
+.tip p {
+  margin: 6px 0 0;
+  color: var(--text-2);
+}
+.tipMeta {
+  display: block;
+  margin-top: 6px;
+  color: var(--gold-2);
+}
+.info {
+  position: absolute;
+  left: 24px;
+  top: 130px;
+  width: 460px;
+  height: 640px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+}
+.infoTitle {
+  margin: 0 0 8px;
+  font-size: 22px;
+  color: var(--gold-3);
+}
+.logList {
+  flex: 1;
+  margin: 0;
+  padding: 0 0 0 20px;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-2);
+  scrollbar-width: thin;
+}
+.logEmpty {
+  list-style: none;
+  color: var(--text-3);
+}
+.logLine {
+  margin-bottom: 2px;
+}
+.tone_ally {
+  color: var(--text-1);
+}
+.tone_enemy {
+  color: #e6b3b3;
+}
+.tone_good {
+  color: var(--buff);
+}
+.tone_bad {
+  color: var(--debuff);
+}
+.tone_system {
+  color: var(--gold-2);
+}
+.hotkeys {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.cutIn {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay, 50);
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.cutInSlash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 420px;
+  transform: translateY(-50%);
+  background: linear-gradient(
+    100deg,
+    rgba(11, 10, 13, 0) 0%,
+    rgba(11, 10, 13, 0.95) 18%,
+    rgba(11, 10, 13, 0.95) 82%,
+    rgba(11, 10, 13, 0) 100%
+  );
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding-left: 300px;
+}
+.cutInArt {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  background-size: cover;
+  background-position: center top;
+  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+}
+.cutInTint {
+  position: absolute;
+  left: 300px;
+  top: 0;
+  width: 420px;
+  height: 420px;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+}
+.cutInText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cutInName {
+  font-size: 36px;
+  color: var(--text-1);
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.9);
+}
+.cutInAbility {
+  font-size: 64px;
+  color: var(--gold-3);
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(240, 213, 122, 0.5);
+}
+.speedLines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0 34px,
+    rgba(255, 255, 255, 0.08) 34px 36px
+  );
+  pointer-events: none;
+}
+.endBanner {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-scene);
+  padding: 12px 48px;
+  font-size: 72px;
+  letter-spacing: 0.08em;
+  background: rgba(11, 10, 13, 0.7);
+  border-top: 2px solid rgba(201, 162, 74, 0.6);
+  border-bottom: 2px solid rgba(201, 162, 74, 0.6);
+  animation: pop 0.5s var(--ease-out) both;
+  pointer-events: none;
+}
+.endVictory {
+  color: var(--gold-3);
+}
+.endDefeat {
+  color: var(--debuff);
+}
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px rgba(240, 213, 122, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(240, 213, 122, 0.9),
+      0 0 22px rgba(240, 213, 122, 0.5);
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

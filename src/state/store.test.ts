@@ -126,6 +126,47 @@ describe('roster actions', () => {
   });
 });
 
+describe('teams and battle records', () => {
+  it('stores validated presets, remembers the last team and counts battles', () => {
+    const clock = new FixedClock(T0);
+    const { store, events } = createGameStore({ clock });
+    const seen: string[] = [];
+    events.on((e) => seen.push(e.type));
+    const { actions } = store.getState();
+    actions.newGame('Captain');
+    actions.chooseStarter('champ.ser_corvin');
+    expect(
+      actions.saveTeamPreset('campaign', 0, ['ser_corvin-1', 'bran_militia-2', 'wenna_novice-3'], 3).ok,
+    ).toBe(true);
+    expect(actions.saveTeamPreset('campaign', 1, ['ser_corvin-1', 'ser_corvin-1'], 3).ok).toBe(false);
+    expect(actions.saveTeamPreset('campaign', 5, ['ser_corvin-1'], 3).ok).toBe(false);
+    expect(actions.saveTeamPreset('boss', 2, [], 4).ok).toBe(true);
+    actions.setLastUsedTeam('campaign', ['gil_scrapper-4', 'nope-1', 'ser_corvin-1']);
+    const teams = store.getState().save?.teams;
+    expect(teams?.campaign.presets[0]).toEqual(['ser_corvin-1', 'bran_militia-2', 'wenna_novice-3']);
+    expect(teams?.campaign.lastUsed).toEqual(['gil_scrapper-4', 'ser_corvin-1']);
+    actions.recordBattle(
+      {
+        kind: 'victory',
+        turns: 12,
+        allyTurns: 7,
+        wavesCleared: 2,
+        waveCount: 2,
+        units: [],
+        enemyHpLeft: 0,
+        seed: 's',
+        decisions: [],
+      },
+      'encounter.training.1',
+    );
+    expect(store.getState().save?.stats['battles.fought']).toBe(1);
+    expect(store.getState().save?.stats['battles.victory']).toBe(1);
+    expect(store.getState().save?.stats['battles.won.encounter.training.1']).toBe(1);
+    expect(seen).toContain('battle.ended');
+    expect(saveSchema.safeParse(store.getState().save).success).toBe(true);
+  });
+});
+
 describe('persistence + boot', () => {
   it('autosaves after a debounce and boots from storage with offline time applied', async () => {
     vi.useFakeTimers();

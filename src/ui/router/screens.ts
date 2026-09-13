@@ -14,6 +14,10 @@ export const SCREENS: Record<RouteName, Lazy> = {
   hub: lazy(() => import('@ui/screens/hub/HubScreen')),
   champions: lazy(() => import('@ui/screens/champions/ChampionsScreen')),
   'game-modes': lazy(() => import('@ui/screens/game-modes/GameModesScreen')),
+  training: lazy(() => import('@ui/screens/training/TrainingScreen')),
+  'battle-setup': lazy(() => import('@ui/screens/battle-setup/BattleSetupScreen')),
+  battle: lazy(() => import('@ui/screens/battle/BattleScreen')),
+  'battle-result': lazy(() => import('@ui/screens/battle-result/BattleResultScreen')),
   locked: lazy(() => import('@ui/screens/locked/LockedScreen')),
   devkit: lazy(() => import('@ui/screens/devkit/DevKitScreen')),
 };

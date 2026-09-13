@@ -1,5 +1,5 @@
 /** Plain, serialisable view of a battle for the HUD and the result screen (no Rng, no defs). */
-import type { AbilitySlot, StatusId } from './imports';
+import type { AbilitySlot, Element, Role, StatusId } from './imports';
 import { shieldTotal } from './stats';
 import type { BattleOutcome, BattleState, DecisionRequest } from './types';
 
@@ -11,6 +11,8 @@ export interface UnitView {
   instanceId: string | null;
   slot: number;
   level: number;
+  element: Element;
+  role: Role;
   hp: number;
   maxHp: number;
   shield: number;
@@ -50,6 +52,8 @@ export function snapshot(state: BattleState): BattleView {
         instanceId: u.instanceId,
         slot: u.slot,
         level: u.level,
+        element: u.element,
+        role: u.role,
         hp: u.hp,
         maxHp: u.maxHp,
         shield: shieldTotal(u),

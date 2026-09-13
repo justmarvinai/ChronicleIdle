@@ -1,12 +1,12 @@
 /**
- * Save-game schema, version 1 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
+ * Save-game schema, version 3 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
  * current phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
 import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES } from '@content/champions/types';
 import { CURRENCY_IDS } from '@content/currencies/types';
 
-export const SAVE_VERSION = 2 as const;
+export const SAVE_VERSION = 3 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -48,8 +48,18 @@ export const championInstanceSchema = z.object({
   source: z.enum(OBTAIN_SOURCES),
 });
 
-export const saveSchemaV2 = z.object({
-  saveVersion: z.literal(2),
+/** Team presets per party-size mode (docs/tech/ARCHITECTURE.md §4.1, owner's answer Q25). */
+export const teamModeSchema = z.object({
+  /** Three presets of ordered roster instance ids; slot 0 is the leader. */
+  presets: z.array(z.array(z.string())).length(3),
+  /** The team last sent into battle in this mode. */
+  lastUsed: z.array(z.string()),
+});
+export const TEAM_MODES = ['campaign', 'boss'] as const;
+export type TeamMode = (typeof TEAM_MODES)[number];
+
+export const saveSchemaV3 = z.object({
+  saveVersion: z.literal(3),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -70,16 +80,25 @@ export const saveSchemaV2 = z.object({
   roster: z.record(z.string(), championInstanceSchema),
   /** Running counters that mint stable ids. */
   counters: z.object({ instances: z.number().int().min(0) }),
+  teams: z.object({ campaign: teamModeSchema, boss: teamModeSchema }),
   settings: settingsSchema,
   /** Lifetime counters used by quests, missions and the profile screen. */
   stats: z.record(z.string(), z.number()),
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV2 = z.infer<typeof saveSchemaV2>;
-export type SaveGame = SaveGameV2;
+export type SaveGameV3 = z.infer<typeof saveSchemaV3>;
+export type SaveGame = SaveGameV3;
+export type TeamPresets = SaveGame['teams'];
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV2;
+export const saveSchema = saveSchemaV3;
+
+export function emptyTeams(): TeamPresets {
+  return {
+    campaign: { presets: [[], [], []], lastUsed: [] },
+    boss: { presets: [[], [], []], lastUsed: [] },
+  };
+}
 export type Settings = z.infer<typeof settingsSchema>;
 export type Profile = SaveGame['profile'];
 

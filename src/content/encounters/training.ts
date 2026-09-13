@@ -1,6 +1,8 @@
 /**
  * Training Grounds (ROADMAP.md Phase 2): three encounters on the Emberhold practice field,
  * replaced by the Campaign in Phase 3. Scaling follows BATTLE.md §4.5 at Intro difficulty.
+ * Compositions were tuned with a seeded win-rate sweep so the level-1 starter trio beats 1 and
+ * 2 on auto (~29/30 seeds) and a full party of four wins the Warlord fight (~28/30).
  */
 import { CAMPAIGN_TURN_LIMIT_DEFAULT } from '@content/balance/battle';
 import type { EncounterDef } from './types';
@@ -14,6 +16,17 @@ const base = {
   version: 1,
 } as const;
 
+const wave = (...enemyIds: string[]): EncounterDef['waves'][number] => ({
+  enemies: enemyIds.map((enemyId) => ({ enemyId })),
+});
+
+const RAIDER = 'enemy.remnant_raider';
+const MARKSMAN = 'enemy.remnant_marksman';
+const WARDEN = 'enemy.remnant_warden';
+const HEXER = 'enemy.remnant_hexer';
+const MENDER = 'enemy.remnant_mender';
+const WARLORD = 'enemy.remnant_warlord';
+
 export const TRAINING_ENCOUNTERS: readonly EncounterDef[] = [
   {
     ...base,
@@ -26,10 +39,7 @@ export const TRAINING_ENCOUNTERS: readonly EncounterDef[] = [
     enemyLevel: 1,
     backdrop: 'bg.bg7',
     surface: 'dirt',
-    waves: [
-      { enemies: [{ enemyId: 'enemy.remnant_raider' }, { enemyId: 'enemy.remnant_raider' }] },
-      { enemies: [{ enemyId: 'enemy.remnant_raider' }, { enemyId: 'enemy.remnant_marksman' }] },
-    ],
+    waves: [wave(RAIDER, RAIDER), wave(RAIDER, MARKSMAN)],
   },
   {
     ...base,
@@ -38,34 +48,11 @@ export const TRAINING_ENCOUNTERS: readonly EncounterDef[] = [
     description: 'encounter.training.2.description',
     kind: 'training',
     partySize: 3,
-    stageIndex: 4,
-    enemyLevel: 3,
+    stageIndex: 0,
+    enemyLevel: 2,
     backdrop: 'bg.bg8',
     surface: 'stone',
-    waves: [
-      {
-        enemies: [
-          { enemyId: 'enemy.remnant_raider' },
-          { enemyId: 'enemy.remnant_marksman' },
-          { enemyId: 'enemy.remnant_hexer' },
-        ],
-      },
-      {
-        enemies: [
-          { enemyId: 'enemy.remnant_brute' },
-          { enemyId: 'enemy.remnant_raider' },
-          { enemyId: 'enemy.remnant_mender' },
-        ],
-      },
-      {
-        enemies: [
-          { enemyId: 'enemy.remnant_warden' },
-          { enemyId: 'enemy.remnant_marksman' },
-          { enemyId: 'enemy.remnant_hexer' },
-          { enemyId: 'enemy.remnant_raider' },
-        ],
-      },
-    ],
+    waves: [wave(RAIDER, MARKSMAN), wave(HEXER, RAIDER), wave(MENDER, RAIDER)],
   },
   {
     ...base,
@@ -74,27 +61,12 @@ export const TRAINING_ENCOUNTERS: readonly EncounterDef[] = [
     description: 'encounter.training.3.description',
     kind: 'boss',
     partySize: 4,
-    stageIndex: 9,
-    enemyLevel: 6,
+    stageIndex: 1,
+    enemyLevel: 3,
     turnLimit: 50,
     backdrop: 'bg.bg3',
     music: 'boss',
     surface: 'stone',
-    waves: [
-      {
-        enemies: [
-          { enemyId: 'enemy.remnant_brute' },
-          { enemyId: 'enemy.remnant_warden' },
-          { enemyId: 'enemy.remnant_mender' },
-        ],
-      },
-      {
-        enemies: [
-          { enemyId: 'enemy.remnant_warlord' },
-          { enemyId: 'enemy.remnant_raider' },
-          { enemyId: 'enemy.remnant_hexer' },
-        ],
-      },
-    ],
+    waves: [wave(WARDEN, MENDER), wave(WARLORD, RAIDER)],
   },
 ];

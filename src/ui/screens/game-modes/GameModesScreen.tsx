@@ -16,6 +16,7 @@ import { Glyph } from '@ui/components/Glyph/Glyph';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
+import type { Route } from '@state/ui-types';
 import styles from './GameModesScreen.module.css';
 
 interface ModeDef {
@@ -25,9 +26,21 @@ interface ModeDef {
   bodyKey: I18nKey;
   art: BackdropKey;
   glyph: GlyphKey;
+  /** Where "Enter" goes; locked-phase modes fall back to the Locked screen. */
+  route?: Route;
 }
 
 const MODES: readonly ModeDef[] = [
+  {
+    // Temporary until the Campaign ships (ROADMAP.md Phase 2 → 3).
+    id: 'training',
+    feature: 'campaign',
+    titleKey: 'gameModes.training',
+    bodyKey: 'gameModes.training.body',
+    art: 'bg.bg8',
+    glyph: 'glyph.hammer_hit',
+    route: { name: 'training' },
+  },
   {
     id: 'campaign',
     feature: 'campaign',
@@ -69,7 +82,9 @@ export default function GameModesScreen(_props: ScreenProps) {
             key={mode.id}
             mode={mode}
             index={index}
-            onOpen={() => actions.push({ name: 'locked', feature: mode.feature, titleKey: mode.titleKey })}
+            onOpen={() =>
+              actions.push(mode.route ?? { name: 'locked', feature: mode.feature, titleKey: mode.titleKey })
+            }
           />
         ))}
       </div>

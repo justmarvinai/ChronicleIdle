@@ -16,7 +16,8 @@ export type DomainEvent =
   | { type: 'profile.renamed'; name: string }
   | { type: 'currency.changed'; changes: CurrencyChange[]; reason: string }
   | { type: 'energy.changed'; delta: number; total: number }
-  | { type: 'settings.changed' };
+  | { type: 'settings.changed' }
+  | { type: 'battle.ended'; outcome: 'victory' | 'defeat' | 'timeout' | 'retreat'; encounterId: string };
 
 export type EventListener = (event: DomainEvent) => void;
 

@@ -21,7 +21,9 @@ import { addEnergy, regenerateEnergy, spendEnergy } from '@engine/economy/energy
 import { grant, spend } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { createNewGame } from '@engine/save/new-game';
-import type { SaveGame, Settings } from '@engine/schema/save';
+import type { SaveGame, Settings, TeamMode } from '@engine/schema/save';
+import type { BattleOutcome } from '@engine/battle/index';
+import { sanitizeTeam, validateTeam } from '@engine/battle/teams';
 import type { Clock } from '@engine/time/clock';
 import { createRng, hashString } from '@engine/rng/rng';
 import { systemClock } from '@platform/clock';
@@ -101,6 +103,17 @@ export interface GameActions {
   generateDebugRoster(count: number, seed: string): Result<void>;
   setRosterView(patch: Partial<RosterView>): void;
   selectChampion(instanceId: string | null): void;
+  /** Stores a team preset (ordered instance ids, slot 0 = leader) for a party-size mode. */
+  saveTeamPreset(
+    mode: TeamMode,
+    index: number,
+    instanceIds: readonly string[],
+    partySize: number,
+  ): Result<void>;
+  /** Remembers the team that just went into battle. */
+  setLastUsedTeam(mode: TeamMode, instanceIds: readonly string[]): void;
+  /** Lifetime battle counters for the profile and later quests. */
+  recordBattle(outcome: BattleOutcome, encounterId: string): void;
 }
 
 export type GameStore = GameState & { actions: GameActions };
@@ -528,6 +541,38 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               set((state) => {
                 state.ui.roster.selected = instanceId;
               });
+            },
+
+            saveTeamPreset(mode, index, instanceIds, partySize) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              if (index < 0 || index > 2) return fail('invalid_argument', 'Presets are numbered 0–2');
+              if (instanceIds.length) {
+                const valid = validateTeam(current.roster, instanceIds, partySize);
+                if (!valid.ok) return valid;
+              }
+              withSave((save) => {
+                save.teams[mode].presets[index] = [...instanceIds];
+              });
+              return ok(undefined);
+            },
+            setLastUsedTeam(mode, instanceIds) {
+              withSave((save) => {
+                save.teams[mode].lastUsed = sanitizeTeam(save.roster, instanceIds, 4);
+              });
+            },
+            recordBattle(outcome, encounterId) {
+              withSave((save) => {
+                const bump = (key: string, by = 1): void => {
+                  save.stats[key] = (save.stats[key] ?? 0) + by;
+                };
+                bump('battles.fought');
+                bump(`battles.${outcome.kind}`);
+                bump('battles.allyTurns', outcome.allyTurns);
+                bump(`battles.fought.${encounterId}`);
+                if (outcome.kind === 'victory') bump(`battles.won.${encounterId}`);
+              });
+              events.emit({ type: 'battle.ended', outcome: outcome.kind, encounterId });
             },
           },
         };

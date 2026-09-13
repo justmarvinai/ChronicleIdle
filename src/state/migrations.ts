@@ -30,6 +30,19 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       };
     },
   },
+  {
+    // Phase 2: team presets per party-size mode.
+    from: 2,
+    to: 3,
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 3,
+      teams: {
+        campaign: { presets: [[], [], []], lastUsed: [] },
+        boss: { presets: [[], [], []], lastUsed: [] },
+      },
+    }),
+  },
 ];
 
 export interface MigrationResult {

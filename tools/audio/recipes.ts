@@ -341,6 +341,96 @@ export const RECIPES: Recipe[] = [
     },
   },
   {
+    // Victory: a rising brass triad with a bright bell tail (UI_DESIGN.md §7 "generated stingers").
+    key: 'sfx.stinger.victory',
+    loop: false,
+    quality: 0.5,
+    render: () => {
+      const brass = (midi: number, at: number, seconds: number, g: number) => ({
+        at,
+        gain: g,
+        sig: lowpass(
+          softclip(
+            mul(
+              mix([
+                { sig: osc('saw', note(midi), seconds) },
+                { sig: osc('saw', note(midi) * 1.003, seconds) },
+                { sig: osc('pulse', note(midi) / 2, seconds), gain: 0.3 },
+              ]),
+              adsr(seconds, { a: 0.02, d: 0.12, s: 0.8, r: 0.3 }),
+            ),
+            1.7,
+          ),
+          (t) => 800 + t * 2600,
+          0.9,
+        ),
+      });
+      return stereo(
+        normalize(
+          reverb(
+            mix([
+              brass(55, 0, 0.28, 0.45),
+              brass(62, 0.14, 0.28, 0.45),
+              brass(67, 0.28, 0.32, 0.5),
+              brass(74, 0.44, 1.2, 0.55),
+              brass(79, 0.44, 1.2, 0.4),
+              { at: 0.46, sig: chime(98, 1.3, 1.3), gain: 0.4 },
+              { at: 0.62, sig: chime(105, 1.4, 1.2), gain: 0.35 },
+              { at: 0.44, sig: mul(lowpass(noise(1.1, 43), 6000, 0.7), expDecay(1.1, 0.3)), gain: 0.12 },
+            ]),
+            0.65,
+            0.32,
+            1.4,
+          ),
+          -2,
+        ),
+        0.45,
+      );
+    },
+  },
+  {
+    // Defeat: a falling minor swell with a low thud and a long dark tail.
+    key: 'sfx.stinger.defeat',
+    loop: false,
+    quality: 0.5,
+    render: () => {
+      const swell = (midi: number, at: number, seconds: number, g: number) => ({
+        at,
+        gain: g,
+        sig: lowpass(
+          mul(
+            mix([
+              { sig: osc('saw', note(midi), seconds) },
+              { sig: osc('triangle', note(midi) * 0.5, seconds), gain: 0.7 },
+            ]),
+            adsr(seconds, { a: 0.05, d: 0.4, s: 0.5, r: 0.8 }),
+          ),
+          (t) => 1400 - t * 900,
+          0.8,
+        ),
+      });
+      const thud = mul(lowpass(noise(0.6, 47), 180, 0.9), expDecay(0.6, 0.12));
+      return stereo(
+        normalize(
+          reverb(
+            mix([
+              swell(50, 0, 0.9, 0.5),
+              swell(46, 0.35, 1.1, 0.5),
+              swell(41, 0.7, 1.8, 0.55),
+              { at: 0.7, sig: thud, gain: 0.8 },
+              { at: 0.72, sig: mul(osc('sine', 55, 1.2), expDecay(1.2, 0.35)), gain: 0.5 },
+            ]),
+            0.85,
+            0.4,
+            2.2,
+          ),
+          -2.5,
+        ),
+        0.45,
+      );
+    },
+  },
+  {
     key: 'ambience.generated.void_drone',
     loop: true,
     quality: 0.35,

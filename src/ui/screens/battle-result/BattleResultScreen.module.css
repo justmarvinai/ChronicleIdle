@@ -1,0 +1,178 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scene);
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.6) 100%);
+}
+.defeat .vignette {
+  background: radial-gradient(ellipse at center, rgba(60, 0, 10, 0) 35%, rgba(70, 0, 12, 0.7) 100%);
+}
+.header {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  z-index: var(--z-scene);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.title {
+  margin: 0;
+  font-size: 84px;
+  letter-spacing: 0.06em;
+  color: var(--gold-3);
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(240, 213, 122, 0.4);
+  animation: pop 0.6s var(--ease-out) both;
+}
+.defeat .title {
+  color: var(--debuff);
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(255, 77, 109, 0.35);
+}
+.subtitle {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.columns {
+  position: absolute;
+  top: 300px;
+  left: 120px;
+  right: 120px;
+  z-index: var(--z-scene);
+  display: grid;
+  grid-template-columns: 560px 1fr;
+  gap: 40px;
+}
+.stats,
+.report {
+  min-height: 460px;
+}
+.heading {
+  margin: 0 0 12px;
+  font-size: 24px;
+  color: var(--gold-3);
+}
+.statList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0;
+}
+.statList div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.statList dt {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.statList dd {
+  margin: 4px 0 0;
+  font-size: 36px;
+  color: var(--text-1);
+}
+.enemyHp {
+  margin: 18px 0 0;
+  font-size: 18px;
+  color: var(--debuff);
+}
+.hints {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+.noRewards {
+  margin: 20px 0 0;
+  font-size: 15px;
+  color: var(--text-3);
+}
+.seed {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+.table th {
+  padding: 8px 10px;
+  text-align: right;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  border-bottom: 1px solid rgba(201, 162, 74, 0.3);
+}
+.table td {
+  padding: 10px;
+  text-align: right;
+  color: var(--text-1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.champ {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left !important;
+}
+.avatar {
+  width: 48px;
+  height: 48px;
+  background-size: cover;
+  background-position: center top;
+  border: 1px solid rgba(201, 162, 74, 0.5);
+}
+.champName {
+  font-size: 20px;
+}
+.fallen td {
+  color: var(--text-3);
+}
+.fallenTag {
+  padding: 1px 8px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--debuff);
+  border: 1px solid rgba(255, 77, 109, 0.5);
+}
+.actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 48px;
+  z-index: var(--z-scene);
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

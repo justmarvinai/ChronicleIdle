@@ -3,6 +3,7 @@ import { AnimatePresence } from 'motion/react';
 import { selectActions, selectDialog } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AvatarPickerDialog } from './AvatarPickerDialog';
+import { BattlePauseDialog } from './BattlePauseDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { ImportConfirmDialog } from './ImportConfirmDialog';
 import { NewGameConfirmDialog } from './NewGameConfirmDialog';
@@ -41,6 +42,7 @@ export function DialogHost() {
       {dialog?.name === 'reset-confirm' ? <ResetConfirmDialog key="reset" onClose={closeDialog} /> : null}
       {dialog?.name === 'welcome-back' ? <WelcomeBackDialog key="welcome" onClose={closeDialog} /> : null}
       {dialog?.name === 'avatar-picker' ? <AvatarPickerDialog key="avatar" onClose={closeDialog} /> : null}
+      {dialog?.name === 'battle-pause' ? <BattlePauseDialog key="pause" onClose={closeDialog} /> : null}
       {DebugDialog && dialog?.name === 'debug' ? (
         <Suspense key="debug" fallback={null}>
           <DebugDialog onClose={closeDialog} />

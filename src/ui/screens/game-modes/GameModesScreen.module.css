@@ -12,12 +12,12 @@
   z-index: var(--z-scene);
   display: flex;
   justify-content: center;
-  gap: 40px;
-  padding: 0 60px;
+  gap: 28px;
+  padding: 0 40px;
 }
 .card {
   position: relative;
-  width: 440px;
+  width: 420px;
   overflow: hidden;
   background: var(--bg-1);
   animation: rise 0.45s var(--ease-out) both;

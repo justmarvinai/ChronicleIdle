@@ -42,6 +42,27 @@ export const SOUNDS = {
   'torch.light': s('sfx.torch.light_torch', 0.6, 0.05, 200),
   'forge.hammer': s('sfx.mining.mine', 0.8, 0.06, 80),
   'gear.equip': s('sfx.sword.sword_unsheath', 0.7, 0.04, 150),
+  // Battle (docs/tech/UI_DESIGN.md §7): owner attack/spell packs plus generated stingers.
+  'battle.start': s('sfx.doors.portcullis_gate', 0.8, 0.02, 800),
+  'battle.attack.melee': s('sfx.sword.sword_attack', 0.75, 0.06, 40),
+  'battle.attack.ranged': s('sfx.bow.bow_attack', 0.7, 0.06, 40),
+  'battle.hit.light': s('sfx.sword.sword_impact_hit', 0.75, 0.07, 30),
+  'battle.hit.heavy': s('sfx.torch.torch_impact', 0.85, 0.05, 30),
+  'battle.hit.crit': s('sfx.spells.spell_impact', 0.95, 0.04, 30),
+  'battle.block': s('sfx.sword.sword_blocked', 0.7, 0.05, 30),
+  'battle.cast.valor': s('sfx.spells.fireball', 0.75, 0.05, 40),
+  'battle.cast.faith': s('sfx.spells.ice_throw', 0.75, 0.05, 40),
+  'battle.cast.justice': s('sfx.spells.firebuff', 0.75, 0.05, 40),
+  'battle.cast.eclipse': s('sfx.spells.ice_freeze', 0.75, 0.08, 40),
+  'battle.heal': s('sfx.spells.waterspray', 0.65, 0.05, 60),
+  'battle.buff': s('sfx.spells.firebuff', 0.55, 0.06, 60),
+  'battle.debuff': s('sfx.spells.ice_freeze', 0.55, 0.06, 60),
+  'battle.death': s('sfx.torch.torch_impact', 0.9, 0.08, 120),
+  'battle.revive': s('sfx.spells.firebuff', 0.85, 0.02, 300),
+  'battle.wave': s('sfx.doors.gate_open', 0.75, 0.02, 500),
+  'battle.ultimate': s('sfx.spells.rock_meteor_swarm', 0.9, 0.02, 300),
+  'battle.victory': s('sfx.stinger.victory', 0.95, 0, 1000),
+  'battle.defeat': s('sfx.stinger.defeat', 0.9, 0, 1000),
 } as const satisfies Record<string, SoundDef>;
 
 export type SoundKey = keyof typeof SOUNDS;

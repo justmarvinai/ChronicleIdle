@@ -12,6 +12,10 @@ export type Route =
   | { name: 'hub' }
   | { name: 'champions'; instanceId?: string; tab?: ChampionTab }
   | { name: 'game-modes' }
+  | { name: 'training' }
+  | { name: 'battle-setup'; encounterId: string }
+  | { name: 'battle' }
+  | { name: 'battle-result' }
   | { name: 'locked'; feature: FeatureId | 'later-phase'; titleKey: I18nKey }
   | { name: 'devkit' };
 
@@ -28,6 +32,7 @@ export type DialogRoute =
   | { name: 'reset-confirm' }
   | { name: 'welcome-back' }
   | { name: 'avatar-picker' }
+  | { name: 'battle-pause' }
   | { name: 'debug' };
 
 export type ToastKind = 'info' | 'reward' | 'error';

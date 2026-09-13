@@ -1,0 +1,168 @@
+{
+  "saveVersion": 2,
+  "createdAt": 1789290000000,
+  "updatedAt": 1789290002000,
+  "seedRoot": "fixture.v2",
+  "profile": {
+    "name": "Marvin",
+    "level": 3,
+    "xp": 40,
+    "avatarChampionId": "champ.reva_ashblade",
+    "titles": []
+  },
+  "wallet": {
+    "gold": 4120,
+    "gems": 60,
+    "energy": 0,
+    "key_daily": 0,
+    "key_weekly": 0,
+    "shard_faded": 0,
+    "shard_ancient": 0,
+    "shard_sacred": 0,
+    "shard_primordial": 0,
+    "brew_justice": 0,
+    "brew_valor": 0,
+    "brew_faith": 0,
+    "brew_eclipse": 0,
+    "brew_universal": 0,
+    "tome_rare": 0,
+    "tome_epic": 0,
+    "tome_legendary": 0,
+    "tome_mythic": 0,
+    "mat_scrap_iron": 0,
+    "mat_ember_alloy": 0,
+    "mat_starsteel": 0,
+    "mat_arcane_dust": 0,
+    "mat_refining_core": 0,
+    "mat_glyph_sigil": 0
+  },
+  "energy": {
+    "value": 51,
+    "lastTickAt": 1789290002000
+  },
+  "provisionsClaimed": [],
+  "roster": {
+    "reva_ashblade-1": {
+      "instanceId": "reva_ashblade-1",
+      "defId": "champ.reva_ashblade",
+      "level": 1,
+      "xp": 0,
+      "stars": 3,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": true,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "bran_militia-2": {
+      "instanceId": "bran_militia-2",
+      "defId": "champ.bran_militia",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "wenna_novice-3": {
+      "instanceId": "wenna_novice-3",
+      "defId": "champ.wenna_novice",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "gil_scrapper-4": {
+      "instanceId": "gil_scrapper-4",
+      "defId": "champ.gil_scrapper",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "anuria-5": {
+      "instanceId": "anuria-5",
+      "defId": "champ.anuria",
+      "level": 1,
+      "xp": 0,
+      "stars": 4,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": true,
+      "favourite": false,
+      "acquiredAt": 1789290001000,
+      "source": "summon"
+    }
+  },
+  "counters": {
+    "instances": 5
+  },
+  "settings": {
+    "musicVolume": 0.7,
+    "ambienceVolume": 0.6,
+    "sfxVolume": 0.8,
+    "masterVolume": 1,
+    "muted": false,
+    "launchFullscreen": true,
+    "reducedMotion": false,
+    "battleSpeed": 2,
+    "autoBattle": true,
+    "language": "en"
+  },
+  "stats": {
+    "playtimeMs": 900000
+  },
+  "periods": {
+    "lastDailyKey": "2026-09-13",
+    "lastWeeklyKey": "2026-09-07"
+  }
+}
