@@ -38,6 +38,13 @@ _Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
 - Settings sliders are the kit's carved stone channel with an ember level, a glass highlight and a
   gold orb knob in the round kit frame, driven by a transparent range input so keyboard and drag
   stay native. The toggle track gained the gold hairline and its knob a grip.
+- Screen sections that were flat scrims (the champions rail, the battle-setup team, enemy and
+  roster columns, the battle ability bar) are one shared textured slab in the kit's materials
+  (`surfaceStone`), so they read as carved chrome rather than web boxes.
+- Pixel dividers are drawn as two mirrored halves: the art is a half ornament (lines running off
+  one edge, the motif at the other), which rendered as a lopsided line with a stray tick.
+- The "art pending" mark only appears on cards 128 px and up; on team slots and pickers it was
+  clipped to a fragment ("…inding") and the placeholder tint already carries the meaning.
 - `Panel` and `KitFrame` take `contentClassName` (layout for the content box) and a numeric
   `padding` measured from inside the frame's ring.
 

@@ -36,6 +36,27 @@ body {
   touch-action: none;
 }
 
+/*
+ * Section slabs (roster rails, team/enemy columns, the ability bar): the kit's tiled stone over a
+ * dark gradient with a gold hairline, so a screen's own containers read as carved chrome rather
+ * than flat web boxes. Modules opt in with `composes: surfaceStone from global`.
+ */
+.surfaceStone {
+  background-color: #0b0a0d;
+  background-image:
+    linear-gradient(to bottom, rgba(11, 10, 13, 0.7), rgba(11, 10, 13, 0.45)), var(--ui-dark-ember-bg-tile-sm);
+  /* One stretched copy, not a tile: the kit's stone textures are 9-slice art and show seams when
+     repeated. Stretching a near-black texture only softens its scratches. */
+  background-repeat: no-repeat, no-repeat;
+  background-size:
+    100% 100%,
+    100% 100%;
+  border: 1px solid rgba(201, 162, 74, 0.3);
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.55),
+    0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
 /* No native scrollbars anywhere (docs/tech/UI_DESIGN.md §2.1); ScrollArea draws its own. */
 * {
   scrollbar-width: none;

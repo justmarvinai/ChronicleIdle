@@ -35,11 +35,15 @@ export function Divider({
       />
     );
   }
+  // The pixel divider art is a half ornament (lines running off the left, the motif at the right),
+  // so it is drawn twice with the left half mirrored: the motif lands in the centre.
   return (
-    <div
-      className={[styles.deco, 'pixel', className ?? ''].join(' ')}
-      style={{ width, backgroundImage: `url("${tinted}")` }}
-      aria-hidden="true"
-    />
+    <div className={[styles.deco, 'pixel', className ?? ''].join(' ')} style={{ width }} aria-hidden="true">
+      <span
+        className={[styles.half, styles.flip].join(' ')}
+        style={{ backgroundImage: `url("${tinted}")` }}
+      />
+      <span className={styles.half} style={{ backgroundImage: `url("${tinted}")` }} />
+    </div>
   );
 }

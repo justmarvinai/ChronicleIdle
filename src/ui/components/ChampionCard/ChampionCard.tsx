@@ -122,12 +122,9 @@ export const ChampionCard = memo(function ChampionCard({
         />
       ) : null}
       <div className={styles.shade} />
-      {placeholder ? (
-        <span
-          className={`display ${styles.placeholder}`}
-          style={{ fontSize: size <= 96 ? 8 : 11 }}
-          title={placeholderLabel}
-        >
+      {/* The mark needs room to stay legible; small and compact cards carry the tint alone. */}
+      {placeholder && !compact && size >= 128 ? (
+        <span className={`display ${styles.placeholder}`} title={placeholderLabel}>
           {placeholderLabel ?? 'ART PENDING'}
         </span>
       ) : null}
