@@ -4,7 +4,7 @@
  */
 import type { Rarity } from '@content/champions/types';
 
-/** `xpToNext(L) = round(CHAMPION_XP_BASE × L ^ CHAMPION_XP_EXPONENT)`; sum to 60 ≈ 583k. */
+/** `xpToNext(L) = round(CHAMPION_XP_BASE × L ^ CHAMPION_XP_EXPONENT)`; sum to 60 = 572,463. */
 export const CHAMPION_XP_BASE = 25;
 export const CHAMPION_XP_EXPONENT = 1.7;
 

@@ -55,9 +55,12 @@ export const GOLD_STAGE_GROWTH = 0.06;
 export const GOLD_DIFFICULTY: Readonly<Record<Difficulty, number>> = { intro: 1, normal: 2.2, hard: 4 };
 export const GOLD_BOSS_MULT = 2;
 
-/** Champion XP per point of energy spent, and the player XP per the same. */
-export const CHAMPION_XP_BASE = 30;
-export const PLAYER_XP_BASE = 10;
+/**
+ * Champion and player XP per point of energy a run costs (CAMPAIGN.md §7). Not to be confused
+ * with `balance/xp.ts`'s curve bases: these are what a win pays, those are what a level costs.
+ */
+export const CHAMPION_XP_PER_ENERGY = 30;
+export const PLAYER_XP_PER_ENERGY = 10;
 export const XP_DIFFICULTY: Readonly<Record<Difficulty, number>> = { intro: 1, normal: 1.5, hard: 2 };
 
 /** Chance of a gear drop; the gear itself arrives with the Forge (Phase 6). */

@@ -4,6 +4,7 @@ import { walletWith } from '@engine/economy/wallet';
 import {
   DEFAULT_SETTINGS,
   SAVE_VERSION,
+  emptyCampaign,
   emptyTeams,
   type SaveGame,
   type Settings,
@@ -32,6 +33,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     roster: {},
     counters: { instances: 0 },
     teams: emptyTeams(),
+    campaign: emptyCampaign(),
     settings: { ...DEFAULT_SETTINGS, ...settings },
     stats: {},
     periods: {

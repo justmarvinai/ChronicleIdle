@@ -8,7 +8,7 @@
 import type { Difficulty } from '@content/balance/battle';
 import {
   BREW_DROP_CHANCE,
-  CHAMPION_XP_BASE,
+  CHAMPION_XP_PER_ENERGY,
   FIRST_CLEAR,
   GEAR_DROP_CHANCE,
   GEAR_DROP_CHANCE_BOSS,
@@ -18,7 +18,7 @@ import {
   GOLD_DIFFICULTY,
   GOLD_STAGE_GROWTH,
   MATERIAL_DROPS,
-  PLAYER_XP_BASE,
+  PLAYER_XP_PER_ENERGY,
   SHARD_DROP_CHANCE,
   STAR_CHESTS,
   STAR_CHEST_THRESHOLDS,
@@ -89,8 +89,8 @@ export function runXp(input: Pick<RunRewardInput, 'difficulty' | 'energySpent'>)
 } {
   const multiplier = XP_DIFFICULTY[input.difficulty];
   return {
-    championXp: Math.round(CHAMPION_XP_BASE * input.energySpent * multiplier),
-    playerXp: Math.round(PLAYER_XP_BASE * input.energySpent * multiplier),
+    championXp: Math.round(CHAMPION_XP_PER_ENERGY * input.energySpent * multiplier),
+    playerXp: Math.round(PLAYER_XP_PER_ENERGY * input.energySpent * multiplier),
   };
 }
 

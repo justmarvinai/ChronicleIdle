@@ -1,11 +1,15 @@
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyDef, CurrencyId } from '@content/currencies/types';
+import { maxBattleSpeed } from '@engine/campaign/progress';
 import { energyCap, msUntilNextEnergy } from '@engine/economy/energy';
 import type { FeatureId } from '@content/balance/unlocks';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
+import { currentPointer, progressOf } from './campaign';
 import type { GameStore } from './store';
 
+import type { StagePointer } from '@engine/campaign/progress';
 import type { Roster } from '@engine/champions/instance';
+import type { CampaignSave } from '@engine/schema/save';
 import type { Route } from './ui-types';
 
 export const selectSave = (s: GameStore) => s.save;
@@ -61,3 +65,25 @@ export const selectFeatureUnlocked =
   (feature: FeatureId) =>
   (s: GameStore): boolean =>
     isFeatureUnlocked(feature, s.save?.profile.level ?? 0);
+
+// ---------------------------------------------------------------------------------------------
+// Campaign
+// ---------------------------------------------------------------------------------------------
+
+export const selectCampaign = (s: GameStore): CampaignSave | null => s.save?.campaign ?? null;
+export const selectAutoRepeat = (s: GameStore): number => s.save?.campaign.autoRepeat ?? 1;
+
+/**
+ * Battle speeds a chronicle may use: ×3 and ×4 are earned by finishing Normal and Hard
+ * (GAME_DESIGN.md §6), so the setting is clamped to this rather than to the content list.
+ */
+export const selectMaxBattleSpeed = (s: GameStore): 1 | 2 | 3 | 4 =>
+  s.save ? maxBattleSpeed(progressOf(s.save)) : 2;
+
+/**
+ * Where the campaign screens open. Returns a fresh object, so components must memoise it on the
+ * campaign slice rather than subscribe to it directly.
+ */
+export function campaignPointer(s: GameStore): StagePointer | null {
+  return s.save ? currentPointer(s.save) : null;
+}

@@ -47,6 +47,14 @@ All notable changes to ChronicleIdle are documented here. The format follows
 - **`ai.prefer` on abilities**: an ability can name who it goes for (`lowest_hp`,
   `lowest_hp_percent`, `highest_atk`, `lowest_def`) instead of taking its side's default. The
   Marksman archetype uses it to pick off the champion closest to death.
+- **Save v4** carries campaign progress (stars and best turns per stage and difficulty, the stage
+  the screens reopen on, and the auto-repeat count) with a migration from v3 and a frozen `v3.json`
+  fixture. Runs go through the store: `startCampaignRun` charges the energy *before* the battle, so
+  a reload mid-fight cannot yield a free run, and `finishCampaignRun` records the stars and pays
+  the gold, materials, shards, brews, gems, energy and XP in one write.
+- **Champions and the player now level from battle XP** (`ECONOMY.md` §3.1, §4): a win's XP fills
+  the bar and levels while it can, stopping at the star tier's cap and reporting the overflow. The
+  level-up moment — the energy refill, the rewards and the celebration — is still Phase 4's.
 - `UnitReport.died` records that a champion went down even if it was revived, which is what the
   campaign's second star asks about.
 

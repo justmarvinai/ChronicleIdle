@@ -27,6 +27,15 @@ import { sanitizeTeam, validateTeam } from '@engine/battle/teams';
 import type { Clock } from '@engine/time/clock';
 import { createRng, hashString } from '@engine/rng/rng';
 import { systemClock } from '@platform/clock';
+import type { StagePointer } from '@engine/campaign/progress';
+import {
+  applyRunFinish,
+  applyRunStart,
+  stageRefOf,
+  type RunFinishInput,
+  type RunStarted,
+  type RunSummary,
+} from './campaign';
 import { EventBus } from './events';
 import type { OfflineReport } from './offline';
 import type { DialogRoute, Route, Toast, ToastKind } from './ui-types';
@@ -114,6 +123,17 @@ export interface GameActions {
   setLastUsedTeam(mode: TeamMode, instanceIds: readonly string[]): void;
   /** Lifetime battle counters for the profile and later quests. */
   recordBattle(outcome: BattleOutcome, encounterId: string): void;
+  /** Points the map, stage list and battle setup at a stage; it reopens there. */
+  selectStage(pointer: StagePointer): Result<void>;
+  /** Runs the auto-repeat selector is set to (1 = a single run). */
+  setAutoRepeat(runs: number): void;
+  /**
+   * Charges one run of a stage and returns the encounter to fight. The energy leaves the wallet
+   * before the battle starts, so a reload mid-fight never yields a free run.
+   */
+  startCampaignRun(pointer: StagePointer): Result<RunStarted>;
+  /** Records a finished run: stars, best turns, rewards, champion and player XP. */
+  finishCampaignRun(input: RunFinishInput): Result<RunSummary>;
 }
 
 export type GameStore = GameState & { actions: GameActions };
@@ -561,6 +581,65 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 save.teams[mode].lastUsed = sanitizeTeam(save.roster, instanceIds, 4);
               });
             },
+            selectStage(pointer) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              if (!stageRefOf(pointer))
+                return fail('invalid_argument', `No stage ${pointer.settlement}.${pointer.stage}`);
+              withSave((save) => {
+                save.campaign.selected = pointer;
+              });
+              return ok(undefined);
+            },
+
+            setAutoRepeat(runs) {
+              withSave((save) => {
+                save.campaign.autoRepeat = Math.max(1, Math.min(50, Math.round(runs)));
+              });
+            },
+
+            startCampaignRun(pointer) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<RunStarted> = fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              set((state) => {
+                if (!state.save) return;
+                result = applyRunStart(state.save, pointer, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok)
+                events.emit({
+                  type: 'energy.changed',
+                  delta: -result.value.cost,
+                  total: get().save?.energy.value ?? 0,
+                });
+              return result;
+            },
+
+            finishCampaignRun(input) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<RunSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyRunFinish(state.save, input);
+                if (result.ok) state.save.updatedAt = input.now;
+              });
+              if (!result.ok) return result;
+              const summary = result.value;
+              if (summary.changes.length)
+                events.emit({ type: 'currency.changed', changes: summary.changes, reason: 'campaign' });
+              events.emit({
+                type: 'campaign.runFinished',
+                stageId: `stage.${String(input.pointer.settlement).padStart(2, '0')}.${String(
+                  input.pointer.stage,
+                ).padStart(2, '0')}`,
+                difficulty: input.pointer.difficulty,
+                stars: summary.stars,
+                firstClear: summary.firstClear,
+              });
+              return result;
+            },
+
             recordBattle(outcome, encounterId) {
               withSave((save) => {
                 const bump = (key: string, by = 1): void => {

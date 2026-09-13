@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { nextStage } from '@engine/campaign/progress';
 import { createNewGame } from '@engine/save/new-game';
 import { SAVE_VERSION } from '@engine/schema/save';
 import { migrateSave } from './migrations';
@@ -44,6 +45,7 @@ describe('migrateSave', () => {
     expect(result.save.stats).toEqual({ playtime_ms: 3_600_000, hub_visits: 4 });
     expect(result.save.roster).toEqual({});
     expect(result.save.counters).toEqual({ instances: 0 });
+    expect(result.save.campaign.stars).toEqual({});
     expect('avatarKey' in result.save.profile).toBe(false);
   });
 
@@ -73,15 +75,40 @@ describe('migrateSave', () => {
     });
   });
 
+  it('upgrades a Phase 2 (version 3) chronicle to a campaign at its first stage', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v3.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(3);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // Everything played in Phase 2 survives…
+    expect(result.save.profile.level).toBe(3);
+    expect(Object.keys(result.save.roster)).toHaveLength(5);
+    expect(result.save.teams.campaign.lastUsed).toEqual([
+      'reva_ashblade-1',
+      'wenna_novice-3',
+      'gil_scrapper-4',
+    ]);
+    expect(result.save.settings.battleSpeed).toBe(2);
+    expect(result.save.settings.autoBattle).toBe(true);
+    expect(result.save.stats['battles.victory']).toBe(9);
+    // …and the campaign starts from nothing, pointed at its first stage.
+    expect(result.save.campaign).toEqual({ stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 });
+    expect(nextStage(result.save.campaign)).toEqual({ settlement: 1, stage: 1, difficulty: 'intro' });
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [
       {
         from: 0,
-        to: 3,
+        to: SAVE_VERSION,
         migrate: (raw) => ({
           ...raw,
-          saveVersion: 3,
+          saveVersion: SAVE_VERSION,
           profile: { ...(raw['profile'] as object), name: raw['legacyName'] as string },
         }),
       },

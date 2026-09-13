@@ -43,6 +43,16 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       },
     }),
   },
+  {
+    // Phase 3: campaign progress. A chronicle from before the campaign starts at its first stage.
+    from: 3,
+    to: 4,
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 4,
+      campaign: { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 },
+    }),
+  },
 ];
 
 export interface MigrationResult {

@@ -40,7 +40,7 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 ### 3.1 Champion XP
 
 ```
-xpToNext(L) = round(25 × L^1.7)          (L = current level; sum to 60 ≈ 583k)
+xpToNext(L) = round(25 × L^1.7)          (L = current level; sum to 60 = 572,463)
 ```
 Sources: battles (`CAMPAIGN.md` §7: `30 × energy × diffMult` per champion per win), brews
 (elemental 1,500 XP, ×1.5 if the element matches → 2,250; universal 1,500), food champions:

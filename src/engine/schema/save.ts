@@ -1,12 +1,14 @@
 /**
- * Save-game schema, version 3 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
+ * Save-game schema, version 4 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
  * current phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
+import { DIFFICULTY_MULT, type Difficulty } from '@content/balance/battle';
+import { SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
 import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES } from '@content/champions/types';
 import { CURRENCY_IDS } from '@content/currencies/types';
 
-export const SAVE_VERSION = 3 as const;
+export const SAVE_VERSION = 4 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -58,8 +60,30 @@ export const teamModeSchema = z.object({
 export const TEAM_MODES = ['campaign', 'boss'] as const;
 export type TeamMode = (typeof TEAM_MODES)[number];
 
-export const saveSchemaV3 = z.object({
-  saveVersion: z.literal(3),
+const DIFFICULTIES = Object.keys(DIFFICULTY_MULT) as [Difficulty, ...Difficulty[]];
+
+/** Where the player is pointed: the map, stage list and battle setup reopen here. */
+export const stagePointerSchema = z.object({
+  settlement: z.number().int().min(1).max(SETTLEMENT_COUNT),
+  stage: z.number().int().min(1).max(STAGES_PER_SETTLEMENT),
+  difficulty: z.enum(DIFFICULTIES),
+});
+
+/**
+ * Campaign progress (docs/design/CAMPAIGN.md §3). Only what was played is stored: stars and best
+ * turns per `<stageId>|<difficulty>`. Unlocks, chests and "where am I" are derived from these by
+ * `@engine/campaign/progress`, so the save can never disagree with itself (CLAUDE.md §5.5).
+ */
+export const campaignSchema = z.object({
+  stars: z.record(z.string(), z.number().int().min(1).max(3)),
+  bestTurns: z.record(z.string(), z.number().int().min(1)),
+  selected: stagePointerSchema.nullable(),
+  /** Runs the auto-repeat selector is set to; 1 is a single run (CAMPAIGN.md §9). */
+  autoRepeat: z.number().int().min(1).max(50),
+});
+
+export const saveSchemaV4 = z.object({
+  saveVersion: z.literal(4),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -81,17 +105,24 @@ export const saveSchemaV3 = z.object({
   /** Running counters that mint stable ids. */
   counters: z.object({ instances: z.number().int().min(0) }),
   teams: z.object({ campaign: teamModeSchema, boss: teamModeSchema }),
+  campaign: campaignSchema,
   settings: settingsSchema,
   /** Lifetime counters used by quests, missions and the profile screen. */
   stats: z.record(z.string(), z.number()),
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV3 = z.infer<typeof saveSchemaV3>;
-export type SaveGame = SaveGameV3;
+export type SaveGameV4 = z.infer<typeof saveSchemaV4>;
+export type SaveGame = SaveGameV4;
 export type TeamPresets = SaveGame['teams'];
+export type CampaignSave = SaveGame['campaign'];
+export type StagePointer = z.infer<typeof stagePointerSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV3;
+export const saveSchema = saveSchemaV4;
+
+export function emptyCampaign(): CampaignSave {
+  return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };
+}
 
 export function emptyTeams(): TeamPresets {
   return {

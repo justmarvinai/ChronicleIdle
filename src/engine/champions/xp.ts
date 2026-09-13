@@ -17,3 +17,35 @@ export function championXpTotal(level: number): number {
 export function canLevel(level: number, stars: number): boolean {
   return level < levelCap(stars);
 }
+
+export interface XpGain {
+  level: number;
+  xp: number;
+  levelsGained: number;
+  /** XP that arrived after the star tier's cap and had nowhere to go. */
+  wasted: number;
+}
+
+/**
+ * Adds battle or brew XP, levelling while the bar fills (ECONOMY.md §3.1). A champion at its star
+ * tier's cap keeps its level and the overflow is reported rather than hidden, so the Tavern
+ * (Phase 5) can warn before it is spent.
+ */
+export function addChampionXp(
+  champion: { level: number; xp: number; stars: number },
+  amount: number,
+): XpGain {
+  const cap = levelCap(champion.stars);
+  let level = Math.min(champion.level, cap);
+  let xp = champion.xp + Math.max(0, Math.round(amount));
+  let levelsGained = 0;
+  while (level < cap) {
+    const needed = championXpToNext(level);
+    if (xp < needed) break;
+    xp -= needed;
+    level += 1;
+    levelsGained += 1;
+  }
+  const wasted = level >= cap ? xp : 0;
+  return { level, xp: level >= cap ? 0 : xp, levelsGained, wasted };
+}
