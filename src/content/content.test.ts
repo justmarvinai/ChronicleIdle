@@ -35,6 +35,7 @@ describe('content registry', () => {
       ['encounter.training.1', 3, 2],
       ['encounter.training.2', 3, 3],
       ['encounter.training.3', 4, 2],
+      ['encounter.bench.stress', 4, 2],
     ]);
   });
 

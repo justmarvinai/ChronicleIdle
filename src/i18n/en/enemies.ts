@@ -63,4 +63,8 @@ export const enemies = {
   'encounter.training.3.name': "The Warlord's Pit",
   'encounter.training.3.description':
     'A four-champion fight: a warden and a mender hold the line, then the Warlord and his raider. He enrages if you stall.',
+
+  'encounter.bench.stress.name': 'Stress Bench',
+  'encounter.bench.stress.description':
+    'Four against four, twice, at ×4: the perf bench fight. Not part of the game.',
 } as const;

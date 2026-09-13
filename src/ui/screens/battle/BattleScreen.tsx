@@ -42,7 +42,8 @@ function defaultChoice(request: DecisionRequest | null): {
 }
 
 /** The battle screen (docs/tech/UI_DESIGN.md §5.9): Pixi stage under a React HUD. */
-export default function BattleScreen(_props: ScreenProps) {
+export default function BattleScreen({ route }: ScreenProps) {
+  const bench = route.name === 'battle' && route.bench === true;
   const actions = useGameStore(selectActions);
   const save = useGameStore(selectSave);
   const status = useBattleSession((s) => s.status);
@@ -108,13 +109,19 @@ export default function BattleScreen(_props: ScreenProps) {
   // When the fight ends, record it once and move to the result screen after the last beat.
   useEffect(() => {
     if (status !== 'ended' || !outcome || !encounter) return;
+    if (bench) {
+      // Bench fights hand their frame statistics back to the perf screen and are never recorded.
+      battleController.recordFrameStats(stage.current?.frameStats() ?? null);
+      const id = window.setTimeout(() => actions.pop(), RESULT_DELAY_MS);
+      return () => window.clearTimeout(id);
+    }
     if (!recorded.current) {
       recorded.current = true;
       actions.recordBattle(outcome, encounter.id);
     }
     const id = window.setTimeout(() => actions.replace({ name: 'battle-result' }), RESULT_DELAY_MS);
     return () => window.clearTimeout(id);
-  }, [status, outcome, encounter, actions]);
+  }, [status, outcome, encounter, actions, bench]);
 
   const activeUnitId = useMemo(() => {
     for (let i = log.length - 1; i >= 0; i--) {

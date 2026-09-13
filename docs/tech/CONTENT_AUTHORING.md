@@ -92,15 +92,42 @@ resolves (the content test renders each one).
 ## 3. Enemy
 
 ```ts
+import { hit, status } from '@content/champions/dsl';
+import { defineEnemy } from './dsl';
+
 export default defineEnemy({
-  id: 'enemy.thornwood_cutpurse', name: 'enemy.thornwood_cutpurse.name',
-  archetype: 'raider', element: 'valor', faction: 'thornwood_bandits',
-  overrides: { stats: { spd: 94 } },                      // optional tweaks on the archetype base
-  abilities: 'archetype',                                  // or an explicit list like champions
-  art: { model: 'model.placeholder_lizard', tint: '#8b5a2b', scale: 1 },
+  id: 'enemy.remnant_raider',
+  archetype: 'raider', element: 'valor', role: 'attack',
+  stats: [1_400, 150, 90, 92, 10, 50, 10, 10],            // HP ATK DEF SPD C.RATE C.DMG RES ACC at Intro, stage 0
+  art: { tint: '#a0522d' },                                 // lizard placeholder tinted per faction; model/scale/facing optional
+  abilities: [
+    { slot: 'a1', key: 'cleave', icon: 'spell.weapon_hatchet', effects: [hit(3.0)] },
+    { slot: 'a2', key: 'reckless_swing', icon: 'spell.weapon_cleaver_axe', cooldown: 3, effects: [hit(4.2)] },
+  ],
+  // passives?: [{ key, icon, trigger, effects, oncePerBattle? }], boss?: { rotation, enrage }
 });
 ```
-Archetype bases and scaling are in `balance/enemies.ts` (see `docs/design/CAMPAIGN.md` §5).
+Ids and i18n keys derive from the enemy id (`ab.remnant_raider.cleave.name` / `.description`);
+abilities use the champion effect builders. Stats are the archetype base at Intro, stage index 0
+and are scaled per encounter (`BATTLE.md` §4.5): `× DIFFICULTY_MULT × (1 + STAGE_GROWTH ×
+stageIndex) × statMult`, bosses ×1.8 HP and ×1.25 ATK/DEF. Strings live in `src/i18n/en/enemies.ts`.
+
+### 3.1 Encounter
+
+```ts
+{
+  id: 'encounter.training.2', name: 'encounter.training.2.name', description: '…description',
+  kind: 'training',            // 'training' | 'campaign' (3 champions) · 'boss' | 'bench' (4)
+  partySize: 3, difficulty: 'intro', stageIndex: 0, enemyLevel: 2,   // enemyLevel is what plates show
+  turnLimit: 40, turnLimitMode: 'ally', timeUpIsDefeat: true,
+  backdrop: 'bg.bg8', music: 'battle', surface: 'stone', version: 1,
+  waves: [{ enemies: [{ enemyId: 'enemy.remnant_raider', statMult: 0.85 }, …] }, …],
+}
+```
+Encounters are plain `EncounterDef` objects listed in `src/content/encounters/index.ts`
+(`training.ts` for the Training Grounds, `bench.ts` for the perf bench; campaign stages and
+bosses generate theirs in later phases). The validator checks enemy ids, i18n keys, the backdrop
+key and the party size per kind.
 
 ## 4. Settlement and stages
 
@@ -173,12 +200,14 @@ Each constant has a doc comment: what it does, what it affects, safe range.
 - Owner-provided sounds live under `/game/assets/music_and_sounds/{sfx,ambience_sounds,background_music}`
   and VFX sheets under `/game/assets/music_and_sounds/vfx`. They are never renamed; the pipeline
   sanitises names into manifest keys.
-- Generated sounds are recipes in `tools/audio/recipes/<key>.ts` (synth graph + envelope +
-  effects); generated VFX are recipes in `tools/vfx/recipes/<key>.ts` (procedural frames).
+- Generated sounds are recipes in `tools/audio/recipes.ts` (synth graph + envelope + effects);
+  generated VFX are recipes in `tools/vfx/recipes.ts` (one `VfxRecipe` per key, painted frame by
+  frame with the soft shapes of `tools/vfx/painter.ts`, rendered as `fx.gen.<name>` strips).
   Recipes are source; rendered files are build artifacts.
 - Map game events to assets in `src/audio/registry.ts` (sound keys → variants) and
-  `src/render/fx/registry.ts` (effect keys → sheet + fps + anchor + blend). Abilities reference
-  effect keys (`fx: 'valor.fireball'`) and optional sound keys; defaults come from the element.
+  `src/render/battle/fx/registry.ts` (effect keys → sheet + scale + speed + tint + blend). The
+  presenter picks casts, projectiles and hits by the caster's element; physical hits, crits,
+  heals, buffs, debuffs, shields, DoT ticks, deaths and turn-meter gains have their own keys.
 - Every new asset gets a row in `docs/tech/CREDITS.md`.
 
 ## 11. Tuning workflow

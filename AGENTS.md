@@ -72,7 +72,7 @@ Documentation
 | a banner | `src/content/banners/<id>.ts` with rate table + rotation | `docs/design/SUMMONING.md` |
 | a balance tweak | edit `src/content/balance/*.ts`, run `pnpm sim:balance`, note in CHANGELOG "Balance" | `docs/design/*` tables |
 | a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes/`; map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
-| a visual effect | owner sheet under `/game/assets/music_and_sounds/vfx/**` or a procedural recipe in `tools/vfx/recipes/`; register in `src/render/fx/registry.ts`; add a credits row | `docs/tech/UI_DESIGN.md` §6.3 |
+| a visual effect | owner sheet under `/game/assets/music_and_sounds/vfx/**` or a procedural recipe in `tools/vfx/recipes.ts`; register in `src/render/battle/fx/registry.ts`; add a credits row | `docs/tech/UI_DESIGN.md` §6.3 |
 
 ## 5. Never do
 

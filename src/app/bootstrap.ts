@@ -101,9 +101,10 @@ async function run(report: ProgressReporter): Promise<void> {
       }
     });
   }
-  // `?screen=devkit` opens the component gallery (docs/tech/UI_DESIGN.md §9) in every build.
+  // `?screen=devkit` opens the component gallery (docs/tech/UI_DESIGN.md §9) and `?screen=perf`
+  // the battle perf bench (CLAUDE.md §5.6) in every build; neither is linked from the game.
   const screen = new URLSearchParams(window.location.search).get('screen');
-  if (screen === 'devkit') actions.resetStack({ name: 'devkit' });
+  if (screen === 'devkit' || screen === 'perf') actions.resetStack({ name: screen });
 }
 
 /** Menu motion follows the setting, or the OS preference until a chronicle exists. */

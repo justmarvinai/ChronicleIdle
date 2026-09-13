@@ -399,4 +399,22 @@ export const ui = {
   'battleResult.team': 'Team',
   'battleResult.hub': 'Emberhold',
   'battleResult.seed': 'Seed {seed}',
+
+  'perf.title': 'Battle perf bench',
+  'perf.body':
+    'Runs the Stress Bench fight (4 v 4, two waves, ×4, auto) with four maxed legendaries and reports frame times. Budget: p95 ≤ 16 ms on an Iris Xe class iGPU.',
+  'perf.needSave': 'Open or create a chronicle first: the bench fights on the normal battle screen.',
+  'perf.run': 'Run ×4 stress battle',
+  'perf.rerun': 'Run again',
+  'perf.back': 'Return to Emberhold',
+  'perf.report': 'Last run',
+  'perf.p50': 'p50',
+  'perf.p95': 'p95',
+  'perf.max': 'max',
+  'perf.samples': 'frames',
+  'perf.outcome': 'Outcome',
+  'perf.pass': 'Within budget',
+  'perf.fail': 'Over budget',
+  'perf.none': 'No run yet.',
+  'perf.startFailed': 'The bench could not start: {message}',
 } as const;

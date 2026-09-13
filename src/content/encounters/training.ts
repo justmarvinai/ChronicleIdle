@@ -1,8 +1,10 @@
 /**
  * Training Grounds (ROADMAP.md Phase 2): three encounters on the Emberhold practice field,
  * replaced by the Campaign in Phase 3. Scaling follows BATTLE.md §4.5 at Intro difficulty.
- * Compositions were tuned with a seeded win-rate sweep so the level-1 starter trio beats 1 and
- * 2 on auto (~29/30 seeds) and a full party of four wins the Warlord fight (~28/30).
+ * Compositions and the 0.85 stat multiplier were tuned with a seeded win-rate sweep over the three
+ * starting rosters (starter + Wenna + Gil, plus Bran in the boss fight) at level 1 on auto:
+ * encounters 1 and 2 are won ≥ 29/30 seeds by every roster; the Warlord fight is won 30/30 by the
+ * Ser Corvin and Reva rosters and ~19/30 by Sister Maelis's healer-heavy one.
  */
 import { CAMPAIGN_TURN_LIMIT_DEFAULT } from '@content/balance/battle';
 import type { EncounterDef } from './types';
@@ -18,6 +20,11 @@ const base = {
 
 const wave = (...enemyIds: string[]): EncounterDef['waves'][number] => ({
   enemies: enemyIds.map((enemyId) => ({ enemyId })),
+});
+/** Training foes fight at 85 % of the archetype base: the roster is level 1 and ungeared. */
+const TRAINING_STAT_MULT = 0.85;
+const softWave = (...enemyIds: string[]): EncounterDef['waves'][number] => ({
+  enemies: enemyIds.map((enemyId) => ({ enemyId, statMult: TRAINING_STAT_MULT })),
 });
 
 const RAIDER = 'enemy.remnant_raider';
@@ -52,7 +59,7 @@ export const TRAINING_ENCOUNTERS: readonly EncounterDef[] = [
     enemyLevel: 2,
     backdrop: 'bg.bg8',
     surface: 'stone',
-    waves: [wave(RAIDER, MARKSMAN), wave(HEXER, RAIDER), wave(MENDER, RAIDER)],
+    waves: [softWave(RAIDER, MARKSMAN), softWave(HEXER, RAIDER), softWave(MENDER, RAIDER)],
   },
   {
     ...base,
@@ -67,6 +74,6 @@ export const TRAINING_ENCOUNTERS: readonly EncounterDef[] = [
     backdrop: 'bg.bg3',
     music: 'boss',
     surface: 'stone',
-    waves: [wave(WARDEN, MENDER), wave(WARLORD, RAIDER)],
+    waves: [softWave(WARDEN, MENDER), softWave(WARLORD, RAIDER)],
   },
 ];

@@ -29,6 +29,7 @@ import { buildModels } from './steps/models.ts';
 import { buildUi } from './steps/ui.ts';
 import { buildVfx } from './steps/vfx.ts';
 import { buildGeneratedAudio } from '../audio/build.ts';
+import { buildGeneratedVfx } from '../vfx/build.ts';
 
 const args = new Set(process.argv.slice(2));
 const quiet = args.has('--quiet');
@@ -144,6 +145,7 @@ async function main(): Promise<void> {
     ]);
     await buildAudio(ctx);
     await buildGeneratedAudio(ctx);
+    await buildGeneratedVfx(ctx);
   } catch (error) {
     // Keep what was produced so the next run resumes instead of starting over.
     await cache.save();

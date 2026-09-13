@@ -61,28 +61,41 @@ Related: `CLAUDE.md` §3–5 (stack, layout, rules), `DECISIONS.md` (why), `CONT
 ### 3.2 Battle module
 
 ```
-createBattle(setup: BattleSetup, content, seed) → BattleState
-step(state: BattleState, decision?: Decision) → { state, events: BattleEvent[], request?: DecisionRequest, outcome?: Outcome }
-autoDecide(state, unitId, policy) → Decision
-resolveOutcome(state) → BattleResult (damage dealt, turns, deaths, stars input)
+createBattle(setup: BattleSetup, seed) → BattleState          // setup: encounter, party, enemyById, control
+step(state, decision?) → { events, request, outcome }         // exactly one unit's turn per call
+runAuto(state) → { events, outcome }                          // whole fight, headless
+replay(setup, seed, decisions) → BattleEvent[]                // the determinism proof
+autoDecide(state, unit) → Decision · snapshot(state) → BattleView · retreat(state) · setControl(state, mode)
 ```
 
-- `BattleSetup`: party (champion instance snapshots with computed stats), encounter (waves, boss
-  config, turn limits), control mode, seed.
-- The simulation is synchronous; `step` advances until the next decision request (manual, ally
-  turn) or the end. In auto mode the controller loops `step(autoDecide(...))` until done — the
-  full battle can be simulated instantly for tests and for `pnpm sim:balance`.
-- **Determinism**: `xorshift128+` RNG seeded per battle; the seed and the decision log are stored
-  in the battle result for replays and bug reports.
+- `BattleSetup`: party (`{ instance, def }` pairs; stats are computed at creation), encounter
+  (waves, scaling, turn limits, boss config through the enemy defs), control mode. The seed is
+  mixed with the encounter id and the party so two fights never share a stream.
+- `BattleState` is mutable and advanced in place: `step` resolves one turn, returns early with a
+  `DecisionRequest` for a manual ally, and resumes with that decision. Only player decisions are
+  logged — AI decisions re-derive from state and seed — so a replay is `(setup, seed, decisions)`.
+- **Determinism**: the xorshift RNG lives in the state and is forked per subsystem; nothing in
+  `engine/` reads the clock or `Math.random`.
 - Effect resolution follows `docs/design/BATTLE.md` §6 with one resolver per `kind` in
-  `engine/battle/effects/<kind>.ts`, registered in `effects/index.ts`.
+  `engine/battle/effects/<kind>.ts`, registered in `effects/index.ts`; passive-only kinds live in
+  `passives.ts`, `stats.ts` and `damage.ts`.
+- `wave.started` carries the spawned units' `UnitView`s so presenters never reach into the state;
+  `snapshot` produces the same view for the HUD and the result screen.
 
 ### 3.3 Battle controller (state layer)
 
-`BattleController` owns the live battle: it holds `BattleState`, exposes `useBattle()` to React,
-runs the simulation in **chunks** so the presenter never starves: the controller requests
-`step()` only when the presenter has consumed the previous events (back-pressure), except in
-"instant" contexts (tests, sim). Speed changes alter presenter timing only.
+`battleController` (`src/state/battle/controller.ts`, a Zustand vanilla store read through
+`useBattleSession`) owns the live battle. `start({ encounterId, instanceIds, roster, control,
+speed, seed, awaitPresenter })` validates the team, creates the state and pumps `step()` with
+**back-pressure**: the next step runs only after the presenter's `play(events, speed, onEvent)`
+promise resolves. The store holds the *presented* view — every event is folded into it as the
+presenter lands it (`applyEventToView`: HP, shields, statuses, TM, waves, corpses leaving on the
+next wave), plus the open `DecisionRequest`, a 400-event log for the Info panel, the outcome and,
+for bench fights, the stage's frame statistics. `awaitPresenter` (set by the UI flow) holds the
+pump until the battle screen attaches its stage presenter, so no turn resolves off-screen; tests
+and headless runs use the `instantPresenter` and never wait. Switching to auto answers an open
+request with the AI policy; speed changes alter presenter timing only; `retreat()` ends the
+fight; `end()` tears the session down after the result screen.
 
 ### 3.4 Presenter (render layer)
 
@@ -101,6 +114,13 @@ runs the simulation in **chunks** so the presenter never starves: the controller
 
 Ultimate (A4) casts trigger a **cut-in**: the champion's avatar slides across a dark slash with
 speed lines and the ability name — the only place the 1254² avatars are shown large.
+
+Shipped shape (Phase 2): `createBattleStage(host, { backdrop, view, hooks, embers })` mounts a
+Pixi application on the 1920 × 1080 stage grid (`render/battle/layout.ts`, shared with the HUD's
+plate anchors) and returns `{ presenter, setPaused, frameStats, destroy }`. Effects come from
+`render/battle/fx/registry.ts` (owner packs + generated `fx.gen.*` flipbooks) and play through
+`fx/flipbook.ts`; numbers from `numbers.ts`; the melee/ranged choreography is synthesised from
+squash-stretch, lunges and projectile flights rather than authored attack animations.
 
 ### 3.5 Economy, progression, summon, quests
 
@@ -126,10 +146,12 @@ Selectors compute derived data (total stats, power, unlocks, quest progress) and
 
 ### 4.1 Save schema (v2 — target shape)
 
-Shipped so far: v1 (Phase 0: profile, wallet, energy, settings, stats, periods, provisions) and
+Shipped so far: v1 (Phase 0: profile, wallet, energy, settings, stats, periods, provisions),
 v2 (Phase 1: `roster`, `counters`, `profile.avatarChampionId`; migration 1→2 drops the old
-`avatarKey`). Fields below that no phase has shipped yet are the planned shape and are added by
-their phase with a migration and a fixture in `tests/fixtures/saves/`.
+`avatarKey`) and v3 (Phase 2: `teams` with three presets and the last team per party-size mode;
+`settings.battleSpeed` / `settings.autoBattle`). Fields below that no phase has shipped yet are
+the planned shape and are added by their phase with a migration and a fixture in
+`tests/fixtures/saves/`.
 
 ```ts
 interface SaveGame {
@@ -247,13 +269,19 @@ The manifest is typed (`AssetKey` union) so a typo in a content file is a compil
   `tools/sim/teams.ts`: "starter Lv10", "mid Epic team 4★40", "endgame 6★60 geared") and prints
   win rate, average turns, and a difficulty curve; fails CI if a stage's win rate for its intended
   tier falls outside the band declared in `CAMPAIGN.md` §5 notes.
-- `tools/perf/battle-bench.ts`: headless Chromium via Playwright records frame times for a ×4
-  4 v 4 stress battle with FX; reports p50/p95.
+- `tools/perf/battle-bench.ts` (`pnpm perf:battle`, against a running preview): headless
+  Chromium via Playwright creates a throwaway chronicle, opens `/?screen=perf` and runs the Stress
+  Bench encounter (4 v 4, two waves, ×4, four maxed legendaries) on the real battle screen; the
+  stage records unclamped frame times and the perf screen reports p50/p95/max (`--strict` fails
+  over the 16 ms budget; `--software` forces SwiftShader for GPU-less runners, whose numbers only
+  compare with earlier software runs).
 - `tools/audio`: deterministic synth recipes (oscillators, noise, envelopes, filters, convolution
   reverb) rendered to OGG/MP3 at build time for UI ticks, stingers and layered impacts; recipes are
   code, outputs are build artifacts.
-- `tools/vfx`: procedural flipbook generator (slash arcs, rune rings, sparks, smoke, speed lines,
-  rarity bursts) rendered to atlases at build time, same format as the owner's packs.
+- `tools/vfx`: procedural flipbook generator — `recipes.ts` paints frames deterministically with
+  the soft-shape raster in `painter.ts`, `build.ts` renders them as horizontal PNG strips through
+  the asset pipeline (`fx.gen.slash_arc`, `sparks`, `rune_ring`, `smoke`, `speed_lines`; rarity
+  bursts arrive with Summoning), same manifest shape as the owner's packs.
 
 ## 10. Electron readiness (backlog)
 

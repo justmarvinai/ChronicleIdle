@@ -1,7 +1,13 @@
 import { DAILY_RESET_HOUR, STARTING_WALLET, WEEKLY_RESET_WEEKDAY } from '@content/balance/economy';
 import { energyCap } from '@engine/economy/energy';
 import { walletWith } from '@engine/economy/wallet';
-import { DEFAULT_SETTINGS, SAVE_VERSION, emptyTeams, type SaveGame, type Settings } from '@engine/schema/save';
+import {
+  DEFAULT_SETTINGS,
+  SAVE_VERSION,
+  emptyTeams,
+  type SaveGame,
+  type Settings,
+} from '@engine/schema/save';
 import { dailyKey, weeklyKey } from '@engine/time/clock';
 
 export interface NewGameInput {

@@ -27,15 +27,17 @@ export default function TrainingScreen(_props: ScreenProps) {
       <TopBar title={t('training.title')} onBack={() => actions.pop()} />
       <p className={styles.intro}>{t('training.body')}</p>
       <div className={styles.cards}>
-        {content.encounters.map((encounter, index) => (
-          <EncounterCard
-            key={encounter.id}
-            encounter={encounter}
-            index={index}
-            cleared={save?.stats[`battles.won.${encounter.id}`] ?? 0}
-            onOpen={() => actions.push({ name: 'battle-setup', encounterId: encounter.id })}
-          />
-        ))}
+        {content.encounters
+          .filter((encounter) => encounter.kind === 'training')
+          .map((encounter, index) => (
+            <EncounterCard
+              key={encounter.id}
+              encounter={encounter}
+              index={index}
+              cleared={save?.stats[`battles.won.${encounter.id}`] ?? 0}
+              onOpen={() => actions.push({ name: 'battle-setup', encounterId: encounter.id })}
+            />
+          ))}
       </div>
     </div>
   );

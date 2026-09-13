@@ -274,7 +274,7 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 
 Element FX are picked from the two provided packs; the presenter tints and scales them. Missing
 shapes (slashes, rune rings, smoke, speed lines) are generated procedurally by `tools/vfx` into
-the same atlas format. All keys live in `src/render/fx/registry.ts`.
+the same atlas format. All keys live in `src/render/battle/fx/registry.ts`.
 
 | Use | Sheets (Free Pixel Effects Pack = FPEP, 100 px grids; GameFX = 64/96/133 px strips) |
 | --- | --- |
@@ -283,7 +283,8 @@ the same atlas format. All keys live in `src/render/fx/registry.ts`.
 | Faith (azure / frost) casts, projectiles, hits | GameFX `IceCast_96x96`, `IcePick_64x64`, `IceShatter_96x96`, `IceShatter_2_96x96`, FPEP `3_bluefire`, `19_freezing` |
 | Eclipse (violet / void) casts and hits | FPEP `18_midnight`, `14_phantom`, `13_vortex`, `17_felspell`, `2_magic8`, `12_nebula` |
 | Poison / DoT ticks | GameFX `PoisonCast_96x96`, `PoisonClaw_96x96`; Burn uses `11_fire` small; Bleed uses generated droplets |
-| Physical hits (A1s, counters) | FPEP `10_weaponhit`, `5_magickahit` + generated slash arcs |
+| Physical hits (A1s, counters) | generated `fx.gen.slash_arc` + `fx.gen.sparks`; crits FPEP `5_magickahit` + sparks |
+| Generated (`tools/vfx`, keys `fx.gen.*`) | `slash_arc` (physical hits), `sparks` (physical hits, crits), `rune_ring` (turn-meter gains, extra turns), `smoke` (deaths), `speed_lines` (melee lunges) |
 | Buffs / shields / block | FPEP `8_protectioncircle`, GameFX `MagicBarrier_64x64`; ATK/DEF/SPD Up use tinted `4_casting` |
 | Heal / revive | FPEP `20_magicbubbles`, `1_magicspell` (green), GameFX `SmallStar_64x64`, `MediumStar_64x64` |
 | Explosions (ultimates, boss abilities) | GameFX `Explosion_96x96`, `Explosion_2_64x64`, `Explosion_3_133x133` |

@@ -335,6 +335,7 @@ pnpm typecheck          tsc --noEmit for the app and for tools/
 pnpm content:validate   validate all content and cross-references (ids, assets, strings)
 pnpm assets:build       generate atlases, WebP variants, audio and the typed manifest from /game
 pnpm assets:check       fail when the committed manifest no longer matches /game (CI)
+pnpm perf:battle        frame-time bench on a running preview (--strict fails over budget, --software = SwiftShader)
 pnpm sim:balance        (Phase 3) headless campaign/boss simulations, prints difficulty curve report
 ```
 

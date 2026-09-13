@@ -13,6 +13,24 @@ downloads by far (Lighthouse "total byte weight"). Re-encoding them in-house to 
 **Default until answered.** The originals ship untouched (music quality is the owner's call);
 the pipeline gains the re-encode step in Phase 15 (polish) if you say yes.
 
+### Q29 — Should an enemy's level scale its stats?
+**Why it matters.** `BATTLE.md` §4.5 scales enemies by difficulty and stage index only; the
+level shown on their plates (`enemyLevel`) is presentation, and the result screen's
+"under-levelled" hint compares those levels with your champions'. Making level a real multiplier
+would double up with the stage growth and change every campaign number.
+**Default until answered.** Level stays cosmetic. Campaign stages (Phase 3) will set
+`enemyLevel` to track the stage index so the read stays honest.
+
+### Q30 — Frame-budget sign-off on real hardware
+**Why it matters.** The remote build environment has no GPU: the battle perf bench runs on
+SwiftShader there (roughly 2–3 frames per second at 1080p), so its numbers cannot prove or
+disprove the 16 ms p95 budget of `CLAUDE.md` §5.6 on an Iris Xe class iGPU.
+**Default until answered.** Phase 2 ships with the bench in place; the budget is verified on
+your laptop with `pnpm build && pnpm preview` then `pnpm perf:battle` (the report prints as a
+Markdown table). If p95 lands above 16 ms there, the FX density and ember count are the first
+knobs (`render/battle/stage.ts` `embers`, `fx/registry.ts` scales) and the fix ships as a `0.0.2.x`
+patch.
+
 ## 2. Answered
 
 | # | Question | Owner's answer | Resulting change |

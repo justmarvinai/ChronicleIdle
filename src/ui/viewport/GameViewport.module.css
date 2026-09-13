@@ -1,7 +1,10 @@
 .window {
   position: fixed;
   inset: 0;
+  /* `clip` (not `hidden`): the unscaled 1920×1080 stage overflows the window box, and a focus or
+     scrollIntoView on a partly hidden element must never scroll the game out of place. */
   overflow: hidden;
+  overflow: clip;
   background: var(--bg-0);
 }
 
@@ -21,6 +24,7 @@
   top: 50%;
   transform-origin: center center;
   overflow: hidden;
+  overflow: clip;
   background: var(--bg-0);
   box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
   contain: layout style;

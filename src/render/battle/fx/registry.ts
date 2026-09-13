@@ -1,6 +1,7 @@
 /**
  * Effect keys → flipbook sheets and presentation parameters (docs/tech/UI_DESIGN.md §6.3).
- * Sheets come from the owner's two packs; tints and scales adapt one sheet to several uses.
+ * Sheets come from the owner's two packs and the in-house procedural flipbooks (`tools/vfx`,
+ * keys `fx.gen.*`); tints and scales adapt one sheet to several uses.
  */
 import type { FxKey } from '@assets/manifest.generated';
 import type { Element } from '@content/champions/types';
@@ -50,7 +51,11 @@ export const FX = {
   'hit.valor': def('fx.gamefx.fire_burst', { scale: 3, speed: 2.2 }),
   'hit.faith': def('fx.gamefx.ice_shatter', { scale: 2.6, speed: 2.2 }),
   'hit.eclipse': def('fx.pixel.vortex', { scale: 2.2, speed: 3 }),
-  'hit.physical': def('fx.pixel.weaponhit', { scale: 2.4, speed: 2.6, blend: 'screen' }),
+  'hit.physical': def('fx.gen.slash_arc', { scale: 2.2, speed: 1.1 }),
+  /** Layered over physical hits and crits. */
+  sparks: def('fx.gen.sparks', { scale: 2, speed: 1.1 }),
+  /** Trails a melee lunge (played behind the mover, flipped for right-to-left movers). */
+  lunge: def('fx.gen.speed_lines', { scale: 1.7, speed: 1.2, alpha: 0.7 }),
   'hit.crit': def('fx.pixel.magickahit', { scale: 2.8, speed: 2.6 }),
   heal: def('fx.pixel.magicbubbles', { scale: 2.4, speed: 2.4, tint: 0x7dff9a }),
   revive: def('fx.pixel.magicspell', { scale: 3, speed: 2, tint: 0xffe08a }),
@@ -63,9 +68,9 @@ export const FX = {
   'dot.bleed': def('fx.pixel.weaponhit', { scale: 1.6, speed: 3, tint: 0xff3b4b, blend: 'normal' }),
   explosion: def('fx.gamefx.explosion', { scale: 3, speed: 2 }),
   ultimate: def('fx.gamefx.explosion_3', { scale: 3.2, speed: 1.8 }),
-  tm: def('fx.gamefx.tornado_static', { scale: 2, speed: 3, tint: 0xcfe8ff }),
+  tm: def('fx.gen.rune_ring', { scale: 1.5, speed: 1, tint: 0xcfe8ff, anchorY: 0.62 }),
   stun: def('fx.gamefx.small_star', { scale: 1.6, speed: 3, tint: 0xfff4a0 }),
-  death: def('fx.pixel.nebula', { scale: 2.6, speed: 2.4, tint: 0x8a7a9a, blend: 'screen' }),
+  death: def('fx.gen.smoke', { scale: 2.6, speed: 1, tint: 0xb9b0c4, blend: 'normal', anchorY: 0.55 }),
 } as const satisfies Record<string, FxDef>;
 
 export type FxId = keyof typeof FX;

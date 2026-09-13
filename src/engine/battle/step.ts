@@ -3,6 +3,7 @@
  * unit's turn: it returns early with a `DecisionRequest` when a manual ally must decide, and
  * resumes with that decision. `runAuto` drives a whole battle; `replay` proves determinism.
  */
+import { unitView } from './snapshot';
 import {
   BOSS_ENRAGE_EVERY,
   BOSS_ENRAGE_STEP,
@@ -286,6 +287,7 @@ function checkBoard(state: BattleState, events: BattleEvent[]): BattleOutcome | 
       wave: state.waveIndex + 1,
       waveCount: state.waveCount,
       enemyIds: next.enemies.map((e) => e.unit.id),
+      units: next.enemies.map((e) => unitView(e.unit)),
     });
     for (const ally of livingUnits(state, 'ally')) {
       const ctx = makeContext(state, ally, 'wave', events);
@@ -325,11 +327,16 @@ export function step(state: BattleState, decision?: Decision): StepResult {
   if (state.phase === 'ended') return { events, request: null, outcome: state.outcome };
   if (state.turn === 0 && !state.pending) {
     events.push({ type: 'battle.started', seed: state.seed, waveCount: state.waveCount });
+    const firstWave = state.order.filter((id) => id.startsWith('w0e'));
     events.push({
       type: 'wave.started',
       wave: 1,
       waveCount: state.waveCount,
-      enemyIds: state.order.filter((id) => id.startsWith('w0e')),
+      enemyIds: firstWave,
+      units: firstWave
+        .map((id) => state.units[id])
+        .filter((u) => !!u)
+        .map(unitView),
     });
     for (const ally of livingUnits(state, 'ally')) {
       const ctx = makeContext(state, ally, 'wave', events);

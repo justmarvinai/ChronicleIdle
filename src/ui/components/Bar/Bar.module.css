@@ -8,6 +8,22 @@
   overflow: hidden;
   background: rgba(0, 0, 0, 0.45);
 }
+/* Hairline frame for thin bars: dark stone track, gold edge, inner shadow (kit materials). */
+.thin {
+  border: 1px solid rgba(240, 213, 122, 0.42);
+  background: linear-gradient(to bottom, #16141b, #2a2831);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(0, 0, 0, 0.6);
+}
+.thin .inner {
+  inset: 1px;
+  background: rgba(0, 0, 0, 0.35);
+}
+.thin .text {
+  font-size: 11px;
+  padding: 0 6px;
+}
 .fill {
   position: absolute;
   inset: 0 auto 0 0;

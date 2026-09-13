@@ -6,7 +6,8 @@
 import type { BackdropKey } from '@assets/manifest.generated';
 import type { Difficulty } from '@content/balance/battle';
 
-export const ENCOUNTER_KINDS = ['training', 'campaign', 'boss'] as const;
+/** `bench` encounters exist only for the perf bench (`?screen=perf`) and never list in-game. */
+export const ENCOUNTER_KINDS = ['training', 'campaign', 'boss', 'bench'] as const;
 export type EncounterKind = (typeof ENCOUNTER_KINDS)[number];
 
 export interface EncounterEnemy {

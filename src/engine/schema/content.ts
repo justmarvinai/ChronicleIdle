@@ -150,7 +150,7 @@ function validateEncounters(
     for (const key of [def.name, def.description])
       if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
     if (!refs.assetKeys.has(def.backdrop)) error(`${path}.backdrop`, `unknown asset key ${def.backdrop}`);
-    const expected = def.kind === 'boss' ? PARTY_SIZE_BOSS : PARTY_SIZE_CAMPAIGN;
+    const expected = def.kind === 'boss' || def.kind === 'bench' ? PARTY_SIZE_BOSS : PARTY_SIZE_CAMPAIGN;
     if (def.partySize !== expected)
       error(`${path}.partySize`, `${def.kind} encounters field ${expected} champions`);
     def.waves.forEach((wave, w) => {

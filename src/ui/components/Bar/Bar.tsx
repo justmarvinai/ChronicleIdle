@@ -22,7 +22,13 @@ export interface BarProps {
   className?: string;
 }
 
-/** Kit progress bar: stone track with a masked textured fill that eases towards the value. */
+/** Below this height the stone track's frame would swallow the fill; a hairline frame is used. */
+const THIN_HEIGHT = 24;
+
+/**
+ * Kit progress bar: stone track with a masked textured fill that eases towards the value. Thin
+ * bars (unit plates, chips) keep the kit fill but frame it with a gold hairline over dark stone.
+ */
 export function Bar({
   value,
   max,
@@ -35,10 +41,11 @@ export function Bar({
 }: BarProps) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   const track: KitKey = kind === 'ember' ? 'ui.dark_ember.bar_track_ember' : 'ui.stone_vine.bar_track_stone';
+  const thin = height < THIN_HEIGHT;
   return (
     <div
-      className={[styles.bar, className ?? ''].join(' ')}
-      style={{ height, width, ...kitBorder(track, kind === 'ember' ? 0.4 : 0.25) }}
+      className={[styles.bar, thin ? styles.thin : '', className ?? ''].join(' ')}
+      style={{ height, width, ...(thin ? {} : kitBorder(track, kind === 'ember' ? 0.4 : 0.25)) }}
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={max}
@@ -47,7 +54,7 @@ export function Bar({
     >
       <div className={styles.inner}>
         <div className={styles.fill} style={{ width: `${pct}%` }}>
-          <div className={styles.texture} style={kitBorder(FILL[kind], 0.25)} />
+          <div className={styles.texture} style={kitBorder(FILL[kind], thin ? 0.2 : 0.25)} />
         </div>
         {label || showNumbers ? (
           <div className={styles.text}>

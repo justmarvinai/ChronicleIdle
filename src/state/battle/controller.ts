@@ -28,6 +28,14 @@ import { applyEventToView } from './view';
 
 export type BattleSpeed = 1 | 2 | 3 | 4;
 
+/** Frame-time percentiles (ms) the stage measured over a fight (CLAUDE.md §5.6 budget). */
+export interface FrameStats {
+  p50: number;
+  p95: number;
+  max: number;
+  samples: number;
+}
+
 export interface BattleSessionState {
   status: 'idle' | 'running' | 'ended';
   encounter: EncounterDef | null;
@@ -42,6 +50,8 @@ export interface BattleSessionState {
   log: BattleEvent[];
   outcome: BattleOutcome | null;
   seed: string;
+  /** Set by the battle screen when a bench fight ends, read by the perf screen. */
+  frameStats: FrameStats | null;
 }
 
 export interface StartBattleInput {
@@ -52,6 +62,11 @@ export interface StartBattleInput {
   speed: BattleSpeed;
   /** Deterministic seed material (the save's seedRoot + a counter). */
   seed: string;
+  /**
+   * Hold the simulation until a presenter attaches (the battle screen mounting its stage), so no
+   * turn is resolved off-screen. Headless runs leave it off and play through the instant presenter.
+   */
+  awaitPresenter?: boolean;
 }
 
 const LOG_LIMIT = 400;
@@ -67,6 +82,7 @@ const initial: BattleSessionState = {
   log: [],
   outcome: null,
   seed: '',
+  frameStats: null,
 };
 
 export interface BattleController {
@@ -81,6 +97,8 @@ export interface BattleController {
   /** Tears the session down (after the result screen or on exit). */
   end(): void;
   attachPresenter(presenter: BattlePresenter | null): void;
+  /** Stores the stage's frame statistics for the perf screen (bench fights only). */
+  recordFrameStats(stats: FrameStats | null): void;
   onEnded(listener: (outcome: BattleOutcome) => void): () => void;
   /** Test/bench hook: the live simulation (never read it from React). */
   simulation(): BattleState | null;
@@ -92,6 +110,8 @@ export function createBattleController(): BattleController {
   let presenter: BattlePresenter = instantPresenter;
   let playing = false;
   let session = 0;
+  /** False while `awaitPresenter` holds the pump until a stage presenter attaches. */
+  let armed = true;
   const endedListeners = new Set<(outcome: BattleOutcome) => void>();
 
   const publish = (patch: Partial<BattleSessionState>): void => store.setState(patch);
@@ -109,7 +129,7 @@ export function createBattleController(): BattleController {
 
   /** Runs simulation steps until a decision is needed, the battle ends, or the controller pauses. */
   const pump = async (): Promise<void> => {
-    if (playing || !state) return;
+    if (playing || !state || !armed) return;
     playing = true;
     const mySession = session;
     try {
@@ -163,6 +183,7 @@ export function createBattleController(): BattleController {
       });
       session += 1;
       playing = false;
+      armed = !input.awaitPresenter || presenter !== instantPresenter;
       const seed = `${input.seed}:${hashString(`${input.encounterId}:${team.value.instanceIds.join(',')}`).toString(16)}`;
       state = createBattle(
         { encounter, party, enemyById: (id) => content.enemyById(id), control: input.control },
@@ -267,6 +288,13 @@ export function createBattleController(): BattleController {
       presenter = next ?? instantPresenter;
       const view = store.getState().view;
       if (next && view) next.mount?.(view);
+      if (next && !armed) {
+        armed = true;
+        void pump();
+      }
+    },
+    recordFrameStats(stats) {
+      publish({ frameStats: stats });
     },
     onEnded(listener) {
       endedListeners.add(listener);

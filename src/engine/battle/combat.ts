@@ -256,6 +256,8 @@ export function healUnit(
   const before = target.hp;
   target.hp = Math.min(target.maxHp, target.hp + amount);
   const healed = target.hp - before;
+  // A heal that changes nothing (full HP) is not an event: no number, no log line, no trigger.
+  if (healed <= 0) return 0;
   report(ctx, source.id).healingDone += healed;
   ctx.events.push({
     type: 'heal',

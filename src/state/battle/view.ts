@@ -70,8 +70,18 @@ export function applyEventToView(view: BattleView, event: BattleEvent): BattleVi
           event.tm[u.id] === undefined ? u : { ...u, tm: event.tm[u.id] as number },
         ),
       };
-    case 'wave.started':
-      return { ...view, wave: event.wave, waveCount: event.waveCount };
+    case 'wave.started': {
+      // The cleared wave's fallen enemies leave the field; the new wave's units join it.
+      const known = new Set(view.units.map((u) => u.id));
+      const spawned = event.units.filter((u) => !known.has(u.id));
+      const kept = event.wave > 1 ? view.units.filter((u) => u.side === 'ally' || u.alive) : view.units;
+      return {
+        ...view,
+        wave: event.wave,
+        waveCount: event.waveCount,
+        units: spawned.length || kept.length !== view.units.length ? [...kept, ...spawned] : view.units,
+      };
+    }
     case 'battle.ended':
       return { ...view, outcome: event.outcome, phase: 'ended' };
     default:

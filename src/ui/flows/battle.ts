@@ -26,6 +26,7 @@ export function launchBattle(input: LaunchInput): Result<void> {
     control,
     speed,
     seed: `${save.seedRoot}:${fought}`,
+    awaitPresenter: true,
   });
   if (!started.ok) return started;
   const encounter = battleController.store.getState().encounter;

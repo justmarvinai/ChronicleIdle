@@ -14,10 +14,12 @@ export type Route =
   | { name: 'game-modes' }
   | { name: 'training' }
   | { name: 'battle-setup'; encounterId: string }
-  | { name: 'battle' }
+  /** `bench`: started by the perf screen; the result returns there instead of the result screen. */
+  | { name: 'battle'; bench?: boolean }
   | { name: 'battle-result' }
   | { name: 'locked'; feature: FeatureId | 'later-phase'; titleKey: I18nKey }
-  | { name: 'devkit' };
+  | { name: 'devkit' }
+  | { name: 'perf' };
 
 export type RouteName = Route['name'];
 

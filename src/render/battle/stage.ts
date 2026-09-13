@@ -178,7 +178,8 @@ export async function createBattleStage(
     const dt = Math.min(0.05, ticker.deltaMS / 1000);
     time += dt;
     embers?.update(dt, time);
-    frames.push(ticker.deltaMS);
+    // Raw elapsed time: `deltaMS` is clamped to 100 ms and would hide slow frames.
+    frames.push(ticker.elapsedMS);
     if (frames.length > 600) frames.shift();
   });
 
@@ -250,11 +251,11 @@ export async function createBattleStage(
           break;
         case 'wave.started': {
           land(e);
-          const ids = e.enemyIds;
+          const spawned = e.units;
           tl.call(() => {
-            for (const id of ids) {
-              const v = viewUnit(id);
-              if (v)
+            for (const v of spawned) {
+              const id = v.id;
+              if (!units.has(id))
                 void addUnit(v).then(() => {
                   const u = unitOf(id);
                   if (!u) return;
@@ -333,7 +334,11 @@ export async function createBattleStage(
           if (melee && target) {
             const dx = (target.home.x - u.home.x) * 0.6;
             const dy = (target.home.y - u.home.y) * 0.6;
-            tl.call(() => options.hooks.sound('attack.melee'));
+            tl.call(() => {
+              options.hooks.sound('attack.melee');
+              const c = centreOf(e.unitId);
+              void playFx(fxBack, 'lunge', { x: c.x - dx * 0.25, y: c.y, speed, flipX: dx < 0 });
+            });
             tl.to(u.body.scale, { x: 0.94, y: 1.08, duration: T.lunge * 0.5, ease: 'power2.out' }, '<');
             tl.to(u.root, { x: u.home.x + dx, y: u.home.y + dy, duration: T.lunge, ease: 'power2.in' }, '<');
           } else {
@@ -380,7 +385,10 @@ export async function createBattleStage(
           const heavy = e.crit || e.damage > 0.25 * (viewUnit(e.targetId)?.maxHp ?? Infinity);
           tl.call(() => {
             const fx: FxId = e.crit ? 'hit.crit' : melee ? 'hit.physical' : hitFx(casterElement);
-            void playFx(fxLayer, fx, { x: c.x, y: c.y, speed, flipX: viewUnit(e.targetId)?.side === 'ally' });
+            const flipX = viewUnit(e.targetId)?.side === 'ally';
+            void playFx(fxLayer, fx, { x: c.x, y: c.y, speed, flipX });
+            if (e.crit || melee)
+              void playFx(fxLayer, 'sparks', { x: c.x, y: c.y, speed, flipX, scale: heavy ? 1.3 : 1 });
             if (e.absorbed > 0) numbers.show('shield', `-${e.absorbed}`, c.x + 30, c.y - 20, speed);
             if (e.damage > 0 || e.absorbed === 0)
               numbers.show(e.crit ? 'crit' : 'damage', String(e.damage), c.x, c.y - 10, speed);

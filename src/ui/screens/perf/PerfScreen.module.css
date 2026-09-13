@@ -1,0 +1,71 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.panel {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  width: 920px;
+  transform: translateX(-50%);
+  padding: 34px 44px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.body {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.warning {
+  margin: 0;
+  font-size: 16px;
+  color: var(--debuff);
+}
+.actions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.heading {
+  margin: 10px 0 0;
+  font-size: 26px;
+  color: var(--gold-3);
+}
+.report {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 0;
+}
+.cell {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(201, 162, 74, 0.28);
+}
+.cell dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.cell dd {
+  margin: 4px 0 0;
+  font-size: 30px;
+  color: var(--text-1);
+}
+.pass dd {
+  color: var(--hp);
+}
+.fail dd {
+  color: var(--debuff);
+}
+.muted {
+  margin: 0;
+  color: var(--text-3);
+}

@@ -29,17 +29,20 @@ Values above 1.0 are kept until the unit acts (allows "overflow" ordering) but c
 
 ## 3. Turn structure
 
-1. **Turn start** — cooldowns tick down; status durations tick down (buffs/debuffs placed by the
-   unit's own previous action are not decremented on the same turn they were placed); DoTs
-   (Poison, Burn, Bleed) deal damage; Continuous Heal heals; `onTurnStart` passives fire;
-   Stun/Freeze/Sleep skip the action (Sleep is also removed when the unit is damaged).
+1. **Turn start** — cooldowns tick down; DoTs (Poison, Burn, Bleed) deal damage; Continuous Heal
+   heals; `onTurnStart` passives fire; Stun/Freeze/Sleep skip the action (Sleep is also removed
+   when the unit is damaged).
 2. **Decision** — Manual: `DecisionRequest { unitId, availableAbilities, validTargets }` is emitted;
    the simulation waits. Auto: the AI policy answers immediately (§7). Enemies always use their AI.
 3. **Resolve ability** — effects execute in order (§6). Each hit: element → crit → mitigation →
    apply; then debuff attempts; then triggers (`onHit`, `onAllyHit`, `onKill`, counterattacks).
-4. **Turn end** — extra-turn checks (Relentless set, ability text), wave transition if the wave
-   is dead (allies keep buffs/debuffs, cooldowns and TM; `onWaveStart` passives fire), battle end
-   check.
+4. **Turn end** — status durations on the acting unit tick down (so a 1-turn Stun costs exactly
+   one action; a status the unit placed on itself during this action is not decremented until its
+   next turn); turn-meter gains the unit earned during its own action are banked and applied after
+   the end-of-turn reset; extra-turn checks (Relentless set, ability text); wave transition if the
+   wave is dead (allies keep buffs/debuffs, cooldowns and TM; `onWaveStart` passives fire; the
+   `wave.started` event carries the new units); battle end check. Heals that restore 0 HP emit no
+   event.
 
 Turn counter: a **turn** is one unit action (ally or enemy). Campaign 3-star limits and boss limits
 count **ally turns** unless stated otherwise (`turnLimitMode` per encounter).

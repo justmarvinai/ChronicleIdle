@@ -20,4 +20,5 @@ export const SCREENS: Record<RouteName, Lazy> = {
   'battle-result': lazy(() => import('@ui/screens/battle-result/BattleResultScreen')),
   locked: lazy(() => import('@ui/screens/locked/LockedScreen')),
   devkit: lazy(() => import('@ui/screens/devkit/DevKitScreen')),
+  perf: lazy(() => import('@ui/screens/perf/PerfScreen')),
 };

@@ -189,3 +189,33 @@ Vite glob so `tools/` scripts and Vitest load the same modules.
 kind in the engine (with tests) before it can be used from data; descriptions stay truthful when
 balance numbers change.
 
+## ADR-024 — The battle controller holds the fight until a stage presenter attaches; the HUD shows the presented view
+**Context.** The battle screen mounts its Pixi stage asynchronously (atlases, FX sheets). The
+controller pumps `step()` with back-pressure from whatever presenter is attached, and the default
+is the instant presenter for tests and headless runs. Started in auto mode, a fight therefore
+resolved completely before the stage existed and the screen opened on a finished battle; in
+manual mode the enemies' opening turns were skipped visually. Separately, a HUD that read the
+simulation directly would show HP dropping before the hit landed on stage.
+**Decision.** `start()` takes `awaitPresenter`; the UI flow sets it and the pump stays armed
+only once a presenter attaches (or the stage fails and the screen attaches the instant presenter
+explicitly). The session store holds the *presented* view, folded from events as the presenter
+lands them, never a snapshot of the live state; the engine's `wave.started` event carries the
+spawned units so the fold needs nothing from the simulation.
+**Consequences.** Tests keep starting instantly; the screen is always consistent with what is on
+stage; a presenter that never attaches (WebGL unavailable) degrades to an unanimated fight
+instead of a stuck one.
+
+## ADR-025 — Missing effects are generated flipbooks rendered at build time, and dev screens ride the query string
+**Context.** The owner's two VFX packs cover element casts and hits but not slashes, sparks,
+rune rings, smoke or speed lines; the owner allows in-house generation (`CLAUDE.md` §2.6). The
+frame budget must be measured on the real battle screen at ×4, a speed the UI locks until the
+Phase 3 unlocks.
+**Decision.** `tools/vfx` paints flipbooks deterministically from recipes and renders them through
+the asset pipeline as `fx.gen.*` strips with the same manifest shape as the packs, so the runtime
+does not care where a sheet came from. The perf bench is a code-split `perf` screen reachable only
+through `?screen=perf`, like the DevKit gallery: it starts a `bench`-kind encounter (never listed
+in-game) through the normal controller with `speed: 4` and returns to the perf screen with the
+stage's frame statistics; `pnpm perf:battle` drives it headlessly.
+**Consequences.** New shapes are recipes plus a registry line; the bench measures exactly what
+players see; `bench` encounters and the perf route exist in production builds but are unreachable
+from the game's navigation.

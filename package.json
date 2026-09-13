@@ -1,6 +1,6 @@
 {
   "name": "chronicleidle",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "ChronicleIdle — a turn-based idle gacha champion-collection RPG for the desktop browser.",
   "type": "module",
@@ -20,7 +20,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tools/tsconfig.json --noEmit",
     "content:validate": "tsx tools/content/validate.ts",
     "assets:build": "tsx tools/assets/build.ts",
-    "assets:check": "tsx tools/assets/build.ts --check"
+    "assets:check": "tsx tools/assets/build.ts --check",
+    "perf:battle": "tsx tools/perf/battle-bench.ts"
   },
   "dependencies": {
     "@fontsource/alegreya-sans-sc": "^5.3.0",

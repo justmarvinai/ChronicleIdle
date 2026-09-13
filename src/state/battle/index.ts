@@ -4,6 +4,7 @@ export {
   type BattleController,
   type BattleSessionState,
   type BattleSpeed,
+  type FrameStats,
   type StartBattleInput,
 } from './controller';
 export { applyEventToView } from './view';

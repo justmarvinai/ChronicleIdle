@@ -52,6 +52,39 @@ describe('battle controller', () => {
     expect(controller.store.getState().status).toBe('idle');
   });
 
+  it('holds an auto battle until a presenter attaches when asked to (the screen mounts its stage first)', async () => {
+    const controller = createBattleController();
+    const roster = rosterOf(STARTERS);
+    controller.start({
+      encounterId: 'encounter.training.1',
+      instanceIds: Object.keys(roster),
+      roster,
+      control: 'auto',
+      speed: 1,
+      seed: 'hold',
+      awaitPresenter: true,
+    });
+    await wait(30);
+    const held = controller.store.getState();
+    expect(held.status).toBe('running');
+    expect(held.log).toHaveLength(0);
+    expect(controller.simulation()?.turn).toBe(0);
+    let mounted = 0;
+    controller.attachPresenter({
+      mount: () => {
+        mounted++;
+      },
+      play: (events, _speed, onEvent) => {
+        for (const e of events) onEvent(e);
+        return Promise.resolve();
+      },
+    });
+    await settle(() => controller.store.getState().status === 'ended');
+    expect(mounted).toBe(1);
+    expect(controller.store.getState().outcome?.kind).toBe('victory');
+    controller.end();
+  });
+
   it('pauses at manual decisions, accepts a decision, rejects bad ones and can switch to auto', async () => {
     const controller = createBattleController();
     const roster = rosterOf(STARTERS);

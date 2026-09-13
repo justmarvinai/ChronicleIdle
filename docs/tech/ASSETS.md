@@ -46,6 +46,7 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | --- | --- | --- | --- | --- |
 | Free Pixel Effects Pack | `vfx/Free Pixel Effects Pack/` | 20 sheets + README | PNG grids of 100 × 100 px frames (600²–1100²) | public domain (README); magicspell, magic8, bluefire, casting, magickahit, flamelash, firespin, protectioncircle, brightfire, weaponhit, fire, nebula, vortex, phantom, loading, sunburn, felspell, midnight, freezing, magicbubbles |
 | GameFX export | `vfx/GameFXExport/SPRITESHEET_Files/` (+ `GIF_Files/` previews) | 22 strips + 22 GIFs | PNG horizontal strips, 64 / 96 / 133 px frames, 28–89 frames | Explosion ×3, FireBall ×3, FireBurst, FireCast, HolyExplosion, IceCast, IcePick, IceShatter ×2, LightCast, MagicBarrier, MediumStar, SmallStar, PoisonCast, PoisonClaw, Tornado ×3 |
+| Generated flipbooks (in-house) | `tools/vfx/recipes.ts` → `public/assets/generated/vfx/generated/` | 5 strips | PNG horizontal strips, 96 / 128 px frames, 8–16 frames, 20–30 fps | `fx.gen.slash_arc`, `sparks`, `rune_ring`, `smoke`, `speed_lines`; rendered by `pnpm assets:build`, cached on the recipe sources |
 
 ## 2. Usage map
 
@@ -169,7 +170,7 @@ Still needed for EA-0.1 and how they are covered:
 | Reward, level-up, rank-up, victory/defeat, summon-tier stingers | generated, layered with the owner's `Spells` pack |
 | Void/Eclipse and holy/Justice cast layers | generated drones/chimes layered on owner sounds |
 | Summon and title ambience | generated void drone + owner `Cave ambience` |
-| Slash arcs, impact sparks, rune rings, smoke, speed lines, ash dissolve, rarity bursts | generated (`tools/vfx`) |
+| Slash arcs, impact sparks, rune rings, smoke, speed lines (shipped); rarity bursts (Summoning) | generated (`tools/vfx`) |
 | Custom cursor set | in-house SVG in the kit style |
 | Extra battle backdrops (frost, marsh) | colour-graded reuse of bg2/bg3; CC0 art only if a settlement still reads wrong |
 | Fonts | Alegreya Sans SC, Nunito Sans, Rajdhani — SIL Open Font License via `@fontsource` |

@@ -11,7 +11,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | P | Planning (this document set) | — | ✅ |
 | 0 | Foundation & Game Shell | 0.0.0 | ✅ shipped in 0.0.0 |
 | 1 | Champions & Collection | 0.0.1 | ✅ shipped in 0.0.1 |
-| 2 | Battle System | 0.0.2 | ⬜ |
+| 2 | Battle System | 0.0.2 | ✅ shipped in 0.0.2 |
 | 3 | Campaign | 0.0.3 | ⬜ |
 | 4 | Player Level & Profile | 0.0.4 | ⬜ |
 | 5 | Tavern — Champion Upgrading | 0.0.5 | ⬜ |
@@ -102,6 +102,9 @@ but everything a system will plug into.
 - Save round-trip of roster; fixture `v1.json`.
 
 ## Phase 2 — Battle System (`0.0.2`)
+
+**Status.** ✅ shipped in 0.0.2 (2026-09-13). See `CHANGELOG.md` for what landed; the frame
+budget is verified on real hardware with `pnpm perf:battle` (USER_QUESTIONS.md Q30).
 
 **Goal.** Complete, animated, deterministic battles: manual and auto, ×1/×2 (×3/×4 behind unlock
 flags), elements, all 26 statuses, the full effect DSL, AI policy, result screen. Playable from a

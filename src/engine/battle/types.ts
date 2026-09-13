@@ -5,6 +5,7 @@
  * `(setup, seed, decisions)`; `replay` proves it.
  */
 import type { Rng } from '@engine/rng/rng';
+import type { UnitView } from './snapshot';
 import type {
   AbilityDef,
   AbilitySlot,
@@ -164,7 +165,7 @@ export type ElementMatch = 'strong' | 'weak' | 'neutral';
 
 export type BattleEvent =
   | { type: 'battle.started'; seed: string; waveCount: number }
-  | { type: 'wave.started'; wave: number; waveCount: number; enemyIds: string[] }
+  | { type: 'wave.started'; wave: number; waveCount: number; enemyIds: string[]; units: UnitView[] }
   | { type: 'turn.started'; unitId: string; turn: number; allyTurns: number; tm: Record<string, number> }
   | { type: 'turn.skipped'; unitId: string; reason: 'stun' | 'freeze' | 'sleep' | 'fear' }
   | { type: 'dot.tick'; unitId: string; status: StatusId; amount: number; hpAfter: number }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
+import { STARTER_IDS } from '@content/champions/types';
 import { createInstance } from '@engine/champions/instance';
 import { createRng } from '@engine/rng/rng';
 import { createBattle, type BattleSetup } from './create';
@@ -61,14 +62,18 @@ describe('battle lifecycle', () => {
     expect(snapshot(state).outcome?.kind).toBe('victory');
   });
 
-  it('lets the level-1 starter team beat Training Grounds 1 and 2 on auto (ROADMAP Phase 2)', () => {
-    for (const encounterId of ['encounter.training.1', 'encounter.training.2']) {
-      let wins = 0;
-      for (let i = 0; i < 20; i++) {
-        const { outcome } = runAuto(createBattle(setup(encounterId, STARTERS), `starter-${i}`));
-        if (outcome.kind === 'victory') wins++;
+  it('lets every level-1 starting roster beat Training Grounds 1 and 2 on auto (ROADMAP Phase 2)', () => {
+    // The setup screen suggests the three strongest by power: the starter, Wenna and Gil.
+    for (const starter of STARTER_IDS) {
+      const trio = [starter, 'champ.wenna_novice', 'champ.gil_scrapper'];
+      for (const encounterId of ['encounter.training.1', 'encounter.training.2']) {
+        let wins = 0;
+        for (let i = 0; i < 20; i++) {
+          const { outcome } = runAuto(createBattle(setup(encounterId, trio), `starter-${i}`));
+          if (outcome.kind === 'victory') wins++;
+        }
+        expect(wins, `${starter} ${encounterId}`).toBeGreaterThanOrEqual(18);
       }
-      expect(wins, encounterId).toBeGreaterThanOrEqual(18);
     }
   });
 

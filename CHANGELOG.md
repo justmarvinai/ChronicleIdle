@@ -6,7 +6,99 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing yet — Phase 2 (Battle System) starts after the owner's Phase 1 check-in._
+_Nothing yet — Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
+
+## [0.0.2] — 2026-09-13 — Phase 2: Battle System
+
+### Added
+- **Deterministic battle engine** (`src/engine/battle`). `createBattle` / `step` / `runAuto` /
+  `replay` / `snapshot` / `retreat`: a whole fight is a pure function of the encounter, the party,
+  the seed and the player's decisions (only manual decisions are logged; AI choices re-derive).
+  Turn meter with closed-form ticks and seeded tie-breaks, element wheel, crit, mitigation with
+  the per-level constant, ±5 % variance, all 26 statuses (stacks, refresh, immunity, block,
+  cleanse/strip/steal, shields as % of caster HP, ally protection, counterattack, provoke, fear,
+  freeze, sleep, stun, revive-on-death, DoTs and regen ticking at turn start), the full effect DSL
+  (`damage`, `heal`, `apply_status`, `remove_status`, `tm`, `revive`, `extra_turn`, `detonate`,
+  `leech`, conditionals), passives and auras, boss rotations and enrage, wave transitions, turn
+  limits, timeout/retreat outcomes and a per-battle report (damage dealt/taken, healing, kills).
+  The auto policy follows `docs/design/BATTLE.md` §7 (heal-skip above 90 % team HP, revive only
+  with dead allies, TM rules, wave-start buff bonus, threat-weighted enemy targeting).
+  71 engine tests cover every formula, effect and status; the same seed and decisions replay to an
+  identical event log, and 1,000 random auto battles run headless in well under 10 s.
+- **Enemy archetypes and the Training Grounds.** `defineEnemy` (the enemy twin of
+  `defineChampion`) with seven Remnant archetypes (raider, marksman, brute, warden, hexer, mender
+  and the Warlord boss), encounter definitions with waves, scaling, turn limits, backdrop, music
+  and footstep surface, status metadata (`src/content/statuses`), Zod schemas and cross-reference
+  validation (ids, i18n, backdrops, party sizes per kind). Three encounters on Game Modes →
+  *Training Grounds* until the Campaign replaces them in Phase 3: two 3-champion fights and a
+  4-champion Warlord fight with the boss bar.
+- **Battle controller and presented view** (`src/state/battle`). Owns the live simulation, drives
+  `step` with back-pressure from the presenter, holds the fight until the stage presenter attaches
+  (`awaitPresenter`) so no turn resolves off-screen, folds every played event into the HUD's view
+  (`applyEventToView`, a 400-event log for the Info panel), handles manual ↔ auto switches, pause,
+  speed and retreat, and hands the outcome to the game store (`recordBattle`).
+- **Pixi battle stage** (`src/render/battle`). 1920 × 1080 stage shared with the React HUD,
+  ¾-perspective slots for four allies and four enemies, backdrop grading, ambient embers, idle
+  model loops with placeholder tints, synthesised choreography (anticipation, lunge with speed
+  lines, cast raise, projectile flight, hit-stop, shake, flash, dissolve, revive, wave slide-in,
+  camera push), the FX library (`fx/registry.ts`: element casts, projectiles and hits, physical
+  slashes with sparks, crits, heals, buffs, debuffs, shields, cleanses, DoT ticks, death smoke,
+  turn-meter rune rings, ultimate bursts), floating numbers (damage, crit, heal, shield, status)
+  and A4 cut-ins.
+- **Generated VFX** (`tools/vfx`). Procedural flipbooks painted deterministically by recipes and
+  rendered at build time through the asset pipeline as `fx.gen.*` strips with the same manifest
+  shape as the owner's packs: slash arc, sparks, rune ring, smoke, speed lines. Tested for
+  determinism and coverage.
+- **Battle screens.** Training Grounds (encounter cards with waves, elements, clears), Battle
+  setup (team slots with leader and aura, team power, three presets per mode with save/load,
+  waves preview, control switch, free start), Battle HUD (unit plates with HP/shield/TM and status
+  rows, target reticle, wave/turn/time counters, boss bar with statuses, turn banner, ability bar
+  with cooldown pips and passive tag, Info panel with the battle log, Auto and ×1/×2 speed
+  buttons, pause menu with resume/settings/retreat), Battle result (victory/defeat/time's up/
+  retreat, turns, waves, per-champion report, hints, seed, Replay/Team/Emberhold). Hotkeys:
+  1–4 abilities, Tab target, Space/Enter confirm, A auto, +/− speed, I info, Esc pause.
+- **Team presets, save v3.** `teams.campaign` / `teams.boss` with three presets and the last team
+  per party size; migration 2→3 and the frozen Phase 1 save `tests/fixtures/saves/v2.json`.
+  Settings gained `battleSpeed` and `autoBattle`.
+- **Battle audio.** Sound keys for battle start, melee/ranged attacks, light/heavy/crit hits,
+  blocks, element casts, heal, buff, debuff, death, revive, wave, ultimate, victory and defeat,
+  mapped to the owner's packs plus generated victory/defeat stingers; the music state switches
+  to `battle` / `boss`.
+- **Perf bench.** `/?screen=perf` (code-split, never linked from the game, like the DevKit)
+  fights the Stress Bench encounter (4 v 4, two waves, ×4, four maxed legendaries) on the real
+  battle screen and reports p50/p95/max frame times; `pnpm perf:battle` drives it headlessly
+  (`--strict` fails over the 16 ms budget, `--software` forces SwiftShader).
+- **E2E.** `tests/e2e/battle.spec.ts`: manual battle with mouse and keyboard, Info log, pause,
+  speed and auto to a victory; auto beats Training Grounds 1 and 2 with the starting roster;
+  retreat; presets.
+
+### Changed
+- `Bar` draws a hairline stone frame below 24 px so plate and chip bars keep a visible fill.
+- The game window and stage use `overflow: clip`: a focus or scroll-into-view on a partly hidden
+  element can no longer scroll the whole game out of place.
+- Game Modes lists four cards (Training Grounds first); the navigation e2e counts four.
+- The engine's `wave.started` event carries the spawned units' views so the HUD and the stage can
+  add them without reaching into the simulation.
+
+### Fixed
+- Auto battles started before the stage had mounted resolved instantly through the instant
+  presenter; the screen then opened on a finished fight. The controller now waits for the stage.
+- Enemies of the second and later waves were missing from the HUD and the stage.
+- Unit plates and the profile XP bar rendered empty at 16 px (the stone track's frame swallowed
+  the fill).
+- Heals for 0 HP no longer produce events ("heals X for 0").
+
+### Balance
+- Training Grounds enemies fight at 85 % of the archetype base (`statMult`). Headless win rates
+  at level 1 on auto over 30 seeds, per starting roster (starter + Wenna + Gil, plus Bran in the
+  Warlord fight): Sparring Ground 28–30/30, Remnant Ambush 29–30/30, The Warlord's Pit 30/30 for
+  Ser Corvin and Reva, 19/30 for Sister Maelis.
+- `src/content/balance/battle.ts` gained the turn-meter, mitigation, variance, status value,
+  DoT, counter, revive, freeze, fear, turn-limit, difficulty, stage-growth, boss and AI
+  constants of `docs/design/BATTLE.md` §11.
+
+### Performance
+<!-- perf-table -->
 
 ## [0.0.1] — 2026-09-12 — Phase 1: Champions & Collection
 
