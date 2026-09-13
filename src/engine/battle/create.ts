@@ -12,7 +12,7 @@ import {
   BOSS_HP_MULT,
   BOSS_SPD_ADD,
   DIFFICULTY_MULT,
-  STAGE_GROWTH,
+  stageScale,
   type AbilityDef,
   type ChampionDef,
   type ChampionStats,
@@ -98,9 +98,9 @@ export function allyUnit(member: PartyMember, slot: number, leader: boolean): Ba
   };
 }
 
-/** `archetypeBase × DIFFICULTY_MULT × (1 + STAGE_GROWTH × stageIndex)` (+ boss multipliers). */
+/** `archetypeBase × DIFFICULTY_MULT × stageScale(stageIndex)` (+ boss multipliers). */
 export function scaledEnemyStats(def: EnemyDef, encounter: EncounterDef, statMult = 1): ChampionStats {
-  const scale = DIFFICULTY_MULT[encounter.difficulty] * (1 + STAGE_GROWTH * encounter.stageIndex) * statMult;
+  const scale = DIFFICULTY_MULT[encounter.difficulty] * stageScale(encounter.stageIndex) * statMult;
   const boss = def.boss
     ? { hp: BOSS_HP_MULT, atkDef: BOSS_ATK_DEF_MULT, spd: BOSS_SPD_ADD }
     : { hp: 1, atkDef: 1, spd: 0 };

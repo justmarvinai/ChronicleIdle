@@ -32,7 +32,7 @@ export interface EncounterDef {
   /** 3 for campaign-type encounters, 4 for boss-type (BATTLE.md §1). */
   partySize: number;
   difficulty: Difficulty;
-  /** Global stage index 0..119 for STAGE_GROWTH; the Training Grounds use small values. */
+  /** Global stage index 0..119; drives `stageScale` (BATTLE.md §4.5). */
   stageIndex: number;
   /** Enemy level shown on plates and used by the mitigation constant. */
   enemyLevel: number;

@@ -31,9 +31,34 @@ All notable changes to ChronicleIdle are documented here. The format follows
   leads only the boss stage's last wave, every faction fields all six archetypes and every
   authored enemy is fightable somewhere.
 
+- **`pnpm sim:balance`** — the campaign's difficulty-curve report. It runs every stage on every
+  difficulty with the reference teams in `tools/sim/teams.ts` (the roster a new chronicle is given
+  at level 10 and at its star caps, a mid-Epic roster, and an endgame roster whose rank-up and gear
+  are modelled until Phases 5–6 ship them), prints win and three-star rates per settlement, and
+  checks the bands declared beside those teams. `--strict` fails CI when a band breaks; `--scan`
+  prints the enemy scale each team can take, which is the table a tuning pass fits the constants
+  to. CI now runs the band check.
+
+### Changed
+- **Enemy scaling retuned (`BATTLE.md` §4.5, `CAMPAIGN.md` §5).** The old ladder was unwinnable:
+  the linear `1 + 0.055 × g` term reached ×7.5 by the last stage and ×49 with Hard's multiplier,
+  while a Phase-3 roster can only grow about ×3, so the campaign was lost from settlement 1
+  stage 4 onwards at every champion level. The stage term is now quadratic —
+  `1 + (STAGE_GROWTH_TOP − 1) × (g / 119)²`, ×1.00 → ×4.80 — which is nearly flat across the first
+  settlements (where only levelling is available) and steep at the end; the difficulty step is now
+  what the same stage costs per difficulty (×1 / ×2.5 / ×6); and the archetype and boss bases are
+  65 % of their Phase 2 values. Measured result: a new save's roster at level 10 clears Intro
+  settlements 1–4, grinds 5–6 and stalls at 7–8; a mid-Epic roster clears Intro and stalls in
+  Normal's second half; the modelled endgame roster clears Hard, with three stars on its last
+  settlement a real fight.
+- The perf bench fights at ×5 enemy stats (was ×1.5) so it still runs 35–45 turns after the
+  retune.
+
 ### Removed
 - The three Training Grounds encounters and the seven Remnant enemies they fielded: the campaign
   replaces them, and the battle tests now fight Thornwood Crossing on Intro.
+- The settlement-1 onboarding multiplier: with the retuned bases the opening stages need no
+  special case.
 
 ## [0.0.2.1] — 2026-09-13 — UI pass
 

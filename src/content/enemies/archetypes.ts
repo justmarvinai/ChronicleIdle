@@ -35,7 +35,7 @@ export const ARCHETYPES: Readonly<Record<FactionArchetype, ArchetypeKit>> = {
   /** Plain damage, a heavier swing every third turn. */
   raider: {
     role: 'attack',
-    stats: [1_400, 150, 90, 92, 10, 50, 10, 10],
+    stats: [900, 100, 60, 92, 10, 50, 10, 10],
     abilities: [
       { slot: 'a1', key: 'cleave', icon: 'spell.weapon_hatchet', effects: [hit(3.0)] },
       {
@@ -50,7 +50,7 @@ export const ARCHETYPES: Readonly<Record<FactionArchetype, ArchetypeKit>> = {
   /** Fast and fragile; picks off the weakest and rakes the party every fourth turn. */
   marksman: {
     role: 'attack',
-    stats: [1_200, 165, 80, 98, 15, 60, 10, 15],
+    stats: [775, 105, 50, 98, 15, 60, 10, 15],
     abilities: [
       {
         slot: 'a1',
@@ -71,7 +71,7 @@ export const ARCHETYPES: Readonly<Record<FactionArchetype, ArchetypeKit>> = {
   /** Big HP, Weaken on the basic, a stunning slam. */
   brute: {
     role: 'health',
-    stats: [2_600, 130, 110, 86, 10, 50, 15, 5],
+    stats: [1_700, 85, 70, 86, 10, 50, 15, 5],
     scale: 1.1,
     abilities: [
       {
@@ -92,7 +92,7 @@ export const ARCHETYPES: Readonly<Record<FactionArchetype, ArchetypeKit>> = {
   /** DEF-scaling hits; buffs the line and provokes the party onto itself. */
   warden: {
     role: 'defense',
-    stats: [1_900, 105, 190, 88, 10, 50, 20, 5],
+    stats: [1_225, 70, 125, 88, 10, 50, 20, 5],
     abilities: [
       {
         slot: 'a1',
@@ -115,7 +115,7 @@ export const ARCHETYPES: Readonly<Record<FactionArchetype, ArchetypeKit>> = {
   /** ATK Down on the basic, Poison on everyone every fourth turn. */
   hexer: {
     role: 'support',
-    stats: [1_500, 140, 100, 100, 10, 50, 20, 25],
+    stats: [975, 90, 65, 100, 10, 50, 20, 25],
     abilities: [
       {
         slot: 'a1',
@@ -135,7 +135,7 @@ export const ARCHETYPES: Readonly<Record<FactionArchetype, ArchetypeKit>> = {
   /** Keeps the line alive; the party learns to focus it first. */
   mender: {
     role: 'support',
-    stats: [1_600, 120, 110, 96, 10, 50, 20, 15],
+    stats: [1_050, 80, 70, 96, 10, 50, 20, 15],
     abilities: [
       { slot: 'a1', key: 'thorn_lash', icon: 'spell.fx_vine_lash', effects: [hit(2.6)] },
       {

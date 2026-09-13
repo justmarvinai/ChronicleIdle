@@ -26,16 +26,6 @@ export const ENERGY_COST: Readonly<Record<Difficulty, readonly [number, number, 
 };
 export const BOSS_ENERGY_EXTRA = 1;
 
-/**
- * Settlement 1's opening stages are where the tutorial stands (CAMPAIGN.md §4), so their enemies
- * fight at a fraction of the archetype base: an ungeared level-1 trio must win with any of the
- * three starters, healer-heavy rosters included. Stage 4 onwards is full strength.
- */
-export const ONBOARDING_STAT_MULT = [0.8, 0.85, 0.9] as const;
-export function onboardingStatMult(settlement: number, stage: number): number {
-  return settlement === 1 ? (ONBOARDING_STAT_MULT[stage - 1] ?? 1) : 1;
-}
-
 /** Ally turns allowed for the third star, and the limit past which the run is lost. */
 export const STAR3_TURN_LIMIT = 25;
 export const STAR3_TURN_LIMIT_BOSS = 30;

@@ -55,18 +55,20 @@ each settlement introduces its faction's units progressively (see §6) so the pl
 
 ## 5. Enemy archetypes
 
-Bases are **Intro, index 0** values; scaling per `BATTLE.md` §4.5. Every faction re-skins these
-archetypes (name, tint, kit tweaks) — the placeholder `teritorial_lizard` model is tinted per
-faction and scaled ×1.35 for bosses until faction models exist.
+Bases are **Intro, index 0** values — what the very first stage fields; scaling per `BATTLE.md`
+§4.5. Every faction re-skins these archetypes (name, tint, kit tweaks) — the placeholder
+`teritorial_lizard` model is tinted per faction and scaled ×1.35 for bosses until faction models
+exist. The bases are set by the balance pass in `tools/sim`, not by feel: they are the point where
+the roster a new chronicle is given wins settlement 1 outright and starts losing by settlement 6.
 
 | Archetype | Role | HP | ATK | DEF | SPD | C.RATE | C.DMG | RES | ACC | Kit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Raider | Attack | 1,400 | 150 | 90 | 92 | 10 | 50 | 10 | 10 | A1 `3.0×ATK`; A2 (CD 3) `4.2×ATK` |
-| Marksman | Attack | 1,200 | 165 | 80 | 98 | 15 | 60 | 10 | 15 | A1 `3.2×ATK` targets lowest HP; A2 (CD 4) `2.2×ATK` all |
-| Brute | Health | 2,600 | 130 | 110 | 86 | 10 | 50 | 15 | 5 | A1 `2.8×ATK`, 25 % Weaken (2); A2 (CD 4) `5.0×ATK` + Stun 30 % |
-| Warden | Defense | 1,900 | 105 | 190 | 88 | 10 | 50 | 20 | 5 | A1 `2.6×DEF`; A2 (CD 4) DEF Up 30 % all + Provoke self |
-| Hexer | Support | 1,500 | 140 | 100 | 100 | 10 | 50 | 20 | 25 | A1 `2.8×ATK` 35 % ATK Down (2); A2 (CD 4) Poison all 60 % |
-| Mender | Support | 1,600 | 120 | 110 | 96 | 10 | 50 | 20 | 15 | A1 `2.6×ATK`; A2 (CD 3) heal all 20 % |
+| Raider | Attack | 900 | 100 | 60 | 92 | 10 | 50 | 10 | 10 | A1 `3.0×ATK`; A2 (CD 3) `4.2×ATK` |
+| Marksman | Attack | 775 | 105 | 50 | 98 | 15 | 60 | 10 | 15 | A1 `3.2×ATK` targets lowest HP; A2 (CD 4) `2.2×ATK` all |
+| Brute | Health | 1,700 | 85 | 70 | 86 | 10 | 50 | 15 | 5 | A1 `2.8×ATK`, 25 % Weaken (2); A2 (CD 4) `5.0×ATK` + Stun 30 % |
+| Warden | Defense | 1,225 | 70 | 125 | 88 | 10 | 50 | 20 | 5 | A1 `2.6×DEF`; A2 (CD 4) DEF Up 30 % all + Provoke self |
+| Hexer | Support | 975 | 90 | 65 | 100 | 10 | 50 | 20 | 25 | A1 `2.8×ATK` 35 % ATK Down (2); A2 (CD 4) Poison all 60 % |
+| Mender | Support | 1,050 | 80 | 70 | 96 | 10 | 50 | 20 | 15 | A1 `2.6×ATK`; A2 (CD 3) heal all 20 % |
 | Stage boss | varies | archetype × 1.8 | × 1.25 | × 1.25 | +4 | 15 | 60 | 40 | 30 | 3 abilities, `startsOnCooldown` on A3, enrage +10 % ATK every 8 own turns |
 
 Element per enemy is data; factions have a dominant element so team building matters (e.g. a

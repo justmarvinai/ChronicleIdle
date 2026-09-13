@@ -265,10 +265,13 @@ The manifest is typed (`AssetKey` union) so a typo in a content file is a compil
 - `vitest` for engine (target ≥ 90 % line coverage in `engine/`), React Testing Library for UI
   flows, Playwright e2e for tutorial chapter 1 and a full campaign battle.
 - Fixtures: content snapshots, saves per phase (`tests/fixtures/saves/v<phase>.json`).
-- `pnpm sim:balance`: runs each stage on all difficulties with reference teams (defined in
-  `tools/sim/teams.ts`: "starter Lv10", "mid Epic team 4★40", "endgame 6★60 geared") and prints
-  win rate, average turns, and a difficulty curve; fails CI if a stage's win rate for its intended
-  tier falls outside the band declared in `CAMPAIGN.md` §5 notes.
+- `pnpm sim:balance`: runs every stage on every difficulty with the reference teams in
+  `tools/sim/teams.ts` ("starter Lv10", the same roster at its star caps, "mid Epic 4★40",
+  "endgame 6★60 geared" — rank-up and gear are modelled as a star tier and a stat multiplier until
+  Phases 5–6 ship them) and prints win rate and three-star rate per settlement, then checks the
+  bands declared beside those teams. `--strict` fails CI when a band breaks, `--scan` prints the
+  enemy scale each team can actually take (the table a tuning pass fits `DIFFICULTY_MULT` and
+  `stageScale` to) and `--runs`/`--team`/`--difficulty` narrow a run.
 - `tools/perf/battle-bench.ts` (`pnpm perf:battle`, against a running preview): headless
   Chromium via Playwright creates a throwaway chronicle, opens `/?screen=perf` and runs the Stress
   Bench encounter (4 v 4, two waves, ×4, four maxed legendaries) on the real battle screen; the

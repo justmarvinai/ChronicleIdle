@@ -5,8 +5,13 @@
  */
 import type { EncounterDef } from './types';
 
+/**
+ * Heavier than any real stage: the bench measures frames, so the fight has to last. At ×5 the four
+ * maxed legendaries win around turn 35–45 having fired every cast, hit, heal, buff and death FX.
+ */
+const BENCH_STAT_MULT = 5;
 const wave = (...enemyIds: string[]): EncounterDef['waves'][number] => ({
-  enemies: enemyIds.map((enemyId) => ({ enemyId, statMult: 1.5 })),
+  enemies: enemyIds.map((enemyId) => ({ enemyId, statMult: BENCH_STAT_MULT })),
 });
 
 export const BENCH_ENCOUNTERS: readonly EncounterDef[] = [

@@ -92,10 +92,17 @@ Explicit effects; buffs are removed newest-first unless the effect names a speci
 ### 4.5 Enemy stat scaling
 
 ```
-enemyStat = archetypeBase × DIFFICULTY_MULT[diff] × (1 + STAGE_GROWTH × globalStageIndex)
-DIFFICULTY_MULT = { intro: 1.0, normal: 2.6, hard: 6.5 }     STAGE_GROWTH = 0.055 (index 0..119)
+enemyStat = archetypeBase × DIFFICULTY_MULT[diff] × stageScale(globalStageIndex)
+DIFFICULTY_MULT = { intro: 1.0, normal: 2.5, hard: 6.0 }   — what the same stage costs per difficulty
+stageScale(g)  = 1 + (STAGE_GROWTH_TOP − 1) × (g / 119) ^ STAGE_GROWTH_POWER
+STAGE_GROWTH_TOP = 4.8   STAGE_GROWTH_POWER = 2   (index 0..119)
 ```
-Bosses (stage 10) use ×1.8 HP, ×1.25 ATK/DEF on top. See `CAMPAIGN.md` §5 for archetype bases.
+The stage term is quadratic, not linear: settlement 1 is nearly flat (×1.00 → ×1.04), the curve
+bites from settlement 6 (×1.9) and the last stand is ×4.8 of the first. That shape is what lets the
+roster a new chronicle is given walk Intro's first settlements — it can only level, not rank up or
+gear, before Phases 5–6 — while Intro's last settlements still ask for a collected roster. Bosses
+(stage 10) use ×1.8 HP, ×1.25 ATK/DEF on top. See `CAMPAIGN.md` §5 for archetype bases, and
+`pnpm sim:balance` for the win-rate bands the curve is tuned against.
 
 ## 5. Status effects (EA-0.1 set)
 

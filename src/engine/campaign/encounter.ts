@@ -14,7 +14,6 @@ import {
   ENERGY_COST,
   SETTLEMENT_COUNT,
   globalStageIndex,
-  onboardingStatMult,
 } from '@content/balance/campaign';
 import type { EncounterDef } from '@content/encounters/types';
 import type { SettlementDef, StageDef } from '@content/stages/types';
@@ -59,7 +58,6 @@ export function stageEncounter(
   difficulty: Difficulty,
 ): EncounterDef {
   const globalIndex = globalStageIndex(settlement.index, stage.number);
-  const statMult = onboardingStatMult(settlement.index, stage.number);
   return {
     id: stageEncounterId(stage.id, difficulty),
     stageId: stage.id,
@@ -70,9 +68,7 @@ export function stageEncounter(
     difficulty,
     stageIndex: globalIndex,
     enemyLevel: stageEnemyLevel(globalIndex, difficulty),
-    waves: stage.waves.map((wave) => ({
-      enemies: wave.map((enemyId) => (statMult === 1 ? { enemyId } : { enemyId, statMult })),
-    })),
+    waves: stage.waves.map((wave) => ({ enemies: wave.map((enemyId) => ({ enemyId })) })),
     turnLimit: stage.turnLimitDefeat,
     turnLimitMode: 'ally',
     timeUpIsDefeat: true,

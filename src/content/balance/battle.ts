@@ -47,10 +47,28 @@ export const CAMPAIGN_TURN_LIMIT_DEFAULT = 40;
 export const BOSS_TURN_LIMIT_DAILY = 50;
 export const BOSS_TURN_LIMIT_WEEKLY = 100;
 
-/** Enemy scaling (BATTLE.md §4.5): `base × DIFFICULTY_MULT × (1 + STAGE_GROWTH × stageIndex)`. */
-export const DIFFICULTY_MULT = { intro: 1.0, normal: 2.6, hard: 6.5 } as const;
+/**
+ * Enemy scaling (BATTLE.md §4.5): `base × DIFFICULTY_MULT[difficulty] × stageScale(globalIndex)`.
+ * The difficulty step is what the same stage costs on Normal and Hard.
+ */
+export const DIFFICULTY_MULT = { intro: 1.0, normal: 2.5, hard: 6.0 } as const;
 export type Difficulty = keyof typeof DIFFICULTY_MULT;
-export const STAGE_GROWTH = 0.055;
+
+/**
+ * The stage term: the last stage's enemies are `STAGE_GROWTH_TOP` times the first's, and the rise
+ * is quadratic — nearly flat over the first settlements, where the roster a new chronicle is given
+ * has to carry the player, and steep at the end, where a collected roster does. Raising the power
+ * moves difficulty later; raising the top makes the whole campaign steeper.
+ */
+export const STAGE_GROWTH_TOP = 4.8;
+export const STAGE_GROWTH_POWER = 2;
+/** Global stage indices run 0..STAGE_COUNT-1 (twelve settlements of ten stages). */
+export const STAGE_COUNT = 120;
+
+export function stageScale(globalIndex: number): number {
+  const t = Math.min(1, Math.max(0, globalIndex / (STAGE_COUNT - 1)));
+  return 1 + (STAGE_GROWTH_TOP - 1) * t ** STAGE_GROWTH_POWER;
+}
 /** Stage bosses on top of the archetype: HP ×1.8, ATK/DEF ×1.25, SPD +4 (CAMPAIGN.md §5). */
 export const BOSS_HP_MULT = 1.8;
 export const BOSS_ATK_DEF_MULT = 1.25;

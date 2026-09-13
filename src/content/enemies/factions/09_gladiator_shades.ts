@@ -8,7 +8,7 @@ const boss = defineEnemy({
   archetype: 'boss',
   element: 'justice',
   role: 'attack',
-  stats: [2_300, 175, 130, 100, 20, 70, 40, 35],
+  stats: [1_500, 115, 85, 100, 20, 70, 40, 35],
   art: { tint: '#d9c07a', scale: 1.34 },
   abilities: [
     {

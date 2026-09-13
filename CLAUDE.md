@@ -109,7 +109,7 @@ each other's internals.
   audio/                      Howler wrappers, music/sfx registry, mixer
   platform/                   Storage adapters (web now, electron later), clipboard, file dialogs
   i18n/                       String tables (English shipped; keys everywhere, no literals in UI)
-/tools/                       Node scripts: assets:build, assets:check, content:validate, audio synth (sim:balance arrives with Phase 3)
+/tools/                       Node scripts: assets:build, assets:check, content:validate, audio synth, sim:balance
 /tests/e2e/                   Playwright specs
 /docs/                        Design + technical documentation (see document map)
 ```
@@ -336,7 +336,7 @@ pnpm content:validate   validate all content and cross-references (ids, assets, 
 pnpm assets:build       generate atlases, WebP variants, audio and the typed manifest from /game
 pnpm assets:check       fail when the committed manifest no longer matches /game (CI)
 pnpm perf:battle        frame-time bench on a running preview (--strict fails over budget, --software = SwiftShader)
-pnpm sim:balance        (Phase 3) headless campaign/boss simulations, prints difficulty curve report
+pnpm sim:balance        headless campaign simulations: difficulty-curve report and win-rate bands (--strict fails on a broken band, --scan prints what each reference team can take)
 ```
 
 The component gallery is at `/?screen=devkit` in every build (code-split, never linked from the

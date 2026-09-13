@@ -8,7 +8,7 @@ const boss = defineEnemy({
   archetype: 'boss',
   element: 'valor',
   role: 'health',
-  stats: [2_600, 130, 110, 86, 15, 60, 40, 30],
+  stats: [1_700, 85, 70, 86, 15, 60, 40, 30],
   art: { tint: '#8b1a1a', scale: 1.35 },
   abilities: [
     { slot: 'a1', key: 'red_hatchet', icon: 'spell.weapon_hatchet', effects: [hit(3.2)] },
