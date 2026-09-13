@@ -245,12 +245,14 @@ function finish(state: BattleState, kind: BattleOutcomeKind, events: BattleEvent
       instanceId: unit.instanceId,
       side: unit.side,
       alive: unit.alive,
+      died: !unit.alive,
       damageDealt: 0,
       damageTaken: 0,
       healingDone: 0,
       kills: 0,
     };
     r.alive = unit.alive;
+    if (!unit.alive) r.died = true;
     state.reports[id] = r;
   }
   const outcome: BattleOutcome = {

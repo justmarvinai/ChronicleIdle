@@ -15,6 +15,7 @@ import { damage as damageFormula, elementMatch } from './formulas';
 import { alliesOf, effectiveStat, enemiesOf, hpFraction, shieldTotal, threat } from './stats';
 import { isDebuff } from './conditions';
 import { provoker, targetableAllies, targetableEnemies, targetingOf } from './targets';
+import type { TargetPreference } from './imports';
 import type { BattleState, BattleUnit, Decision, UnitAbility } from './types';
 
 function flatten(effects: readonly Effect[]): Effect[] {
@@ -120,6 +121,32 @@ function abilityScore(
   return score;
 }
 
+/** `ai.prefer`: the ability names who it goes for, whoever casts it (BATTLE.md §7). */
+function preferredTarget(
+  state: BattleState,
+  pool: readonly BattleUnit[],
+  preference: TargetPreference,
+): BattleUnit {
+  const first = pool[0];
+  if (!first) throw new Error('preferredTarget needs a non-empty pool');
+  switch (preference) {
+    case 'lowest_hp':
+      return pool.reduce((best, u) => (u.hp < best.hp ? u : best), first);
+    case 'lowest_hp_percent':
+      return pool.reduce((best, u) => (hpFraction(u) < hpFraction(best) ? u : best), first);
+    case 'highest_atk':
+      return pool.reduce(
+        (best, u) => (effectiveStat(state, u, 'atk') > effectiveStat(state, best, 'atk') ? u : best),
+        first,
+      );
+    case 'lowest_def':
+      return pool.reduce(
+        (best, u) => (effectiveStat(state, u, 'def') < effectiveStat(state, best, 'def') ? u : best),
+        first,
+      );
+  }
+}
+
 /** Default target for an ability (BATTLE.md §7 table); `null` when it needs none. */
 export function pickTarget(state: BattleState, unit: BattleUnit, ability: UnitAbility): BattleUnit | null {
   const targeting = targetingOf(ability.def);
@@ -139,6 +166,10 @@ export function pickTarget(state: BattleState, unit: BattleUnit, ability: UnitAb
   if (forced) return forced;
   const enemies = targetableEnemies(state, unit);
   if (!enemies.length) return null;
+  // A declared preference wins over the side's default (the Marksman archetype picks off the
+  // champion closest to death; a champion kit may ask for the biggest threat instead).
+  const prefer = ability.def.ai.prefer;
+  if (prefer) return preferredTarget(state, enemies, prefer);
   if (unit.side === 'enemy') {
     // Campaign enemies: random, weighted by threat (ATK × SPD).
     return state.rng.weighted(enemies.map((e) => ({ item: e, weight: Math.max(1, threat(state, e)) })));

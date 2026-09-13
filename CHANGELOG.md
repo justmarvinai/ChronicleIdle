@@ -39,6 +39,17 @@ All notable changes to ChronicleIdle are documented here. The format follows
   prints the enemy scale each team can take, which is the table a tuning pass fits the constants
   to. CI now runs the band check.
 
+- **The campaign engine** (`src/engine/campaign/`): energy per run and per band, the unlock chain
+  (stage → settlement → difficulty, and ×3/×4 battle speed), star evaluation, seeded reward rolls
+  and the run itself. Progress stores only what was played — stars and best turns per stage and
+  difficulty — and everything else is derived from it, so a save can never disagree with its own
+  progress: which stage is open, which chest was granted, where the player is next.
+- **`ai.prefer` on abilities**: an ability can name who it goes for (`lowest_hp`,
+  `lowest_hp_percent`, `highest_atk`, `lowest_def`) instead of taking its side's default. The
+  Marksman archetype uses it to pick off the champion closest to death.
+- `UnitReport.died` records that a champion went down even if it was revived, which is what the
+  campaign's second star asks about.
+
 ### Changed
 - **Enemy scaling retuned (`BATTLE.md` §4.5, `CAMPAIGN.md` §5).** The old ladder was unwinnable:
   the linear `1 + 0.055 × g` term reached ×7.5 by the last stage and ×49 with Hard's multiplier,

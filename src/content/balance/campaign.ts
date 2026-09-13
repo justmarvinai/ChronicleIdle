@@ -67,6 +67,8 @@ export const GEAR_DROP_CHANCE: Readonly<Record<Difficulty, number>> = {
   hard: 0.18,
 };
 export const GEAR_DROP_CHANCE_BOSS = 0.45;
+/** A dropped piece belongs to one of the settlement's own sets this often, else to any set. */
+export const GEAR_SET_FROM_POOL_CHANCE = 0.6;
 
 /** A Faded Shard now and then, more often on the harder difficulties. */
 export const SHARD_DROP_CHANCE: Readonly<Record<Difficulty, number>> = {

@@ -198,9 +198,10 @@ Every new `kind` needs: resolver + unit tests + a row in the table above + a cha
 
 ## 7. Auto-battle AI
 
-Data-driven policy evaluated per decision. Each ability declares `ai: { priority, when?, avoid? }`
-using conditions from the DSL, and the policy picks the highest-priority **usable** ability whose
-`when` holds; A1 is the fallback. Targeting rules by ability kind:
+Data-driven policy evaluated per decision. Each ability declares
+`ai: { priority, when?, avoid?, prefer? }` using conditions from the DSL, and the policy picks the
+highest-priority **usable** ability whose `when` holds; A1 is the fallback. Targeting rules by
+ability kind:
 
 | Kind | Default target choice |
 | --- | --- |
@@ -208,6 +209,10 @@ using conditions from the DSL, and the policy picks the highest-priority **usabl
 | Single heal / buff | Lowest-HP-% ally without that buff |
 | Debuff ability | Enemy without that debuff with the highest threat (ATK × SPD) |
 | AoE | n/a |
+
+`prefer` overrides the default for enemy-targeting abilities, whoever casts it — one of
+`lowest_hp`, `lowest_hp_percent` (the Marksman archetype's shot, which picks off the champion
+closest to death), `highest_atk` or `lowest_def`. Provoke still wins over a preference.
 
 Global rules: never waste heals above 90 % team HP; save `revive` abilities for a dead ally; use
 TM boosts when ≥2 allies are below 50 % TM; prefer buffs at wave start; bosses (see `BOSSES.md`)

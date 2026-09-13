@@ -141,6 +141,8 @@ export interface UnitReport {
   instanceId: string | null;
   side: Side;
   alive: boolean;
+  /** Went down at any point, revived or not — the campaign's second star asks for this (CAMPAIGN.md §3). */
+  died: boolean;
   damageDealt: number;
   damageTaken: number;
   healingDone: number;

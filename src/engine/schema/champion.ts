@@ -13,6 +13,7 @@ import {
   ROLES,
   STAT_IDS,
   STATUS_IDS,
+  TARGET_PREFERENCES,
   UPGRADE_TYPES,
   type Condition,
   type Effect,
@@ -200,6 +201,7 @@ export const abilitySchema = z.object({
     priority: z.number().int().min(0).max(10),
     when: conditionSchema.optional(),
     avoid: conditionSchema.optional(),
+    prefer: z.enum(TARGET_PREFERENCES).optional(),
   }),
 });
 

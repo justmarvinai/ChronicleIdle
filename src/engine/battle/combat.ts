@@ -63,6 +63,7 @@ export function report(ctx: ActionContext, unitId: string): UnitReport {
     instanceId: unit?.instanceId ?? null,
     side: unit?.side ?? 'enemy',
     alive: unit?.alive ?? false,
+    died: false,
     damageDealt: 0,
     damageTaken: 0,
     healingDone: 0,
@@ -126,6 +127,7 @@ export function applyHit(
   if (killed) {
     ctx.killedThisAction = true;
     if (source) report(ctx, source.id).kills += 1;
+    report(ctx, target.id).died = true;
     ctx.events.push({ type: 'unit.died', unitId: target.id, killerId: source?.id ?? null });
     if (source && meta.triggers) ctx.trigger('onKill', source, { target });
     if (!target.flags.onDeathFired) {

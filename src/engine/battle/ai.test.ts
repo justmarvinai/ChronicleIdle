@@ -89,6 +89,57 @@ describe('auto-battle policy', () => {
     expect(autoDecide(state, state.units['a0']!).targetId).toBe('w0e0');
   });
 
+  it('sends an ability with `prefer` at the target it names (BATTLE.md §7)', () => {
+    const picky = (prefer: 'lowest_hp' | 'lowest_hp_percent' | 'highest_atk' | 'lowest_def') =>
+      ability('a1', [hit()], { ai: { priority: 1, prefer } });
+    const cases = [
+      // Two enemies: the second has the fewest HP left, the highest ATK and the lowest DEF, while
+      // the first is on the smallest share of its own (much larger) pool.
+      ['lowest_hp', 'w0e1'],
+      ['lowest_hp_percent', 'w0e0'],
+      ['highest_atk', 'w0e1'],
+      ['lowest_def', 'w0e1'],
+    ] as const;
+    for (const [prefer, expected] of cases) {
+      const a1 = picky(prefer);
+      const state = battle({
+        party: [champion({ abilities: [a1] })],
+        waves: [
+          [
+            enemy({ stats: { spd: 1, hp: 20_000, atk: 100, def: 900 } }),
+            enemy({ stats: { spd: 1, hp: 4_000, atk: 900, def: 100 } }),
+          ],
+        ],
+      });
+      untilTurnOf(state, 'a0');
+      state.units['w0e0']!.hp = 1_000;
+      state.units['w0e1']!.hp = 900;
+      expect(autoDecide(state, state.units['a0']!).targetId, prefer).toBe(expected);
+    }
+  });
+
+  it('lets an enemy kit pick off the champion closest to death instead of rolling for one', () => {
+    const shot = ability('a1', [hit()], { ai: { priority: 1, prefer: 'lowest_hp_percent' } });
+    const roller = ability('a1', [hit()]);
+    const picky = battle({
+      party: [champion(), champion()],
+      waves: [[enemy({ abilities: [shot], stats: { spd: 1 } })]],
+    });
+    picky.units['a1']!.hp = Math.round(picky.units['a1']!.maxHp * 0.1);
+    // The preference is not a roll: every call goes for the same champion.
+    for (let i = 0; i < 10; i += 1) expect(autoDecide(picky, picky.units['w0e0']!).targetId).toBe('a1');
+    // Without it the archetype default is threat-weighted random, which can take either.
+    const plain = battle({
+      party: [champion(), champion()],
+      waves: [[enemy({ abilities: [roller], stats: { spd: 1 } })]],
+      seed: 'roller',
+    });
+    plain.units['a1']!.hp = Math.round(plain.units['a1']!.maxHp * 0.1);
+    const picked = new Set<string | null>();
+    for (let i = 0; i < 30; i += 1) picked.add(autoDecide(plain, plain.units['w0e0']!).targetId);
+    expect(picked.size).toBe(2);
+  });
+
   it('boosts buffs on the first action of a wave', () => {
     const buff = ability(
       'a2',

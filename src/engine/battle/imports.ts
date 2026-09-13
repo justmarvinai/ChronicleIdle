@@ -11,7 +11,14 @@ export {
   ELEMENT_WEAK_CRIT,
   ELEMENT_WEAK_DMG,
 } from '@content/balance/element';
-export { ABILITY_SLOTS, BUFF_IDS, DEBUFF_IDS, STAT_IDS, STATUS_IDS } from '@content/champions/types';
+export {
+  ABILITY_SLOTS,
+  BUFF_IDS,
+  DEBUFF_IDS,
+  STAT_IDS,
+  STATUS_IDS,
+  TARGET_PREFERENCES,
+} from '@content/champions/types';
 export type {
   AbilityAi,
   AbilityDef,
@@ -35,6 +42,7 @@ export type {
   StatId,
   StatusId,
   Target,
+  TargetPreference,
 } from '@content/champions/types';
 export type { EnemyDef, EnemyBossConfig } from '@content/enemies/types';
 export type { EncounterDef, EncounterKind, EncounterWave } from '@content/encounters/types';
