@@ -95,19 +95,27 @@ test.describe('battle', () => {
     expect(problems).toEqual([]);
   });
 
-  test('auto beats Training Grounds 1 and 2 with the starting roster', async ({ page }) => {
+  /** Starts one encounter on auto at ×2 and expects a victory (ROADMAP Phase 2 acceptance). */
+  async function autoWins(page: Page, encounter: 1 | 2): Promise<void> {
     await startChronicle(page);
-    for (const encounter of [1, 2] as const) {
-      await openTrainingSetup(page, encounter);
-      await setAuto(page, true);
-      await startBattle(page);
-      await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'true');
-      await waitForResult(page);
-      await expect(page.getByTestId('result-title')).toHaveText('Victory');
-      await page.getByTestId('result-hub').click();
-      await expect(page.getByTestId('screen-hub')).toBeVisible();
-      await settle(page);
-    }
+    await openTrainingSetup(page, encounter);
+    await setAuto(page, true);
+    await startBattle(page);
+    await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'true');
+    await page.getByTestId('battle-speed').click();
+    await expect(page.getByTestId('battle-speed')).toContainText('2');
+    await waitForResult(page);
+    await expect(page.getByTestId('result-title')).toHaveText('Victory');
+    await page.getByTestId('result-hub').click();
+    await expect(page.getByTestId('screen-hub')).toBeVisible();
+  }
+
+  test('auto beats Training Grounds 1 with the starting roster', async ({ page }) => {
+    await autoWins(page, 1);
+  });
+
+  test('auto beats Training Grounds 2 with the starting roster', async ({ page }) => {
+    await autoWins(page, 2);
   });
 
   test('retreating from the pause menu ends the fight and the result leads back to the team', async ({

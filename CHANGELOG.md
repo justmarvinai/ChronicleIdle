@@ -110,8 +110,8 @@ _Nothing yet — Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
   `pnpm build && pnpm preview` then `pnpm perf:battle` (`USER_QUESTIONS.md` Q30).
 - The stage records unclamped frame times (`ticker.elapsedMS`); React commits nothing per frame
   during a fight — the HUD updates only when the presenter lands an event.
-- `tests/e2e`: 27 specs green (Phase 0–2); the battle fights get a 480 s budget because CI
-  runners render with software WebGL.
+- `tests/e2e`: 28 specs (Phase 0–2); the battle fights get a 480 s budget and the auto fights
+  run at ×2 because CI runners render with software WebGL.
 
 ## [0.0.1] — 2026-09-12 — Phase 1: Champions & Collection
 
