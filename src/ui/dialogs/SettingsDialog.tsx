@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { t } from '@i18n/index';
-import { selectActions, selectSettings } from '@state/selectors';
+import { selectActions, selectMaxBattleSpeed, selectSettings } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { services } from '@state/services';
 import { chronicleFileName, encodeChronicleFile } from '@state/chronicle-file';
@@ -17,11 +17,15 @@ import { importChronicle } from '@ui/flows/importChronicle';
 import { DEFAULT_SETTINGS } from '@engine/schema/save';
 import styles from './dialogs.module.css';
 
+/** ×3 and ×4 are earned in the campaign (CAMPAIGN.md §1). */
+const SPEEDS = [1, 2, 3, 4] as const;
+
 type Tab = 'audio' | 'display' | 'battle' | 'save' | 'about';
 
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const actions = useGameStore(selectActions);
   const saved = useGameStore(selectSettings);
+  const maxSpeed = useGameStore(selectMaxBattleSpeed);
   const fullscreen = useGameStore((s) => s.ui.fullscreen);
   const hasSave = saved !== null;
   const settings = saved ?? DEFAULT_SETTINGS;
@@ -130,12 +134,16 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             <div className={styles.row}>
               <span className={styles.rowLabel}>{t('settings.battleSpeed')}</span>
               <Dropdown
-                options={[
-                  { value: 1, label: '×1' },
-                  { value: 2, label: '×2' },
-                ]}
-                value={settings.battleSpeed > 2 ? 2 : settings.battleSpeed}
-                onChange={(v) => update({ battleSpeed: v as 1 | 2 })}
+                options={SPEEDS.map((value) => ({
+                  value,
+                  label: value <= maxSpeed ? `×${value}` : `×${value} 🔒`,
+                }))}
+                value={Math.min(settings.battleSpeed, maxSpeed)}
+                onChange={(v) =>
+                  v <= maxSpeed
+                    ? update({ battleSpeed: v as 1 | 2 | 3 | 4 })
+                    : actions.toast('info', 'settings.battleSpeedLocked', { speed: v })
+                }
                 width={160}
                 disabled={!hasSave}
               />

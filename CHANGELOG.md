@@ -6,7 +6,11 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-### Added — Phase 3 (Campaign), in progress
+_Phase 4 (Player Level & Profile) starts after the owner's Phase 3 check-in._
+
+## [0.0.3] — 2026-09-13 — Phase 3: Campaign
+
+### Added
 
 - **Twelve faction rosters (84 enemies).** Every settlement fields its own faction: six
   rank-and-file units re-skinning the shared archetype kits (`ab.arch.<archetype>.<key>`, so a
@@ -22,15 +26,12 @@ All notable changes to ChronicleIdle are documented here. The format follows
   (`CAMPAIGN.md` §2, §3, §7, §9).
 - **Stage encounters are derived, not stored.** `stageEncounter(settlement, stage, difficulty)`
   builds the encounter for any of the 360 stage/difficulty pairs — scaling index, plate level,
-  limits, backdrop and music included — and the registry resolves and memoises them by id, so a
-  save only remembers a stage and a difficulty. Settlement 1's opening three stages fight at
-  80–90 % of the archetype base: the tutorial stands there and an ungeared level-1 trio must win
-  with any starter.
+  limits, backdrop and music included — and the registry resolves and memoises them by id
+  (`encounter.stage.<nn>.<nn>.<difficulty>`), so a save only remembers a stage and a difficulty.
 - **Campaign content validation.** Settlements, stages and factions are Zod-validated with their
   cross-references: ids carry their index, stage waves may only field their own faction, the boss
   leads only the boss stage's last wave, every faction fields all six archetypes and every
   authored enemy is fightable somewhere.
-
 - **`pnpm sim:balance`** — the campaign's difficulty-curve report. It runs every stage on every
   difficulty with the reference teams in `tools/sim/teams.ts` (the roster a new chronicle is given
   at level 10 and at its star caps, a mid-Epic roster, and an endgame roster whose rank-up and gear
@@ -38,7 +39,6 @@ All notable changes to ChronicleIdle are documented here. The format follows
   checks the bands declared beside those teams. `--strict` fails CI when a band breaks; `--scan`
   prints the enemy scale each team can take, which is the table a tuning pass fits the constants
   to. CI now runs the band check.
-
 - **The campaign engine** (`src/engine/campaign/`): energy per run and per band, the unlock chain
   (stage → settlement → difficulty, and ×3/×4 battle speed), star evaluation, seeded reward rolls
   and the run itself. Progress stores only what was played — stars and best turns per stage and
@@ -57,7 +57,6 @@ All notable changes to ChronicleIdle are documented here. The format follows
   level-up moment — the energy refill, the rewards and the celebration — is still Phase 4's.
 - `UnitReport.died` records that a champion went down even if it was revived, which is what the
   campaign's second star asks about.
-
 - **The campaign is playable end to end.** The Game Modes card carries the stand you are on and
   opens the **campaign map** — twelve settlement banners with their stars, the difficulty
   selector and its gate, and the star-chest track. A settlement's screen lists its ten stands with
@@ -86,7 +85,25 @@ All notable changes to ChronicleIdle are documented here. The format follows
   Normal's second half; the modelled endgame roster clears Hard, with three stars on its last
   settlement a real fight.
 - The perf bench fights at ×5 enemy stats (was ×1.5) so it still runs 35–45 turns after the
-  retune.
+  retune. On this GPU-less build environment it reports p50 216.6 ms / p95 233.4 ms over 97 frames
+  of a 25.9 s fight — SwiftShader numbers, which say nothing about the 16 ms budget either way
+  (USER_QUESTIONS.md Q30 still awaits a run on the owner's laptop).
+- Battle speed is capped by campaign progress everywhere it can be chosen (the in-battle cycle
+  button, the settings dropdown and every launch), so ×3 appears with Normal complete and ×4 with
+  Hard instead of being hard-capped at ×2.
+- `CONTENT_AUTHORING.md` §3–§4 now describe factions, derived stage encounters and settlements as
+  they are actually authored, and its balance table names `campaign.ts` (the file the phase added)
+  instead of the `drops.ts`/`enemies.ts` the plan had guessed at.
+
+### Fixed
+- `prefers-reduced-motion` now also stops CSS keyframes (entry rises, shimmers), not just
+  transitions; the battle itself is Pixi and keeps its animation.
+
+### Not yet
+- The all-3★ **milestone chest** of `CAMPAIGN.md` §7 is not granted: Intro's reward is an Epic
+  champion of the player's choice (which needs the Summoning Portal's picker, Phase 8) and
+  Normal's and Hard's carry a title (Phase 4). Both are noted in those phases' scope in
+  `ROADMAP.md`; everything else in the reward table pays out.
 
 ### Removed
 - The three Training Grounds encounters and the seven Remnant enemies they fielded: the campaign

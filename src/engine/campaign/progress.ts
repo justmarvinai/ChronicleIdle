@@ -41,6 +41,13 @@ export function stageIdOf(settlement: number, stage: number): string {
   return `stage.${pad(settlement)}.${pad(stage)}`;
 }
 
+/** The inverse of `stageIdOf`: `stage.03.07` → settlement 3, stage 7. */
+export function parseStageId(stageId: string): { settlement: number; stage: number } | null {
+  const match = /^stage\.(\d{2})\.(\d{2})$/.exec(stageId);
+  if (!match?.[1] || !match[2]) return null;
+  return { settlement: Number(match[1]), stage: Number(match[2]) };
+}
+
 export function starsOf(progress: CampaignProgress, stageId: string, difficulty: Difficulty): number {
   return progress.stars[progressKey(stageId, difficulty)] ?? 0;
 }

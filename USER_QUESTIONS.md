@@ -31,6 +31,34 @@ Markdown table). If p95 lands above 16 ms there, the FX density and ember count 
 knobs (`render/battle/stage.ts` `embers`, `fx/registry.ts` scales) and the fix ships as a `0.0.2.x`
 patch.
 
+### Q31 — Is the retuned campaign curve the difficulty you want?
+**Why it matters.** The Phase 2 enemy ladder could not be won (the linear stage term reached ×7.5
+by the last stage, ×49 with Hard's multiplier, against a roster that can only grow ~×3 before gear
+and rank-up exist), so Phase 3 retuned it: a quadratic stage term ×1.00 → ×4.80, difficulty steps
+×1 / ×2.5 / ×6, and archetype bases at 65 % of their old values (`BATTLE.md` §4.5,
+`CAMPAIGN.md` §5). Measured with `pnpm sim:balance`: a new save's roster at level 10 clears Intro
+settlements 1–4, grinds 5–6 and stalls at 7–8; a mid-Epic roster clears Intro and stalls in
+Normal's second half; the modelled endgame roster clears Hard with three stars still a fight.
+**Default until answered.** Those numbers ship. They are four constants — `STAGE_GROWTH_TOP`,
+`STAGE_GROWTH_POWER`, `DIFFICULTY_MULT` and the archetype bases — so "harder" or "gentler" is one
+edit plus `pnpm sim:balance --strict`, and the bands live in `tools/sim/teams.ts`.
+
+### Q32 — Should a stand's XP level champions on the spot?
+**Why it matters.** `ECONOMY.md` §3.1 lists battles as a champion-XP source and the Tavern
+(Phase 5) as the place to *spend* brews and food. Phase 3 therefore applies a win's XP to the
+champions that fought and to the chronicle, levelling while the bar fills — otherwise the campaign
+would be unplayable until Phase 5, since the difficulty curve assumes levelling. The level-up
+*moment* (the full energy refill, the per-level rewards, the celebration) is still Phase 4's.
+**Default until answered.** Battle XP levels champions and the chronicle immediately; the Tavern
+will add brews and food on top of the same curve.
+
+### Q33 — Auto-repeat opens at chronicle level 5; is that too far?
+**Why it matters.** `CAMPAIGN.md` §9 gates ×10 at level 5, ×25 at 20 and ×50 at 30. With the
+campaign as the only XP source in 0.0.3, level 5 is roughly fifty Intro runs; quests, missions and
+the idle chest (Phases 9, 12, 13) will shorten that a lot.
+**Default until answered.** The gates stay as designed. `AUTO_REPEAT_TIERS` and
+`FEATURE_UNLOCK_LEVEL` are one edit each if you want ×10 from the start.
+
 ## 2. Answered
 
 | # | Question | Owner's answer | Resulting change |

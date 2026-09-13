@@ -192,6 +192,33 @@ describe('campaign runs through the store', () => {
     expect(stats['campaign.runs']).toBe(runs);
   });
 
+  it('announces the difficulty and the speed a completed difficulty opens', () => {
+    const { store, actions } = chronicle();
+    const party = Object.keys(store.getState().save!.roster).slice(0, 3);
+    // One stage short of a complete Intro…
+    actions.debugClearCampaign('intro', 1);
+    const last = { settlement: 12, stage: 10, difficulty: 'intro' } as const;
+    store.setState((state) => {
+      if (state.save) delete state.save.campaign.stars['stage.12.10|intro'];
+      return state;
+    });
+    const started = actions.startCampaignRun(last);
+    if (!started.ok) throw new Error(started.error.message);
+    const finished = actions.finishCampaignRun({
+      pointer: last,
+      cost: started.value.cost,
+      runIndex: started.value.runIndex,
+      outcome: victory(party),
+      party,
+      now: T0,
+    });
+    expect(finished.ok && finished.value.completedDifficulty).toBe(true);
+    const toasts = store.getState().ui.toasts.map((toast) => toast.textKey);
+    expect(toasts).toContain('campaign.difficultyOpen');
+    expect(toasts).toContain('campaign.speedUnlocked');
+    expect(availableDifficulties(store.getState().save!)).toEqual(['intro', 'normal']);
+  });
+
   it('exposes the pointer, the cost and the difficulties a chronicle may choose', () => {
     const { store, actions } = chronicle();
     const save = store.getState().save!;

@@ -122,6 +122,8 @@ export const ui = {
   'settings.launchFullscreen': 'Offer fullscreen at launch',
   'settings.reducedMotion': 'Reduce menu motion',
   'settings.battle': 'Battle',
+  'settings.battleSpeedLocked':
+    '×{speed} speed is earned in the campaign: ×3 with Normal complete, ×4 with Hard.',
   'settings.battleSpeed': 'Default battle speed',
   'settings.autoBattle': 'Start battles on Auto',
   'settings.save': 'Save data',
@@ -387,6 +389,8 @@ export const ui = {
   'campaign.cleared': 'Cleared',
   'campaign.current': 'You are here',
   'campaign.stageShort': '{settlement}-{stage}',
+  'campaign.difficultyOpen': '{difficulty} difficulty is open.',
+  'campaign.speedUnlocked': 'Battle speed ×{speed} unlocked.',
 
   'settlement.stages': 'Stands',
   'settlement.stage': 'Stage {settlement}-{stage}',

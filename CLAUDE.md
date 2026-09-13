@@ -248,7 +248,7 @@ with our kits and palette.
 - One file per champion (`src/content/champions/<id>.ts`), one per gear set, one per settlement
   (stages inside), one per boss, one per banner, one per quest group, one per mission chapter.
 - Balance curves and global constants in `src/content/balance/` (`stats.ts`, `xp.ts`,
-  `energy.ts`, `drops.ts`, `summon.ts`, `idle.ts`, `battle.ts`, `element.ts`, `economy.ts`).
+  `energy.ts`, `campaign.ts`, `summon.ts`, `idle.ts`, `battle.ts`, `element.ts`, `economy.ts`).
 - Ability effects are composed from the effect DSL (`docs/design/BATTLE.md` §6). Do not add
   ad-hoc `if (champion.id === …)` code anywhere. If a champion needs a new mechanic, add a new
   effect type to the engine with tests, then use it from data.

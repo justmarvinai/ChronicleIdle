@@ -91,59 +91,109 @@ resolves (the content test renders each one).
 
 ## 3. Enemy
 
-```ts
-import { hit, status } from '@content/champions/dsl';
-import { defineEnemy } from './dsl';
+A settlement's rank and file are re-skins of the six archetypes, so a faction file brings names,
+element and tint — never a copy of a kit:
 
-export default defineEnemy({
-  id: 'enemy.remnant_raider',
-  archetype: 'raider', element: 'valor', role: 'attack',
-  stats: [1_400, 150, 90, 92, 10, 50, 10, 10],            // HP ATK DEF SPD C.RATE C.DMG RES ACC at Intro, stage 0
-  art: { tint: '#a0522d' },                                 // lizard placeholder tinted per faction; model/scale/facing optional
-  abilities: [
-    { slot: 'a1', key: 'cleave', icon: 'spell.weapon_hatchet', effects: [hit(3.0)] },
-    { slot: 'a2', key: 'reckless_swing', icon: 'spell.weapon_cleaver_axe', cooldown: 3, effects: [hit(4.2)] },
+```ts
+import { defineFaction } from '@content/enemies/faction';
+import boss from './…';      // a named boss, authored with defineEnemy (below)
+
+export default defineFaction({
+  slug: 'thornwood_bandits',
+  element: 'valor',
+  tint: '#a0522d',                                   // multiplied over the lizard placeholder
+  units: [
+    { slug: 'thornwood_cutpurse', archetype: 'raider' },
+    { slug: 'thornwood_poacher', archetype: 'marksman' },
+    { slug: 'thornwood_ox_bandit', archetype: 'brute' },
+    { slug: 'thornwood_shieldbearer', archetype: 'warden' },
+    { slug: 'thornwood_hedge_hexer', archetype: 'hexer', element: 'eclipse' },
+    { slug: 'thornwood_camp_medic', archetype: 'mender', element: 'faith' },
   ],
-  // passives?: [{ key, icon, trigger, effects, oncePerBattle? }], boss?: { rotation, enrage }
+  boss,
 });
 ```
-Ids and i18n keys derive from the enemy id (`ab.remnant_raider.cleave.name` / `.description`);
-abilities use the champion effect builders. Stats are the archetype base at Intro, stage index 0
-and are scaled per encounter (`BATTLE.md` §4.5): `× DIFFICULTY_MULT × (1 + STAGE_GROWTH ×
-stageIndex) × statMult`, bosses ×1.8 HP and ×1.25 ATK/DEF. Strings live in `src/i18n/en/enemies.ts`.
+
+Each unit becomes `enemy.<slug>` with the archetype's stats and kit; the shared abilities live
+once per archetype in `src/content/enemies/archetypes.ts` as `ab.arch.<archetype>.<key>`, so the
+only strings a faction needs are its own name and its units' names. A faction that wants a new
+mechanic gets a named enemy instead — which is what the twelve stage bosses are:
+
+```ts
+import { hit, status } from '@content/champions/dsl';
+import { defineEnemy } from '@content/enemies/dsl';
+
+export default defineEnemy({
+  id: 'enemy.redcap_halvar',
+  archetype: 'boss', element: 'valor', role: 'attack',
+  stats: [1_700, 85, 70, 86, 15, 60, 40, 30],       // HP ATK DEF SPD C.RATE C.DMG RES ACC at Intro, stage 0
+  art: { tint: '#a0522d', scale: 1.3 },
+  abilities: [
+    { slot: 'a1', key: 'cleaver', icon: 'spell.weapon_hatchet', effects: [hit(2.2)] },
+    { slot: 'a2', key: 'bandit_call', icon: 'spell.crest_warmark', cooldown: 3, effects: [status('atk_up', 2, { target: 'all_allies' })] },
+  ],
+  boss: { rotation: ['a1', 'a2', 'a1'], immunities: [], enrageAfterTurn: 12, damageTakenMult: 1 },
+});
+```
+
+Ids and i18n keys derive from the enemy id (`ab.redcap_halvar.cleaver.name` / `.description`);
+abilities use the champion effect builders. Stats are the base at Intro, stage index 0 and are
+scaled per encounter (`BATTLE.md` §4.5): `× DIFFICULTY_MULT × stageScale(stageIndex) × statMult`,
+bosses ×1.8 HP and ×1.25 ATK/DEF. Strings live in `src/i18n/en/campaign.ts`.
 
 ### 3.1 Encounter
 
 ```ts
 {
-  id: 'encounter.training.2', name: 'encounter.training.2.name', description: '…description',
-  kind: 'training',            // 'training' | 'campaign' (3 champions) · 'boss' | 'bench' (4)
-  partySize: 3, difficulty: 'intro', stageIndex: 0, enemyLevel: 2,   // enemyLevel is what plates show
-  turnLimit: 40, turnLimitMode: 'ally', timeUpIsDefeat: true,
-  backdrop: 'bg.bg8', music: 'battle', surface: 'stone', version: 1,
-  waves: [{ enemies: [{ enemyId: 'enemy.remnant_raider', statMult: 0.85 }, …] }, …],
+  id: 'encounter.bench.stress', name: '…name', description: '…description',
+  kind: 'bench',               // 'campaign' (3 champions) · 'boss' | 'bench' (4)
+  partySize: 4, difficulty: 'normal', stageIndex: 40, enemyLevel: 40,  // enemyLevel is what plates show
+  turnLimit: 60, turnLimitMode: 'all', timeUpIsDefeat: false,
+  backdrop: 'bg.bg3', music: 'boss', surface: 'stone', version: 1,
+  waves: [{ enemies: [{ enemyId: 'enemy.the_gatekeeper', statMult: 5 }, …] }, …],
 }
 ```
-Encounters are plain `EncounterDef` objects listed in `src/content/encounters/index.ts`
-(`training.ts` for the Training Grounds, `bench.ts` for the perf bench; campaign stages and
-bosses generate theirs in later phases). The validator checks enemy ids, i18n keys, the backdrop
-key and the party size per kind.
 
-## 4. Settlement and stages
+Campaign encounters are **not** authored: `stageEncounter(settlement, stage, difficulty)` derives
+all 360 of them from the stage, and the registry resolves and memoises them by the id
+`encounter.stage.<nn>.<nn>.<difficulty>`. The only authored `EncounterDef` left is the perf bench
+(`src/content/encounters/bench.ts`); later phases add the daily and weekly bosses the same way.
+The validator checks enemy ids, i18n keys, the backdrop key and the party size per kind.
+
+## 4. Settlement and stands
+
+A settlement is ten lines: its faction, where it is fought and which archetypes turn up on each
+stand. Wave *shape* comes from the design table (`CAMPAIGN.md` §4), so it is computed rather than
+typed out, and the boss stand leads its last wave with the faction's boss.
 
 ```ts
+import faction from '@content/enemies/factions/01_thornwood_bandits';
+import { defineSettlement } from './dsl';
+
 export default defineSettlement({
-  id: 'settlement.thornwood_crossing', number: 1, name: '…', backdrop: 'bg7', tint: null,
-  faction: 'thornwood_bandits', dominantElement: 'valor', sets: ['gear_set.ember_guard', 'gear_set.warcry'],
-  boss: 'enemy.redcap_halvar',
+  index: 1,
+  slug: 'thornwood_crossing',
+  faction,
+  backdrop: 'bg.bg7',
+  grade: 'rgba(24, 30, 18, 0.42)',                 // colour grade over the backdrop
+  surface: 'dirt',                                  // footstep surface for lunges
+  setPool: ['gear_set.ember_guard', 'gear_set.warcry'],
   stages: [
-    { number: 1, waves: [['enemy.thornwood_cutpurse','enemy.thornwood_cutpurse'], ['enemy.thornwood_cutpurse','enemy.thornwood_poacher','enemy.thornwood_cutpurse']] },
+    { mix: ['raider'] },                            // each wave is filled by cycling the mix
+    { mix: ['raider', 'marksman'] },
     …
-    { number: 10, waves: [[…],[…],['enemy.redcap_halvar','enemy.thornwood_shieldbearer','enemy.thornwood_shieldbearer']], turnLimit3Star: 30, turnLimitDefeat: 50 },
+    { mix: ['brute', 'warden', 'marksman'], adds: ['warden', 'mender'] },   // stand 10: who flanks the boss
   ],
 });
 ```
-Difficulty variants are derived; add `overrides: { hard: { stages: { 10: { waves: … } } } }` when needed.
+
+Add the file to `src/content/stages/index.ts`, the faction to
+`src/content/enemies/factions/index.ts`, and the names to `src/i18n/en/campaign.ts`
+(`settlement.<slug>.name` / `.description`, `faction.<slug>.name`, `enemy.<slug>.name`). Stage
+ids, turn limits, energy costs, plate levels, drops and the three difficulties all follow from the
+index — there is nothing else to write. `pnpm content:validate` checks that a stand only fields
+its own faction, that the boss leads only the boss stand's last wave, that every archetype is
+fielded and that every authored enemy is fightable somewhere.
 
 ## 5. Gear set
 
@@ -174,10 +224,10 @@ See the "Content shape" sections of `docs/design/BOSSES.md`, `SUMMONING.md`,
 | `stats.ts` | `STAR_MULT`, level factor, role templates, rarity budgets, power weights |
 | `xp.ts` | champion XP curve, player XP curve, brew values, food values |
 | `energy.ts` | cap formula, regen seconds, refill price, overflow cap |
-| `battle.ts` | TM rate, DEF K, variance, status constants, turn limits |
+| `battle.ts` | TM rate, DEF K, variance, status constants, turn limits, `DIFFICULTY_MULT`, `stageScale` |
 | `element.ts` | strong/weak modifiers |
-| `enemies.ts` | archetype bases, difficulty multipliers, stage growth, boss multipliers |
-| `drops.ts` | campaign reward formulas, rarity/star tables by difficulty, first-clear, star chests |
+| `campaign.ts` | energy per band, star and defeat limits, star-chest thresholds, plate levels, gold/XP/drop rates, material ranges, first-clear and chest bundles, auto-repeat tiers |
+| `enemies/archetypes.ts` | the six archetype bases and their shared kits (content, not balance) |
 | `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers |
 | `summon.ts` | shard rates, pity, exchange prices, featured weight, rotation epoch |
 | `idle.ts` | capacity bands, hourly yields, chance rolls |
@@ -213,6 +263,9 @@ Each constant has a doc comment: what it does, what it affects, safe range.
 ## 11. Tuning workflow
 
 1. Change a balance constant or an object number.
-2. `pnpm content:validate` → `pnpm test` → `pnpm sim:balance` (prints the difficulty curve and
-   flags stages outside their target win-rate band).
-3. Note the change under "Balance" in `CHANGELOG.md`.
+2. `pnpm content:validate` → `pnpm test` → `pnpm sim:balance` (prints win and three-star rates per
+   settlement for each reference team, then checks the bands in `tools/sim/teams.ts`).
+3. When a band breaks, `pnpm sim:balance --scan` prints the enemy scale each team actually
+   survives — fit `DIFFICULTY_MULT` and `stageScale` to that table rather than guessing.
+4. Note the change under "Balance" in `CHANGELOG.md`; the design tables in `docs/design/` carry
+   the same numbers, so update them in the same commit.

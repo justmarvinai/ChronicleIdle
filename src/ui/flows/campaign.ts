@@ -11,7 +11,6 @@ import { maxBattleSpeed, nextStage, type StagePointer } from '@engine/campaign/p
 import { fail, ok, type Result } from '@engine/errors';
 import { battleController, type BattleSpeed } from '@state/battle/index';
 import {
-  batchRewards,
   beginCampaignBatch,
   campaignSession,
   clearCampaignSession,
@@ -144,5 +143,3 @@ export function currentRunView(): CampaignRunView | null {
     settlementName: ref.settlement.name,
   };
 }
-
-export { batchRewards };

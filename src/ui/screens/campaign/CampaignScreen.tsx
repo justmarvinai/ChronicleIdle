@@ -1,15 +1,17 @@
 import { useMemo } from 'react';
 import { backdrop } from '@assets/manifest';
 import type { Difficulty } from '@content/balance/battle';
-import { STARS_PER_SETTLEMENT, STAR_CHEST_THRESHOLDS } from '@content/balance/campaign';
+import { BOSS_STAGE_NUMBER, STARS_PER_SETTLEMENT, STAR_CHEST_THRESHOLDS } from '@content/balance/campaign';
 import { content } from '@content/registry';
 import type { SettlementDef } from '@content/stages/types';
 import { playSfx } from '@audio/index';
 import {
   difficultyStars,
   isSettlementUnlocked,
+  isStageCleared,
   nextStage,
   settlementStars,
+  stageIdOf,
   type CampaignProgress,
 } from '@engine/campaign/progress';
 import { t, translate } from '@i18n/index';
@@ -163,7 +165,8 @@ function SettlementBanner({
 }) {
   const unlocked = isSettlementUnlocked(progress, settlement.index, difficulty);
   const stars = settlementStars(progress, settlement.index, difficulty);
-  const cleared = stars > 0 && progress.stars[`stage.${pad(settlement.index)}.10|${difficulty}`];
+  // "Cleared" means the boss fell: the settlement then wears the ornate frame.
+  const cleared = isStageCleared(progress, stageIdOf(settlement.index, BOSS_STAGE_NUMBER), difficulty);
   const art = backdrop(settlement.backdrop);
   const previous = content.settlementByIndex(settlement.index - 1);
   return (
@@ -231,5 +234,3 @@ function SettlementBanner({
     </DecoFrame>
   );
 }
-
-const pad = (n: number): string => String(n).padStart(2, '0');

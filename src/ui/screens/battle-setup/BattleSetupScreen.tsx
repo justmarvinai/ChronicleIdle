@@ -4,7 +4,7 @@ import { playSfx } from '@audio/index';
 import { sanitizeTeam, suggestTeam } from '@engine/battle/teams';
 import { scaledEnemyStats } from '@engine/battle/index';
 import { parseStageEncounterId } from '@engine/campaign/encounter';
-import type { StagePointer } from '@engine/campaign/progress';
+import { parseStageId, type StagePointer } from '@engine/campaign/progress';
 import { autoRepeatTiers } from '@engine/campaign/run';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { AUTO_REPEAT_TIERS } from '@content/balance/campaign';
@@ -42,9 +42,8 @@ const CARD = 96;
 /** `encounter.stage.03.07.normal` → the stage pointer the campaign actions take. */
 function stagePointerOf(encounterId: string): StagePointer | null {
   const parsed = parseStageEncounterId(encounterId);
-  const match = parsed ? /^stage\.(\d{2})\.(\d{2})$/.exec(parsed.stageId) : null;
-  if (!parsed || !match?.[1] || !match[2]) return null;
-  return { settlement: Number(match[1]), stage: Number(match[2]), difficulty: parsed.difficulty };
+  const stage = parsed ? parseStageId(parsed.stageId) : null;
+  return parsed && stage ? { ...stage, difficulty: parsed.difficulty } : null;
 }
 
 /** Battle setup (docs/tech/UI_DESIGN.md §5.8): team slots, presets, enemy preview, start. */

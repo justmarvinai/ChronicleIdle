@@ -1,5 +1,7 @@
+import { useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
 import { content } from '@content/registry';
+import { playSfx } from '@audio/index';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { battleController } from '@state/battle/index';
 import { batchRewards, batchStars, campaignSession, clearCampaignSession } from '@state/campaign-session';
@@ -35,6 +37,21 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const encounter = session.encounter;
   const victory = outcome?.kind === 'victory';
   useSceneAudio(victory ? 'hub' : 'battle', 'none');
+  const cued = useRef(false);
+  const hasRewards = campaign.summaries.some((summary) => summary.rewards !== null);
+  const bigReward =
+    campaign.summaries.some((summary) => summary.firstClear || summary.chestThresholds.length > 0) ||
+    campaign.requested > 1;
+  const anyLevelUp = campaign.summaries.some(
+    (summary) => summary.levelUps.length > 0 || summary.playerLevelsGained > 0,
+  );
+  // The spoils land with a sound, and a level-up with its stinger (AGENTS.md definition of done).
+  useEffect(() => {
+    if (cued.current || !hasRewards) return;
+    cued.current = true;
+    playSfx(bigReward ? 'reward.large' : 'reward.medium');
+    if (anyLevelUp) window.setTimeout(() => playSfx('stinger.levelup'), 450);
+  }, [hasRewards, bigReward, anyLevelUp]);
   if (!outcome || !encounter) {
     return null;
   }
@@ -63,8 +80,9 @@ export default function BattleResultScreen(_props: ScreenProps) {
     actions.resetStack({ name: 'hub' });
     if (route === 'hub') return;
     actions.push({ name: 'campaign' });
-    if (run) actions.push({ name: 'settlement', settlement: run.pointer.settlement });
-    if (route === 'team' && run) actions.push({ name: 'battle-setup', encounterId: run.encounterId });
+    if (route === 'campaign' || !run) return;
+    actions.push({ name: 'settlement', settlement: run.pointer.settlement });
+    actions.push({ name: 'battle-setup', encounterId: run.encounterId });
   };
   const again = (pointer: typeof run extends null ? never : NonNullable<typeof run>['pointer']): void => {
     battleController.end();

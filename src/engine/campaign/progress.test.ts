@@ -12,6 +12,7 @@ import {
   isStageUnlocked,
   maxBattleSpeed,
   nextStage,
+  parseStageId,
   recordRun,
   settlementStars,
   stageIdOf,
@@ -249,8 +250,11 @@ describe('the unlock chain (CAMPAIGN.md §1)', () => {
     });
   });
 
-  it('names the stage ids the content uses', () => {
+  it('names the stage ids the content uses, and reads them back', () => {
     expect(stageIdOf(3, 7)).toBe('stage.03.07');
     expect(stageIdOf(12, 10)).toBe('stage.12.10');
+    expect(parseStageId('stage.03.07')).toEqual({ settlement: 3, stage: 7 });
+    expect(parseStageId('stage.3.7')).toBeNull();
+    expect(parseStageId('encounter.stage.03.07.intro')).toBeNull();
   });
 });

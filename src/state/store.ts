@@ -29,10 +29,11 @@ import { sanitizeTeam, validateTeam } from '@engine/battle/teams';
 import type { Clock } from '@engine/time/clock';
 import { createRng, hashString } from '@engine/rng/rng';
 import { systemClock } from '@platform/clock';
-import type { StagePointer } from '@engine/campaign/progress';
+import { maxBattleSpeed, type StagePointer } from '@engine/campaign/progress';
 import {
   applyRunFinish,
   applyRunStart,
+  progressOf,
   stageRefOf,
   type RunFinishInput,
   type RunStarted,
@@ -41,7 +42,7 @@ import {
 import { EventBus } from './events';
 import type { OfflineReport } from './offline';
 import type { DialogRoute, Route, Toast, ToastKind } from './ui-types';
-import type { I18nKey, I18nParams } from '@i18n/index';
+import { t, type I18nKey, type I18nParams } from '@i18n/index';
 
 export type BootStatus = 'booting' | 'ready' | 'failed';
 
@@ -634,6 +635,17 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               const summary = result.value;
               if (summary.changes.length)
                 events.emit({ type: 'currency.changed', changes: summary.changes, reason: 'campaign' });
+              // Finishing a difficulty opens the next one and, with it, a faster battle speed.
+              if (summary.completedDifficulty && input.pointer.difficulty !== 'hard') {
+                const next = input.pointer.difficulty === 'intro' ? 'normal' : 'hard';
+                const toast = get().actions.toast;
+                toast('reward', 'campaign.difficultyOpen', { difficulty: t(`campaign.difficulty.${next}`) });
+                const save = get().save;
+                if (save)
+                  toast('reward', 'campaign.speedUnlocked', {
+                    speed: maxBattleSpeed(progressOf(save)),
+                  });
+              }
               events.emit({
                 type: 'campaign.runFinished',
                 stageId: `stage.${String(input.pointer.settlement).padStart(2, '0')}.${String(

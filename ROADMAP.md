@@ -12,7 +12,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 0 | Foundation & Game Shell | 0.0.0 | ✅ shipped in 0.0.0 |
 | 1 | Champions & Collection | 0.0.1 | ✅ shipped in 0.0.1 |
 | 2 | Battle System | 0.0.2 | ✅ shipped in 0.0.2 |
-| 3 | Campaign | 0.0.3 | ⬜ |
+| 3 | Campaign | 0.0.3 | ✅ shipped in 0.0.3 |
 | 4 | Player Level & Profile | 0.0.4 | ⬜ |
 | 5 | Tavern — Champion Upgrading | 0.0.5 | ⬜ |
 | 6 | Gear | 0.0.6 | ⬜ |
@@ -135,6 +135,11 @@ temporary "Training Grounds" entry on Game Modes (removed in Phase 3 when Campai
 
 ## Phase 3 — Campaign (`0.0.3`)
 
+**Status.** ✅ shipped in 0.0.3 (2026-09-13). See `CHANGELOG.md` for what landed. The enemy
+ladder was retuned during this phase (`BATTLE.md` §4.5) because the Phase 2 curve could not be
+won; `pnpm sim:balance --strict` guards the bands from here on and runs in CI. Champion and player
+levels now rise from battle XP; the level-up *moment* (refill, rewards, celebration) stays Phase 4.
+
 **Goal.** The complete campaign: 12 settlements × 10 stages × 3 difficulties, world map, stage
 lists, battle setup, energy, drops, stars, first-clear and star chests, speed unlocks, auto-repeat.
 
@@ -167,8 +172,14 @@ energy refill, rewards, stinger, dialog), unlock gating for every hub hotspot an
 table in `GAME_DESIGN.md` §6, Profile dialog (avatar picker, name, stats, titles), top-bar chip
 with XP bar. Tests for curve, unlocks, refill/overflow.
 
+**Scope carried from Phase 3**: the all-3★ milestone chest of `CAMPAIGN.md` §7 — Normal's
+(2 Sacred Shards + 300 Gems) and Hard's (1 Primordial Shard + 1,000 Gems + the title "Warden of
+Veyrath") land here with titles; Intro's (an Epic champion of the player's choice) waits for the
+Summoning Portal's picker in Phase 8.
+
 **Acceptance criteria**: level-up at exact thresholds; unlocks appear/disappear correctly on
-level change; fixture save `v4.json`; profile stats reflect lifetime counters.
+level change; fixture save `v4.json` (Phase 3's schema, frozen); profile stats reflect lifetime
+counters; the milestone chests pay out once, on the run that completes the difficulty.
 
 ## Phase 5 — Tavern: Champion Upgrading (`0.0.5`)
 
@@ -207,6 +218,9 @@ statistically correct; refine keeps substats and re-bases the main stat; dismant
 
 **Goal.** Four shard types, standard portal, featured banner with deterministic rotation, pity,
 exchange, the full reveal ritual (Pixi) with ×1/×10, history and rates panel.
+
+**Scope carried from Phase 3**: Intro's all-3★ milestone chest — an Epic champion of the player's
+choice (`CAMPAIGN.md` §7) — uses this phase's champion picker.
 
 **Acceptance criteria**: 100k-roll rate test within tolerance; pity guarantees hold in tests;
 rotation computed identically across reloads and time zones for the same instant; duplicates
