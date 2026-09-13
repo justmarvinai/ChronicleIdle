@@ -98,7 +98,20 @@ _Nothing yet — Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
   constants of `docs/design/BATTLE.md` §11.
 
 ### Performance
-<!-- perf-table -->
+- `pnpm perf:battle --software` in the GPU-less build environment (SwiftShader, 1920 × 1080,
+  Stress Bench 4 v 4 × 2 waves at ×4, four maxed legendaries, 31.7 s fight, victory):
+
+  | p50 | p95 | max | frames | budget (p95) |
+  | --- | --- | --- | --- | --- |
+  | 350.0 ms | 366.7 ms | 366.8 ms | 72 | over 16 ms (software renderer) |
+
+  Software WebGL renders the stage at roughly three frames per second, so this run only proves the
+  bench pipeline; the 16 ms p95 budget is signed off on the owner's iGPU laptop with
+  `pnpm build && pnpm preview` then `pnpm perf:battle` (`USER_QUESTIONS.md` Q30).
+- The stage records unclamped frame times (`ticker.elapsedMS`); React commits nothing per frame
+  during a fight — the HUD updates only when the presenter lands an event.
+- `tests/e2e`: 27 specs green (Phase 0–2); the battle fights get a 480 s budget because CI
+  runners render with software WebGL.
 
 ## [0.0.1] — 2026-09-12 — Phase 1: Champions & Collection
 
