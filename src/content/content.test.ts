@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { CHAMPION_IDS, STARTER_IDS } from '@content/champions/types';
+import { STATUSES } from '@content/statuses/index';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import { validateContentRegistry } from '@engine/schema/content';
 import { I18N_KEYS, textOf, translate } from '@i18n/index';
@@ -21,6 +22,20 @@ describe('content registry', () => {
     ]);
     expect(content.currencies).toHaveLength(24);
     expect(content.currencies.filter((c) => c.topBar).map((c) => c.id)).toEqual(['gold', 'gems', 'energy']);
+    expect(content.enemies.map((e) => e.archetype)).toEqual([
+      'raider',
+      'marksman',
+      'brute',
+      'warden',
+      'hexer',
+      'mender',
+      'boss',
+    ]);
+    expect(content.encounters.map((e) => [e.id, e.partySize, e.waves.length])).toEqual([
+      ['encounter.training.1', 3, 2],
+      ['encounter.training.2', 3, 3],
+      ['encounter.training.3', 4, 2],
+    ]);
   });
 
   it('ships all 23 champions of CHAMPIONS.md §4 with the three Rare starters', () => {
@@ -52,6 +67,16 @@ describe('content registry', () => {
         expect(text, passive.id).not.toMatch(/\{\w+\}/);
         expect(text, passive.id).not.toMatch(/\b0 turn/);
       }
+    }
+    for (const enemy of content.enemies) {
+      for (const ability of enemy.abilities) {
+        const text = translate(ability.description, { ...abilityNumbers(ability) });
+        expect(text, ability.id).not.toMatch(/\{\w+\}/);
+      }
+    }
+    for (const status of STATUSES) {
+      expect(translate(status.name)).not.toMatch(/^status\./);
+      expect(translate(status.description, { value: 1 })).not.toMatch(/\{\w+\}/);
     }
   });
 });

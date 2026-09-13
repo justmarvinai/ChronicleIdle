@@ -2,8 +2,13 @@ import { z } from 'zod';
 import { RARITY_KIT, STAT_DEVIATION_TOLERANCE } from '@content/balance/stats';
 import { CHAMPION_IDS, STARTER_IDS, type ChampionDef } from '@content/champions/types';
 import { CURRENCY_IDS } from '@content/currencies/types';
+import { PARTY_SIZE_BOSS, PARTY_SIZE_CAMPAIGN } from '@content/balance/battle';
+import type { EncounterDef } from '@content/encounters/types';
+import type { EnemyDef } from '@content/enemies/types';
 import { statDeviation } from '@engine/champions/stats';
 import { championSchema } from './champion';
+import { encounterSchema } from './encounter';
+import { enemySchema } from './enemy';
 
 export const currencySchema = z.object({
   id: z.enum(CURRENCY_IDS),
@@ -50,10 +55,110 @@ const PLACEHOLDER_MODEL = 'model.teritorial_lizard';
  * injected so the engine stays free of asset/i18n imports. Warnings never fail the build.
  */
 export function validateContentRegistry(
-  registry: { currencies: readonly unknown[]; champions: readonly unknown[] },
+  registry: {
+    currencies: readonly unknown[];
+    champions: readonly unknown[];
+    enemies: readonly unknown[];
+    encounters: readonly unknown[];
+  },
   refs: ContentRefs,
 ): ValidationIssue[] {
-  return [...validateCurrencies(registry.currencies, refs), ...validateChampions(registry.champions, refs)];
+  const enemies = validateEnemies(registry.enemies, refs);
+  return [
+    ...validateCurrencies(registry.currencies, refs),
+    ...validateChampions(registry.champions, refs),
+    ...enemies.issues,
+    ...validateEncounters(registry.encounters, enemies.ids, refs),
+  ];
+}
+
+function validateEnemies(
+  enemies: readonly unknown[],
+  refs: ContentRefs,
+): { issues: ValidationIssue[]; ids: Set<string> } {
+  const issues: ValidationIssue[] = [];
+  const ids = new Set<string>();
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const text = (key: string, path: string): void => {
+    if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+  };
+  enemies.forEach((raw, index) => {
+    const parsed = enemySchema.safeParse(raw);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues)
+        error(`enemies[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = parsed.data as EnemyDef;
+    const path = `enemies.${def.id}`;
+    if (ids.has(def.id)) error(path, 'duplicate id');
+    ids.add(def.id);
+    text(def.name, `${path}.name`);
+    if (!refs.assetKeys.has(def.art.model)) error(`${path}.art`, `unknown asset key ${def.art.model}`);
+    if (def.art.model === PLACEHOLDER_MODEL && !def.art.tint)
+      error(`${path}.art`, 'placeholder art needs a tint');
+    if ((def.archetype === 'boss') !== !!def.boss)
+      error(`${path}.boss`, 'boss archetypes carry a boss block, others do not');
+    def.abilities.forEach((ability, i) => {
+      if (ability.slot !== `a${i + 1}`)
+        error(`${path}.abilities[${i}]`, `expected slot a${i + 1}, found ${ability.slot}`);
+      if (ability.slot === 'a1' && ability.cooldown !== 0)
+        error(`${path}.${ability.id}`, 'A1 must have no cooldown');
+      if (ability.slot !== 'a1' && ability.cooldown < 1)
+        error(`${path}.${ability.id}`, 'A2–A4 need a cooldown');
+      if (!refs.assetKeys.has(ability.icon))
+        error(`${path}.${ability.id}.icon`, `unknown asset key ${ability.icon}`);
+      text(ability.name, `${path}.${ability.id}.name`);
+      text(ability.description, `${path}.${ability.id}.description`);
+    });
+    for (const passive of def.passives) {
+      if (!refs.assetKeys.has(passive.icon))
+        error(`${path}.${passive.id}.icon`, `unknown asset key ${passive.icon}`);
+      text(passive.name, `${path}.${passive.id}.name`);
+      text(passive.description, `${path}.${passive.id}.description`);
+    }
+    if (def.boss) {
+      const slots = new Set(def.abilities.map((a) => a.slot));
+      for (const slot of def.boss.rotation)
+        if (!slots.has(slot)) error(`${path}.boss.rotation`, `rotation names ${slot} which the kit lacks`);
+    }
+  });
+  return { issues, ids };
+}
+
+function validateEncounters(
+  encounters: readonly unknown[],
+  enemyIds: ReadonlySet<string>,
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const seen = new Set<string>();
+  encounters.forEach((raw, index) => {
+    const parsed = encounterSchema.safeParse(raw);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues)
+        error(`encounters[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = parsed.data as EncounterDef;
+    const path = `encounters.${def.id}`;
+    if (seen.has(def.id)) error(path, 'duplicate id');
+    seen.add(def.id);
+    for (const key of [def.name, def.description])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (!refs.assetKeys.has(def.backdrop)) error(`${path}.backdrop`, `unknown asset key ${def.backdrop}`);
+    const expected = def.kind === 'boss' ? PARTY_SIZE_BOSS : PARTY_SIZE_CAMPAIGN;
+    if (def.partySize !== expected)
+      error(`${path}.partySize`, `${def.kind} encounters field ${expected} champions`);
+    def.waves.forEach((wave, w) => {
+      for (const spawn of wave.enemies)
+        if (!enemyIds.has(spawn.enemyId)) error(`${path}.waves[${w}]`, `unknown enemy ${spawn.enemyId}`);
+    });
+  });
+  return issues;
 }
 
 function validateCurrencies(currencies: readonly unknown[], refs: ContentRefs): ValidationIssue[] {
