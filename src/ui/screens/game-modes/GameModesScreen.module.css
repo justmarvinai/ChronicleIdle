@@ -97,3 +97,10 @@
     transform: none;
   }
 }
+
+.note {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}

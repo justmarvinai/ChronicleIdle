@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useStore } from 'zustand';
 import { playSfx } from '@audio/index';
 import type { DecisionRequest, UnitView } from '@engine/battle/index';
 import { battleController, type BattleSpeed } from '@state/battle/index';
@@ -11,6 +12,8 @@ import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { StatusIcon } from '@ui/components/StatusIcon/StatusIcon';
 import { STATUS_BY_ID } from '@content/statuses/index';
+import { batchRewards, campaignSession, stopCampaignBatch } from '@state/campaign-session';
+import { settleCampaignRun } from '@ui/flows/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { AbilityBar } from './AbilityBar';
@@ -22,6 +25,8 @@ import { useBattleSession } from './useBattleSession';
 import styles from './BattleScreen.module.css';
 
 const RESULT_DELAY_MS = 900;
+/** A beat between auto-repeat runs, so the victory banner is seen before the next wave lands. */
+const REPEAT_DELAY_MS = 600;
 
 /** A new request preselects the policy's ability and target (BATTLE.md §8). */
 function defaultChoice(request: DecisionRequest | null): {
@@ -91,6 +96,9 @@ export default function BattleScreen({ route }: ScreenProps) {
   const stage = useRef<BattleStageHandle | null>(null);
   const cutInKey = useRef(0);
   const recorded = useRef(false);
+  const settled = useRef(false);
+  const repeat = useStore(campaignSession);
+  const repeatGold = batchRewards(repeat)?.currencies.find((entry) => entry.currency === 'gold')?.amount ?? 0;
 
   // Leave gracefully if there is no live battle (deep link, reload).
   useEffect(() => {
@@ -118,6 +126,16 @@ export default function BattleScreen({ route }: ScreenProps) {
     if (!recorded.current) {
       recorded.current = true;
       actions.recordBattle(outcome, encounter.id);
+      // A campaign run settles here: it pays out, and an auto-repeat batch starts its next fight.
+      settled.current = settleCampaignRun(outcome).repeated;
+    }
+    if (settled.current) {
+      // Another run began: let the next battle's own events take over the screen.
+      const id = window.setTimeout(() => {
+        recorded.current = false;
+        settled.current = false;
+      }, REPEAT_DELAY_MS);
+      return () => window.clearTimeout(id);
     }
     const id = window.setTimeout(() => actions.replace({ name: 'battle-result' }), RESULT_DELAY_MS);
     return () => window.clearTimeout(id);
@@ -324,6 +342,29 @@ export default function BattleScreen({ route }: ScreenProps) {
           </span>
         </div>
       </div>
+
+      {repeat.requested > 1 ? (
+        <div className={styles.repeatHud} data-testid="repeat-hud">
+          <span className={`display ${styles.repeatRun}`}>
+            {t('campaignRun.run', {
+              index: Math.min(repeat.completed + 1, repeat.requested),
+              total: repeat.requested,
+            })}
+          </span>
+          <span className={`num ${styles.repeatDrops}`}>
+            {t('campaignRun.gold', { gold: repeatGold.toLocaleString('en-US') })}
+          </span>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => stopCampaignBatch()}
+            disabled={repeat.stopping}
+            data-testid="repeat-stop"
+          >
+            {repeat.stopping ? t('campaignRun.stopping') : t('campaignRun.stop')}
+          </Button>
+        </div>
+      ) : null}
 
       {boss ? (
         <div className={styles.bossBar} data-testid="boss-bar">

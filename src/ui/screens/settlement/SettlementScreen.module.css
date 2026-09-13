@@ -1,0 +1,197 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.side {
+  position: absolute;
+  top: 96px;
+  left: 44px;
+  bottom: 32px;
+  width: 420px;
+  z-index: var(--z-scene);
+}
+.sidePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sideTitle {
+  margin: 0;
+  font-size: 28px;
+  color: var(--gold-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+.lore {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+.starsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.starCount {
+  font-size: 17px;
+  color: var(--gold-3);
+}
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.label {
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.element {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+.elementName {
+  font-size: 15px;
+  color: var(--text-1);
+}
+.dropsTitle {
+  margin: 6px 0 0;
+  font-size: 19px;
+  color: var(--gold-3);
+}
+.drops {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.stages {
+  position: absolute;
+  top: 96px;
+  left: 488px;
+  right: 44px;
+  bottom: 32px;
+  z-index: var(--z-scene);
+}
+.scroller {
+  height: 100%;
+}
+.list {
+  margin: 0;
+  padding: 0 6px 0 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: rise 0.35s var(--ease-out) both;
+}
+.rowLocked {
+  filter: saturate(0.45) brightness(0.82);
+}
+.rowHere {
+  box-shadow:
+    0 0 0 2px rgba(242, 169, 59, 0.5),
+    0 0 22px rgba(242, 169, 59, 0.25);
+}
+.rowHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.stageNumber {
+  font-size: 24px;
+  color: var(--gold-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+.bossTag {
+  padding: 2px 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bg-0);
+  background: var(--gold-3);
+}
+.best {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text-3);
+}
+.rowBody {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.enemiesText {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 3px;
+  background: linear-gradient(180deg, rgba(28, 25, 30, 0.9), rgba(14, 13, 17, 0.9));
+  border: 1px solid rgba(201, 162, 74, 0.35);
+}
+.chipSigil {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+.chipName {
+  font-size: 12px;
+  color: var(--text-2);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rowFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.starHint {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.lockText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

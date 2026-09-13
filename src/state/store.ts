@@ -6,6 +6,8 @@ import { create, type Mutate, type StoreApi, type UseBoundStore } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { PLAYER_NAME_MAX_LENGTH, PLAYER_NAME_MIN_LENGTH } from '@content/balance/economy';
+import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
+import type { Difficulty } from '@content/balance/battle';
 import { CHAMPION_IDS, type ChampionId, type ObtainSource } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import { content } from '@content/registry';
@@ -134,6 +136,10 @@ export interface GameActions {
   startCampaignRun(pointer: StagePointer): Result<RunStarted>;
   /** Records a finished run: stars, best turns, rewards, champion and player XP. */
   finishCampaignRun(input: RunFinishInput): Result<RunSummary>;
+  /** Dev/debug (Chronicle Debug panel): the player level, for verifying level gates. */
+  debugSetPlayerLevel(level: number): void;
+  /** Dev/debug: marks a whole difficulty cleared, for verifying the unlock chain. */
+  debugClearCampaign(difficulty: Difficulty, stars?: number): void;
 }
 
 export type GameStore = GameState & { actions: GameActions };
@@ -638,6 +644,22 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 firstClear: summary.firstClear,
               });
               return result;
+            },
+
+            debugSetPlayerLevel(level) {
+              withSave((save) => {
+                save.profile.level = Math.max(1, Math.min(PLAYER_MAX_LEVEL, Math.round(level)));
+                save.profile.xp = 0;
+              });
+            },
+
+            debugClearCampaign(difficulty, stars = 3) {
+              withSave((save) => {
+                for (const stage of content.stages) {
+                  save.campaign.stars[`${stage.id}|${difficulty}`] = Math.max(1, Math.min(3, stars));
+                  save.campaign.bestTurns[`${stage.id}|${difficulty}`] = 10;
+                }
+              });
             },
 
             recordBattle(outcome, encounterId) {

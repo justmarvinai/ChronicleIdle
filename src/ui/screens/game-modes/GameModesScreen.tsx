@@ -2,10 +2,12 @@ import { backdrop } from '@assets/manifest';
 import type { BackdropKey, GlyphKey } from '@assets/manifest.generated';
 import type { FeatureId } from '@content/balance/unlocks';
 import { playSfx } from '@audio/index';
-import { t } from '@i18n/index';
+import { content } from '@content/registry';
+import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
-import { selectActions, selectFeatureUnlocked } from '@state/selectors';
+import { currentPointer } from '@state/campaign';
+import { selectActions, selectFeatureUnlocked, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
@@ -32,22 +34,13 @@ interface ModeDef {
 
 const MODES: readonly ModeDef[] = [
   {
-    // Temporary until the Campaign ships (ROADMAP.md Phase 2 → 3).
-    id: 'training',
-    feature: 'campaign',
-    titleKey: 'gameModes.training',
-    bodyKey: 'gameModes.training.body',
-    art: 'bg.bg8',
-    glyph: 'glyph.hammer_hit',
-    route: { name: 'training' },
-  },
-  {
     id: 'campaign',
     feature: 'campaign',
     titleKey: 'gameModes.campaign',
     bodyKey: 'gameModes.campaign.body',
     art: 'bg.bg7',
     glyph: 'glyph.crossed_swords',
+    route: { name: 'campaign' },
   },
   {
     id: 'daily',
@@ -70,7 +63,10 @@ const MODES: readonly ModeDef[] = [
 /** Game Modes (clones `different_content_battles_screen.png`): tall illustrated cards. */
 export default function GameModesScreen(_props: ScreenProps) {
   const actions = useGameStore(selectActions);
+  const save = useGameStore(selectSave);
   useSceneAudio('hub', 'hub');
+  const here = save ? currentPointer(save) : null;
+  const settlement = here ? content.settlementByIndex(here.settlement) : null;
   return (
     <div className={styles.root} data-testid="screen-game-modes">
       <Backdrop asset="bg.bg6" grade="rgba(20, 18, 40, 0.45)" parallax={8} />
@@ -82,6 +78,14 @@ export default function GameModesScreen(_props: ScreenProps) {
             key={mode.id}
             mode={mode}
             index={index}
+            {...(mode.id === 'campaign' && here && settlement
+              ? {
+                  note: `${t('campaign.stageShort', {
+                    settlement: here.settlement,
+                    stage: here.stage,
+                  })} · ${translate(settlement.name)} · ${t(`campaign.difficulty.${here.difficulty}`)}`,
+                }
+              : {})}
             onOpen={() =>
               actions.push(mode.route ?? { name: 'locked', feature: mode.feature, titleKey: mode.titleKey })
             }
@@ -92,7 +96,18 @@ export default function GameModesScreen(_props: ScreenProps) {
   );
 }
 
-function ModeCard({ mode, index, onOpen }: { mode: ModeDef; index: number; onOpen: () => void }) {
+function ModeCard({
+  mode,
+  index,
+  note,
+  onOpen,
+}: {
+  mode: ModeDef;
+  index: number;
+  /** Where the player stands in this mode (the campaign's current stand). */
+  note?: string;
+  onOpen: () => void;
+}) {
   const unlocked = useGameStore(selectFeatureUnlocked(mode.feature));
   const art = backdrop(mode.art);
   return (
@@ -118,6 +133,11 @@ function ModeCard({ mode, index, onOpen }: { mode: ModeDef; index: number; onOpe
       </div>
       <div className={styles.foot}>
         <p className={styles.body}>{t(mode.bodyKey)}</p>
+        {note ? (
+          <p className={`num ${styles.note}`} data-testid={`note-${mode.id}`}>
+            {note}
+          </p>
+        ) : null}
         {unlocked ? (
           <Button variant="primary" size="md" onClick={onOpen}>
             {t('gameModes.enter')}

@@ -58,6 +58,21 @@ All notable changes to ChronicleIdle are documented here. The format follows
 - `UnitReport.died` records that a champion went down even if it was revived, which is what the
   campaign's second star asks about.
 
+- **The campaign is playable end to end.** The Game Modes card carries the stand you are on and
+  opens the **campaign map** — twelve settlement banners with their stars, the difficulty
+  selector and its gate, and the star-chest track. A settlement's screen lists its ten stands with
+  stars, best turns, enemy chips, the star and defeat limits and a **Battle · ⚡cost** button, over
+  a panel of what the place drops. Battle setup shows the stand's three-star conditions, the
+  auto-repeat selector with how many runs the energy pays for, and what the run costs; the result
+  screen shows the stars, a "New record" badge, every coin and material the run paid, first-clear
+  and star-chest lines, the level-ups, and a **Next stand** button that walks straight into the
+  stand the clear unlocked.
+- **Auto-repeat** runs a stand up to fifty times in a row: a compact HUD counts the runs and the
+  gold so far with a Stop button, and the batch ends on a defeat, on Stop, or when the energy runs
+  out — the result screen then summarises the whole batch.
+- The Chronicle Debug panel can set the chronicle level and clear a whole difficulty, which is how
+  the unlock chain and the ×3/×4 speed gates are verified.
+
 ### Changed
 - **Enemy scaling retuned (`BATTLE.md` §4.5, `CAMPAIGN.md` §5).** The old ladder was unwinnable:
   the linear `1 + 0.055 × g` term reached ×7.5 by the last stage and ×49 with Hard's multiplier,

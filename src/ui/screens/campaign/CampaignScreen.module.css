@@ -1,0 +1,201 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.head {
+  position: absolute;
+  top: 96px;
+  left: 60px;
+  right: 60px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+.subtitle {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+}
+.headRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.total {
+  font-size: 22px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+.map {
+  position: absolute;
+  top: 140px;
+  left: 48px;
+  right: 48px;
+  bottom: 150px;
+  z-index: var(--z-scene);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 16px;
+}
+.banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  overflow: hidden;
+  background: var(--bg-1);
+  animation: rise 0.4s var(--ease-out) both;
+  transition:
+    transform var(--t-base) var(--ease-out),
+    filter var(--t-base);
+}
+.banner:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.07);
+}
+.bannerLocked {
+  filter: saturate(0.35) brightness(0.62);
+}
+.bannerLocked .name {
+  color: var(--text-2);
+}
+.bannerHere {
+  box-shadow:
+    0 0 0 2px rgba(242, 169, 59, 0.55),
+    0 0 26px rgba(242, 169, 59, 0.3);
+}
+.art {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+.shade {
+  position: absolute;
+  inset: 0;
+}
+.bannerHead {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.index {
+  font-size: 20px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.element {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+.name {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.count {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.here {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-3);
+}
+.lockText {
+  position: relative;
+  z-index: 1;
+  padding: 3px 8px;
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--text-2);
+  background: rgba(11, 10, 13, 0.78);
+  border: 1px solid rgba(141, 133, 119, 0.3);
+}
+.foot {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  bottom: 28px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.difficulty {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.locked {
+  margin: 0;
+  max-width: 320px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.chests {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.chests > [data-surface-content] {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.chestLabel {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.chestRow {
+  display: flex;
+  gap: 18px;
+}
+.chest {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+.chestOn {
+  color: var(--gold-3);
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

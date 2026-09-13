@@ -103,6 +103,9 @@ export interface RunRecord {
   /** Stars before and after, so the UI can show what the run added. */
   starsBefore: number;
   starsAfter: number;
+  /** The clear set the stage's best ally turns (the first clear always does). */
+  newRecord: boolean;
+  bestTurns: number | null;
   /** This difficulty was completed by this run (it opens the next one). */
   completedDifficulty: boolean;
 }
@@ -132,6 +135,8 @@ export function recordRun(
   return {
     progress: next,
     firstClear: starsBefore === 0 && input.stars > 0,
+    newRecord: input.stars > 0 && (previousBest === undefined || input.allyTurns < previousBest),
+    bestTurns: bestTurns[key] ?? null,
     chestThresholds: STAR_CHEST_THRESHOLDS.filter((t) => before < t && after >= t),
     starsBefore,
     starsAfter,

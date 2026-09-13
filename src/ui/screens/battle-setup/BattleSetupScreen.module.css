@@ -45,7 +45,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 10px 0;
+  margin: 12px 0 4px;
 }
 .label {
   font-size: 15px;
@@ -92,7 +92,9 @@
 }
 .wavePanel {
   margin-top: 10px;
-  min-height: 250px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 .enemyList {
   list-style: none;
@@ -139,7 +141,7 @@
   color: var(--debuff);
 }
 .start {
-  margin-top: auto;
+  margin-top: 8px;
   display: flex;
   justify-content: flex-end;
 }
@@ -152,4 +154,43 @@
   height: 300px;
   z-index: var(--z-scene);
   padding: 12px 20px;
+}
+
+/* The stand's star conditions sit in the team column's empty right half. */
+.stars {
+  position: absolute;
+  right: 24px;
+  top: 96px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.starList {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.turnLimit {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.repeat {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.affordable {
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.waveContent {
+  height: 100%;
+  overflow-y: auto;
 }

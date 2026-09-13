@@ -104,6 +104,8 @@ export interface RunSummary {
   stars: number;
   starsBefore: number;
   firstClear: boolean;
+  /** The clear beat this stage's best ally turns. */
+  newRecord: boolean;
   chestThresholds: number[];
   /** Null on a loss: a defeat, a timeout and a retreat all pay nothing. */
   rewards: RunRewards | null;
@@ -129,6 +131,7 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
     stars: settled.stars,
     starsBefore: settled.record.starsBefore,
     firstClear: settled.record.firstClear,
+    newRecord: settled.record.newRecord,
     chestThresholds: settled.record.chestThresholds,
     rewards: settled.rewards,
     changes: [],

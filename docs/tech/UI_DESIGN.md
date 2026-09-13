@@ -177,27 +177,34 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 
 ### 5.6 Campaign map
 - Reference: `campaign_settlement_screen.png` (RSL map), `_alternative_2.png` (banners).
-- Layout: painted parchment map (`bg2`/`bg7` composite with map overlay) with 12 settlement
-  banners (`Frame` with the boss portrait, stars ×30, name, lock); difficulty dropdown bottom-left;
-  star-chest track bottom-centre (10/20/30 chests); *Emberhold* button bottom-right.
-- Motion: banners sway, cleared settlements glow gold, locked ones are chained; camera pans to the
-  furthest unlocked settlement on open.
+- Layout: painted map ground (`bg2`) under twelve settlement banners on a 6 × 2 grid, each a
+  `DecoFrame` over the settlement's own backdrop and colour grade with its index, element sigil,
+  name, star row and star count; the settlement the player stands in is ringed in gold and says
+  so. Locked banners are desaturated and carry "Beat the boss of …" instead of a button.
+  Difficulty dropdown bottom-left with the gate line under it, star-chest track bottom-centre
+  (10/20/30), *Emberhold* bottom-right.
+- Motion: banners rise in on open and lift on hover; cleared settlements take the ornate gold
+  frame.
 
 ### 5.7 Settlement stages
 - Reference: `campaign_stages_screen.png`.
-- Layout: left panel: settlement name, drop preview (set icons, materials, rarity ranges),
-  difficulty dropdown; content: 10 stage rows — stage number, stars, best turns, enemy preview
-  (4–5 `ChampionCard`-style enemy chips with level), **Battle ⚡cost** button; boss row uses the
-  boss portrait.
-- Auto-repeat control lives on the Battle setup screen.
+- Layout: left panel: settlement name and lore, star count, faction element, drop preview
+  (set pool, material ranges, shard and brew chances for the chosen difficulty); content: ten
+  scrolling stand rows — stage number, stars, best turns, enemy count and plate level, enemy chips
+  with their element sigils, the star and defeat turn limits, and a **Battle · ⚡cost** button. The
+  boss stand uses the ember frame and is labelled; a locked stand names the stand it waits on.
+- The difficulty is the one chosen on the map; auto-repeat lives on the Battle setup screen.
 
 ### 5.8 Battle setup
 - Reference: `battle_setup_screen.png`, `_alternative_2.png`.
-- Layout: title "Stage 3-7 · Normal"; left half: team slots — 3 in campaign, 4 in boss fights — (leader slot marked, aura text),
-  team power; centre "VS" with element wheel and 3-star conditions; right half: enemy waves
-  preview (tabs Wave 1/2/3) with element sigils and levels; bottom: roster strip (virtualised,
-  filter/sort), presets (3 per mode: campaign / boss), *Auto-repeat ×N* selector, **Start ⚡cost**.
-- Drag-and-drop or click-to-place; slot swap animation; energy insufficient → refill dialog.
+- Layout: title "Stage 3-7 · Normal · Thornwood Crossing"; left half: team slots — 3 in campaign,
+  4 in boss fights — (leader slot marked, aura text), team power, presets, and the stand's
+  three-star conditions with its defeat limit; right half: enemy waves preview (tabs Wave 1/2/3)
+  with element sigils, levels and scaled HP, the *Auto-repeat ×N* selector with how many runs the
+  energy pays for, the manual/auto switch and **Start battle · ⚡cost**; bottom: roster strip
+  (virtualised).
+- Click-to-place; a locked repeat tier says which level opens it; too little energy disables the
+  start button and says what the stand costs (the gem refill arrives with the player-level phase).
 
 ### 5.9 Battle
 - Reference: `in_battle_non_boss_screen*.png`, `in_battle_boss_screen*.png`.
@@ -209,10 +216,13 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
 
 ### 5.10 Battle result
-- Victory: stars ignite, stage name, turns, "New record", reward cards fly to wallet, champion
-  XP bars fill with level-up pops, buttons *Replay*, *Next stage*, *Emberhold*. Auto-repeat
-  shows a compact ticker instead and the full summary at the end. Defeat: red vignette, enemy
-  HP left, tips, *Retry*, *Team*, *Emberhold*.
+- Victory: the stand's stars and a "New record" badge on the stats panel, stage name and
+  settlement, turns and waves, the spoils list (gold, materials, shards, brews, gems, energy,
+  champion and chronicle XP) with first-clear, star-chest, gear-drop and level-up lines, the
+  per-champion report, and buttons *Emberhold*, *Campaign*, *Team*, *Replay*, **Next stand**.
+  An auto-repeat batch shows the merged spoils and how the batch ended (done, stopped, defeated,
+  out of energy). Defeat: red vignette, enemy HP left, tips, *Team*, *Emberhold* — and the energy
+  stays spent.
 
 ### 5.11 Forge & Inventory
 - Reference: `tavern` layout language + right column pattern.

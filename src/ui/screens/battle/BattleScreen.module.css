@@ -447,3 +447,26 @@
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+.repeatHud {
+  position: absolute;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-hud);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, rgba(24, 21, 27, 0.94), rgba(12, 11, 15, 0.94));
+  border: 1px solid rgba(201, 162, 74, 0.45);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.repeatRun {
+  font-size: 18px;
+  color: var(--gold-3);
+}
+.repeatDrops {
+  font-size: 14px;
+  color: var(--text-2);
+}

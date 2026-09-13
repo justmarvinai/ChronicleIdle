@@ -1,15 +1,18 @@
 import { expect, test, type Page } from '@playwright/test';
 import { collectConsole, settle, startChronicle } from './helpers';
 
-/** Hub → Battle → Training Grounds → the setup screen of one encounter. */
-async function openTrainingSetup(page: Page, encounter: 1 | 2 | 3): Promise<void> {
+/** Hub → Battle → the campaign map → Thornwood Crossing → the setup screen of one stand. */
+async function openStageSetup(page: Page, stage: 1 | 2): Promise<void> {
   await page.getByTestId('nav-battle').click();
   await expect(page.getByTestId('screen-game-modes')).toBeVisible();
   await settle(page);
-  await page.getByTestId('mode-training').getByRole('button').click();
-  await expect(page.getByTestId('screen-training')).toBeVisible();
+  await page.getByTestId('mode-campaign').getByRole('button').click();
+  await expect(page.getByTestId('screen-campaign')).toBeVisible();
   await settle(page);
-  await page.getByTestId(`prepare-${encounter}`).click();
+  await page.getByTestId('enter-1').click();
+  await expect(page.getByTestId('screen-settlement')).toBeVisible();
+  await settle(page);
+  await page.getByTestId(`battle-stage-01-0${stage}`).click();
   await expect(page.getByTestId('screen-battle-setup')).toBeVisible();
   await settle(page);
 }
@@ -45,9 +48,10 @@ test.describe('battle', () => {
   }) => {
     const problems = collectConsole(page);
     await startChronicle(page);
-    await openTrainingSetup(page, 1);
+    await openStageSetup(page, 1);
     await expect(page.getByTestId('team-power')).not.toHaveText('0');
-    await expect(page.getByTestId('wave-enemies')).toContainText('Remnant Raider');
+    await expect(page.getByTestId('wave-enemies')).toContainText('Thornwood Cutpurse');
+    await expect(page.getByTestId('start-battle')).toContainText('4');
     await setAuto(page, false);
     await startBattle(page);
     await expect(page.getByTestId('battle-wave')).toContainText('1');
@@ -90,15 +94,20 @@ test.describe('battle', () => {
     await waitForResult(page);
     await expect(page.getByTestId('result-title')).toHaveText('Victory');
     await expect(page.getByTestId('result-turns')).toBeVisible();
+    // The stand paid: stars, gold and the first-clear bundle.
+    await expect(page.getByTestId('result-stars')).toBeVisible();
+    await expect(page.getByTestId('result-rewards')).toContainText('Gold');
+    await expect(page.getByTestId('result-rewards')).toContainText('First clear');
     await page.getByTestId('result-hub').click();
     await expect(page.getByTestId('screen-hub')).toBeVisible();
     expect(problems).toEqual([]);
   });
 
-  /** Starts one encounter on auto at ×2 and expects a victory (ROADMAP Phase 2 acceptance). */
-  async function autoWins(page: Page, encounter: 1 | 2): Promise<void> {
+  test('auto clears the first stand and the Next stand button opens the one it unlocked', async ({
+    page,
+  }) => {
     await startChronicle(page);
-    await openTrainingSetup(page, encounter);
+    await openStageSetup(page, 1);
     await setAuto(page, true);
     await startBattle(page);
     await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'true');
@@ -106,23 +115,25 @@ test.describe('battle', () => {
     await expect(page.getByTestId('battle-speed')).toContainText('2');
     await waitForResult(page);
     await expect(page.getByTestId('result-title')).toHaveText('Victory');
-    await page.getByTestId('result-hub').click();
-    await expect(page.getByTestId('screen-hub')).toBeVisible();
-  }
 
-  test('auto beats Training Grounds 1 with the starting roster', async ({ page }) => {
-    await autoWins(page, 1);
-  });
-
-  test('auto beats Training Grounds 2 with the starting roster', async ({ page }) => {
-    await autoWins(page, 2);
+    // Stage 1-2 was locked before this clear; the result screen leads straight into it.
+    await page.getByTestId('result-next').click();
+    await expect(page.getByTestId('screen-battle-setup')).toBeVisible();
+    await settle(page);
+    await startBattle(page);
+    await waitForResult(page);
+    await expect(page.getByTestId('result-title')).toHaveText('Victory');
+    await page.getByTestId('result-campaign').click();
+    await expect(page.getByTestId('screen-campaign')).toBeVisible();
+    // Two stands cleared in Thornwood Crossing: its banner carries the stars.
+    await expect(page.getByTestId('campaign-stars')).not.toContainText('0 /');
   });
 
   test('retreating from the pause menu ends the fight and the result leads back to the team', async ({
     page,
   }) => {
     await startChronicle(page);
-    await openTrainingSetup(page, 1);
+    await openStageSetup(page, 1);
     await setAuto(page, false);
     await startBattle(page);
     await waitForDecision(page);
@@ -138,7 +149,7 @@ test.describe('battle', () => {
 
   test('team presets save and load on the setup screen', async ({ page }) => {
     await startChronicle(page);
-    await openTrainingSetup(page, 1);
+    await openStageSetup(page, 1);
     const power = page.getByTestId('team-power');
     const full = await power.textContent();
     await expect(page.getByTestId('preset-load-0')).toBeDisabled();

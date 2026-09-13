@@ -3,6 +3,12 @@ import { content } from '@content/registry';
 import { playSfx } from '@audio/index';
 import { sanitizeTeam, suggestTeam } from '@engine/battle/teams';
 import { scaledEnemyStats } from '@engine/battle/index';
+import { parseStageEncounterId } from '@engine/campaign/encounter';
+import type { StagePointer } from '@engine/campaign/progress';
+import { autoRepeatTiers } from '@engine/campaign/run';
+import { unlockLevel } from '@engine/progression/unlocks';
+import { AUTO_REPEAT_TIERS } from '@content/balance/campaign';
+import type { FeatureId } from '@content/balance/unlocks';
 import { sortAndFilter, DEFAULT_ROSTER_VIEW } from '@engine/champions/query';
 import { t, translate } from '@i18n/index';
 import type { TeamMode } from '@engine/schema/save';
@@ -20,7 +26,10 @@ import { Tabs } from '@ui/components/Tab/Tabs';
 import { Toggle } from '@ui/components/Toggle/Toggle';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
+import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { launchBattle } from '@ui/flows/battle';
+import { launchCampaignRun } from '@ui/flows/campaign';
+import { pointerCost, runsAffordable, stageRefOf } from '@state/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { entriesOf, elementLabel, roleLabel } from '@ui/screens/champions/roster-view';
@@ -30,6 +39,14 @@ import styles from './BattleSetupScreen.module.css';
 type SetupRoute = Extract<Route, { name: 'battle-setup' }>;
 const CARD = 96;
 
+/** `encounter.stage.03.07.normal` → the stage pointer the campaign actions take. */
+function stagePointerOf(encounterId: string): StagePointer | null {
+  const parsed = parseStageEncounterId(encounterId);
+  const match = parsed ? /^stage\.(\d{2})\.(\d{2})$/.exec(parsed.stageId) : null;
+  if (!parsed || !match?.[1] || !match[2]) return null;
+  return { settlement: Number(match[1]), stage: Number(match[2]), difficulty: parsed.difficulty };
+}
+
 /** Battle setup (docs/tech/UI_DESIGN.md §5.8): team slots, presets, enemy preview, start. */
 export default function BattleSetupScreen({ route }: ScreenProps) {
   const { encounterId } = route as SetupRoute;
@@ -38,6 +55,9 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const roster = useGameStore(selectRoster);
   const save = useGameStore(selectSave);
   useSceneAudio('hub', 'interior');
+  // The encounter id carries the stage and the difficulty, so the pointer needs no route field.
+  const pointer = stagePointerOf(encounterId);
+  const ref = pointer ? stageRefOf(pointer) : null;
   const partySize = encounter?.partySize ?? 3;
   const mode: TeamMode = partySize === 4 ? 'boss' : 'campaign';
   const entries = useMemo(() => entriesOf(roster), [roster]);
@@ -60,6 +80,11 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const leaderDef = leader ? content.championById(leader.defId) : undefined;
   const teamPower = team.reduce((sum, id) => sum + powerOf(id), 0);
   const control = save.settings.autoBattle ? 'auto' : 'manual';
+  const cost = pointer ? pointerCost(pointer) : 0;
+  const repeat = save.campaign.autoRepeat;
+  const tiers = autoRepeatTiers(save.profile.level);
+  const affordable = pointer ? runsAffordable(save, pointer, repeat) : 1;
+  const canPay = !pointer || affordable > 0;
 
   const place = (instanceId: string): void => {
     setError(null);
@@ -86,9 +111,15 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
     if (result.ok) actions.toast('info', 'battleSetup.presetSaved', { index: index + 1 });
   };
   const start = (): void => {
-    const result = launchBattle({ encounterId, instanceIds: team, control });
+    const result = pointer
+      ? launchCampaignRun({ pointer, instanceIds: team, control, repeat })
+      : launchBattle({ encounterId, instanceIds: team, control });
     if (!result.ok) {
-      setError(result.error.message);
+      setError(
+        result.error.code === 'insufficient_energy'
+          ? t('campaignRun.insufficientEnergy', { cost })
+          : result.error.message,
+      );
       playSfx('ui.error');
     }
   };
@@ -98,7 +129,13 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
       <Backdrop asset={encounter.backdrop} grade="rgba(14, 12, 20, 0.62)" parallax={6} />
       <AmbientLayer preset="interior" />
       <TopBar
-        title={`${t('battleSetup.title')} · ${translate(encounter.name)}`}
+        title={
+          pointer
+            ? `${t('settlement.stage', { settlement: pointer.settlement, stage: pointer.stage })} · ${t(
+                `campaign.difficulty.${pointer.difficulty}`,
+              )} · ${translate(encounter.name)}`
+            : `${t('battleSetup.title')} · ${translate(encounter.name)}`
+        }
         onBack={() => actions.pop()}
       />
 
@@ -189,6 +226,19 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
           })}
         </div>
         <p className={styles.hint}>{t('battleSetup.slotsHint')}</p>
+        {ref ? (
+          <Panel kind="thin" padding={12} className={styles.stars} data-testid="star-conditions">
+            <span className={styles.label}>{t('settlement.starConditions')}</span>
+            <ol className={styles.starList}>
+              <li>{t('settlement.star1')}</li>
+              <li>{t('settlement.star2')}</li>
+              <li>{t('settlement.star3', { turns: ref.stage.turnLimit3Star })}</li>
+            </ol>
+            <span className={styles.turnLimit}>
+              {t('settlement.turnLimit', { turns: ref.stage.turnLimitDefeat })}
+            </span>
+          </Panel>
+        ) : null}
       </section>
 
       <section className={styles.enemies} aria-label={t('battleSetup.enemies')}>
@@ -202,7 +252,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
           value={String(wave)}
           onChange={(key) => setWave(Number(key))}
         />
-        <Panel kind="stone" padding={18} className={styles.wavePanel}>
+        <Panel kind="thin" padding={14} className={styles.wavePanel} contentClassName={styles.waveContent}>
           <ul className={styles.enemyList} data-testid="wave-enemies">
             {(encounter.waves[wave]?.enemies ?? []).map((spawn, i) => {
               const def = content.enemyById(spawn.enemyId);
@@ -244,6 +294,45 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
             })}
           </ul>
         </Panel>
+        {pointer ? (
+          <div className={styles.repeat} data-testid="auto-repeat">
+            <Dropdown<number>
+              label={t('campaignRun.repeat')}
+              width={220}
+              value={repeat}
+              options={[1, ...AUTO_REPEAT_TIERS.map((tier) => tier.runs)].map((runs) => ({
+                value: runs,
+                label:
+                  runs === 1
+                    ? t('campaignRun.repeatOnce')
+                    : tiers.includes(runs)
+                      ? t('campaignRun.repeatTimes', { count: runs })
+                      : `${t('campaignRun.repeatTimes', { count: runs })} 🔒`,
+              }))}
+              onChange={(runs) => {
+                if (!tiers.includes(runs)) {
+                  const tier = AUTO_REPEAT_TIERS.find((entry) => entry.runs === runs);
+                  playSfx('ui.error');
+                  if (tier)
+                    setError(
+                      t('campaignRun.repeatLocked', {
+                        count: runs,
+                        level: unlockLevel(tier.feature as FeatureId),
+                      }),
+                    );
+                  return;
+                }
+                setError(null);
+                actions.setAutoRepeat(runs);
+              }}
+            />
+            {repeat > 1 ? (
+              <span className={`num ${styles.affordable}`} data-testid="repeat-affordable">
+                {t('campaignRun.summary', { count: affordable })}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <div className={styles.controls}>
           <span className={styles.label}>{t('battleSetup.control')}</span>
           <span data-testid="setup-auto">
@@ -259,12 +348,13 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
           <Button
             variant="primary"
             size="lg"
-            disabled={team.length === 0}
+            disabled={team.length === 0 || !canPay}
             icon={<Glyph glyph="glyph.sword_clash" size={28} color="var(--gold-3)" />}
             onClick={start}
             data-testid="start-battle"
           >
-            {t('battleSetup.start')} · {t('battleSetup.free')}
+            {t('battleSetup.start')}
+            {pointer ? ` · ${t('battleSetup.cost', { cost })}` : ''}
           </Button>
         </div>
       </section>

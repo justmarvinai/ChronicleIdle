@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { Difficulty } from '@content/balance/battle';
 import { CHAMPION_IDS, type ChampionId } from '@content/champions/types';
 import { content } from '@content/registry';
 import { t, translate } from '@i18n/index';
@@ -67,6 +68,46 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
           >
             {t('debug.generate', { count: GENERATE_COUNT })}
           </Button>
+        </span>
+      </div>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>{t('debug.campaign')}</span>
+        <span style={{ display: 'flex', gap: 10 }}>
+          {(['intro', 'normal', 'hard'] as Difficulty[]).map((difficulty) => (
+            <Button
+              key={difficulty}
+              size="sm"
+              variant="secondary"
+              data-testid={`debug-clear-${difficulty}`}
+              onClick={() => {
+                actions.debugClearCampaign(difficulty);
+                actions.toast('info', 'debug.cleared', {
+                  difficulty: t(`campaign.difficulty.${difficulty}`),
+                });
+              }}
+            >
+              {t('debug.clearDifficulty', { difficulty: t(`campaign.difficulty.${difficulty}`) })}
+            </Button>
+          ))}
+        </span>
+      </div>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>{t('debug.playerLevel')}</span>
+        <span style={{ display: 'flex', gap: 10 }}>
+          {[5, 20, 30].map((level) => (
+            <Button
+              key={level}
+              size="sm"
+              variant="secondary"
+              data-testid={`debug-level-${level}`}
+              onClick={() => {
+                actions.debugSetPlayerLevel(level);
+                actions.toast('info', 'debug.levelSet', { level });
+              }}
+            >
+              {t('common.level', { level })}
+            </Button>
+          ))}
         </span>
       </div>
       <div className={styles.row}>

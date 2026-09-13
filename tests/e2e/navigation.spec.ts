@@ -21,7 +21,7 @@ test.describe('navigation', () => {
     await settle(page);
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible();
-    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(4);
+    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(3);
   });
 
   test('every other hotspot explains why it is still closed', async ({ page }) => {

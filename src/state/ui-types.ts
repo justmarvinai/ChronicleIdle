@@ -12,7 +12,9 @@ export type Route =
   | { name: 'hub' }
   | { name: 'champions'; instanceId?: string; tab?: ChampionTab }
   | { name: 'game-modes' }
-  | { name: 'training' }
+  /** The world map; `settlement` is the settlement screen with its ten stands. */
+  | { name: 'campaign' }
+  | { name: 'settlement'; settlement: number }
   | { name: 'battle-setup'; encounterId: string }
   /** `bench`: started by the perf screen; the result returns there instead of the result screen. */
   | { name: 'battle'; bench?: boolean }
