@@ -45,6 +45,7 @@ _Phase 3 (Campaign) starts after the owner's Phase 2 check-in._
   one edge, the motif at the other), which rendered as a lopsided line with a stray tick.
 - The "art pending" mark only appears on cards 128 px and up; on team slots and pickers it was
   clipped to a fragment ("…inding") and the placeholder tint already carries the meaning.
+- The starter screen's bind button names the champion in full ("Bind Ser Corvin", not "Bind Ser").
 - `Panel` and `KitFrame` take `contentClassName` (layout for the content box) and a numeric
   `padding` measured from inside the frame's ring.
 

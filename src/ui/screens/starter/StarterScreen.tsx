@@ -182,7 +182,7 @@ export default function StarterScreen(_props: ScreenProps) {
                     onClick={() => bind(id)}
                     data-testid={`bind-${id.replace('champ.', '')}`}
                   >
-                    {t('starter.bind', { name: translate(def.name).split(' ')[0] ?? '' })}
+                    {t('starter.bind', { name: translate(def.name) })}
                   </Button>
                 </div>
                 {chosen ? <div className={styles.burst} aria-hidden="true" /> : null}
