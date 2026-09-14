@@ -18,6 +18,9 @@ export type DomainEvent =
   | { type: 'gear.equipped'; instanceId: string; pieceId: string }
   | { type: 'gear.unequipped'; instanceId: string; pieceId: string }
   | { type: 'gear.levelled'; pieceId: string; level: number }
+  | { type: 'gear.crafted'; pieceId: string; tier: string }
+  | { type: 'gear.dismantled'; count: number }
+  | { type: 'gear.refined'; pieceId: string; stars: number }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

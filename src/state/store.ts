@@ -51,6 +51,15 @@ import {
   type EquipSummary,
   type GearLevelSummary,
 } from './gear';
+import {
+  applyCraft,
+  applyDismantle,
+  applyRefine,
+  type CraftSummary,
+  type DismantleSummary,
+  type RefineSummary,
+} from './forge';
+import type { CraftTier } from '@content/balance/forge';
 import type { GearInstance } from '@engine/gear/instance';
 import {
   applyTavernFeed,
@@ -171,6 +180,12 @@ export interface GameActions {
   levelGear(pieceId: string, levels: number): Result<GearLevelSummary>;
   /** Locks a piece against the Forge's dismantle and refine. */
   setGearLocked(pieceId: string, locked: boolean): Result<GearInstance>;
+  /** The Forge — Craft: one piece of the tier's band, its set named by a Glyph Sigil or rolled. */
+  craftGear(tier: CraftTier, slot: GearSlot, setId?: string): Result<CraftSummary>;
+  /** The Forge — Dismantle: breaks a selection for materials and a fifth of the level gold. */
+  dismantleGear(pieceIds: readonly string[]): Result<DismantleSummary>;
+  /** The Forge — Refine: one star up, eating a twin of the same slot and star. */
+  refineGear(pieceId: string, sacrificeId: string): Result<RefineSummary>;
   /** Dev/debug: a seeded piece straight into the armoury. */
   debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
@@ -801,6 +816,67 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 result = applyGearLock(state.save, { pieceId, locked });
                 if (result.ok) state.save.updatedAt = clock.now();
               });
+              return result;
+            },
+
+            craftGear(tier, slot, setId) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              // A craft's stream is its own: the same chronicle never repeats a strike.
+              const rng = createRng(`craft:${current.seedRoot}:${current.counters.gear + 1}:${tier}`);
+              let result: Result<CraftSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyCraft(state.save, {
+                  tier,
+                  slot,
+                  ...(setId !== undefined ? { setId } : {}),
+                  now,
+                  rng,
+                });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'forge' });
+              events.emit({ type: 'gear.crafted', pieceId: result.value.piece.instanceId, tier });
+              return result;
+            },
+
+            dismantleGear(pieceIds) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<DismantleSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyDismantle(state.save, { pieceIds });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              // The bench may have been holding one of them.
+              set((state) => {
+                const gone = new Set(pieceIds);
+                if (state.ui.armoury.selected && gone.has(state.ui.armoury.selected))
+                  state.ui.armoury.selected = null;
+              });
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'forge' });
+              events.emit({ type: 'gear.dismantled', count: result.value.pieces.length });
+              return result;
+            },
+
+            refineGear(pieceId, sacrificeId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<RefineSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyRefine(state.save, { pieceId, sacrificeId });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              set((state) => {
+                if (state.ui.armoury.selected === sacrificeId) state.ui.armoury.selected = pieceId;
+              });
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'forge' });
+              events.emit({ type: 'gear.refined', pieceId, stars: result.value.to });
               return result;
             },
 

@@ -81,3 +81,12 @@ export function craftGear(input: CraftInput, rng: Rng): Result<GearInstance> {
   );
   return ok(piece);
 }
+
+/**
+ * The sets a tier carries (GEAR.md §6): Scrap forges only the two-piece sets, the higher tiers
+ * the whole catalogue. The sets themselves come from content, so this stays a rule about tiers.
+ */
+export function craftPool(tier: CraftTier, sets: readonly { id: string; pieces: number }[]): string[] {
+  const pool = CRAFT_TIER[tier].setPool;
+  return sets.filter((set) => pool === 'any' || set.pieces === 2).map((set) => set.id);
+}

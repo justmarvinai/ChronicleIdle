@@ -44,6 +44,13 @@ export function levelCostTotal(piece: GearInstance, levels: number): number {
   return total;
 }
 
+/** The gold a piece's levels have already cost — what a dismantle refunds a fifth of. */
+export function levelGoldSpent(piece: GearInstance): number {
+  let total = 0;
+  for (let level = 0; level < piece.level; level += 1) total += levelCost(piece.stars, level);
+  return total;
+}
+
 /** Pieces held; the cap is what the inventory screen warns about (GEAR.md §7). */
 export function inventoryCount(save: SaveGame): number {
   return Object.keys(save.inventory).length;
