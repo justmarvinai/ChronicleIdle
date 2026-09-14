@@ -3,7 +3,8 @@
  * and later the quest tracker react. The bus is synchronous and never throws past a listener.
  */
 import type { Difficulty } from '@content/balance/battle';
-import type { ChampionId } from '@content/champions/types';
+import type { ShardId } from '@content/balance/summon';
+import type { ChampionId, Rarity } from '@content/champions/types';
 import type { CurrencyChange } from '@engine/economy/wallet';
 
 export type DomainEvent =
@@ -21,6 +22,14 @@ export type DomainEvent =
   | { type: 'gear.crafted'; pieceId: string; tier: string }
   | { type: 'gear.dismantled'; count: number }
   | { type: 'gear.refined'; pieceId: string; stars: number }
+  | {
+      type: 'summon.revealed';
+      shard: ShardId;
+      bannerId: string;
+      count: number;
+      /** The rarest of the press — what the music and the stinger answer to. */
+      best: Rarity;
+    }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

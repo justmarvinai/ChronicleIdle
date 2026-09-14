@@ -3,6 +3,7 @@
  * difficulties; everything a stage costs, grants and demands is derived from these numbers and
  * the stage's global index, so a balance pass is an edit here rather than 360 content edits.
  */
+import type { Rarity } from '@content/champions/types';
 import type { CurrencyId } from '@content/currencies/types';
 import type { Difficulty } from './battle';
 
@@ -228,6 +229,33 @@ export const MILESTONE_CHESTS: Readonly<Record<Difficulty, RewardBundle | null>>
     currencies: [{ currency: 'shard_primordial', amount: 1 }],
   },
 };
+
+/**
+ * Champion choices the campaign owes (CAMPAIGN.md §7). Mastering a difficulty is the entitlement;
+ * the pick itself is taken at the Portal's picker (SUMMONING.md §5), which is why Intro's
+ * milestone chest above carries no currencies.
+ *
+ * Which choices are *owed* is derived from the stars in the save, so a chronicle that mastered
+ * Intro before the Portal existed is owed its Epic too; only the taking is stored (CLAUDE.md §5.5).
+ */
+export interface ChampionChoiceDef {
+  id: string;
+  /** Three stars on every stand of this difficulty owes the pick. */
+  difficulty: Difficulty;
+  /** The rarity the picker offers, from the summonable pool. */
+  rarity: Rarity;
+  /** i18n key naming where the choice came from. */
+  reason: string;
+}
+
+export const CHAMPION_CHOICES: readonly ChampionChoiceDef[] = [
+  {
+    id: 'choice.milestone.intro',
+    difficulty: 'intro',
+    rarity: 'epic',
+    reason: 'summon.choice.reason.milestone_intro',
+  },
+];
 
 /** Auto-repeat run counts and the player level each unlocks (CAMPAIGN.md §9). */
 export const AUTO_REPEAT_TIERS = [

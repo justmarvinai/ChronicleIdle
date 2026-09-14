@@ -5,6 +5,7 @@ import {
   DEFAULT_SETTINGS,
   SAVE_VERSION,
   emptyCampaign,
+  emptySummon,
   emptyTeams,
   type SaveGame,
   type Settings,
@@ -35,6 +36,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     counters: { instances: 0, gear: 0 },
     teams: emptyTeams(),
     campaign: emptyCampaign(),
+    summon: emptySummon(),
     settings: { ...DEFAULT_SETTINGS, ...settings },
     stats: {},
     periods: {

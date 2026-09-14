@@ -79,6 +79,25 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       };
     },
   },
+  {
+    // Phase 8: the Portal (save v7 — the version and the phase number part ways here). A
+    // chronicle from before it has pulled nothing, so every mercy counter starts at zero and no
+    // champion choice has been taken — including the Intro milestone's Epic, which is owed the
+    // moment the Portal exists because that entitlement is derived from the campaign's stars
+    // rather than stored.
+    from: 6,
+    to: 7,
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 7,
+      summon: {
+        pity: { faded: {}, ancient: {}, sacred: {}, primordial: {} },
+        history: [],
+        unseen: [],
+        choices: {},
+      },
+    }),
+  },
 ];
 
 export interface MigrationResult {

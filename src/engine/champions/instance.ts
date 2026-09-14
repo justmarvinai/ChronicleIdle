@@ -50,3 +50,15 @@ export function createInstance(
     source: input.source,
   };
 }
+
+/**
+ * A detached copy. Summaries handed back out of a store action must not point into the draft the
+ * action wrote: a draft is revoked the moment the producer closes (CLAUDE.md §5.5).
+ */
+export function cloneInstance(instance: ChampionInstance): ChampionInstance {
+  return {
+    ...instance,
+    skillUpgrades: { ...instance.skillUpgrades },
+    gear: { ...instance.gear },
+  };
+}

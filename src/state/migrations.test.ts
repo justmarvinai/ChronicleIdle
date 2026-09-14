@@ -152,6 +152,29 @@ describe('migrateSave', () => {
       expect(Object.values(champion.gear).every((id) => id === null)).toBe(true);
   });
 
+  it('upgrades a Phase 6/7 (version 6) chronicle to an unused Portal', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v6.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(6);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // The armoury Phase 6 wrote survives, worn pieces included…
+    expect(Object.keys(result.save.inventory)).toHaveLength(3);
+    expect(result.save.counters).toEqual({ instances: 5, gear: 3 });
+    const worn = result.save.inventory['gear-1'];
+    expect(worn?.equippedTo).toBe('reva_ashblade-1');
+    expect(result.save.roster['reva_ashblade-1']?.gear.weapon).toBe('gear-1');
+    expect(result.save.wallet.shard_ancient).toBe(4);
+    // …and the Portal starts clean: no mercy owed, no history, no choice taken.
+    expect(result.save.summon.pity).toEqual({ faded: {}, ancient: {}, sacred: {}, primordial: {} });
+    expect(result.save.summon.history).toEqual([]);
+    expect(result.save.summon.unseen).toEqual([]);
+    expect(result.save.summon.choices).toEqual({});
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [

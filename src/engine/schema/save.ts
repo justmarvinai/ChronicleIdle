@@ -1,5 +1,5 @@
 /**
- * Save-game schema, version 6 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
+ * Save-game schema, version 7 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
  * current phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
@@ -9,8 +9,9 @@ import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES, RARITIES } from '@content/cha
 import { GEAR_SOURCES } from '@content/balance/gear';
 import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@content/balance/gear';
 import { CURRENCY_IDS } from '@content/currencies/types';
+import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 6 as const;
+export const SAVE_VERSION = 7 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -108,8 +109,58 @@ export const gearInstanceSchema = z.object({
   source: z.enum(GEAR_SOURCES),
 });
 
-export const saveSchemaV6 = z.object({
-  saveVersion: z.literal(6),
+/**
+ * One pull, as the portal's history shows it (docs/design/SUMMONING.md §5). The copy it became is
+ * named, so "View champion" still works for a pull from a hundred summons ago.
+ */
+export const summonRecordSchema = z.object({
+  at: z.number().int().nonnegative(),
+  shard: z.enum(SHARD_IDS),
+  bannerId: z.string().min(1),
+  championId: z.enum(CHAMPION_IDS),
+  rarity: z.enum(RARITIES),
+  instanceId: z.string().min(1),
+  /** The chronicle already had a copy — rank-up material, never auto-converted (owner's Q8). */
+  duplicate: z.boolean(),
+  /** Mercy, not the dice, decided the rarity. */
+  mercy: z.boolean(),
+  /** The champion was one of the rotation's featured. */
+  featured: z.boolean(),
+});
+
+/** Pulls since each rarity on one shard type; a missing key is zero (`@engine/summon/pity`). */
+const pityCountersSchema = z.record(z.string(), z.number().int().min(0));
+
+/**
+ * A champion choice that has been taken (`CHAMPION_CHOICES` in `balance/campaign.ts`). Which
+ * choices are *owed* is derived from the campaign's stars, so only the taking is stored — a
+ * chronicle that mastered Intro before the Portal existed is still owed its Epic (CLAUDE.md §5.5).
+ */
+export const championChoiceSchema = z.object({
+  championId: z.enum(CHAMPION_IDS),
+  instanceId: z.string().min(1),
+  at: z.number().int().nonnegative(),
+});
+
+/** The Summoning Portal's save slice (docs/design/SUMMONING.md §2, §5). */
+export const summonSchema = z.object({
+  /** Mercy counters per shard type; they persist across banners. */
+  pity: z.object(
+    Object.fromEntries(SHARD_IDS.map((shard) => [shard, pityCountersSchema])) as Record<
+      ShardId,
+      typeof pityCountersSchema
+    >,
+  ),
+  /** Newest first; older pulls fall off the end at `HISTORY_LIMIT`. */
+  history: z.array(summonRecordSchema).max(HISTORY_LIMIT),
+  /** Roster copies the Portal delivered that the player has not opened yet — the "NEW" badge. */
+  unseen: z.array(z.string()),
+  /** Taken champion choices, keyed by choice id. */
+  choices: z.record(z.string(), championChoiceSchema),
+});
+
+export const saveSchemaV7 = z.object({
+  saveVersion: z.literal(7),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -139,22 +190,37 @@ export const saveSchemaV6 = z.object({
   inventory: z.record(z.string(), gearInstanceSchema),
   teams: z.object({ campaign: teamModeSchema, boss: teamModeSchema }),
   campaign: campaignSchema,
+  /** The Portal: mercy counters, pull history and the champion choices already taken. */
+  summon: summonSchema,
   settings: settingsSchema,
   /** Lifetime counters used by quests, missions and the profile screen. */
   stats: z.record(z.string(), z.number()),
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV6 = z.infer<typeof saveSchemaV6>;
-export type SaveGame = SaveGameV6;
+export type SaveGameV7 = z.infer<typeof saveSchemaV7>;
+export type SaveGame = SaveGameV7;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
+export type SummonSave = SaveGame['summon'];
+export type SummonRecord = z.infer<typeof summonRecordSchema>;
+export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV6;
+export const saveSchema = saveSchemaV7;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };
+}
+
+/** A Portal nobody has used yet. */
+export function emptySummon(): SummonSave {
+  return {
+    pity: Object.fromEntries(SHARD_IDS.map((shard) => [shard, {}])) as SummonSave['pity'],
+    history: [],
+    unseen: [],
+    choices: {},
+  };
 }
 
 export function emptyTeams(): TeamPresets {

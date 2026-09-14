@@ -60,6 +60,16 @@ import {
   type RefineSummary,
 } from './forge';
 import type { CraftTier } from '@content/balance/forge';
+import type { ShardId } from '@content/balance/summon';
+import {
+  applyChampionChoice,
+  applyExchange,
+  applySummon,
+  markChampionsSeen,
+  type ChoiceSummary,
+  type ExchangeSummary,
+  type SummonSummary,
+} from './summon';
 import type { GearInstance } from '@engine/gear/instance';
 import {
   applyTavernFeed,
@@ -107,6 +117,11 @@ export interface UiState {
    * empty table, and nothing is spent until the Upgrade press.
    */
   tavern: { targetId: string | null; offering: Offering };
+  /**
+   * The Portal's tabs: which banner and which shard the rail is on. Kept for the session so
+   * returning from a reveal lands where the player left off.
+   */
+  portal: { bannerId: string; shard: ShardId };
   /**
    * Levels crossed since the player last saw the celebration. A battle never interrupts itself:
    * the screen that follows it opens the dialog and clears this.
@@ -186,6 +201,19 @@ export interface GameActions {
   dismantleGear(pieceIds: readonly string[]): Result<DismantleSummary>;
   /** The Forge — Refine: one star up, eating a twin of the same slot and star. */
   refineGear(pieceId: string, sacrificeId: string): Result<RefineSummary>;
+  /**
+   * The Portal — one press: `count` pulls on a banner's shard (SUMMONING.md §1–§3). The shards
+   * are paid, the copies join the roster (duplicates included) and mercy moves on.
+   */
+  summonChampions(bannerId: string, shard: ShardId, count: number): Result<SummonSummary>;
+  /** The Portal — Exchange: buys shards for gold or gems. */
+  exchangeShards(shard: ShardId, count: number): Result<ExchangeSummary>;
+  /** Takes a champion choice the campaign owes (`CAMPAIGN.md` §7). */
+  takeChampionChoice(choiceId: string, championId: ChampionId): Result<ChoiceSummary>;
+  /** Clears the "NEW" badge from copies the player has looked at. */
+  markSeen(instanceIds: readonly string[]): void;
+  /** Remembers the Portal's banner tab and shard. */
+  setPortalSelection(patch: Partial<{ bannerId: string; shard: ShardId }>): void;
   /** Dev/debug: a seeded piece straight into the armoury. */
   debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
@@ -328,6 +356,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             roster: { view: DEFAULT_ROSTER_VIEW, selected: null },
             armoury: { view: DEFAULT_GEAR_VIEW, selected: null },
             tavern: { targetId: null, offering: { brews: {}, food: [] } },
+            portal: { bannerId: 'banner.standard', shard: 'faded' },
             levelUp: null,
           },
 
@@ -878,6 +907,85 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'forge' });
               events.emit({ type: 'gear.refined', pieceId, stars: result.value.to });
               return result;
+            },
+
+            summonChampions(bannerId, shard, count) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              // Each press draws its own stream, keyed by how many pulls the chronicle has made:
+              // a saved chronicle replays its summons exactly, and never repeats a press.
+              const pressed = current.stats['summon.pulls'] ?? 0;
+              const rng = createRng(`summon:${current.seedRoot}:${shard}:${pressed}`);
+              let result: Result<SummonSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applySummon(state.save, { bannerId, shard, count, now, rng });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'summon' });
+              for (const pull of result.value.pulls)
+                events.emit({
+                  type: 'champion.added',
+                  defId: pull.record.championId,
+                  instanceId: pull.instance.instanceId,
+                  source: 'summon',
+                });
+              events.emit({
+                type: 'summon.revealed',
+                shard,
+                bannerId,
+                count: result.value.pulls.length,
+                best: result.value.best.record.rarity,
+              });
+              return result;
+            },
+
+            exchangeShards(shard, count) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<ExchangeSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyExchange(state.save, { shard, count });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'summon' });
+              return result;
+            },
+
+            takeChampionChoice(choiceId, championId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<ChoiceSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyChampionChoice(state.save, { choiceId, championId, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({
+                type: 'champion.added',
+                defId: championId,
+                instanceId: result.value.instance.instanceId,
+                source: 'choice',
+              });
+              return result;
+            },
+
+            markSeen(instanceIds) {
+              if (!get().save) return;
+              set((state) => {
+                if (!state.save) return;
+                markChampionsSeen(state.save, instanceIds);
+              });
+            },
+
+            setPortalSelection(patch) {
+              set((state) => {
+                Object.assign(state.ui.portal, patch);
+              });
             },
 
             debugGrantGear(settlementIndex) {
