@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { content } from '@content/registry';
+import { DEFAULT_GEAR_VIEW } from '@engine/gear/query';
 import type { GearInstance } from '@engine/gear/instance';
 import { useGameStore } from '@state/store';
 import { DialogHost } from '@ui/dialogs/DialogHost';
@@ -51,6 +52,8 @@ function chronicle(): void {
   a.grantCurrency([{ currency: 'gold', amount: 500_000 }], 'test');
   // Level 3 opens the gear feature (`unlocks.ts`), which the tab is gated on.
   a.grantPlayerXp(4_000, 'test');
+  // The rack view lives outside the save, so each test starts from the default filters.
+  a.setGearView({ ...DEFAULT_GEAR_VIEW, filters: { ...DEFAULT_GEAR_VIEW.filters } });
 }
 
 /** One piece of a named slot and set, straight onto the racks. */
@@ -166,6 +169,20 @@ describe('the champion Gear tab', () => {
     await user.click(screen.getByTestId('gear-remove-boots'));
     expect(save().roster[starter()]?.gear.boots).toBeNull();
     expect(save().inventory[piece.instanceId]?.equippedTo).toBeNull();
+  });
+
+  it('offers every candidate, whatever the Armoury is filtered to', async () => {
+    const user = userEvent.setup();
+    stock('weapon', 'gear_set.warcry', 7);
+    // The racks are showing Mythics only; the picker must still offer the Epic piece.
+    actions().setGearView({
+      filters: { ...DEFAULT_GEAR_VIEW.filters, rarities: ['mythic'], minStars: 6 },
+    });
+    openGearTab(starter());
+    await user.click(within(screen.getByTestId('gear-slot-weapon')).getByRole('button'));
+    const picker = await screen.findByTestId('dialog-gear-picker');
+    expect(within(picker).queryByTestId('gear-picker-empty')).not.toBeInTheDocument();
+    expect(within(picker).getAllByRole('button', { name: /Warcry/ }).length).toBeGreaterThan(0);
   });
 
   it('adds the gear bonus to the Info tab’s stat table', async () => {

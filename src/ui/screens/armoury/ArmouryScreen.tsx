@@ -125,6 +125,7 @@ export default function ArmouryScreen({ route }: ScreenProps) {
 
       {selected ? (
         <GearDetail
+          key={selected.piece.instanceId}
           piece={selected.piece}
           wearer={selected.wearer}
           wearerName={wearerName(selected.wearer)}

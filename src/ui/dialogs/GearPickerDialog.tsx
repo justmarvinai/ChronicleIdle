@@ -3,7 +3,7 @@ import { playSfx } from '@audio/index';
 import type { ChampionId, GearSlot } from '@content/champions/types';
 import { content } from '@content/registry';
 import { wornBy } from '@engine/gear/equip';
-import { equipCandidates, gearEntries, sortAndFilterGear } from '@engine/gear/query';
+import { DEFAULT_GEAR_VIEW, equipCandidates, gearEntries, sortAndFilterGear } from '@engine/gear/query';
 import { t, translate } from '@i18n/index';
 import { selectActions, selectGearView, selectInventory, selectRoster } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -46,8 +46,8 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
   const worn = useMemo(() => (champion ? wornBy(champion, inventory) : []), [champion, inventory]);
   const candidates = useMemo(() => {
     const entries = equipCandidates(gearEntries(inventory, roster), slot, instanceId);
-    // The racks' own sort, minus its filters: a picker that hides pieces would be a trap.
-    return sortAndFilterGear(entries, { ...view, filters: { ...view.filters, slots: [], worn: null } });
+    // The racks' own sort, none of their filters: a picker that hides a candidate is a trap.
+    return sortAndFilterGear(entries, { ...view, filters: DEFAULT_GEAR_VIEW.filters });
   }, [inventory, roster, slot, instanceId, view]);
 
   const chosen = chosenId ? (candidates.find((e) => e.piece.instanceId === chosenId) ?? null) : null;
