@@ -34,6 +34,12 @@ describe('content registry', () => {
       expect(faction.boss.archetype, faction.id).toBe('boss');
     }
     expect(content.enemies).toHaveLength(SETTLEMENT_COUNT * (FACTION_ARCHETYPES.length + 1));
+    // Titles are content too: every one names a condition and ships its strings.
+    expect(content.titles.length).toBeGreaterThanOrEqual(10);
+    expect(content.titleById('title.warden_of_veyrath')?.condition).toEqual({
+      kind: 'difficulty_mastered',
+      difficulty: 'hard',
+    });
     // The only authored encounter left is the perf bench; campaign fights are derived from stages.
     expect(content.encounters.map((e) => [e.id, e.partySize, e.waves.length])).toEqual([
       ['encounter.bench.stress', 4, 2],

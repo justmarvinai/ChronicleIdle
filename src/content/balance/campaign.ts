@@ -189,6 +189,23 @@ export const STAR_CHESTS: Readonly<Record<Difficulty, readonly RewardBundle[]>> 
   ],
 };
 
+/**
+ * The milestone chest for three stars on every stand of a difficulty (CAMPAIGN.md §7). Intro's
+ * reward is an Epic champion of the player's choice and waits for the Summoning Portal's picker
+ * (Phase 8), so it is `null` here rather than a silently different prize.
+ */
+export const MILESTONE_CHESTS: Readonly<Record<Difficulty, RewardBundle | null>> = {
+  intro: null,
+  normal: {
+    gems: 300,
+    currencies: [{ currency: 'shard_sacred', amount: 2 }],
+  },
+  hard: {
+    gems: 1_000,
+    currencies: [{ currency: 'shard_primordial', amount: 1 }],
+  },
+};
+
 /** Auto-repeat run counts and the player level each unlocks (CAMPAIGN.md §9). */
 export const AUTO_REPEAT_TIERS = [
   { runs: 10, feature: 'auto_repeat_10' },

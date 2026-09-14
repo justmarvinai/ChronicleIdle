@@ -86,6 +86,7 @@ export function settleRun(
       energySpent: state.energySpent,
       firstClear: record.firstClear,
       chestThresholds: record.chestThresholds,
+      mastered: record.masteredDifficulty,
     },
     rng,
   );

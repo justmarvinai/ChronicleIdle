@@ -18,6 +18,7 @@ import {
   GOLD_DIFFICULTY,
   GOLD_STAGE_GROWTH,
   MATERIAL_DROPS,
+  MILESTONE_CHESTS,
   PLAYER_XP_PER_ENERGY,
   SHARD_DROP_CHANCE,
   STAR_CHESTS,
@@ -54,6 +55,8 @@ export interface RunRewards {
   /** Which bundles were paid, for the result screen's "first clear" and "star chest" rows. */
   firstClear: RewardBundle | null;
   starChests: { threshold: number; bundle: RewardBundle }[];
+  /** The difficulty's milestone chest, when this run earned it. */
+  milestone: RewardBundle | null;
 }
 
 export interface RunRewardInput {
@@ -70,6 +73,8 @@ export interface RunRewardInput {
   firstClear: boolean;
   /** Star-chest thresholds this run crossed (from `recordRun`). */
   chestThresholds: readonly number[];
+  /** This run put three stars on every stand of the difficulty (CAMPAIGN.md §7). */
+  mastered?: boolean;
 }
 
 /** `GOLD_BASE × (1 + GOLD_STAGE_GROWTH × g) × difficulty`, doubled on a boss stand. */
@@ -142,6 +147,9 @@ export function rollRunRewards(input: RunRewardInput, rng: Rng): RunRewards {
     bundle(chest);
   }
 
+  const milestone = input.mastered ? MILESTONE_CHESTS[input.difficulty] : null;
+  if (milestone) bundle(milestone);
+
   const { championXp, playerXp } = runXp(input);
   return {
     championXp,
@@ -152,6 +160,7 @@ export function rollRunRewards(input: RunRewardInput, rng: Rng): RunRewards {
     gear,
     firstClear: firstClearBundle,
     starChests,
+    milestone,
   };
 }
 
@@ -165,6 +174,7 @@ export function mergeRunRewards(runs: readonly RunRewards[]): RunRewards {
   const gear: GearDrop[] = [];
   const starChests: { threshold: number; bundle: RewardBundle }[] = [];
   let firstClear: RewardBundle | null = null;
+  let milestone: RewardBundle | null = null;
   for (const run of runs) {
     championXp += run.championXp;
     playerXp += run.playerXp;
@@ -175,6 +185,7 @@ export function mergeRunRewards(runs: readonly RunRewards[]): RunRewards {
       gains.set(entry.currency, (gains.get(entry.currency) ?? 0) + entry.amount);
     starChests.push(...run.starChests);
     firstClear = firstClear ?? run.firstClear;
+    milestone = milestone ?? run.milestone;
   }
   return {
     championXp,
@@ -185,5 +196,6 @@ export function mergeRunRewards(runs: readonly RunRewards[]): RunRewards {
     gear,
     firstClear,
     starChests,
+    milestone,
   };
 }

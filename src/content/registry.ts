@@ -21,6 +21,8 @@ import {
   STAGE_BY_ID,
 } from '@content/stages/index';
 import type { SettlementDef, StageDef } from '@content/stages/types';
+import { TITLES, TITLE_BY_ID } from '@content/titles/index';
+import type { TitleDef } from '@content/titles/types';
 import type { Difficulty } from '@content/balance/battle';
 import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounter';
 
@@ -47,6 +49,9 @@ export interface ContentRegistry {
   stageById(id: string): StageDef | undefined;
   /** The settlement a stage belongs to, for scaling, energy cost and drops. */
   settlementOfStage(stageId: string): SettlementDef | undefined;
+  /** Titles in display order, earliest first (ECONOMY.md §4). */
+  titles: readonly TitleDef[];
+  titleById(id: string): TitleDef | undefined;
 }
 
 export function buildContentRegistry(): ContentRegistry {
@@ -86,6 +91,8 @@ export function buildContentRegistry(): ContentRegistry {
     stages: STAGES,
     stageById: (id) => STAGE_BY_ID[id],
     settlementOfStage: (id) => SETTLEMENT_OF_STAGE[id],
+    titles: TITLES,
+    titleById: (id) => TITLE_BY_ID[id],
   };
 }
 

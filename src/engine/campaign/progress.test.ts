@@ -7,6 +7,7 @@ import {
   difficultyStars,
   emptyCampaignProgress,
   evaluateStars,
+  isDifficultyMastered,
   isDifficultyUnlocked,
   isSettlementUnlocked,
   isStageUnlocked,
@@ -229,6 +230,39 @@ describe('the unlock chain (CAMPAIGN.md §1)', () => {
       allyTurns: 9,
     });
     expect(replay.completedDifficulty).toBe(false);
+  });
+
+  it('reports the run that put three stars on every stand of a difficulty, once', () => {
+    let progress = emptyCampaignProgress();
+    for (let settlement = 1; settlement <= SETTLEMENT_COUNT; settlement += 1)
+      progress = clear(progress, settlement, STAGES_PER_SETTLEMENT, 'intro', 3);
+    expect(isDifficultyMastered(progress, 'intro')).toBe(true);
+    expect(isDifficultyMastered(progress, 'normal')).toBe(false);
+
+    // Take one stand back to two stars, then earn the third again: that run is the milestone.
+    let short = emptyCampaignProgress();
+    for (let settlement = 1; settlement <= SETTLEMENT_COUNT; settlement += 1)
+      short = clear(short, settlement, STAGES_PER_SETTLEMENT, 'intro', settlement === 12 ? 2 : 3);
+    expect(isDifficultyMastered(short, 'intro')).toBe(false);
+    let record = recordRun(short, {
+      settlement: 12,
+      stage: 1,
+      difficulty: 'intro',
+      stars: 3,
+      allyTurns: 9,
+    });
+    expect(record.masteredDifficulty).toBe(false); // nine stands of settlement 12 still at two stars
+    let next = record.progress;
+    for (let stage = 2; stage <= STAGES_PER_SETTLEMENT; stage += 1) {
+      record = recordRun(next, { settlement: 12, stage, difficulty: 'intro', stars: 3, allyTurns: 9 });
+      next = record.progress;
+    }
+    expect(record.masteredDifficulty).toBe(true);
+    // Replaying a mastered difficulty never earns it twice.
+    expect(
+      recordRun(next, { settlement: 1, stage: 1, difficulty: 'intro', stars: 3, allyTurns: 8 })
+        .masteredDifficulty,
+    ).toBe(false);
   });
 
   it('unlocks ×3 with Normal complete and ×4 with Hard (GAME_DESIGN.md §6)', () => {

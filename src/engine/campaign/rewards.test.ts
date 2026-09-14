@@ -7,6 +7,7 @@ import {
   GEAR_DROP_CHANCE_BOSS,
   GEAR_SET_FROM_POOL_CHANCE,
   MATERIAL_DROPS,
+  MILESTONE_CHESTS,
   SHARD_DROP_CHANCE,
   STAR_CHESTS,
   STAR_CHEST_THRESHOLDS,
@@ -115,6 +116,32 @@ describe('per-victory rewards (CAMPAIGN.md §7)', () => {
     expect(merged.gear).toHaveLength(runs.reduce((sum, r) => sum + r.gear.length, 0));
     expect(merged.firstClear).toEqual(FIRST_CLEAR.intro.stage);
     expect(mergeRunRewards([]).currencies).toEqual([]);
+  });
+});
+
+describe('the milestone chest (CAMPAIGN.md §7)', () => {
+  it('pays Normal and Hard, and leaves Intro for the champion picker', () => {
+    const normal = rollRunRewards(
+      input({ difficulty: 'normal', mastered: true }),
+      createRng('milestone:normal'),
+    );
+    expect(normal.milestone).toEqual(MILESTONE_CHESTS.normal);
+    expect(normal.gems).toBe(300);
+    expect(amountOf(normal, 'shard_sacred')).toBe(2);
+
+    const hard = rollRunRewards(input({ difficulty: 'hard', mastered: true }), createRng('milestone:hard'));
+    expect(hard.gems).toBe(1_000);
+    expect(amountOf(hard, 'shard_primordial')).toBe(1);
+
+    const intro = rollRunRewards(input({ mastered: true }), createRng('milestone:intro'));
+    expect(intro.milestone).toBeNull();
+    expect(intro.gems).toBe(0);
+  });
+
+  it('pays nothing extra on an ordinary run', () => {
+    const plain = rollRunRewards(input({ difficulty: 'hard' }), createRng('plain-hard'));
+    expect(plain.milestone).toBeNull();
+    expect(plain.gems).toBe(0);
   });
 });
 

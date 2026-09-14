@@ -7,12 +7,15 @@ import type { EncounterDef } from '@content/encounters/types';
 import { FACTION_ARCHETYPES, type EnemyDef } from '@content/enemies/types';
 import type { FactionDef } from '@content/enemies/faction';
 import type { SettlementDef } from '@content/stages/types';
+import type { TitleDef } from '@content/titles/types';
 import { SETTLEMENT_COUNT } from '@content/balance/campaign';
+import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { statDeviation } from '@engine/champions/stats';
 import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
 import { enemySchema } from './enemy';
 import { settlementSchema, stageShapeIssues } from './stage';
+import { titleSchema } from './title';
 
 export const currencySchema = z.object({
   id: z.enum(CURRENCY_IDS),
@@ -66,6 +69,7 @@ export function validateContentRegistry(
     encounters: readonly unknown[];
     factions: readonly FactionDef[];
     settlements: readonly unknown[];
+    titles: readonly unknown[];
   },
   refs: ContentRefs,
 ): ValidationIssue[] {
@@ -80,7 +84,35 @@ export function validateContentRegistry(
     ...factions,
     ...settlements.issues,
     ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters),
+    ...validateTitles(registry.titles, refs),
   ];
+}
+
+/** Titles name a condition the save can meet; the engine derives the rest (ECONOMY.md §4). */
+function validateTitles(titles: readonly unknown[], refs: ContentRefs): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const seen = new Set<string>();
+  titles.forEach((raw, index) => {
+    const parsed = titleSchema.safeParse(raw);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues)
+        error(`titles[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = parsed.data as TitleDef;
+    const path = `titles.${def.id}`;
+    if (seen.has(def.id)) error(path, 'duplicate id');
+    seen.add(def.id);
+    for (const key of [def.name, def.description])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (def.condition.kind === 'level' && def.condition.level > PLAYER_MAX_LEVEL)
+      error(`${path}.condition`, `level ${def.condition.level} is past the cap`);
+    if (def.condition.kind === 'settlement_boss' && def.condition.settlement > SETTLEMENT_COUNT)
+      error(`${path}.condition`, `settlement ${def.condition.settlement} does not exist`);
+  });
+  return issues;
 }
 
 /** A faction fields the six rank-and-file archetypes plus one named boss (CAMPAIGN.md §5–§6). */

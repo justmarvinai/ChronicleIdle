@@ -115,6 +115,8 @@ export interface RunRecord {
   bestTurns: number | null;
   /** This difficulty was completed by this run (it opens the next one). */
   completedDifficulty: boolean;
+  /** This run took the difficulty to three stars everywhere — its milestone chest is due. */
+  masteredDifficulty: boolean;
 }
 
 /**
@@ -152,7 +154,17 @@ export function recordRun(
       starsBefore === 0 &&
       isDifficultyComplete(next, input.difficulty) &&
       !isDifficultyComplete(progress, input.difficulty),
+    masteredDifficulty:
+      starsAfter > starsBefore &&
+      isDifficultyMastered(next, input.difficulty) &&
+      !isDifficultyMastered(progress, input.difficulty),
   };
+}
+
+/** Three stars on every stand of a difficulty — the milestone chest's condition (CAMPAIGN.md §7). */
+export function isDifficultyMastered(progress: CampaignProgress, difficulty: Difficulty): boolean {
+  const { stars, max } = difficultyStars(progress, difficulty);
+  return stars === max;
 }
 
 // ---------------------------------------------------------------------------------------------
