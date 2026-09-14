@@ -8,7 +8,7 @@
  *
  * A duplicate is an ordinary roster copy (owner's answer Q8): nothing is auto-converted, ever.
  */
-import { CHAMPION_CHOICES, type ChampionChoiceDef } from '@content/balance/campaign';
+import type { ChampionChoiceDef } from '@content/balance/campaign';
 import {
   MULTI_PULL,
   HISTORY_LIMIT,
@@ -29,9 +29,9 @@ import {
 import { grant, spend, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { choiceById, choicePool, openChoices } from '@engine/summon/choices';
-import { mercyView, type MercyView, type PityCounters } from '@engine/summon/pity';
+import { mercyView, type MercyView } from '@engine/summon/pity';
 import { rotationAt, pityRules, type RotationView } from '@engine/summon/rotation';
-import { rarityRank, summonMany, type Pull } from '@engine/summon/summon';
+import { bestPull, summonMany, type Pull } from '@engine/summon/summon';
 import type { Rng } from '@engine/rng/rng';
 import type { SaveGame, SummonRecord } from '@engine/schema/save';
 import { progressOf } from './campaign';
@@ -127,9 +127,9 @@ export function applySummon(save: SaveGame, input: SummonInput): Result<SummonSu
     HISTORY_LIMIT,
   );
 
-  let best = pulls[0];
-  for (const candidate of pulls)
-    if (best && rarityRank(candidate.record.rarity) > rarityRank(best.record.rarity)) best = candidate;
+  // Which pull is the best is the engine's rule; the index maps 1:1 onto the copies above.
+  const rarest = bestPull(rolled.value.pulls);
+  const best = rarest ? pulls[rolled.value.pulls.indexOf(rarest)] : undefined;
   if (!best) return fail('invalid_argument', 'A press pulls at least once');
 
   bump(save, 'summon.pulls', pulls.length);
@@ -236,10 +236,6 @@ export function mercyOf(save: SaveGame, banner: BannerDef, shard: ShardId, now: 
   return mercyView(save.summon.pity[shard], pityRules(shard, rotation?.primordial ?? false));
 }
 
-export function pityOf(save: SaveGame, shard: ShardId): PityCounters {
-  return save.summon.pity[shard];
-}
-
 /** Copies of a champion in the roster. */
 export function copiesOf(save: SaveGame, championId: ChampionId): number {
   return Object.values(save.roster).filter((copy) => copy.defId === championId).length;
@@ -253,17 +249,6 @@ export function openChampionChoices(save: SaveGame): ChampionChoiceDef[] {
 /** Everyone a choice offers, in content order. */
 export function choiceCandidates(choice: ChampionChoiceDef): ChampionDef[] {
   return choicePool(content.summonPool, choice.rarity);
-}
-
-/** Every choice in the catalogue with what it became, for the profile and the picker. */
-export function choiceLedger(save: SaveGame): {
-  choice: ChampionChoiceDef;
-  takenId: ChampionId | null;
-}[] {
-  return CHAMPION_CHOICES.map((choice) => ({
-    choice,
-    takenId: save.summon.choices[choice.id]?.championId ?? null,
-  }));
 }
 
 function recordOf(

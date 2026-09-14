@@ -64,7 +64,7 @@ export function rotationAt(banner: BannerDef, now: number): RotationView | null 
   const primordial = isPrimordialRotation(index);
   const featured: ChampionId[] = [rotation.legendary, ...rotation.epics];
   if (primordial && rotation.mythic) featured.push(rotation.mythic);
-  const startsAt = ROTATION_EPOCH + index * ROTATION_MS;
+  const startsAt = rotationStart(now);
   return {
     index,
     number: index + 1,

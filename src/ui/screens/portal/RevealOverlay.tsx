@@ -44,7 +44,7 @@ export function RevealOverlay({
   onView,
   onClose,
 }: RevealOverlayProps) {
-  const cards = useMemo(() => revealOrder(summary.pulls), [summary]);
+  const cards = useMemo(() => revealOrder(summary.pulls, summary.best), [summary]);
   const rarity = summary.best.record.rarity;
   const [phase, setPhase] = useState<Phase>('ritual');
   const [shown, setShown] = useState(0);

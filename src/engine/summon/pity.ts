@@ -6,16 +6,11 @@
  * The counters live in the save, persist across banners, and are what the portal quotes back to
  * the player, so the same numbers must drive the roll and the label. They do.
  */
-import { SHARD_PITY, type PityRule } from '@content/balance/summon';
+import type { PityRule } from '@content/balance/summon';
 import type { Rarity } from '@content/champions/types';
 
 /** Pulls since each rarity the shard tracks; a missing key is the same as zero. */
 export type PityCounters = Partial<Record<Rarity, number>>;
-
-/** Every rarity any shard keeps count of, for the save's shape. */
-export const PITY_RARITIES: readonly Rarity[] = [
-  ...new Set(Object.values(SHARD_PITY).flatMap((rules) => rules.map((rule) => rule.rarity))),
-];
 
 export function emptyPity(): PityCounters {
   return {};

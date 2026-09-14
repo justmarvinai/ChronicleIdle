@@ -17,7 +17,6 @@ import { content } from '@content/registry';
 import type { MercyView } from '@engine/summon/pity';
 import type { SummonRecord } from '@engine/schema/save';
 import type { SummonedChampion } from '@state/summon';
-import { rarityRank } from '@engine/summon/summon';
 import { t, translate, type I18nKey } from '@i18n/index';
 
 export interface ShardView {
@@ -85,17 +84,13 @@ export function mercySentences(lines: readonly MercyView[]): string[] {
   return out;
 }
 
-/** The order the cards reveal in: the rarest last (SUMMONING.md §5.4). */
-export function revealOrder(pulls: readonly SummonedChampion[]): SummonedChampion[] {
+/**
+ * The order the cards reveal in: the rarest last (SUMMONING.md §5.4). Which pull is the rarest is
+ * the press's own answer (`SummonSummary.best`), so the grid and the toast can never disagree.
+ */
+export function revealOrder(pulls: readonly SummonedChampion[], best: SummonedChampion): SummonedChampion[] {
   if (pulls.length < 2) return [...pulls];
-  let bestIndex = 0;
-  pulls.forEach((pull, index) => {
-    const best = pulls[bestIndex];
-    if (best && rarityRank(pull.record.rarity) > rarityRank(best.record.rarity)) bestIndex = index;
-  });
-  const rest = pulls.filter((_, index) => index !== bestIndex);
-  const best = pulls[bestIndex];
-  return best ? [...rest, best] : [...pulls];
+  return [...pulls.filter((pull) => pull !== best), best];
 }
 
 export interface HistoryRow {
