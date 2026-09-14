@@ -11,6 +11,10 @@ export type DomainEvent =
   | { type: 'starter.chosen'; defId: ChampionId; instanceId: string }
   | { type: 'champion.added'; defId: ChampionId; instanceId: string; source: string }
   | { type: 'champion.updated'; instanceId: string; change: 'locked' | 'favourite' }
+  | { type: 'champion.levelled'; instanceId: string; level: number; levelsGained: number }
+  | { type: 'champion.rankedUp'; instanceId: string; stars: number }
+  | { type: 'champion.skillUpgraded'; instanceId: string; abilityId: string; step: number }
+  | { type: 'champion.consumed'; instanceId: string }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

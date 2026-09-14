@@ -40,6 +40,15 @@ import {
   type RunSummary,
 } from './campaign';
 import { EventBus } from './events';
+import type { Offering } from '@engine/progression/tavern-level';
+import {
+  applyTavernFeed,
+  applyTavernRankUp,
+  applyTavernSkillUpgrade,
+  type FeedSummary,
+  type RankSummary,
+  type SkillSummary,
+} from './tavern';
 import { applyPlayerXp, canWearTitle, mergeLevelUps, NO_LEVEL_UP, type LevelUpResult } from './progression';
 import type { OfflineReport } from './offline';
 import type { DialogRoute, Route, Toast, ToastKind } from './ui-types';
@@ -71,6 +80,11 @@ export interface UiState {
   fullscreenDeclined: boolean;
   /** Champions index state (sort, filters, selection) — kept for the session, never saved. */
   roster: { view: RosterView; selected: string | null };
+  /**
+   * The Tavern's table: who is drinking and what is on it. Transient — a reload starts with an
+   * empty table, and nothing is spent until the Upgrade press.
+   */
+  tavern: { targetId: string | null; offering: Offering };
   /**
    * Levels crossed since the player last saw the celebration. A battle never interrupts itself:
    * the screen that follows it opens the dialog and clears this.
@@ -123,6 +137,19 @@ export interface GameActions {
   grantPlayerXp(amount: number, reason: string): LevelUpResult;
   /** Drops the queued celebration once the dialog has shown it. */
   clearLevelUp(): void;
+  /** Points the Tavern at a champion; the table is cleared, so nothing carries over. */
+  setTavernTarget(instanceId: string | null): void;
+  /** Replaces what is on the Tavern table (brews poured, companions seated). */
+  setTavernOffering(offering: Offering): void;
+  /**
+   * Tavern — Upgrade Level: brews and food champions become XP (ECONOMY.md §3.1). The food leaves
+   * the roster and every team it stood on.
+   */
+  feedChampion(instanceId: string, offering: Offering): Result<FeedSummary>;
+  /** Tavern — Upgrade Rank: `n` copies of `n★` plus gold light one more star. */
+  rankUpChampion(instanceId: string, foodIds: readonly string[]): Result<RankSummary>;
+  /** Tavern — Upgrade Skills: one tome of the champion's rarity buys one step. */
+  upgradeChampionSkill(instanceId: string, abilityId: string): Result<SkillSummary>;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
   generateDebugRoster(count: number, seed: string): Result<void>;
   setRosterView(patch: Partial<RosterView>): void;
@@ -196,6 +223,20 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
           return true;
         };
 
+        /** Champions the Tavern ate must not stay selected or remembered anywhere in the session. */
+        const forgetEaten = (eaten: readonly string[]): void => {
+          if (eaten.length === 0) return;
+          const gone = new Set(eaten);
+          set((state) => {
+            if (state.ui.roster.selected && gone.has(state.ui.roster.selected))
+              state.ui.roster.selected = null;
+            if (state.ui.tavern.targetId && gone.has(state.ui.tavern.targetId))
+              state.ui.tavern.targetId = null;
+            state.ui.tavern.offering.food = state.ui.tavern.offering.food.filter((id) => !gone.has(id));
+          });
+          for (const instanceId of eaten) events.emit({ type: 'champion.consumed', instanceId });
+        };
+
         /**
          * Queues a level-up for the celebration and announces it. A battle is never interrupted:
          * the screen that follows opens the dialog and calls `clearLevelUp`.
@@ -244,6 +285,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             fullscreenOffered: false,
             fullscreenDeclined: false,
             roster: { view: DEFAULT_ROSTER_VIEW, selected: null },
+            tavern: { targetId: null, offering: { brews: {}, food: [] } },
             levelUp: null,
           },
 
@@ -287,6 +329,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.ui.stack = [{ name: 'starter' }];
                 state.ui.dialog = null;
                 state.ui.roster = { view: DEFAULT_ROSTER_VIEW, selected: null };
+                state.ui.tavern = { targetId: null, offering: { brews: {}, food: [] } };
                 state.ui.levelUp = null;
               });
               events.emit({ type: 'game.created', name: valid.value });
@@ -310,6 +353,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.boot.hasSave = false;
                 state.ui.stack = [{ name: 'title' }];
                 state.ui.dialog = null;
+                state.ui.tavern = { targetId: null, offering: { brews: {}, food: [] } };
                 state.ui.levelUp = null;
               });
               events.emit({ type: 'game.reset' });
@@ -611,6 +655,72 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               set((state) => {
                 state.ui.levelUp = null;
               });
+            },
+
+            setTavernTarget(instanceId) {
+              set((state) => {
+                state.ui.tavern = { targetId: instanceId, offering: { brews: {}, food: [] } };
+              });
+            },
+
+            setTavernOffering(offering) {
+              set((state) => {
+                state.ui.tavern.offering = { brews: { ...offering.brews }, food: [...offering.food] };
+              });
+            },
+
+            feedChampion(instanceId, offering) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<FeedSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTavernFeed(state.save, { instanceId, offering });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              forgetEaten(result.value.eaten);
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'tavern' });
+              events.emit({
+                type: 'champion.levelled',
+                instanceId,
+                level: result.value.level,
+                levelsGained: result.value.levelsGained,
+              });
+              return result;
+            },
+
+            rankUpChampion(instanceId, foodIds) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<RankSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTavernRankUp(state.save, { instanceId, foodIds });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              forgetEaten(result.value.eaten);
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'tavern' });
+              events.emit({ type: 'champion.rankedUp', instanceId, stars: result.value.stars });
+              return result;
+            },
+
+            upgradeChampionSkill(instanceId, abilityId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<SkillSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTavernSkillUpgrade(state.save, { instanceId, abilityId });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'tavern' });
+              events.emit({
+                type: 'champion.skillUpgraded',
+                instanceId,
+                abilityId,
+                step: result.value.step,
+              });
+              return result;
             },
 
             generateDebugRoster(count, seed) {

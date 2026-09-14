@@ -106,3 +106,6 @@ export const selectWornTitle = (s: GameStore): string | null => s.save?.profile.
 export function earnedTitleIds(s: GameStore): string[] {
   return s.save ? titlesOf(s.save) : [];
 }
+
+/** The Tavern's table: the champion being upgraded and what is on it (`ECONOMY.md` §3). */
+export const selectTavern = (s: GameStore) => s.ui.tavern;
