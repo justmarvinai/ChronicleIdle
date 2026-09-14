@@ -10,6 +10,7 @@ import type { GameStore } from './store';
 
 import type { StagePointer } from '@engine/campaign/progress';
 import type { Roster } from '@engine/champions/instance';
+import type { SummonSave } from '@engine/schema/save';
 import type { Inventory } from '@engine/gear/instance';
 import type { CampaignSave } from '@engine/schema/save';
 import type { Route } from './ui-types';
@@ -18,6 +19,7 @@ export const selectSave = (s: GameStore) => s.save;
 const EMPTY_ROSTER: Roster = {};
 export const selectRoster = (s: GameStore): Roster => s.save?.roster ?? EMPTY_ROSTER;
 const EMPTY_INVENTORY: Inventory = {};
+const EMPTY_IDS: readonly string[] = [];
 /** Every piece of gear the chronicle owns, worn or not (`GEAR.md` §7). */
 export const selectInventory = (s: GameStore): Inventory => s.save?.inventory ?? EMPTY_INVENTORY;
 export const selectRosterView = (s: GameStore) => s.ui.roster.view;
@@ -123,3 +125,14 @@ export const selectSelectedPiece = (s: GameStore): string | null => s.ui.armoury
 /** Pieces held against the cap, for the racks' capacity band. */
 export const selectInventoryCount = (s: GameStore): number =>
   s.save ? Object.keys(s.save.inventory).length : 0;
+
+// ---------------------------------------------------------------------------------------------
+// The Summoning Portal (docs/design/SUMMONING.md)
+// ---------------------------------------------------------------------------------------------
+
+/** Which banner tab and shard the Portal's rail is on (session state). */
+export const selectPortalUi = (s: GameStore) => s.ui.portal;
+/** Mercy counters, pull history and the choices taken. */
+export const selectSummon = (s: GameStore): SummonSave | null => s.save?.summon ?? null;
+/** Copies the player has not opened yet — the "NEW" badge (SUMMONING.md §5.3). */
+export const selectUnseen = (s: GameStore): readonly string[] => s.save?.summon.unseen ?? EMPTY_IDS;

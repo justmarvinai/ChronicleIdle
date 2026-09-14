@@ -401,6 +401,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.ui.dialog = null;
                 state.ui.roster = { view: DEFAULT_ROSTER_VIEW, selected: null };
                 state.ui.tavern = { targetId: null, offering: { brews: {}, food: [] } };
+                state.ui.portal = { bannerId: 'banner.standard', shard: 'faded' };
                 state.ui.levelUp = null;
               });
               events.emit({ type: 'game.created', name: valid.value });
@@ -425,6 +426,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.ui.stack = [{ name: 'title' }];
                 state.ui.dialog = null;
                 state.ui.tavern = { targetId: null, offering: { brews: {}, food: [] } };
+                state.ui.portal = { bannerId: 'banner.standard', shard: 'faded' };
                 state.ui.levelUp = null;
               });
               events.emit({ type: 'game.reset' });

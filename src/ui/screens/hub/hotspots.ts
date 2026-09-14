@@ -42,6 +42,7 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     size: 150,
     glyph: 'glyph.arcane_symbol',
     feature: 'summoning',
+    route: { name: 'portal' },
     color: '#9b5de5',
     labelBelow: false,
   },

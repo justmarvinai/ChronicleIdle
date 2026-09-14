@@ -1,6 +1,7 @@
 import { t } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
-import { selectActions, selectFeatureUnlocked } from '@state/selectors';
+import { openChampionChoices } from '@state/summon';
+import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
@@ -29,7 +30,16 @@ export default function HubScreen(_props: ScreenProps) {
   const missions = useGameStore(selectMissions);
   const quests = useGameStore(selectQuests);
   const gear = useGameStore(selectGear);
+  const unseen = useGameStore(selectUnseen);
+  const save = useGameStore(selectSave);
   useSceneAudio('hub', 'hub');
+
+  // Dots on the buildings that owe the player something: copies not looked at yet, and a
+  // champion choice the campaign still owes (CAMPAIGN.md §7).
+  const notices: Record<string, boolean> = {
+    champions: unseen.length > 0,
+    portal: save ? openChampionChoices(save).length > 0 : false,
+  };
 
   const open = (def: HubHotspotDef, unlocked: boolean): void => {
     if (unlocked && def.route) actions.push(def.route);
@@ -43,7 +53,7 @@ export default function HubScreen(_props: ScreenProps) {
       <TopBar />
 
       {HUB_HOTSPOTS.map((def) => (
-        <HubHotspot key={def.id} def={def} onOpen={open} />
+        <HubHotspot key={def.id} def={def} onOpen={open} notify={notices[def.id] ?? false} />
       ))}
 
       <aside className={styles.bossColumn} aria-label={t('hub.bossGate')}>

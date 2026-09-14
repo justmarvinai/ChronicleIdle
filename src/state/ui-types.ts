@@ -20,6 +20,8 @@ export type Route =
   | { name: 'armoury'; pieceId?: string }
   /** The Forge; `tab` deep-links one of its three benches (`GEAR.md` §4, §6). */
   | { name: 'forge'; tab?: ForgeTab; pieceId?: string }
+  /** The Summoning Portal; `banner` opens on a banner tab (`SUMMONING.md` §3). */
+  | { name: 'portal'; banner?: string }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }
@@ -57,6 +59,12 @@ export type DialogRoute =
     }
   /** The racks, filtered to one champion's slot: pick a piece, compare it, wear it. */
   | { name: 'gear-picker'; instanceId: string; slot: GearSlot }
+  /** The Portal's rates and mercy table for one banner (`SUMMONING.md` §1–§2). */
+  | { name: 'summon-rates'; bannerId: string }
+  /** The Portal's pull history, newest first. */
+  | { name: 'summon-history' }
+  /** Takes a champion choice the campaign owes (`CAMPAIGN.md` §7). */
+  | { name: 'champion-picker'; choiceId: string }
   | { name: 'level-up' }
   | { name: 'title-picker' }
   | { name: 'battle-pause' }

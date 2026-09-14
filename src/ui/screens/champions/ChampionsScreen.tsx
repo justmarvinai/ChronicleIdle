@@ -9,6 +9,7 @@ import {
   selectRoster,
   selectRosterView,
   selectSelectedChampion,
+  selectUnseen,
 } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import type { ChampionTab, Route } from '@state/ui-types';
@@ -43,6 +44,7 @@ export default function ChampionsScreen({ route }: ScreenProps) {
   const inventory = useGameStore(selectInventory);
   const view = useGameStore(selectRosterView);
   const selectedId = useGameStore(selectSelectedChampion);
+  const unseen = useGameStore(selectUnseen);
   const [tab, setTab] = useState<ChampionTab>(params.tab ?? 'info');
   useSceneAudio('hub', 'interior');
 
@@ -52,13 +54,20 @@ export default function ChampionsScreen({ route }: ScreenProps) {
   const selectHandlers = useMemo(() => {
     const handlers = new Map<string, () => void>();
     for (const entry of entries)
-      handlers.set(entry.instance.instanceId, () => actions.selectChampion(entry.instance.instanceId));
+      handlers.set(entry.instance.instanceId, () => {
+        // Looking at a champion is what clears its "NEW" ribbon (SUMMONING.md §5.3).
+        actions.selectChampion(entry.instance.instanceId);
+        actions.markSeen([entry.instance.instanceId]);
+      });
     return handlers;
   }, [entries, actions]);
+  const isNew = useMemo(() => new Set(unseen), [unseen]);
 
   // A deep link (route.instanceId) wins once; afterwards the selection lives in the store.
   useEffect(() => {
-    if (params.instanceId) actions.selectChampion(params.instanceId);
+    if (!params.instanceId) return;
+    actions.selectChampion(params.instanceId);
+    actions.markSeen([params.instanceId]);
   }, [params.instanceId, actions]);
 
   const selected =
@@ -105,6 +114,7 @@ export default function ChampionsScreen({ route }: ScreenProps) {
               selected={selected?.instance.instanceId === entry.instance.instanceId}
               locked={entry.instance.locked}
               favourite={entry.instance.favourite}
+              badge={isNew.has(entry.instance.instanceId) ? t('summon.reveal.new') : null}
               onClick={
                 selectHandlers.get(entry.instance.instanceId) ??
                 (() => actions.selectChampion(entry.instance.instanceId))

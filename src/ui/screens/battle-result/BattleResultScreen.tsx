@@ -9,7 +9,8 @@ import { currentRunView, launchCampaignRun, nextPointerAfter } from '@ui/flows/c
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
-import { selectActions } from '@state/selectors';
+import { selectActions, selectSave } from '@state/selectors';
+import { openChampionChoices } from '@state/summon';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { championAvatar } from '@ui/champions/art';
@@ -32,6 +33,7 @@ const TITLE: Record<string, I18nKey> = {
 /** Battle result (docs/tech/UI_DESIGN.md §5.10): outcome, turns, per-champion report, next steps. */
 export default function BattleResultScreen(_props: ScreenProps) {
   const actions = useGameStore(selectActions);
+  const save = useGameStore(selectSave);
   const session = useStore(battleController.store);
   const campaign = useStore(campaignSession);
   const outcome = session.outcome;
@@ -64,6 +66,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
   // Every piece the batch minted, and the drops the racks were too full to hold (GEAR.md §7).
   const dropped = campaign.summaries.flatMap((summary) => summary.gear);
   const gearLost = campaign.summaries.reduce((sum, summary) => sum + summary.gearLost, 0);
+  // Mastering a difficulty owes a champion of the player's choosing; it is claimed at the Portal.
+  const owedChoice = save ? openChampionChoices(save).length > 0 : false;
   const allies = outcome.units.filter((u) => u.side === 'ally');
   const teamIds = allies.map((u) => u.instanceId).filter((id): id is string => !!id);
   const enemyTurns = outcome.turns - outcome.allyTurns;
@@ -234,6 +238,12 @@ export default function BattleResultScreen(_props: ScreenProps) {
                   {t('battleResult.starChest', { stars: threshold })}
                 </p>
               ))}
+              {/* The Intro milestone's Epic is taken at the Portal, so the run only says so. */}
+              {owedChoice ? (
+                <p className={styles.bonus} data-testid="result-choice">
+                  {t('battleResult.championChoice')}
+                </p>
+              ) : null}
               {dropped.map((piece) => (
                 <p
                   key={piece.instanceId}

@@ -151,27 +151,11 @@
   },
   "teams": {
     "campaign": {
-      "presets": [
-        [
-          "reva_ashblade-1",
-          "wenna_novice-3",
-          "gil_scrapper-4"
-        ],
-        [],
-        []
-      ],
-      "lastUsed": [
-        "reva_ashblade-1",
-        "wenna_novice-3",
-        "gil_scrapper-4"
-      ]
+      "presets": [["reva_ashblade-1", "wenna_novice-3", "gil_scrapper-4"], [], []],
+      "lastUsed": ["reva_ashblade-1", "wenna_novice-3", "gil_scrapper-4"]
     },
     "boss": {
-      "presets": [
-        [],
-        [],
-        []
-      ],
+      "presets": [[], [], []],
       "lastUsed": []
     }
   },

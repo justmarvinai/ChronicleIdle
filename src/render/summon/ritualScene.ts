@@ -17,8 +17,12 @@ import type { FxId } from '@render/battle/fx/registry';
 
 export const STAGE_W = 1920;
 export const STAGE_H = 1080;
-/** Where the ring hangs on `bg9`, in stage pixels. */
-export const RING = { x: 960, y: 470, radius: 210 } as const;
+/**
+ * Where the ring hangs, in stage pixels. The scene covers the whole 1920×1080 stage (like the
+ * ambient layer), so the ring stays a circle at every window size; it sits in the open space
+ * between the shard rail and the banner column.
+ */
+export const RING = { x: 900, y: 470, radius: 210 } as const;
 
 /**
  * Rarity colours as Pixi tints. The same values as `RARITY_HEX` in the UI layer (a card frame and
@@ -55,6 +59,8 @@ export interface RitualHandle {
    * Resolves when the burst has finished — the point the card reveal takes over.
    */
   reveal(rarity: Rarity, shardUrl: string): Promise<void>;
+  /** Hangs a shard in the ring while the gate waits (SUMMONING.md §5). */
+  hover(shardUrl: string): Promise<void>;
   /** Cuts a running ritual to its end; the promise still resolves (SUMMONING.md §5 "skipping"). */
   skip(): void;
   /** True while a ritual is playing. */
@@ -120,11 +126,12 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     const x = RING.x + Math.cos(angle) * RING.radius;
     const y = RING.y + Math.sin(angle) * RING.radius;
     const rune = new Graphics();
-    rune.rect(-7, -18, 14, 36).fill({ color: 0xffffff, alpha: 0.9 });
+    rune.rect(-8, -22, 16, 44).fill({ color: 0xffffff, alpha: 1 });
     rune.position.set(x, y);
     rune.rotation = angle + Math.PI / 2;
     rune.alpha = 0;
-    rune.tint = 0x9b5de5;
+    // Gold-white: the backdrop is violet, so a violet rune would vanish into it.
+    rune.tint = 0xffe9b0;
     runes.push(rune);
     runeLayer.addChild(rune);
   }
@@ -194,10 +201,19 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
       : null;
   if (motes) glowLayer.addChild(motes.container);
 
-  let shard: Sprite | null = null;
+  let shard: Container | null = null;
+  let hoverTween: gsap.core.Tween | null = null;
+  let hovering: string | null = null;
+  /** Guards the async shard load: only the newest `hover` call may take the ring. */
+  let hoverSeq = 0;
   const shardCache = new Map<string, Texture>();
 
-  async function shardSprite(url: string): Promise<Sprite | null> {
+  /**
+   * The shard as it hangs in the ring: the icon, additively blended and cut to a disc. The icon
+   * pack draws on a dark square plate — additive drops most of it and the mask takes the corners,
+   * so what is left is the crystal and its own glow.
+   */
+  async function shardSprite(url: string): Promise<Container | null> {
     try {
       const cached = shardCache.get(url);
       const texture = cached ?? (await Assets.load<Texture>(url));
@@ -206,7 +222,12 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
       sprite.anchor.set(0.5);
       sprite.width = 150;
       sprite.height = 150;
-      return sprite;
+      sprite.blendMode = 'add';
+      const mask = new Graphics().circle(0, 0, 66).fill({ color: 0xffffff });
+      sprite.mask = mask;
+      const holder = new Container();
+      holder.addChild(sprite, mask);
+      return holder;
     } catch {
       return null;
     }
@@ -224,7 +245,9 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
   app.ticker.add(ticker);
   app.ticker.maxFPS = 60;
 
-  /** Resting state: the runes dark, the ring breathing, nothing in the middle. */
+  /** Resting state: the runes dark, a breath of violet in the middle, the ring pulsing. */
+  coreGlow.tint = 0x9b5de5;
+  coreGlow.alpha = 0.14;
   const idle = gsap.to(ring, {
     alpha: 0.82,
     duration: 2.4,
@@ -233,37 +256,85 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     ease: 'sine.inOut',
   });
 
-  function resetStage(): void {
+  /** Hangs the chosen shard in the ring, bobbing, while nothing is being summoned. */
+  async function hover(shardUrl: string): Promise<void> {
+    if (timeline !== null || hovering === shardUrl) return;
+    const seq = (hoverSeq += 1);
+    hovering = shardUrl;
+    const sprite = await shardSprite(shardUrl);
+    // Another shard was chosen while this one loaded: that call owns the ring now.
+    if (seq !== hoverSeq || timeline !== null) {
+      sprite?.destroy({ children: true });
+      return;
+    }
+    dropShard();
+    shard = sprite;
+    if (!shard) return;
+    shard.position.set(RING.x, RING.y - 46);
+    shard.alpha = 0;
+    shardLayer.addChild(shard);
+    gsap.to(shard, { alpha: 0.95, duration: 0.4 });
+    hoverTween = gsap.to(shard, {
+      y: RING.y - 22,
+      duration: 2.2,
+      yoyo: true,
+      repeat: -1,
+      ease: 'sine.inOut',
+    });
+  }
+
+  /** Takes the shard out of the ring, tweens and all: a tween on a dead sprite throws. */
+  function dropShard(): void {
+    hoverTween?.kill();
+    hoverTween = null;
+    if (shard) {
+      gsap.killTweensOf(shard);
+      shard.destroy({ children: true });
+    }
+    shard = null;
+  }
+
+  function resetStage({ keepShard = false } = {}): void {
+    hoverTween?.kill();
+    hoverTween = null;
     for (const rune of runes) rune.alpha = 0;
     cracks.alpha = 0;
     cracks.scale.set(1);
-    coreGlow.alpha = 0;
+    coreGlow.scale.set(1.6);
+    coreGlow.alpha = 0.14;
     haloGlow.alpha = 0;
     pillar.alpha = 0;
     shockwave.alpha = 0;
     shockwave.scale.set(1);
     flash.alpha = 0;
-    shard?.destroy();
-    shard = null;
+    if (!keepShard) {
+      dropShard();
+      hovering = null;
+    }
   }
 
   async function reveal(rarity: Rarity, shardUrl: string): Promise<void> {
     timeline?.kill();
-    resetStage();
+    const waiting = shard;
+    resetStage({ keepShard: true });
     const tint = RARITY_TINT[rarity];
     const fast = options.reducedMotion === true;
 
-    shard = await shardSprite(shardUrl);
-    if (shard) {
-      shard.position.set(RING.x, RING.y - 420);
-      shard.alpha = 0;
-      shardLayer.addChild(shard);
+    if (!waiting) {
+      shard = await shardSprite(shardUrl);
+      if (shard) {
+        shard.position.set(RING.x, RING.y - 420);
+        shard.alpha = 0;
+        shardLayer.addChild(shard);
+      }
     }
+    hovering = null;
 
     const tl = gsap.timeline({ paused: true });
     timeline = tl;
 
-    // 1. The shard falls into the ring and the runes light in sequence (0.6 s).
+    // 1. The shard drops into the ring and the runes light in sequence (0.6 s). A shard already
+    // hanging there only has the last stretch to fall.
     tl.call(() => options.hooks.cue('charge', rarity));
     if (shard) {
       tl.to(shard, { alpha: 1, duration: 0.12 }, 0);
@@ -331,12 +402,24 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
       }
     }
     tl.to({}, { duration: fast ? 0.2 : 0.45 });
+    // Back to rest: the card takes over from here, and the gate must not stay mid-burst.
+    const tail = burstAt + (fast ? 0.3 : 0.7);
+    for (const rune of runes) tl.to(rune, { alpha: 0, duration: 0.5 }, tail);
+    tl.to(coreGlow, { alpha: 0.14, duration: 0.5 }, tail);
+    tl.to(coreGlow.scale, { x: 1.6, y: 1.6, duration: 0.5 }, tail);
+    tl.to(haloGlow, { alpha: 0, duration: 0.5 }, tail);
+    tl.call(() => {
+      coreGlow.tint = 0x9b5de5;
+    });
 
     await new Promise<void>((resolve) => {
       tl.eventCallback('onComplete', () => resolve());
       tl.play();
     });
     timeline = null;
+    // The shard is spent; the gate hangs the next one when the screen says which.
+    dropShard();
+    hovering = null;
   }
 
   async function playBurstFx(rarity: Rarity, tint: number): Promise<void> {
@@ -357,6 +440,7 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
 
   return {
     reveal,
+    hover,
     skip() {
       // Everything up to and including the burst still happens; only the waiting is cut.
       timeline?.progress(1);
@@ -374,6 +458,7 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
       idle.kill();
       timeline?.kill();
       timeline = null;
+      dropShard();
       app.ticker.remove(ticker);
       motes?.destroy();
       app.destroy(true, { children: true });

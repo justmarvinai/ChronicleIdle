@@ -4,6 +4,7 @@ import { selectActions, selectDialog } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { useLevelUpCelebration } from '@ui/hooks/useLevelUpCelebration';
 import { AvatarPickerDialog } from './AvatarPickerDialog';
+import { ChampionPickerDialog } from './ChampionPickerDialog';
 import { BattlePauseDialog } from './BattlePauseDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { FoodPickerDialog } from './FoodPickerDialog';
@@ -15,6 +16,8 @@ import { NewGameDialog } from './NewGameDialog';
 import { ProfileDialog } from './ProfileDialog';
 import { ResetConfirmDialog } from './ResetConfirmDialog';
 import { SettingsDialog } from './SettingsDialog';
+import { SummonHistoryDialog } from './SummonHistoryDialog';
+import { SummonRatesDialog } from './SummonRatesDialog';
 import { TavernConfirmDialog } from './TavernConfirmDialog';
 import { TitlePickerDialog } from './TitlePickerDialog';
 import { WalletDialog } from './WalletDialog';
@@ -78,6 +81,15 @@ export function DialogHost() {
           slot={dialog.slot}
           onClose={closeDialog}
         />
+      ) : null}
+      {dialog?.name === 'summon-rates' ? (
+        <SummonRatesDialog key="summon-rates" bannerId={dialog.bannerId} onClose={closeDialog} />
+      ) : null}
+      {dialog?.name === 'summon-history' ? (
+        <SummonHistoryDialog key="summon-history" onClose={closeDialog} />
+      ) : null}
+      {dialog?.name === 'champion-picker' ? (
+        <ChampionPickerDialog key="champion-picker" choiceId={dialog.choiceId} onClose={closeDialog} />
       ) : null}
       {dialog?.name === 'battle-pause' ? <BattlePauseDialog key="pause" onClose={closeDialog} /> : null}
       {DebugDialog && dialog?.name === 'debug' ? (

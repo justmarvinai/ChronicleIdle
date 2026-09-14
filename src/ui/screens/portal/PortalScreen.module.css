@@ -1,0 +1,60 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.root > :global(section[aria-label]) {
+  position: absolute;
+  left: 24px;
+  top: 96px;
+  width: 348px;
+  z-index: var(--z-scene);
+}
+
+.right {
+  position: absolute;
+  right: 24px;
+  top: 96px;
+  bottom: 132px;
+  width: 452px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.right > :global(.panelWrap),
+.right > div:last-child {
+  flex: 1;
+  min-height: 0;
+}
+
+.bottom {
+  position: absolute;
+  left: 396px;
+  right: 500px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.choice {
+  margin-right: 4px;
+}
+
+.status {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+}

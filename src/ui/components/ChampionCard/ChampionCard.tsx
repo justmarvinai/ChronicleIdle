@@ -42,6 +42,8 @@ export interface ChampionCardProps {
   selected?: boolean;
   locked?: boolean;
   favourite?: boolean;
+  /** Corner ribbon, e.g. "NEW" for a copy the player has not opened yet (SUMMONING.md §5.3). */
+  badge?: string | null;
   dimmed?: boolean;
   onClick?: () => void;
   /** Identity only (avatar picker, previews): no star row and no level badge. */
@@ -70,6 +72,7 @@ export const ChampionCard = memo(function ChampionCard({
   selected,
   locked,
   favourite,
+  badge = null,
   dimmed,
   onClick,
   compact = false,
@@ -169,6 +172,7 @@ export const ChampionCard = memo(function ChampionCard({
           label="favourite"
         />
       ) : null}
+      {badge ? <span className={`display ${styles.badge}`}>{badge}</span> : null}
       {size >= 192 ? <span className={`display ${styles.name}`}>{name}</span> : null}
     </DecoFrame>
   );

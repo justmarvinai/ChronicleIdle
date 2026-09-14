@@ -456,6 +456,8 @@ export const ui = {
   'battleResult.newRecord': 'New record',
   'battleResult.firstClear': 'First clear',
   'battleResult.starChest': 'Star chest ({stars} ★)',
+  'battleResult.championChoice':
+    'A champion of your choosing waits at the Summoning Portal — claim your Epic.',
   'battleResult.rewards': 'Spoils',
   'battleResult.championXpLabel': 'Champion XP (each)',
   'battleResult.playerXpLabel': 'Chronicle XP',
