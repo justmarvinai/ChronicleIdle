@@ -69,7 +69,8 @@ Documentation
 | a gear set | `src/content/sets/<slug>.ts` with the `set()` helper (2-piece / 4-piece bonus written as a passive), add it to `sets/index.ts`, its two i18n keys and every home settlement's `setPool` | `docs/tech/CONTENT_AUTHORING.md` §5, `docs/design/GEAR.md` §5 |
 | a currency | `src/content/currencies/index.ts` + icon manifest key | `docs/design/ECONOMY.md` §2 |
 | a quest / mission | `src/content/quests/*.ts` or `src/content/missions/chapter_<n>.ts` using goal types | `docs/design/QUESTS_MISSIONS.md` |
-| a banner | `src/content/banners/<id>.ts` with rate table + rotation | `docs/design/SUMMONING.md` |
+| a banner or a featured rotation | `src/content/banners/<slug>.ts` (`kind`, `shards`, and for a featured banner an appended `rotations` row: one Legendary + two Epics, plus `mythic` on a Primordial Rotation), add it to `banners/index.ts` and its two i18n keys; rates and mercy stay in `balance/summon.ts` | `docs/tech/CONTENT_AUTHORING.md` §8, `docs/design/SUMMONING.md` §3 |
+| a champion the player may *choose* as a reward | a row in `CHAMPION_CHOICES` (`balance/campaign.ts`): the difficulty whose mastery owes it, the rarity, and an i18n key for where it came from | `docs/tech/CONTENT_AUTHORING.md` §8, ADR-032 |
 | a craft tier or forge cost | edit `src/content/balance/forge.ts` (materials, gold, rarity/star weights, set pool); the 10k-craft test guards the bands | `docs/design/GEAR.md` §6 |
 | a balance tweak | edit `src/content/balance/*.ts`, run `pnpm sim:balance`, note in CHANGELOG "Balance" | `docs/design/*` tables |
 | a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes/`; map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
