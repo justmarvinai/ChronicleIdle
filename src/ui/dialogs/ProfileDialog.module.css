@@ -1,0 +1,162 @@
+.header {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding-bottom: 6px;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.scroll {
+  padding-right: 18px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.name {
+  font-size: 30px;
+  color: var(--gold-3);
+  line-height: 1.1;
+}
+
+.worn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  color: var(--text-2);
+}
+
+.levelRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.level {
+  font-size: 19px;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(30, 25, 19, 0.8), rgba(15, 12, 9, 0.8));
+  border: 1px solid rgba(201, 162, 74, 0.24);
+}
+
+.stat dt {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.stat dd {
+  margin: 0;
+  font-size: 22px;
+  color: var(--gold-3);
+}
+
+.starRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.starRows li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 17px;
+  color: var(--text-1);
+}
+
+.starRows li .num {
+  margin-left: auto;
+  color: var(--gold-3);
+}
+
+.difficulty {
+  min-width: 110px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.count {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.unlocks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unlocks li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 12px;
+  background: linear-gradient(90deg, rgba(45, 36, 20, 0.55), rgba(16, 13, 10, 0.5));
+  border-left: 3px solid var(--gold-1);
+}
+
+.unlocks li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.unlockLevel {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  font-size: 20px;
+  color: var(--gold-3);
+  background: radial-gradient(circle, rgba(90, 70, 30, 0.8), rgba(20, 16, 12, 0.9));
+  border: 1px solid rgba(201, 162, 74, 0.4);
+}
+
+.unlocks li strong {
+  font-size: 18px;
+  color: var(--text-1);
+}
+
+.unlocks li em {
+  font-style: normal;
+  font-size: 14px;
+  color: var(--text-3);
+}

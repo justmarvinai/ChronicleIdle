@@ -1,18 +1,34 @@
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { playSfx } from '@audio/index';
+import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
+import { content } from '@content/registry';
 import { xpToNextLevel } from '@engine/progression/player-level';
-import { t } from '@i18n/index';
+import { t, translate } from '@i18n/index';
 import { selectProfile } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { Bar } from '@ui/components/Bar/Bar';
 import { profileAvatar } from '@ui/champions/art';
+import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import { imageUrl } from '@assets/manifest';
 import styles from './ProfileChip.module.css';
 
-/** Avatar ring, name, level and XP bar (clones the reference profile chip). */
+/** Avatar ring, name, worn title, level and XP bar (clones the reference profile chip). */
 export function ProfileChip({ onClick }: { onClick: () => void }) {
   const profile = useGameStore(selectProfile);
+  const level = profile?.level ?? 0;
+  // The ring flares each time the level climbs; the first render is not a level-up.
+  const seen = useRef(level);
+  const [flash, setFlash] = useState(0);
+  useEffect(() => {
+    if (level > seen.current) setFlash((n) => n + 1);
+    seen.current = level;
+  }, [level]);
+
   if (!profile) return null;
   const avatar = profileAvatar(profile.avatarChampionId, 128);
+  const titleDef = profile.title ? content.titleById(profile.title) : null;
+  const maxed = profile.level >= PLAYER_MAX_LEVEL;
   return (
     <button
       type="button"
@@ -40,11 +56,40 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
           style={{ backgroundImage: `url("${imageUrl('ui.dark_ember.frame_round_sm')}")` }}
           aria-hidden="true"
         />
-        <span className={`num ${styles.level}`}>{profile.level}</span>
+        {flash > 0 && !prefersReducedMotion() ? (
+          <motion.span
+            key={flash}
+            className={styles.flash}
+            aria-hidden="true"
+            data-testid="profile-chip-flash"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: [0, 0.95, 0], scale: [0.8, 1.45, 1.7] }}
+            transition={{ duration: 1.1, ease: 'easeOut' }}
+          />
+        ) : null}
+        <motion.span
+          className={`num ${styles.level}`}
+          data-testid="profile-chip-level"
+          animate={flash > 0 ? { scale: [1, 1.35, 1] } : { scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          {profile.level}
+        </motion.span>
       </span>
       <span className={styles.text}>
         <span className={`display ${styles.name}`}>{profile.name}</span>
-        <Bar value={profile.xp} max={xpToNextLevel(profile.level)} kind="xp" height={16} width={190} />
+        {titleDef ? (
+          <span className={styles.title} data-testid="profile-chip-title">
+            {translate(titleDef.name)}
+          </span>
+        ) : null}
+        <Bar
+          value={maxed ? 1 : profile.xp}
+          max={maxed ? 1 : xpToNextLevel(profile.level)}
+          kind="xp"
+          height={16}
+          width={190}
+        />
       </span>
     </button>
   );

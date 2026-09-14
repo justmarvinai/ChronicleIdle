@@ -186,9 +186,10 @@ test.describe('profile avatar', () => {
     await page.getByTestId('choose-avatar').click();
     await expect(page.getByTestId('dialog-avatar-picker')).toBeVisible();
     await page.getByTestId('dialog-avatar-picker').getByRole('button', { name: /Wenna/ }).click();
+    // Choosing returns to the profile the picker was opened from.
     await expect(page.getByTestId('dialog-avatar-picker')).toHaveCount(0);
+    await expect(page.getByTestId('dialog-profile')).toBeVisible();
     await expect(page.getByTestId('profile-chip')).toHaveAttribute('data-avatar', 'champ.wenna_novice');
-    await page.getByTestId('profile-chip').click();
     await page.getByTestId('choose-avatar').click();
     await page.getByTestId('avatar-none').click();
     await expect(page.getByTestId('profile-chip')).toHaveAttribute('data-avatar', 'chronicler');

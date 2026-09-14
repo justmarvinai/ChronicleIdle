@@ -1,0 +1,124 @@
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 0 22px;
+}
+
+/* The ember flare behind the numeral; purely decorative, so it never affects layout. */
+.burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  translate: -50% -50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(240, 213, 122, 0.5) 0%,
+    rgba(201, 162, 74, 0.22) 38%,
+    rgba(201, 162, 74, 0) 70%
+  );
+}
+
+.level {
+  position: relative;
+  font-size: 92px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow:
+    0 0 22px rgba(240, 213, 122, 0.55),
+    0 3px 0 rgba(0, 0, 0, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.heroLabel {
+  position: relative;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  text-transform: uppercase;
+}
+
+.scroll {
+  padding-right: 18px;
+}
+
+.section {
+  margin-top: 18px;
+}
+
+.section:first-child {
+  margin-top: 0;
+}
+
+.sectionTitle {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: var(--gold-2);
+  letter-spacing: 0.05em;
+}
+
+.rewards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rewards li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 12px;
+  background: linear-gradient(180deg, rgba(28, 22, 16, 0.75), rgba(16, 12, 9, 0.75));
+  border: 1px solid rgba(201, 162, 74, 0.3);
+  font-size: 17px;
+  color: var(--text-1);
+}
+
+.rewards li .num,
+.rewards li span:last-child {
+  color: var(--gold-3);
+}
+
+.unlocks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unlocks li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: linear-gradient(90deg, rgba(60, 44, 18, 0.6), rgba(18, 14, 10, 0.55));
+  border-left: 3px solid var(--gold-2);
+}
+
+.unlocks li span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.unlocks li strong {
+  font-size: 19px;
+  color: var(--gold-3);
+  font-weight: 700;
+}
+
+.unlocks li em {
+  font-style: normal;
+  font-size: 15px;
+  color: var(--text-2);
+}

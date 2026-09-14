@@ -93,7 +93,7 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
       </div>
       <div className={styles.row}>
         <span className={styles.rowLabel}>{t('debug.playerLevel')}</span>
-        <span style={{ display: 'flex', gap: 10 }}>
+        <span style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {[5, 20, 30].map((level) => (
             <Button
               key={level}
@@ -108,6 +108,14 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
               {t('common.level', { level })}
             </Button>
           ))}
+          <Button
+            size="sm"
+            variant="secondary"
+            data-testid="debug-player-xp"
+            onClick={() => actions.grantPlayerXp(5_000, 'debug')}
+          >
+            {t('debug.playerXp')}
+          </Button>
         </span>
       </div>
       <div className={styles.row}>

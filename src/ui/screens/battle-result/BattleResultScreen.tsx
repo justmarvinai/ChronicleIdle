@@ -42,16 +42,16 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const bigReward =
     campaign.summaries.some((summary) => summary.firstClear || summary.chestThresholds.length > 0) ||
     campaign.requested > 1;
-  const anyLevelUp = campaign.summaries.some(
-    (summary) => summary.levelUps.length > 0 || summary.playerLevelsGained > 0,
-  );
+  // A chronicle level-up brings its own dialog and stinger; this is the champions' cue.
+  const championLevelUp = campaign.summaries.some((summary) => summary.levelUps.length > 0);
+  const chronicleLevelUp = campaign.summaries.some((summary) => summary.playerLevelsGained > 0);
   // The spoils land with a sound, and a level-up with its stinger (AGENTS.md definition of done).
   useEffect(() => {
     if (cued.current || !hasRewards) return;
     cued.current = true;
     playSfx(bigReward ? 'reward.large' : 'reward.medium');
-    if (anyLevelUp) window.setTimeout(() => playSfx('stinger.levelup'), 450);
-  }, [hasRewards, bigReward, anyLevelUp]);
+    if (championLevelUp && !chronicleLevelUp) window.setTimeout(() => playSfx('stinger.levelup'), 450);
+  }, [hasRewards, bigReward, championLevelUp, chronicleLevelUp]);
   if (!outcome || !encounter) {
     return null;
   }

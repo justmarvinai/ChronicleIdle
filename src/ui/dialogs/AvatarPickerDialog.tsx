@@ -11,8 +11,10 @@ import { Dialog } from '@ui/components/Dialog/Dialog';
 import styles from './dialogs.module.css';
 
 /** Any owned champion can be the profile avatar; the Chronicler's likeness is always available. */
-export function AvatarPickerDialog({ onClose }: { onClose: () => void }) {
+export function AvatarPickerDialog() {
   const actions = useGameStore(selectActions);
+  // Opened from the profile: closing or choosing returns there instead of dropping to the game.
+  const back = (): void => actions.openDialog({ name: 'profile' });
   const roster = useGameStore(selectRoster);
   const current = useGameStore(selectAvatarChampionId);
   const owned = useMemo(() => {
@@ -26,12 +28,12 @@ export function AvatarPickerDialog({ onClose }: { onClose: () => void }) {
     const result = actions.setAvatar(id);
     if (result.ok) {
       playSfx('ui.confirm');
-      onClose();
+      back();
     }
   };
 
   return (
-    <Dialog title={t('avatarPicker.title')} onClose={onClose} width={900} testId="dialog-avatar-picker">
+    <Dialog title={t('avatarPicker.title')} onClose={back} width={900} testId="dialog-avatar-picker">
       <p className={styles.hint}>{t('avatarPicker.body')}</p>
       <div className={styles.avatarGrid}>
         <button
