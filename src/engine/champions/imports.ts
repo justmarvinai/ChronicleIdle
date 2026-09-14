@@ -17,7 +17,19 @@ export {
   STAR_MULT,
   STAT_DEVIATION_TOLERANCE,
 } from '@content/balance/stats';
-export { CHAMPION_XP_BASE, CHAMPION_XP_EXPONENT } from '@content/balance/xp';
+export {
+  BREW_MATCH_MULT,
+  BREW_XP,
+  CHAMPION_XP_BASE,
+  CHAMPION_XP_EXPONENT,
+  FOOD_LEVEL_BONUS,
+  FOOD_XP_BASE,
+  RANK_UP_GOLD,
+  RARITY_FOOD_MULT,
+  TAVERN_LEVEL_GOLD_PER_LEVEL,
+} from '@content/balance/xp';
+export { CURRENCY_IDS } from '@content/currencies/types';
+export type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 export {
   ABILITY_SLOTS,
   CHAMPION_IDS,
