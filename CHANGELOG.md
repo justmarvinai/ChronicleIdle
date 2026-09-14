@@ -52,6 +52,15 @@ _Phase 5 (Tavern — Champion Upgrading) starts after the owner's Phase 4 check-
 - The avatar and title pickers return to the profile dialog they were opened from instead of
   dropping the player back to the game.
 
+### Fixed
+
+- **The asset build is reproducible again.** libvorbis stamps every stream with a random serial
+  number, so encoding the same synthesised PCM twice produced different bytes — which changed 110
+  audio entries' content hashes, and with them `MANIFEST_VERSION`, on *every* build. CI's
+  `git diff --exit-code` on the typed manifest had failed on `main` since 0.0.2 because of it.
+  `normaliseOgg` now rewrites each page with a fixed serial and the CRC that follows from it, so
+  two forced builds of the same sources agree byte for byte.
+
 ### Balance
 
 - `LEVEL_ENERGY_REFILL` (on) documents and controls the refill: with it, an auto-repeat batch that
