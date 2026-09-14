@@ -60,6 +60,12 @@ _Phase 5 (Tavern — Champion Upgrading) starts after the owner's Phase 4 check-
   `git diff --exit-code` on the typed manifest had failed on `main` since 0.0.2 because of it.
   `normaliseOgg` now rewrites each page with a fixed serial and the CRC that follows from it, so
   two forced builds of the same sources agree byte for byte.
+- **The e2e console gate ignores Chromium's preload advisories.** With the manifest check fixed,
+  the suite ran on CI for the first time in three phases and tripped on two browser hints about
+  the first-paint preloads (`vite.config.ts` `preloadBootImages`): once the service worker controls
+  the page it serves those images itself, and a slow runner boots past the "used within a few
+  seconds" window. The hint still warms the cache on a first visit, so the warnings join the
+  WebGL driver chatter in `tests/e2e/helpers.ts`.
 
 ### Balance
 

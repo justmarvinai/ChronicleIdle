@@ -1,7 +1,19 @@
 import { expect, type Page } from '@playwright/test';
 
-/** Driver chatter from software-rendered WebGL on CI runners; the game never logs these. */
-const IGNORED = [/^\[\.WebGL-/, /GPU stall/, /Download the React DevTools/];
+/**
+ * Browser chatter the game never logs: software-WebGL driver messages on CI runners, and
+ * Chromium's advisories about the two first-paint preload hints (`vite.config.ts`
+ * `preloadBootImages`). Once the service worker controls the page it serves those images itself,
+ * and on a slow runner the boot takes longer than the "used within a few seconds" window — the
+ * hint still warms the cache on a first visit, which is what it is there for.
+ */
+const IGNORED = [
+  /^\[\.WebGL-/,
+  /GPU stall/,
+  /Download the React DevTools/,
+  /A preload for .* is not used because it is a cross-world service worker resource mismatch/,
+  /was preloaded using link preload but not used within a few seconds/,
+];
 
 /** Collects console errors/warnings and page errors so a test can assert there were none. */
 export function collectConsole(page: Page): string[] {
