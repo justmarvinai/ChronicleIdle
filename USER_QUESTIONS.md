@@ -5,8 +5,23 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-_None. Q28–Q35 were answered "as recommended" on 2026-09-14; the defaults they describe are what
-ships. New questions are added here as they come up._
+**Q36 — Should the Armoury stay a screen of its own once the Forge lands?**
+*Why it matters:* `UI_DESIGN.md` §5.11 describes one Forge screen with three tabs (*Craft*,
+*Inventory*, *Refine*). Phase 6 has no Forge yet, so the racks ship as their own screen, the
+Armoury, reached from the hub's bottom bar. Phase 7 can either fold it in as the *Inventory* tab
+or leave it standing beside the Forge.
+*Default in use:* Phase 7 folds it in — the Armoury becomes the Forge's *Inventory* tab and the
+hub button deep-links to that tab. The screen is a plain route (`{ name: 'armoury' }`) reading
+the store, so becoming a tab costs a wrapper and nothing else.
+
+**Q37 — What should a single piece's "power" be measured against?**
+*Why it matters:* a percentage roll (+8 % ATK) is worth nothing without a champion to apply it
+to, but the racks need one number per piece to sort by.
+*Default in use:* every piece is weighed against one imaginary mid-campaign champion
+(`GEAR_POWER_REFERENCE` in `src/content/balance/gear.ts`) — stable, comparable across slots, and
+independent of who is selected. The alternative is to rank the racks against the champion
+currently on the bench, which reorders the grid as the selection changes; switching means
+passing that champion's stats into `piecePower`.
 
 ## 2. Answered
 

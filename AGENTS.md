@@ -66,7 +66,7 @@ Documentation
 | an ability effect that does not exist | add a new effect type in `src/engine/battle/effects/`, register in the effect resolver, write tests, document in `docs/design/BATTLE.md` §6 | `docs/design/BATTLE.md` |
 | an enemy | `src/content/enemies/<id>.ts` with `defineEnemy` (archetype + stat curve + abilities) | `docs/design/CAMPAIGN.md` §5 |
 | a settlement / stages | `src/content/stages/<nn>_<slug>.ts` with waves, drop table, star rules | `docs/design/CAMPAIGN.md` |
-| a gear set | `src/content/sets/<id>.ts` (2-piece / 4-piece bonus from the set-bonus DSL) | `docs/design/GEAR.md` §5 |
+| a gear set | `src/content/sets/<slug>.ts` with the `set()` helper (2-piece / 4-piece bonus written as a passive), add it to `sets/index.ts`, its two i18n keys and every home settlement's `setPool` | `docs/tech/CONTENT_AUTHORING.md` §5, `docs/design/GEAR.md` §5 |
 | a currency | `src/content/currencies/index.ts` + icon manifest key | `docs/design/ECONOMY.md` §2 |
 | a quest / mission | `src/content/quests/*.ts` or `src/content/missions/chapter_<n>.ts` using goal types | `docs/design/QUESTS_MISSIONS.md` |
 | a banner | `src/content/banners/<id>.ts` with rate table + rotation | `docs/design/SUMMONING.md` |

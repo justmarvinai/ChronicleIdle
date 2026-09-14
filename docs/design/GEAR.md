@@ -137,9 +137,15 @@ Returns materials by rarity: Common 2 Scrap; Uncommon 4 Scrap; Rare 6 Scrap + 2 
 
 ```
 GearInstance {
-  instanceId, slot, setId, rarity, stars, level,
-  main: { stat, value },      // value derived from tables; stored for save simplicity but recomputed on migration
+  instanceId,                 // `gear-<n>` from the save's `counters.gear`
+  slot, setId, rarity, stars, level,
+  mainStat,                   // the identity only: its value follows from star and level (§3)
   subs: [{ stat, value, rolls }],
   equippedTo: championInstanceId | null, locked: boolean, acquiredAt, source
 }
 ```
+
+Nothing derived is stored: the main stat's value, the champion stats a piece grants and the
+power it is worth are all recomputed on read (`CLAUDE.md` §5.5). A champion's worn pieces are
+read from `champion.gear[slot]`, and `piece.equippedTo` names the wearer — the two are kept in
+step by one reducer, so a slot always holds one piece and a piece always has one wearer.

@@ -16,7 +16,7 @@ Related: `CLAUDE.md` §3–5 (stack, layout, rules), `DECISIONS.md` (why), `CONT
 │         │  commands             │ reducers/calculators      │ events             │ events  │
 │         ▼                       ▼                           ▼                    ▼         │
 │  ┌──────────────────────────── engine/ (pure TypeScript) ─────────────────────────────┐   │
-│  │ battle · economy · progression · summon · quests · rng · time · schema              │   │
+│  │ battle · gear · economy · progression · summon · quests · rng · time · schema       │   │
 │  └────────────────────────────────────┬────────────────────────────────────────────────┘   │
 │                                       │ reads                                              │
 │  ┌────────────────────────────────────▼────────────────────────────────────────────────┐   │
@@ -127,7 +127,31 @@ squash-stretch, lunges and projectile flights rather than authored attack animat
 Each is a folder of reducers + calculators + tests. Cross-cutting rules (unlock gating, cost
 checks) are helpers in `engine/progression/unlocks.ts` and `engine/economy/wallet.ts`.
 
-### 3.6 Time
+### 3.6 Gear module
+
+```
+generateGear(input, rng) → GearInstance                  // one roll: main stat, substats, any levels
+levelGear(piece, levels, rng) → { piece, rolls }         // never mutates the piece it is given
+planEquip(champion, pieceId, inventory, roster) → EquipPlan   // what the swap would do; the store does it
+gearedStats(def, instance, worn) → ChampionStats         // what a battle unit is built from
+totalStats / totalPower(def, instance, worn, setById)    // what the screens show (sets included)
+setPassives(worn, setById) → PassiveDef[]                // what the battle adds to the unit
+gearEntries / sortAndFilterGear(entries, view)           // the Armoury's racks
+```
+
+- Two stat functions, deliberately (`engine/gear/champion-stats.ts`): `gearedStats` stops at the
+  pieces, because the battle applies a set's `stat_mod` through the passive engine like any other
+  passive — baking it in here would count it twice. `totalStats` adds them, for the screens,
+  where there is no passive engine to do it.
+- A set is data (`content/sets/*.ts`) written in the champions' own passive shape, so the battle
+  learned only the two mechanics the sets introduced (`lifesteal`, `counterattack`). Complete
+  groups are counted by `setGroups`; a doubled two-piece group grants two copies of its passive,
+  each with its own id, so `oncePerBattle` bookkeeping and the log stay unambiguous.
+- A piece's own "power" is measured against `GEAR_POWER_REFERENCE` (`content/balance/gear.ts`) —
+  a percentage roll is worth nothing without a champion to apply it to — and is a sorting
+  yardstick only.
+
+### 3.7 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
 `FixedClock` (tests). Daily boundary 00:00 local, weekly boundary Monday 00:00 local, by default (`balance/economy.ts`).
@@ -144,27 +168,28 @@ genre; a "battle in progress" flag prevents double-spend on reload).
 Selectors compute derived data (total stats, power, unlocks, quest progress) and are memoised with
 `reselect`-style helpers; React components subscribe to narrow selectors.
 
-### 4.1 Save schema (v5 — target shape)
+### 4.1 Save schema (v6 — target shape)
 
 Shipped so far: v1 (Phase 0: profile, wallet, energy, settings, stats, periods, provisions),
 v2 (Phase 1: `roster`, `counters`, `profile.avatarChampionId`; migration 1→2 drops the old
 `avatarKey`), v3 (Phase 2: `teams` with three presets and the last team per party-size mode;
 `settings.battleSpeed` / `settings.autoBattle`), v4 (Phase 3: `campaign` — stars, best turns, the
-selected pointer and the auto-repeat count) and v5 (Phase 4: `profile.titles` becomes
+selected pointer and the auto-repeat count), v5 (Phase 4: `profile.titles` becomes
 `profile.title`, the one title the chronicle *wears*; which titles are **earned** is derived from
-the play by `@engine/progression/titles`, never stored). Fields below that no phase has shipped
+the play by `@engine/progression/titles`, never stored) and v6 (Phase 6: `inventory` with every
+piece of gear the chronicle owns, and `counters.gear`). Fields below that no phase has shipped
 yet are the planned shape and are added by their phase with a migration and a fixture in
 `tests/fixtures/saves/`.
 
 ```ts
 interface SaveGame {
-  saveVersion: 5; createdAt: number; updatedAt: number; seedRoot: string;
+  saveVersion: 6; createdAt: number; updatedAt: number; seedRoot: string;
   profile: { name: string; level: number; xp: number; avatarChampionId: ChampionId | null; title: string | null };
   wallet: Record<CurrencyId, number>;
   energy: { value: number; lastTickAt: number };
   roster: Record<string, ChampionInstance>;   // instance ids are `<def>-<n>` from `counters.instances`
-  counters: { instances: number };            // monotonic serials so ids never collide after a release
-  gear: Record<string, GearInstance>;
+  counters: { instances: number; gear: number };   // monotonic serials so ids never collide after a release
+  inventory: Record<string, GearInstance>;    // gear ids are `gear-<n>` from `counters.gear`
   teams: Record<'campaign' | 'boss', { presets: string[][]; lastUsed: string[] }>;   // 3 presets per mode (Q25)
   campaign: { stages: Record<string, { stars: 0|1|2|3; clears: number; bestTurns: number | null }>;
               unlocked: { normal: boolean; hard: boolean }; speeds: { x3: boolean; x4: boolean }; starChests: string[] };

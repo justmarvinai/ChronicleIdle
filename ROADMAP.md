@@ -204,6 +204,11 @@ never consumed.
 
 ## Phase 6 — Gear (`0.0.6`)
 
+**Status.** ✅ shipped in 0.0.6 (2026-09-14). See `CHANGELOG.md` for what landed. The inventory
+ships as its own screen, the Armoury; Phase 7 folds it into the Forge as the *Inventory* tab
+(`UI_DESIGN.md` §5.11). Dismantle and refine belong to that phase, so the lock has nothing to
+protect a piece from yet.
+
 **Goal.** Gear items with rarity/stars/level/main/sub stats and 14 sets; drops from campaign;
 equip/unequip with compare; upgrade to +16; inventory management; set bonuses active in battle.
 

@@ -6,7 +6,58 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 6 (Gear) starts after the owner's Phase 5 check-in._
+_Phase 7 (The Forge) starts after the owner's Phase 6 check-in._
+
+## [0.0.6] — 2026-09-14 — Phase 6: Gear
+
+### Added
+
+- **Gear, rolled from the doc's own tables.** One generator serves every source (`GEAR.md`
+  §1–§3): the slot decides whether the main stat is fixed or weighted, the rarity decides how
+  many substats a piece starts with and how large its rolls are, and the star band decides the
+  numbers. A piece never duplicates its main stat or one of its own substats, and ten thousand
+  generated pieces are checked against the tables in a test.
+- **Levels to +16, priced before they are bought.** `cost(star, level) = LEVEL_COST_BASE[star] ×
+  (1 + 0.35 × level)`, bought one level or four at a time with the running total on the button.
+  The rolls land at +4, +8, +12 and +16 — a fourth substat while the piece has fewer than four,
+  otherwise a bigger roll on one it already carries.
+- **The fourteen sets fight.** Set bonuses are passives written in the same DSL champions use
+  (`src/content/sets/*.ts`), so the battle engine learned only what the sets introduced:
+  lifesteal on a hit and a chance to counterattack. Two-piece groups stack — six slots can carry
+  three — and a doubled group grants two copies of its passive, each with its own id. Tests hold
+  the doc's promises: Ember Guard adds its 15 % HP, Retaliation counters about three hits in ten,
+  Lifedrinker heals a share of what it deals, Bulwark shields when a wave opens.
+- **Save v6 and the armoury.** `inventory` holds every piece the chronicle owns and
+  `counters.gear` mints their ids; a chronicle from Phase 5 migrates to an empty armoury, with a
+  frozen `v5.json` fixture guarding the step. Equipping is a swap — a slot holds one piece, a
+  piece has one wearer — and every action is all-or-nothing.
+- **Campaign drops are real pieces.** A run mints its drops from the seed the rest of the run
+  used, from the settlement's own sets (`CAMPAIGN.md` §7) or the wider catalogue, in the star
+  band the settlement allows. The result screen names what dropped, and says when the racks were
+  too full to hold it.
+- **The Armoury** (`UI_DESIGN.md` §5.11, the Inventory tab the Forge grows around in Phase 7):
+  racks with filters for slot, rarity, set, stars, worn and locked, five sorts, a capacity band
+  that warns at 90 % of 400, and one piece on the bench with its main stat, its substats and the
+  rolls behind them, its set, its wearer, the +1/+4 buttons and the lock.
+- **The champion Gear tab** (`UI_DESIGN.md` §5.4): six slots showing what is worn, the set
+  bonuses the build has earned and how many pieces the next group needs, and a picker per slot
+  that answers before it acts — every stat before and after, the power either side, the sets the
+  swap makes or breaks, and a confirmation when the piece is on somebody else.
+- **The Armoury is on the hub's bottom bar**, gated at player level 3 like the rest of the gear
+  feature, and the Chronicle Debug panel can stock the racks with twelve pieces.
+
+### Changed
+
+- **Power includes gear everywhere it is shown** — the Champions index, the Tavern rail, the
+  battle setup and the compare panel all read `totalPower`, which is base stats plus what the
+  pieces carry plus what their complete sets add.
+- The Champion Info tab's second stat column is no longer a placeholder `+0`: it carries what
+  the gear and its sets add on top of the base.
+- Battle units are built from `gearedStats`, deliberately *without* set bonuses: the battle
+  applies those through the passive engine like any other `stat_mod`, so baking them in would
+  count them twice.
+- Every gear set carries its own crest (`icon`), so a piece can be recognised on a card without
+  reading its name.
 
 ## [0.0.5] — 2026-09-14 — Phase 5: The Tavern
 

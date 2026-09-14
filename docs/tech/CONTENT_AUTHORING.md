@@ -197,13 +197,33 @@ fielded and that every authored enemy is fightable somewhere.
 
 ## 5. Gear set
 
+One file per set, `src/content/sets/<slug>.ts`, written with the `set()` helper from
+`src/content/sets/set.ts` and collected in `index.ts`:
+
 ```ts
-export default defineGearSet({
-  id: 'gear_set.retaliation', name: '…', pieces: 4, icon: 'spell.crest-warded-shield',
-  bonus: { trigger: 'onHitTaken', chance: 30, effects: [{ kind: 'counterattack' }] },
-});
+// src/content/sets/retaliation.ts
+import { set } from './set';
+
+export default set({
+  slug: 'retaliation',              // the id becomes `gear_set.retaliation`
+  pieces: 4,                        // 2 or 4; two-piece groups stack, up to three on six slots
+  icon: 'spell.hero_voidguard',     // the set's crest, worn by every piece of it on every card
+  grants: [{ effects: [{ kind: 'counterattack', chance: 30 }] }],
+  homes: [6, 11],                   // settlements whose drops favour it (GEAR.md §5)
+})
 ```
-Two-piece stat sets use `{ trigger: 'static', effects: [{ kind: 'stat_mod', stat: 'hp', percent: 15 }] }`.
+
+- `grants` is one entry per passive the complete group gives; the trigger defaults to `static`.
+- A `stat_mod` is **only** read off a static passive (`BATTLE.md` §6), so a set that changes a
+  stat *and* does something on a trigger needs one entry of each — see Immortal, which grants
+  `+15 % HP` statically and heals on `onTurnStart`.
+- Two-piece stat sets are a single entry:
+  `{ effects: [{ kind: 'stat_mod', stat: 'hp', percent: 15 }] }`.
+- Every `homes` entry must name the set in that settlement's `setPool`, and every pool entry must
+  name a set that exists — `pnpm content:validate` checks both directions, plus the i18n keys
+  (`gear_set.<slug>.name` / `.description` in `src/i18n/en/sets.ts`) and the crest's asset key.
+- A set needing a mechanic the engine does not have yet gets a new effect kind **with tests**
+  first; never an `if (setId === …)` anywhere.
 
 ## 6. Currency
 

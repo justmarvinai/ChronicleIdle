@@ -219,3 +219,30 @@ stage's frame statistics; `pnpm perf:battle` drives it headlessly.
 **Consequences.** New shapes are recipes plus a registry line; the bench measures exactly what
 players see; `bench` encounters and the perf route exist in production builds but are unreachable
 from the game's navigation.
+
+## ADR-026 — Set bonuses are passives, and gear stats are computed twice for two different callers
+**Context.** The fourteen sets (`GEAR.md` §5) change stats, heal on a hit, counterattack, shield a
+wave and stun — most of which the battle engine already does for champion passives. Meanwhile the
+screens have to show a champion's real numbers, including set bonuses, where no battle exists.
+**Decision.** A set is data written in the champions' own `PassiveDef` shape
+(`src/content/sets/*.ts`), and the engine learned only the two mechanics it was missing
+(`lifesteal`, `counterattack`); `setPassives(worn, setById)` hands a unit its sets' passives at
+battle creation, one copy per complete group with its own id. Stats are therefore computed two
+ways on purpose: `gearedStats` (base + the pieces) builds battle units, because the battle applies
+each set's `stat_mod` through the passive engine like any other passive, and `totalStats`
+(+ set bonuses) is what the screens show.
+**Consequences.** A new set is content, not code, as long as its mechanic exists; a set needing a
+new mechanic adds an effect kind with tests, never a special case. The two stat functions must
+stay in step — the doc comment on each says which caller it is for, and `gear-battle.test.ts`
+proves a set's stat bonus lands exactly once in a real fight.
+
+## ADR-027 — A piece's power is measured against a fixed reference champion
+**Context.** The Armoury sorts by power, but half of what gear carries is a percentage of a
+champion's base stats. A piece has no power of its own.
+**Decision.** `piecePower` applies the piece to `GEAR_POWER_REFERENCE`
+(`src/content/balance/gear.ts`) — one imaginary mid-campaign champion — and reports the
+difference. It is a yardstick for ordering an armoury, never a promise about a particular
+champion; the compare panel, which does have a champion, uses `totalPower` instead.
+**Consequences.** The racks keep a stable order as the selection changes, and flat and percentage
+rolls are comparable. The reference is a balance number with a comment, so re-weighting how
+percentage rolls look is a one-line change (`USER_QUESTIONS.md` Q37).

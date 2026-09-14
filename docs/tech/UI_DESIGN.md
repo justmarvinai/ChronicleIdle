@@ -141,8 +141,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Layout: full-bleed `bg8` (night harbour town) with hotspots placed on real buildings; top bar
   (profile chip left: avatar `frame-round-sm`, name, level, XP bar, power; currencies centre-right:
   Energy, Gold, Gems, +; settings right); left edge: Idle Chest at the docks (chest icon with fill
-  ring and timer); bottom bar: **Missions**, **Quests**, **Index**, **Champions**, primary
-  **BATTLE** (opens Game Modes). Right column: Daily Boss / Weekly Boss gate cards with timers.
+  ring and timer); bottom bar: **Missions**, **Quests**, **Armoury**, **Index**, **Champions**,
+  primary **BATTLE** (opens Game Modes). Right column: Daily Boss / Weekly Boss gate cards with timers.
 - Hotspots (label banner `banner-plain` + glow ring + dot): Tavern, Forge, Portal (statue replaced
   with a violet gate overlay), Chronicler's Hall (missions), Campaign gate (world map), Champions
   barracks, Boss gate.
@@ -161,8 +161,16 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 ### 5.4 Champion detail tabs
 - Reference: `champions_gearing_info_screen_alternative_2.png` (right attribute list + gear column),
   `champions_gearing_info_screen.png` (gear grid + total stats).
-- **Info**: as 5.3. **Gear**: 2×3 slot grid (`Slot`) to the right of the portrait; click → gear
-  list filtered to slot with compare panel; set bonus summary with active/inactive rows.
+- **Info**: as 5.3, with a second stat column carrying what the gear and its complete sets add.
+  **Gear**: the power with everything worn, then a 3×2 slot grid (`Slot`) — each slot shows the
+  piece's crest, its `+level` badge, its main stat and its stars, with *Take off* under it — then
+  the set-bonus rows (a complete group shows how many copies it grants, an incomplete one how
+  many pieces it still needs), then *Open the Armoury*. A slot opens the **gear picker**
+  (`dialog-gear-picker`): the racks filtered to that slot on the left, and a compare panel on the
+  right that answers before anything is spent — every stat before → after (coloured by the
+  delta), the power either side, and the set groups the swap would make or break. A piece worn by
+  another champion turns the button into *Take from <name>*, and the press asks once before it
+  strips them.
   **Abilities**: A1–A4 rows (`AbilityIcon`, name, description with live numbers, cooldown,
   upgrade dots), passive, aura; *Upgrade* jumps to Tavern skills with this champion selected.
 
@@ -245,6 +253,17 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   anvil scene with hammer animation and reveal), *Inventory* (grid of `GearCard`, filters, sort,
   multi-select, *Dismantle*, *Lock*), *Refine* (piece picker, sacrifice picker, cores, result
   preview).
+- **The Armoury ships first, on its own** (Phase 6, `screen-armoury`, reached from the hub's
+  bottom bar and from the champion Gear tab): the *Inventory* tab above, standing alone until
+  Phase 7 gives it the Forge's other two tabs. Backdrop `bg5` — the armory interior. Left: the
+  filter bar (sort + direction, set and minimum-star dropdowns, one-tap chips for slot, rarity,
+  worn/spare and locked, a clear link and a "shown of total" count) over a virtualised
+  `GearCard` grid, with the capacity band pinned to the bottom (`held / 400`, amber warning at
+  90 %, a red band and the overflow note when it is full). Right: the bench — the piece's crest
+  in a rarity-lit frame, its name, slot, rarity, `+level` and stars, its power, its main stat,
+  its substats with the roll count behind each, its set and what the set gives, who wears it (a
+  link to that champion's Gear tab) and when it was found; beneath, **+1** and **+4** with the
+  gold each would cost, then *Lock* and *Take it off*.
 
 ### 5.12 Summoning Portal
 - Reference: `summoning_screen.png` (rail of shards + centre ritual + right tabs),
