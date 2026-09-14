@@ -5,77 +5,8 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-### Q28 — Re-encode the two music tracks?
-**Why it matters.** `outside_combat.mp3` (6.8 MB) and `combat_campaign_depths_arena.mp3`
-(8.1 MB) are streamed on demand, so they never block the game, but they are the two biggest
-downloads by far (Lighthouse "total byte weight"). Re-encoding them in-house to OGG/Opus at
-~128 kbps would cut them to roughly 2–3 MB each with no audible change on laptop speakers.
-**Default until answered.** The originals ship untouched (music quality is the owner's call);
-the pipeline gains the re-encode step in Phase 15 (polish) if you say yes.
-
-### Q29 — Should an enemy's level scale its stats?
-**Why it matters.** `BATTLE.md` §4.5 scales enemies by difficulty and stage index only; the
-level shown on their plates (`enemyLevel`) is presentation, and the result screen's
-"under-levelled" hint compares those levels with your champions'. Making level a real multiplier
-would double up with the stage growth and change every campaign number.
-**Default until answered.** Level stays cosmetic. Campaign stages (Phase 3) will set
-`enemyLevel` to track the stage index so the read stays honest.
-
-### Q30 — Frame-budget sign-off on real hardware
-**Why it matters.** The remote build environment has no GPU: the battle perf bench runs on
-SwiftShader there (roughly 2–3 frames per second at 1080p), so its numbers cannot prove or
-disprove the 16 ms p95 budget of `CLAUDE.md` §5.6 on an Iris Xe class iGPU.
-**Default until answered.** Phase 2 ships with the bench in place; the budget is verified on
-your laptop with `pnpm build && pnpm preview` then `pnpm perf:battle` (the report prints as a
-Markdown table). If p95 lands above 16 ms there, the FX density and ember count are the first
-knobs (`render/battle/stage.ts` `embers`, `fx/registry.ts` scales) and the fix ships as a `0.0.2.x`
-patch.
-
-### Q31 — Is the retuned campaign curve the difficulty you want?
-**Why it matters.** The Phase 2 enemy ladder could not be won (the linear stage term reached ×7.5
-by the last stage, ×49 with Hard's multiplier, against a roster that can only grow ~×3 before gear
-and rank-up exist), so Phase 3 retuned it: a quadratic stage term ×1.00 → ×4.80, difficulty steps
-×1 / ×2.5 / ×6, and archetype bases at 65 % of their old values (`BATTLE.md` §4.5,
-`CAMPAIGN.md` §5). Measured with `pnpm sim:balance`: a new save's roster at level 10 clears Intro
-settlements 1–4, grinds 5–6 and stalls at 7–8; a mid-Epic roster clears Intro and stalls in
-Normal's second half; the modelled endgame roster clears Hard with three stars still a fight.
-**Default until answered.** Those numbers ship. They are four constants — `STAGE_GROWTH_TOP`,
-`STAGE_GROWTH_POWER`, `DIFFICULTY_MULT` and the archetype bases — so "harder" or "gentler" is one
-edit plus `pnpm sim:balance --strict`, and the bands live in `tools/sim/teams.ts`.
-
-### Q32 — Should a stand's XP level champions on the spot?
-**Why it matters.** `ECONOMY.md` §3.1 lists battles as a champion-XP source and the Tavern
-(Phase 5) as the place to *spend* brews and food. Phase 3 therefore applies a win's XP to the
-champions that fought and to the chronicle, levelling while the bar fills — otherwise the campaign
-would be unplayable until Phase 5, since the difficulty curve assumes levelling. The level-up
-*moment* (the full energy refill, the per-level rewards, the celebration) is still Phase 4's.
-**Default until answered.** Battle XP levels champions and the chronicle immediately; the Tavern
-will add brews and food on top of the same curve.
-
-### Q33 — Auto-repeat opens at chronicle level 5; is that too far?
-**Why it matters.** `CAMPAIGN.md` §9 gates ×10 at level 5, ×25 at 20 and ×50 at 30. With the
-campaign as the only XP source in 0.0.3, level 5 is roughly fifty Intro runs; quests, missions and
-the idle chest (Phases 9, 12, 13) will shorten that a lot.
-**Default until answered.** The gates stay as designed. `AUTO_REPEAT_TIERS` and
-`FEATURE_UNLOCK_LEVEL` are one edit each if you want ×10 from the start.
-
-### Q34 — Should a title be worn, and is one at a time enough?
-**Why it matters.** `ECONOMY.md` §4 listed titles as something the profile *shows*. Phase 4 makes
-which titles are earned derived from the play (never stored, CLAUDE.md §5.5) and adds one stored
-choice: the title the chronicle wears, shown beside the name in the top-bar chip and in the
-profile. Anything more — several at once, a frame or colour per title, titles as a reward the
-summon or the shop can grant — changes what a title *is*.
-**Default until answered.** One worn title, chosen from those earned, or none. `profile.title` in
-the save is the only stored part; adding a second slot later is a migration and a picker change.
-
-### Q35 — A level-up refills energy by the new cap; should it also interrupt a batch?
-**Why it matters.** Q15's refill is generous on purpose: early levels hand out 70–150 energy at a
-run cost of 4, so an auto-repeat batch that levels the chronicle keeps going far past where its
-energy would have run out. That is the intended feel (a level-up should change the evening), but
-it does mean a ×50 batch on a cheap stand can run much longer than the player expected.
-**Default until answered.** The refill lands mid-batch and the batch continues; the celebration
-waits for the screen after the fight. `LEVEL_ENERGY_REFILL` in `balance/levels.ts` turns the
-refill off in one edit if a batch should stop at the energy it started with.
+_None. Q28–Q35 were answered "as recommended" on 2026-09-14; the defaults they describe are what
+ships. New questions are added here as they come up._
 
 ## 2. Answered
 
@@ -108,3 +39,11 @@ refill off in one edit if a batch should stop at the energy it started with.
 | Q25 | Team presets per mode | Yes, as recommended | 3 campaign presets + 3 boss presets with "last used" per mode; save schema `teams` keyed by mode (`ARCHITECTURE.md` §4.1, `UI_DESIGN.md` §5.8) |
 | Q26 | Stage energy costs under the generous model | As recommended | Costs stay 4–10 for EA-0.1; re-checked by the Phase 15 30-day economy simulation |
 | Q27 | Fullscreen on first launch | As recommended, but never force fullscreen | Offered once on the first title click (setting, default on); declining or exiting is remembered, never re-prompted, fully playable windowed (`UI_DESIGN.md` §2.1, `ARCHITECTURE.md` §11, ADR-018) |
+| Q28 | Re-encode the two music tracks | As recommended | The originals ship untouched; the OGG/Opus re-encode stays a Phase 15 (polish) option, one pipeline step away |
+| Q29 | Should an enemy's level scale its stats | As recommended | Enemy level stays cosmetic; stage index and difficulty do the scaling (`BATTLE.md` §4.5, `CAMPAIGN.md` §5) |
+| Q30 | Frame-budget sign-off on real hardware | As recommended | The bench ships and the budget stands on its structure; `pnpm build && pnpm preview` then `pnpm perf:battle` is the one-command check whenever the owner is at an Iris Xe class machine. FX density and ember count are the first knobs if p95 lands high |
+| Q31 | Is the retuned campaign curve right | As recommended | The Phase 3 ladder ships: `STAGE_GROWTH_TOP` 4.8, `STAGE_GROWTH_POWER` 2, `DIFFICULTY_MULT` ×1/×2.5/×6, archetype bases at 65 %; `pnpm sim:balance --strict` guards the bands |
+| Q32 | Should a stand's XP level champions on the spot | As recommended | Battle XP levels champions and the chronicle immediately; the Tavern (Phase 5) adds brews and food on top of the same curve |
+| Q33 | Auto-repeat opens at chronicle level 5 | As recommended | The gates stay as designed: ×10 at 5, ×25 at 20, ×50 at 30 (`AUTO_REPEAT_TIERS`, `FEATURE_UNLOCK_LEVEL`) |
+| Q34 | Should a title be worn, one at a time | As recommended | One worn title chosen from those earned, or none; `profile.title` is the only stored part (save v5), the earned set stays derived |
+| Q35 | Should a level-up refill interrupt a batch | As recommended | The refill lands mid-batch and the batch runs on; the celebration waits for the screen after the fight (`LEVEL_ENERGY_REFILL`) |
