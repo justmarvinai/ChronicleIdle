@@ -140,7 +140,12 @@ export const FIRST_CLEAR: Readonly<Record<Difficulty, { stage: RewardBundle; bos
   },
 };
 
-/** Star chests at 10 / 20 / 30 stars in a settlement, per difficulty (CAMPAIGN.md §7). */
+/**
+ * Star chests at 10 / 20 / 30 stars in a settlement, per difficulty (CAMPAIGN.md §7). The
+ * 20-star chest also carries Glyph Sigils: their designed homes are the weekly boss, the
+ * missions and the weekly quests (`ECONOMY.md` §2), none of which exist yet, and a Forge whose
+ * set chooser can never be used is not a finished Forge (`USER_QUESTIONS.md` Q38).
+ */
 export const STAR_CHESTS: Readonly<Record<Difficulty, readonly RewardBundle[]>> = {
   intro: [
     {
@@ -149,7 +154,13 @@ export const STAR_CHESTS: Readonly<Record<Difficulty, readonly RewardBundle[]>> 
         { currency: 'brew_universal', amount: 2 },
       ],
     },
-    { gems: 30, currencies: [{ currency: 'shard_faded', amount: 1 }] },
+    {
+      gems: 30,
+      currencies: [
+        { currency: 'shard_faded', amount: 1 },
+        { currency: 'mat_glyph_sigil', amount: 1 },
+      ],
+    },
     {
       currencies: [
         { currency: 'shard_ancient', amount: 1 },
@@ -164,7 +175,13 @@ export const STAR_CHESTS: Readonly<Record<Difficulty, readonly RewardBundle[]>> 
         { currency: 'brew_universal', amount: 4 },
       ],
     },
-    { gems: 60, currencies: [{ currency: 'shard_faded', amount: 2 }] },
+    {
+      gems: 60,
+      currencies: [
+        { currency: 'shard_faded', amount: 2 },
+        { currency: 'mat_glyph_sigil', amount: 2 },
+      ],
+    },
     {
       currencies: [
         { currency: 'shard_sacred', amount: 1 },
@@ -179,7 +196,13 @@ export const STAR_CHESTS: Readonly<Record<Difficulty, readonly RewardBundle[]>> 
         { currency: 'brew_universal', amount: 8 },
       ],
     },
-    { gems: 100, currencies: [{ currency: 'shard_ancient', amount: 1 }] },
+    {
+      gems: 100,
+      currencies: [
+        { currency: 'shard_ancient', amount: 1 },
+        { currency: 'mat_glyph_sigil', amount: 3 },
+      ],
+    },
     {
       currencies: [
         { currency: 'shard_primordial', amount: 1 },

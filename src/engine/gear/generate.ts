@@ -14,9 +14,10 @@ import {
   SUBSTAT_ROLL_LEVELS,
   GEAR_STATS,
   starBand,
+  type GearSource,
   type GearStat,
 } from '@content/balance/gear';
-import type { GearSlot, ObtainSource, Rarity } from '@content/champions/types';
+import type { GearSlot, Rarity } from '@content/champions/types';
 import { fail, ok, type Result } from '@engine/errors';
 import type { Rng } from '@engine/rng/rng';
 import { clampGearLevel, clampGearStars } from './stats';
@@ -51,7 +52,7 @@ export interface GenerateInput {
   setId: string;
   rarity: Rarity;
   stars: number;
-  source: ObtainSource;
+  source: GearSource;
   now: number;
   /** Pieces start at +0 unless a caller (a test, a debug grant) asks otherwise. */
   level?: number;

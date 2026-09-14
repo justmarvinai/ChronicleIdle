@@ -7,6 +7,7 @@
  */
 import {
   DROP_RARITY_WEIGHTS,
+  type GearSource,
   INVENTORY_CAPACITY,
   INVENTORY_OVERFLOW,
   LEVEL_COST_BASE,
@@ -14,7 +15,7 @@ import {
   dropStarRange,
 } from '@content/balance/gear';
 import type { CurrencyAmount } from '@content/currencies/types';
-import type { GearSlot, ObtainSource, Rarity } from '@content/champions/types';
+import type { GearSlot, Rarity } from '@content/champions/types';
 import { content } from '@content/registry';
 import { GEAR_SLOTS } from '@content/champions/types';
 import { spend, type CurrencyChange } from '@engine/economy/wallet';
@@ -160,7 +161,7 @@ export interface DropInput {
   settlementIndex: number;
   /** The drop rolled from the settlement's own sets rather than the whole catalogue. */
   fromSetPool: boolean;
-  source: ObtainSource;
+  source: GearSource;
   now: number;
   rng: Rng;
 }

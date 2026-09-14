@@ -113,7 +113,9 @@ reveal). Recipe = slot + tier (+ optional Glyph Sigil to pick a set from the tie
 | II — Ember | 15 Ember Alloy + 10 Arcane Dust | 12,000 | R 45 / E 40 / L 15 | 3–5★ (30/45/25) | any set |
 | III — Star | 10 Starsteel + 20 Arcane Dust | 60,000 | E 40 / L 50 / M 10 | 5–6★ (60/40) | any set |
 
-Glyph Sigil: +1 per craft to choose the set. Crafted gear rolls exactly like a drop.
+Glyph Sigil: +1 per craft to choose the set. Crafted gear rolls exactly like a drop. Until the
+weekly boss and the quests exist, the Sigil's supply is the 20-star chest of each difficulty
+(`ECONOMY.md` §2, `USER_QUESTIONS.md` Q38).
 
 ### Dismantle
 

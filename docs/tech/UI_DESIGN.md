@@ -247,15 +247,18 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   out of energy). Defeat: red vignette, enemy HP left, tips, *Team*, *Emberhold* — and the energy
   stays spent.
 
-### 5.11 Forge & Inventory
+### 5.11 Forge & Armoury
 - Reference: `tavern` layout language + right column pattern.
-- Tabs: *Craft* (slot picker, tier cards with material costs, set chooser using Glyph Sigil,
-  anvil scene with hammer animation and reveal), *Inventory* (grid of `GearCard`, filters, sort,
-  multi-select, *Dismantle*, *Lock*), *Refine* (piece picker, sacrifice picker, cores, result
-  preview).
-- **The Armoury ships first, on its own** (Phase 6, `screen-armoury`, reached from the hub's
-  bottom bar and from the champion Gear tab): the *Inventory* tab above, standing alone until
-  Phase 7 gives it the Forge's other two tabs. Backdrop `bg5` — the armory interior. Left: the
+- **Two screens, by the owner's decision** (Q36): the Armoury keeps its own route and the Forge is
+  *Craft* / *Dismantle* / *Refine*. Each links to the other, so a full rack is two clicks from the
+  hammer either way.
+- Forge tabs: *Craft* (slot picker, three tier cards with material costs, set chooser using a
+  Glyph Sigil, anvil scene with hammer animation and reveal), *Dismantle* (grid of `GearCard`,
+  multi-select with the quick filters of `GEAR.md` §6, a running yield preview, *Dismantle*),
+  *Refine* (piece picker, sacrifice picker of the same slot and star, cores and gold, result
+  preview showing the re-based main stat).
+- **The Armoury** (`screen-armoury`, reached from the hub's bottom bar, the champion Gear tab and
+  the Forge): the racks and the bench. Backdrop `bg5` — the armory interior. Left: the
   filter bar (sort + direction, set and minimum-star dropdowns, one-tap chips for slot, rarity,
   worn/spare and locked, a clear link and a "shown of total" count) over a virtualised
   `GearCard` grid, with the capacity band pinned to the bottom (`held / 400`, amber warning at

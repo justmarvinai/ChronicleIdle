@@ -18,11 +18,6 @@ export const gear = {
   'gear.roll': '1 roll',
   'gear.source.campaign_drop': 'Fallen in the campaign',
   'gear.source.craft': 'Struck at the Forge',
-  'gear.source.starter': 'From the first chronicle',
-  'gear.source.summon': 'Drawn at the portal',
-  'gear.source.quest': 'Paid for a quest',
-  'gear.source.event': 'Won at an event',
-  'gear.source.debug': 'Conjured by the Chronicler',
 
   'armoury.title': 'The Armoury',
   'armoury.subtitle': 'Everything the campaign left on the field.',

@@ -5,23 +5,14 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-**Q36 — Should the Armoury stay a screen of its own once the Forge lands?**
-*Why it matters:* `UI_DESIGN.md` §5.11 describes one Forge screen with three tabs (*Craft*,
-*Inventory*, *Refine*). Phase 6 has no Forge yet, so the racks ship as their own screen, the
-Armoury, reached from the hub's bottom bar. Phase 7 can either fold it in as the *Inventory* tab
-or leave it standing beside the Forge.
-*Default in use:* Phase 7 folds it in — the Armoury becomes the Forge's *Inventory* tab and the
-hub button deep-links to that tab. The screen is a plain route (`{ name: 'armoury' }`) reading
-the store, so becoming a tab costs a wrapper and nothing else.
-
-**Q37 — What should a single piece's "power" be measured against?**
-*Why it matters:* a percentage roll (+8 % ATK) is worth nothing without a champion to apply it
-to, but the racks need one number per piece to sort by.
-*Default in use:* every piece is weighed against one imaginary mid-campaign champion
-(`GEAR_POWER_REFERENCE` in `src/content/balance/gear.ts`) — stable, comparable across slots, and
-independent of who is selected. The alternative is to rank the racks against the champion
-currently on the bench, which reorders the grid as the selection changes; switching means
-passing that champion's stats into `piecePower`.
+**Q38 — Where should Glyph Sigils come from until the weekly boss and the quests exist?**
+*Why it matters:* a Sigil is what lets a craft name its set (`GEAR.md` §6). Its designed homes —
+the weekly boss, the Chronicler's Path and the weekly quests (`ECONOMY.md` §2) — are Phases 9, 12
+and 13, so without an interim source the Forge ships with a chooser nobody can use.
+*Default in use:* the 20-star chest of each difficulty carries Sigils (Intro 1, Normal 2, Hard 3)
+on top of what it already gave. It is a slow supply that rewards clearing a settlement properly,
+and the later sources replace it rather than stack with it — one line in
+`STAR_CHESTS` (`src/content/balance/campaign.ts`) to take back out.
 
 ## 2. Answered
 
@@ -62,3 +53,5 @@ passing that champion's stats into `piecePower`.
 | Q33 | Auto-repeat opens at chronicle level 5 | As recommended | The gates stay as designed: ×10 at 5, ×25 at 20, ×50 at 30 (`AUTO_REPEAT_TIERS`, `FEATURE_UNLOCK_LEVEL`) |
 | Q34 | Should a title be worn, one at a time | As recommended | One worn title chosen from those earned, or none; `profile.title` is the only stored part (save v5), the earned set stays derived |
 | Q35 | Should a level-up refill interrupt a batch | As recommended | The refill lands mid-batch and the batch runs on; the celebration waits for the screen after the fight (`LEVEL_ENERGY_REFILL`) |
+| Q36 | Should the Armoury stay a screen of its own once the Forge lands | Keep the extra Armoury screen for now | The Armoury stays its own route; the Forge (Phase 7) is *Craft* / *Dismantle* / *Refine* and links to it rather than swallowing it (`UI_DESIGN.md` §5.11) |
+| Q37 | What a single piece's power is measured against | As recommended | The fixed reference champion stays: `GEAR_POWER_REFERENCE` keeps the racks' order stable as the selection changes (ADR-027) |

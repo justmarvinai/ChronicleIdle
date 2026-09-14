@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { DIFFICULTY_MULT, type Difficulty } from '@content/balance/battle';
 import { SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
 import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES, RARITIES } from '@content/champions/types';
+import { GEAR_SOURCES } from '@content/balance/gear';
 import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@content/balance/gear';
 import { CURRENCY_IDS } from '@content/currencies/types';
 
@@ -104,7 +105,7 @@ export const gearInstanceSchema = z.object({
   equippedTo: z.string().nullable(),
   locked: z.boolean(),
   acquiredAt: z.number().int().nonnegative(),
-  source: z.enum(OBTAIN_SOURCES),
+  source: z.enum(GEAR_SOURCES),
 });
 
 export const saveSchemaV6 = z.object({

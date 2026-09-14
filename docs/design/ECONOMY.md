@@ -31,7 +31,7 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | `mat_starsteel` | Starsteel | spell-icons/earth-star-medallion | Hard campaign, weekly boss, dismantle L/M | Forge III |
 | `mat_arcane_dust` | Arcane Dust | spell-icons/rune-astral-burst | everywhere in small amounts | all Forge tiers |
 | `mat_refining_core` | Refining Core | spell-icons/earth-geode-crystal | star chests, bosses, dismantle | refine |
-| `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | weekly boss, missions, weekly quests | choose set when crafting |
+| `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | 20-star chests (interim, Q38); later weekly boss, missions, weekly quests | choose set when crafting |
 
 24 wallet entries. Quest points and mission progress are tracked separately (not wallet items).
 

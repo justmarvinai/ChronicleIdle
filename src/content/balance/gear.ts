@@ -36,6 +36,14 @@ export const PERCENT_GEAR_STATS: ReadonlySet<GearStat> = new Set<GearStat>([
   'acc',
 ]);
 
+/**
+ * Where a piece came from. Champions have their own `OBTAIN_SOURCES`; the two vocabularies are
+ * deliberately separate, because a champion is never struck at the Forge and a piece is never
+ * summoned. Every value a save has ever stored must stay in this list.
+ */
+export const GEAR_SOURCES = ['campaign_drop', 'craft'] as const;
+export type GearSource = (typeof GEAR_SOURCES)[number];
+
 /** Gear levels run 0 → 16 (GEAR.md §3). */
 export const GEAR_MAX_LEVEL = 16;
 /** Levels that roll a substat: a new one while the piece has fewer than four, else an upgrade. */

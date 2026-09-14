@@ -205,9 +205,8 @@ never consumed.
 ## Phase 6 — Gear (`0.0.6`)
 
 **Status.** ✅ shipped in 0.0.6 (2026-09-14). See `CHANGELOG.md` for what landed. The inventory
-ships as its own screen, the Armoury; Phase 7 folds it into the Forge as the *Inventory* tab
-(`UI_DESIGN.md` §5.11). Dismantle and refine belong to that phase, so the lock has nothing to
-protect a piece from yet.
+ships as its own screen, the Armoury, and stays one by the owner's answer to Q36; Phase 7's Forge
+is *Craft* / *Dismantle* / *Refine* beside it (`UI_DESIGN.md` §5.11).
 
 **Goal.** Gear items with rarity/stars/level/main/sub stats and 14 sets; drops from campaign;
 equip/unequip with compare; upgrade to +16; inventory management; set bonuses active in battle.
@@ -223,6 +222,11 @@ tests (e.g. Retaliation counters ~30 %); equip/unequip persists; capacity overfl
 
 **Goal.** Craft (three tiers, set choice via Glyph Sigil), dismantle (multi-select), refine
 (star-up), with the Forge screen and animations; materials wired into campaign drops.
+
+**Scope note.** The Armoury stays its own screen (owner's answer Q36), so the Forge is three tabs
+— *Craft*, *Dismantle*, *Refine* — and the two screens link to each other. Refine's own gate is
+player level 18 (`gear_refine`), above the Forge's level 8, so a fresh chronicle sees the tab
+locked with its level named.
 
 **Acceptance criteria**: recipes consume exactly the documented materials; rarity/star weights
 statistically correct; refine keeps substats and re-bases the main stat; dismantle yields match.

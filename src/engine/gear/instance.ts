@@ -3,8 +3,8 @@
  * for it — the set, the rarity, the stars, the level and its stats — and who wears it; every
  * derived number (the main stat's current value, the power it adds) is recomputed on read.
  */
-import type { GearStat } from '@content/balance/gear';
-import type { GearSlot, ObtainSource } from '@content/champions/types';
+import type { GearSource, GearStat } from '@content/balance/gear';
+import type { GearSlot } from '@content/champions/types';
 import type { Rarity } from '@content/champions/types';
 
 export interface GearSubStat {
@@ -29,7 +29,7 @@ export interface GearInstance {
   equippedTo: string | null;
   locked: boolean;
   acquiredAt: number;
-  source: ObtainSource;
+  source: GearSource;
 }
 
 export type Inventory = Record<string, GearInstance>;
