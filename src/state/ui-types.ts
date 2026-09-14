@@ -36,6 +36,8 @@ export type DialogRoute =
   | { name: 'reset-confirm' }
   | { name: 'welcome-back' }
   | { name: 'avatar-picker' }
+  | { name: 'level-up' }
+  | { name: 'title-picker' }
   | { name: 'battle-pause' }
   | { name: 'debug' };
 

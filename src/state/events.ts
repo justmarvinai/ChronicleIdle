@@ -15,6 +15,8 @@ export type DomainEvent =
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }
   | { type: 'profile.renamed'; name: string }
+  | { type: 'profile.titleChanged'; title: string | null }
+  | { type: 'player.leveled'; level: number; levelsGained: number; unlocks: readonly string[] }
   | { type: 'currency.changed'; changes: CurrencyChange[]; reason: string }
   | { type: 'energy.changed'; delta: number; total: number }
   | { type: 'settings.changed' }

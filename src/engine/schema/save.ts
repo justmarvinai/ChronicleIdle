@@ -1,5 +1,5 @@
 /**
- * Save-game schema, version 4 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
+ * Save-game schema, version 5 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
  * current phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
@@ -8,7 +8,7 @@ import { SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campai
 import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES } from '@content/champions/types';
 import { CURRENCY_IDS } from '@content/currencies/types';
 
-export const SAVE_VERSION = 4 as const;
+export const SAVE_VERSION = 5 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -82,8 +82,8 @@ export const campaignSchema = z.object({
   autoRepeat: z.number().int().min(1).max(50),
 });
 
-export const saveSchemaV4 = z.object({
-  saveVersion: z.literal(4),
+export const saveSchemaV5 = z.object({
+  saveVersion: z.literal(5),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -94,7 +94,12 @@ export const saveSchemaV4 = z.object({
     xp: z.number().int().min(0),
     /** Champion whose avatar the profile shows; null until one is chosen. */
     avatarChampionId: z.enum(CHAMPION_IDS).nullable(),
-    titles: z.array(z.string()),
+    /**
+     * The title shown beside the name, or null for none. Which titles are *earned* is derived
+     * from the play (`@engine/progression/titles`) and never stored (CLAUDE.md §5.5); only the
+     * player's choice of which one to wear lives here.
+     */
+    title: z.string().nullable(),
   }),
   wallet: walletSchema,
   energy: z.object({ value: z.number().min(0), lastTickAt: z.number().int().nonnegative() }),
@@ -112,13 +117,13 @@ export const saveSchemaV4 = z.object({
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV4 = z.infer<typeof saveSchemaV4>;
-export type SaveGame = SaveGameV4;
+export type SaveGameV5 = z.infer<typeof saveSchemaV5>;
+export type SaveGame = SaveGameV5;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV4;
+export const saveSchema = saveSchemaV5;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

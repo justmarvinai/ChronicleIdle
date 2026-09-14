@@ -4,6 +4,7 @@ import { nextStage } from '@engine/campaign/progress';
 import { createNewGame } from '@engine/save/new-game';
 import { SAVE_VERSION } from '@engine/schema/save';
 import { migrateSave } from './migrations';
+import { titlesOf } from './progression';
 
 describe('migrateSave', () => {
   const save = createNewGame({ name: 'Test', now: 1_700_000_000_000, seedRoot: 's' });
@@ -34,7 +35,7 @@ describe('migrateSave', () => {
       level: 1,
       xp: 0,
       avatarChampionId: null,
-      titles: [],
+      title: null,
     });
     expect(result.save.wallet.gems).toBe(150);
     expect(result.save.wallet.gold).toBe(3_275);
@@ -98,6 +99,33 @@ describe('migrateSave', () => {
     // …and the campaign starts from nothing, pointed at its first stage.
     expect(result.save.campaign).toEqual({ stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 });
     expect(nextStage(result.save.campaign)).toEqual({ settlement: 1, stage: 1, difficulty: 'intro' });
+  });
+
+  it('upgrades a Phase 3 (version 4) chronicle, dropping the stored titles', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v4.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(4);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // The campaign, the roster and the chronicle's standing all survive…
+    expect(result.save.profile.level).toBe(7);
+    expect(result.save.profile.xp).toBe(620);
+    expect(result.save.campaign.autoRepeat).toBe(5);
+    expect(result.save.campaign.selected).toEqual({ settlement: 2, stage: 5, difficulty: 'intro' });
+    expect(result.save.campaign.stars['stage.01.01|intro']).toBe(3);
+    expect(Object.keys(result.save.campaign.stars)).toHaveLength(14);
+    expect(result.save.campaign.bestTurns['stage.02.04|intro']).toBe(22);
+    expect(nextStage(result.save.campaign)).toEqual({ settlement: 2, stage: 5, difficulty: 'intro' });
+    expect(result.save.stats['campaign.cleared']).toBe(19);
+    expect(result.save.wallet.gold).toBe(18_450);
+    expect(result.save.energy).toEqual({ value: 74, lastTickAt: 1_789_389_960_000 });
+    // …but the titles it used to store are gone: they are derived from the play now.
+    expect('titles' in result.save.profile).toBe(false);
+    expect(result.save.profile.title).toBeNull();
+    expect(titlesOf(result.save)).toContain('title.chronicler');
   });
 
   it('runs migration steps in order', () => {

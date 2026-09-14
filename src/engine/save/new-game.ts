@@ -26,7 +26,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     createdAt: now,
     updatedAt: now,
     seedRoot,
-    profile: { name: name.trim(), level: 1, xp: 0, avatarChampionId: null, titles: [] },
+    profile: { name: name.trim(), level: 1, xp: 0, avatarChampionId: null, title: null },
     wallet: walletWith(STARTING_WALLET),
     energy: { value: energyCap(1), lastTickAt: now },
     provisionsClaimed: [],

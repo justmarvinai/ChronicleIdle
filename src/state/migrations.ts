@@ -53,6 +53,17 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       campaign: { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 },
     }),
   },
+  {
+    // Phase 4: titles are earned by play and derived on read, so the stored list goes; what stays
+    // is the one the chronicle wears, and a returning chronicle wears none until it picks.
+    from: 4,
+    to: 5,
+    migrate: (raw) => {
+      const profile = { ...((raw['profile'] as Record<string, unknown> | undefined) ?? {}) };
+      delete profile['titles'];
+      return { ...raw, saveVersion: 5, profile: { ...profile, title: null } };
+    },
+  },
 ];
 
 export interface MigrationResult {

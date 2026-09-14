@@ -1,0 +1,227 @@
+{
+  "saveVersion": 4,
+  "createdAt": 1789290000000,
+  "updatedAt": 1789390000000,
+  "seedRoot": "fixture.v4",
+  "profile": {
+    "name": "Marvin",
+    "level": 7,
+    "xp": 620,
+    "avatarChampionId": "champ.reva_ashblade",
+    "titles": ["title.chronicler", "title.wayfarer"]
+  },
+  "wallet": {
+    "gold": 18450,
+    "gems": 210,
+    "energy": 0,
+    "key_daily": 0,
+    "key_weekly": 0,
+    "shard_faded": 0,
+    "shard_ancient": 0,
+    "shard_sacred": 0,
+    "shard_primordial": 0,
+    "brew_justice": 0,
+    "brew_valor": 0,
+    "brew_faith": 0,
+    "brew_eclipse": 0,
+    "brew_universal": 0,
+    "tome_rare": 0,
+    "tome_epic": 0,
+    "tome_legendary": 0,
+    "tome_mythic": 0,
+    "mat_scrap_iron": 46,
+    "mat_ember_alloy": 12,
+    "mat_starsteel": 0,
+    "mat_arcane_dust": 0,
+    "mat_refining_core": 0,
+    "mat_glyph_sigil": 0
+  },
+  "energy": {
+    "value": 74,
+    "lastTickAt": 1789389960000
+  },
+  "provisionsClaimed": [],
+  "roster": {
+    "reva_ashblade-1": {
+      "instanceId": "reva_ashblade-1",
+      "defId": "champ.reva_ashblade",
+      "level": 1,
+      "xp": 0,
+      "stars": 3,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": true,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "bran_militia-2": {
+      "instanceId": "bran_militia-2",
+      "defId": "champ.bran_militia",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "wenna_novice-3": {
+      "instanceId": "wenna_novice-3",
+      "defId": "champ.wenna_novice",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "gil_scrapper-4": {
+      "instanceId": "gil_scrapper-4",
+      "defId": "champ.gil_scrapper",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "anuria-5": {
+      "instanceId": "anuria-5",
+      "defId": "champ.anuria",
+      "level": 1,
+      "xp": 0,
+      "stars": 4,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": true,
+      "favourite": false,
+      "acquiredAt": 1789290001000,
+      "source": "summon"
+    }
+  },
+  "counters": {
+    "instances": 5
+  },
+  "teams": {
+    "campaign": {
+      "presets": [["reva_ashblade-1", "wenna_novice-3", "gil_scrapper-4"], [], []],
+      "lastUsed": ["reva_ashblade-1", "wenna_novice-3", "gil_scrapper-4"]
+    },
+    "boss": {
+      "presets": [[], [], []],
+      "lastUsed": []
+    }
+  },
+  "campaign": {
+    "stars": {
+      "stage.01.01|intro": 3,
+      "stage.01.02|intro": 3,
+      "stage.01.03|intro": 2,
+      "stage.01.04|intro": 3,
+      "stage.01.05|intro": 3,
+      "stage.01.06|intro": 2,
+      "stage.01.07|intro": 3,
+      "stage.01.08|intro": 3,
+      "stage.01.09|intro": 2,
+      "stage.01.10|intro": 3,
+      "stage.02.01|intro": 3,
+      "stage.02.02|intro": 1,
+      "stage.02.03|intro": 3,
+      "stage.02.04|intro": 3
+    },
+    "bestTurns": {
+      "stage.01.01|intro": 15,
+      "stage.01.02|intro": 16,
+      "stage.01.03|intro": 17,
+      "stage.01.04|intro": 18,
+      "stage.01.05|intro": 19,
+      "stage.01.06|intro": 20,
+      "stage.01.07|intro": 21,
+      "stage.01.08|intro": 22,
+      "stage.01.09|intro": 23,
+      "stage.01.10|intro": 24,
+      "stage.02.01|intro": 19,
+      "stage.02.02|intro": 20,
+      "stage.02.03|intro": 21,
+      "stage.02.04|intro": 22
+    },
+    "selected": {
+      "settlement": 2,
+      "stage": 5,
+      "difficulty": "intro"
+    },
+    "autoRepeat": 5
+  },
+  "settings": {
+    "musicVolume": 0.7,
+    "ambienceVolume": 0.6,
+    "sfxVolume": 0.8,
+    "masterVolume": 1,
+    "muted": false,
+    "launchFullscreen": true,
+    "reducedMotion": false,
+    "battleSpeed": 2,
+    "autoBattle": true,
+    "language": "en"
+  },
+  "stats": {
+    "playtime_ms": 9000000,
+    "hub_visits": 17,
+    "battles.fought": 12,
+    "battles.victory": 9,
+    "battles.defeat": 3,
+    "battles.allyTurns": 158,
+    "campaign.runs": 21,
+    "campaign.cleared": 19,
+    "campaign.stars": 38,
+    "energy.spent": 96
+  },
+  "periods": {
+    "lastDailyKey": "2026-09-13",
+    "lastWeeklyKey": "2026-09-07"
+  }
+}

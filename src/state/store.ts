@@ -40,9 +40,10 @@ import {
   type RunSummary,
 } from './campaign';
 import { EventBus } from './events';
+import { applyPlayerXp, canWearTitle, mergeLevelUps, NO_LEVEL_UP, type LevelUpResult } from './progression';
 import type { OfflineReport } from './offline';
 import type { DialogRoute, Route, Toast, ToastKind } from './ui-types';
-import { t, type I18nKey, type I18nParams } from '@i18n/index';
+import { t, translate, type I18nKey, type I18nParams } from '@i18n/index';
 
 export type BootStatus = 'booting' | 'ready' | 'failed';
 
@@ -70,6 +71,11 @@ export interface UiState {
   fullscreenDeclined: boolean;
   /** Champions index state (sort, filters, selection) — kept for the session, never saved. */
   roster: { view: RosterView; selected: string | null };
+  /**
+   * Levels crossed since the player last saw the celebration. A battle never interrupts itself:
+   * the screen that follows it opens the dialog and clears this.
+   */
+  levelUp: LevelUpResult | null;
 }
 
 export interface GameState {
@@ -111,6 +117,12 @@ export interface GameActions {
   setChampionLocked(instanceId: string, locked: boolean): Result<void>;
   setChampionFavourite(instanceId: string, favourite: boolean): Result<void>;
   setAvatar(defId: ChampionId | null): Result<void>;
+  /** Wears one of the earned titles, or none (ECONOMY.md §4). */
+  setTitle(titleId: string | null): Result<void>;
+  /** The one way XP reaches the chronicle: fills the bar, pays the levels, queues the celebration. */
+  grantPlayerXp(amount: number, reason: string): LevelUpResult;
+  /** Drops the queued celebration once the dialog has shown it. */
+  clearLevelUp(): void;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
   generateDebugRoster(count: number, seed: string): Result<void>;
   setRosterView(patch: Partial<RosterView>): void;
@@ -184,6 +196,33 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
           return true;
         };
 
+        /**
+         * Queues a level-up for the celebration and announces it. A battle is never interrupted:
+         * the screen that follows opens the dialog and calls `clearLevelUp`.
+         */
+        const noteLevelUp = (result: LevelUpResult, reason: string, announce = true): void => {
+          if (result.levels.length === 0 && result.titlesEarned.length === 0) return;
+          if (result.levels.length > 0) {
+            set((state) => {
+              state.ui.levelUp = state.ui.levelUp ? mergeLevelUps(state.ui.levelUp, result) : result;
+            });
+            const level = result.levels[result.levels.length - 1]?.level ?? 1;
+            events.emit({
+              type: 'player.leveled',
+              level,
+              levelsGained: result.levels.length,
+              unlocks: result.unlocks,
+            });
+          }
+          // A campaign run announces its own payout, level-up currencies included.
+          if (announce && result.changes.length)
+            events.emit({ type: 'currency.changed', changes: result.changes, reason });
+          for (const id of result.titlesEarned) {
+            const def = content.titleById(id);
+            if (def) get().actions.toast('reward', 'profile.titleEarned', { title: translate(def.name) });
+          }
+        };
+
         return {
           boot: {
             status: 'booting',
@@ -205,6 +244,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             fullscreenOffered: false,
             fullscreenDeclined: false,
             roster: { view: DEFAULT_ROSTER_VIEW, selected: null },
+            levelUp: null,
           },
 
           actions: {
@@ -247,6 +287,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.ui.stack = [{ name: 'starter' }];
                 state.ui.dialog = null;
                 state.ui.roster = { view: DEFAULT_ROSTER_VIEW, selected: null };
+                state.ui.levelUp = null;
               });
               events.emit({ type: 'game.created', name: valid.value });
               return ok(undefined);
@@ -269,6 +310,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 state.boot.hasSave = false;
                 state.ui.stack = [{ name: 'title' }];
                 state.ui.dialog = null;
+                state.ui.levelUp = null;
               });
               events.emit({ type: 'game.reset' });
             },
@@ -540,6 +582,37 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               return ok(undefined);
             },
 
+            setTitle(titleId) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              if (titleId !== null && !canWearTitle(current, titleId))
+                return fail('invalid_argument', 'Title has not been earned');
+              withSave((save) => {
+                save.profile.title = titleId;
+              });
+              events.emit({ type: 'profile.titleChanged', title: titleId });
+              return ok(undefined);
+            },
+
+            grantPlayerXp(amount, reason) {
+              if (!get().save) return NO_LEVEL_UP;
+              const now = clock.now();
+              let result: LevelUpResult = NO_LEVEL_UP;
+              set((state) => {
+                if (!state.save) return;
+                result = applyPlayerXp(state.save, amount, now);
+                state.save.updatedAt = now;
+              });
+              noteLevelUp(result, reason);
+              return result;
+            },
+
+            clearLevelUp() {
+              set((state) => {
+                state.ui.levelUp = null;
+              });
+            },
+
             generateDebugRoster(count, seed) {
               const current = get().save;
               if (!current) return fail('invalid_argument', 'No chronicle loaded');
@@ -635,6 +708,8 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               const summary = result.value;
               if (summary.changes.length)
                 events.emit({ type: 'currency.changed', changes: summary.changes, reason: 'campaign' });
+              // The run already paid the levels; the celebration waits for the screen after the battle.
+              noteLevelUp(summary.levelUp, 'campaign', false);
               // Finishing a difficulty opens the next one and, with it, a faster battle speed.
               if (summary.completedDifficulty && input.pointer.difficulty !== 'hard') {
                 const next = input.pointer.difficulty === 'intro' ? 'normal' : 'hard';

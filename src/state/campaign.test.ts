@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { content } from '@content/registry';
 import type { BattleOutcome, UnitReport } from '@engine/battle/types';
 import { nextStage } from '@engine/campaign/progress';
@@ -161,13 +162,19 @@ describe('campaign runs through the store', () => {
 
   it('repeats a stage with fresh drops until the energy runs out', () => {
     const { store, actions } = chronicle();
+    // A maxed chronicle so the batch is bounded by the energy alone; the level-up refill has its
+    // own test below.
+    store.setState((state) => {
+      if (state.save) state.save.profile.level = PLAYER_MAX_LEVEL;
+      return state;
+    });
     const party = Object.keys(store.getState().save!.roster).slice(0, 3);
     actions.setAutoRepeat(10);
     expect(store.getState().save?.campaign.autoRepeat).toBe(10);
     expect(runsAffordable(store.getState().save!, STAGE_1, 10)).toBe(10);
     const goldGains: number[] = [];
     let runs = 0;
-    for (let i = 0; i < 20; i += 1) {
+    for (let i = 0; i < 40; i += 1) {
       const started = actions.startCampaignRun(STAGE_1);
       if (!started.ok) break;
       runs += 1;
@@ -182,7 +189,7 @@ describe('campaign runs through the store', () => {
       });
       goldGains.push(store.getState().save!.wallet.gold - before);
     }
-    // 60 energy at 4 per run, plus the 15 the first clear paid back.
+    // 60 energy at 4 a run, plus the 15 the first clear pays back: 18 runs, 3 energy left over.
     expect(runs).toBe(18);
     expect(store.getState().save!.energy.value).toBeLessThan(4);
     // Gold per run is fixed by the stage, but the material rolls are not identical every time.
@@ -190,6 +197,40 @@ describe('campaign runs through the store', () => {
     const stats = store.getState().save!.stats;
     expect(stats['campaign.cleared']).toBe(runs);
     expect(stats['campaign.runs']).toBe(runs);
+  });
+
+  it('keeps a batch going when a level-up refills the energy', () => {
+    const { store, actions } = chronicle();
+    const party = Object.keys(store.getState().save!.roster).slice(0, 3);
+    let levelUps = 0;
+    let runs = 0;
+    for (let i = 0; i < 30; i += 1) {
+      const started = actions.startCampaignRun(STAGE_1);
+      if (!started.ok) break;
+      runs += 1;
+      const finished = actions.finishCampaignRun({
+        pointer: STAGE_1,
+        cost: started.value.cost,
+        runIndex: started.value.runIndex,
+        outcome: victory(party),
+        party,
+        now: T0,
+      });
+      if (!finished.ok) throw new Error('finish');
+      levelUps += finished.value.levelUp.levels.length;
+      if (finished.value.levelUp.levels.length > 0) {
+        // The refill is the new cap, added on top of what was left (Q15).
+        expect(finished.value.playerLevelsGained).toBe(finished.value.levelUp.levels.length);
+        expect(finished.value.changes.some((c) => c.currency === 'energy')).toBe(true);
+      }
+    }
+    const save = store.getState().save!;
+    expect(runs).toBe(30);
+    expect(levelUps).toBeGreaterThan(0);
+    expect(save.profile.level).toBe(1 + levelUps);
+    // The stage costs 4 and the chronicle started with 60: without the refills the batch would
+    // have stopped at 18 runs.
+    expect(save.energy.value).toBeGreaterThan(60);
   });
 
   it('announces the difficulty and the speed a completed difficulty opens', () => {

@@ -22,8 +22,8 @@ import { addChampionXp } from '@engine/champions/xp';
 import { addEnergy } from '@engine/economy/energy';
 import { grant, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
-import { addPlayerXp } from '@engine/progression/player-level';
 import { createRng } from '@engine/rng/rng';
+import { NO_LEVEL_UP, applyPlayerXp, type LevelUpResult } from './progression';
 import type { SaveGame } from '@engine/schema/save';
 
 /** The progress the engine reads, straight out of the save. */
@@ -113,6 +113,8 @@ export interface RunSummary {
   changes: CurrencyChange[];
   levelUps: ChampionLevelUp[];
   playerLevelsGained: number;
+  /** What the chronicle levels this run bought paid, for the celebration (ECONOMY.md §4). */
+  levelUp: LevelUpResult;
   completedDifficulty: boolean;
 }
 
@@ -137,6 +139,7 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
     changes: [],
     levelUps: [],
     playerLevelsGained: 0,
+    levelUp: NO_LEVEL_UP,
     completedDifficulty: settled.record.completedDifficulty,
   };
   const rewards = settled.rewards;
@@ -162,10 +165,11 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
       summary.levelUps.push({ instanceId, level: gain.level, levelsGained: gain.levelsGained });
   }
 
-  const player = addPlayerXp(save.profile, rewards.playerXp);
-  save.profile.level = player.level;
-  save.profile.xp = player.xp;
-  summary.playerLevelsGained = player.levelsGained;
+  // Chronicle XP is the last thing a run pays, so a level-up's refill lands on the new cap.
+  const levelUp = applyPlayerXp(save, rewards.playerXp, input.now);
+  summary.playerLevelsGained = levelUp.levels.length;
+  summary.levelUp = levelUp;
+  summary.changes.push(...levelUp.changes);
 
   // Lifetime counters the profile and later the quest tracker read.
   const bump = (key: string, by = 1): void => {

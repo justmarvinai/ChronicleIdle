@@ -5,6 +5,7 @@ import { energyCap, msUntilNextEnergy } from '@engine/economy/energy';
 import type { FeatureId } from '@content/balance/unlocks';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
 import { currentPointer, progressOf } from './campaign';
+import { titlesOf, type LevelUpResult } from './progression';
 import type { GameStore } from './store';
 
 import type { StagePointer } from '@engine/campaign/progress';
@@ -86,4 +87,22 @@ export const selectMaxBattleSpeed = (s: GameStore): 1 | 2 | 3 | 4 =>
  */
 export function campaignPointer(s: GameStore): StagePointer | null {
   return s.save ? currentPointer(s.save) : null;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Chronicle level and titles (docs/design/ECONOMY.md §4)
+// ---------------------------------------------------------------------------------------------
+
+/** The level-up waiting to be celebrated, or null when there is nothing to show. */
+export const selectLevelUp = (s: GameStore): LevelUpResult | null => s.ui.levelUp;
+
+/** The title the chronicle wears, or null. Earned titles are derived — see `earnedTitleIds`. */
+export const selectWornTitle = (s: GameStore): string | null => s.save?.profile.title ?? null;
+
+/**
+ * Ids of every title the chronicle has earned. Returns a fresh array, so components must not
+ * subscribe to it directly — read it from the save inside a memo.
+ */
+export function earnedTitleIds(s: GameStore): string[] {
+  return s.save ? titlesOf(s.save) : [];
 }
