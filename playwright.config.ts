@@ -17,7 +17,8 @@ export default defineConfig({
    * other until a click on a visible, enabled button times out and a session crashes. Wall-clock
    * is the cheaper thing to spend.
    */
-  workers: process.env['CI'] ? 1 : undefined,
+  // `exactOptionalPropertyTypes`: the key is absent locally rather than explicitly undefined.
+  ...(process.env['CI'] ? { workers: 1 } : {}),
   retries: process.env['CI'] ? 1 : 0,
   reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {
