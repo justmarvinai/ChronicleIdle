@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AbilityDef, ChampionDef, ChampionId, Rarity } from '@content/champions/types';
 import { RANK_UP_GOLD } from '@content/balance/xp';
+import { allyUnit } from '@engine/battle/create';
 import { emptyGear, type ChampionInstance, type Roster } from '@engine/champions/instance';
 import { levelCap } from '@engine/champions/stats';
 import { championXpToNext } from '@engine/champions/xp';
@@ -282,5 +283,25 @@ describe('skill upgrades', () => {
     expect(refused.ok).toBe(false);
     if (!refused.ok) expect(refused.error.message).toContain('no skill upgrades');
     expect(planSkillUpgrade(heroDef, hero, 'ab.nope').ok).toBe(false);
+  });
+});
+
+describe('a sharpened ability reaches the battlefield', () => {
+  it('fights with the step the Tavern bought, not the authored number', () => {
+    const heroDef = DEFS['champ.hero'] as ChampionDef;
+    const abilityId = heroDef.abilities[1]?.id as string;
+    const base = instance({ instanceId: 'hero-1', defId: 'champ.hero' as ChampionId, stars: 3 });
+    const sharpened = applySkillUpgrade(base, { abilityId, step: 2, tome: 'tome_rare' });
+
+    const before = allyUnit({ instance: base, def: heroDef }, 0, true);
+    const after = allyUnit({ instance: sharpened, def: heroDef }, 0, true);
+    const multOf = (unit: ReturnType<typeof allyUnit>): number => {
+      const ability = unit.abilities.find((a) => a.def.id === abilityId);
+      const effect = ability?.def.effects[0];
+      return effect && effect.kind === 'damage' ? effect.mult : 0;
+    };
+    // Two damage steps of +10 % each: 3 × 1.2 = 3.6.
+    expect(multOf(before)).toBe(3);
+    expect(multOf(after)).toBe(3.6);
   });
 });
