@@ -451,6 +451,254 @@ export const RECIPES: Recipe[] = [
       return stereo(normalize(fade(loopable(trimmed, 2.5), 0, 0), -6), 0.6);
     },
   },
+  {
+    // The ritual charging: the shard falls, the ring's runes light one after another. A rising
+    // filtered swell under four ascending taps (SUMMONING.md §5.1).
+    key: 'sfx.summon.charge',
+    loop: false,
+    quality: 0.5,
+    render: () => {
+      const seconds = 1.5;
+      const swell = mul(
+        mix([
+          { sig: osc('saw', (t) => 110 + t * 90, seconds) },
+          { sig: osc('saw', (t) => 110.4 + t * 90, seconds), gain: 0.8 },
+          { sig: osc('triangle', (t) => 220 + t * 180, seconds), gain: 0.5 },
+        ]),
+        adsr(seconds, { a: 0.7, d: 0.2, s: 0.85, r: 0.5 }),
+      );
+      const runes = [0.15, 0.45, 0.75, 1.05].map((at, i) => ({
+        at,
+        gain: 0.26 + i * 0.03,
+        sig: chime(81 + i * 4, 0.5, 1.2),
+      }));
+      return stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: lowpass(swell, (t) => 300 + t * 2600, 1.2), gain: 0.42 },
+              ...runes,
+              { at: 0.05, sig: mul(lowpass(noise(0.5, 23), 1800, 0.8), expDecay(0.5, 0.1)), gain: 0.18 },
+            ]),
+            0.7,
+            0.32,
+            1.4,
+          ),
+          -4,
+        ),
+        0.35,
+      );
+    },
+  },
+  {
+    // Cracks spreading over the shard: dry splinters over a low strain (SUMMONING.md §5.2).
+    key: 'sfx.summon.crack',
+    loop: false,
+    quality: 0.45,
+    render: () => {
+      const splinter = (at: number, seed: number, g: number) => ({
+        at,
+        gain: g,
+        sig: mul(burst(0.12, 4200, 2.4, seed, 0.012), expDecay(0.12, 0.02)),
+      });
+      return stereo(
+        normalize(
+          mix([
+            splinter(0, 13, 0.55),
+            splinter(0.07, 29, 0.4),
+            splinter(0.16, 41, 0.5),
+            splinter(0.27, 57, 0.35),
+            {
+              sig: mul(
+                osc('sine', (t) => 90 - t * 30, 0.45),
+                expDecay(0.45, 0.12),
+              ),
+              gain: 0.4,
+            },
+          ]),
+          -5,
+        ),
+        0.3,
+      );
+    },
+  },
+  {
+    // Reveal, Common/Uncommon: a short two-note chime — the ritual answered, modestly.
+    key: 'sfx.summon.reveal_common',
+    loop: false,
+    quality: 0.45,
+    render: () =>
+      stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: chime(74, 0.7, 0.8), gain: 0.5 },
+              { at: 0.09, sig: chime(78, 0.8, 0.9), gain: 0.4 },
+              { sig: mul(lowpass(noise(0.3, 7), 2600, 0.7), expDecay(0.3, 0.06)), gain: 0.14 },
+            ]),
+            0.5,
+            0.25,
+            0.9,
+          ),
+          -4,
+        ),
+        0.3,
+      ),
+  },
+  {
+    // Reveal, Rare: a brighter triad with a little air behind it.
+    key: 'sfx.summon.reveal_rare',
+    loop: false,
+    quality: 0.5,
+    render: () =>
+      stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: chime(76, 0.9, 1), gain: 0.45 },
+              { at: 0.08, sig: chime(83, 1, 1.1), gain: 0.4 },
+              { at: 0.16, sig: chime(88, 1.1, 1.2), gain: 0.35 },
+              { sig: mul(bandpass(noise(0.6, 19), 3200, 1.6), expDecay(0.6, 0.12)), gain: 0.16 },
+            ]),
+            0.6,
+            0.3,
+            1.2,
+          ),
+          -3.5,
+        ),
+        0.35,
+      ),
+  },
+  {
+    // Reveal, Epic: a violet swell under a bell pair — the purple light of the gate.
+    key: 'sfx.summon.reveal_epic',
+    loop: false,
+    quality: 0.5,
+    render: () => {
+      const seconds = 1.6;
+      const swell = mul(
+        mix([
+          { sig: osc('saw', note(45), seconds) },
+          { sig: osc('saw', note(45) * 1.006, seconds), gain: 0.8 },
+          { sig: osc('triangle', note(57), seconds), gain: 0.55 },
+        ]),
+        adsr(seconds, { a: 0.05, d: 0.35, s: 0.6, r: 0.7 }),
+      );
+      return stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: lowpass(swell, (t) => 500 + t * 2200, 1.1), gain: 0.4 },
+              { at: 0.04, sig: chime(86, 1.3, 1.2), gain: 0.4 },
+              { at: 0.2, sig: chime(93, 1.4, 1.3), gain: 0.32 },
+              { sig: mul(lowpass(noise(0.8, 31), 3000, 0.8), expDecay(0.8, 0.18)), gain: 0.14 },
+            ]),
+            0.8,
+            0.34,
+            1.6,
+          ),
+          -3,
+        ),
+        0.4,
+      );
+    },
+  },
+  {
+    // Reveal, Legendary: the gold pillar — a bass hit, brass over it, bells falling after
+    // (SUMMONING.md §5.2 "gold pillar + screen flash + bass hit").
+    key: 'sfx.summon.reveal_legendary',
+    loop: false,
+    quality: 0.55,
+    render: () => {
+      const boom = mul(
+        mix([
+          { sig: osc('sine', (t) => 120 - t * 75, 1.4) },
+          { sig: osc('triangle', (t) => 60 - t * 32, 1.4), gain: 0.6 },
+        ]),
+        expDecay(1.4, 0.3),
+      );
+      const brass = (midi: number, at: number, seconds: number, g: number) => ({
+        at,
+        gain: g,
+        sig: lowpass(
+          softclip(
+            mul(
+              mix([
+                { sig: osc('saw', note(midi), seconds) },
+                { sig: osc('saw', note(midi) * 1.005, seconds) },
+                { sig: osc('pulse', note(midi) / 2, seconds), gain: 0.4 },
+              ]),
+              adsr(seconds, { a: 0.03, d: 0.2, s: 0.7, r: 0.4 }),
+            ),
+            1.9,
+          ),
+          (t) => 800 + t * 2600,
+          0.9,
+        ),
+      });
+      return stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: boom, gain: 0.5 },
+              brass(67, 0.02, 1.1, 0.4),
+              brass(71, 0.02, 1.1, 0.3),
+              brass(74, 0.14, 1.2, 0.34),
+              { at: 0.3, sig: chime(96, 1.6, 1.4), gain: 0.34 },
+              { at: 0.46, sig: chime(91, 1.5, 1.2), gain: 0.26 },
+              { at: 0.62, sig: chime(103, 1.7, 1.3), gain: 0.24 },
+            ]),
+            0.85,
+            0.34,
+            2,
+          ),
+          -2,
+        ),
+        0.45,
+      );
+    },
+  },
+  {
+    // Reveal, Mythic: the rose pillar — a deep detonation, a shockwave sweeping out, and a
+    // crystalline sequence nothing else in the game plays (SUMMONING.md §5.2).
+    key: 'sfx.summon.reveal_mythic',
+    loop: false,
+    quality: 0.6,
+    render: () => {
+      const detonation = mul(
+        mix([
+          { sig: osc('sine', (t) => 92 - t * 26, 2.2) },
+          { sig: osc('sine', (t) => 46 - t * 12, 2.2), gain: 0.7 },
+          { sig: lowpass(noise(2.2, 97), (t) => 1000 - t * 260, 0.9), gain: 0.35 },
+        ]),
+        expDecay(2.2, 0.55),
+      );
+      const shockwave = mul(
+        bandpass(noise(1.2, 151), (t) => 400 + t * 5200, 1.8),
+        adsr(1.2, { a: 0.06, d: 0.3, s: 0.35, r: 0.6 }),
+      );
+      return stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: detonation, gain: 0.5 },
+              { at: 0.08, sig: shockwave, gain: 0.3 },
+              { at: 0.24, sig: chime(88, 2, 1.5), gain: 0.32 },
+              { at: 0.44, sig: chime(95, 2.1, 1.5), gain: 0.28 },
+              { at: 0.64, sig: chime(100, 2.2, 1.6), gain: 0.26 },
+              { at: 0.84, sig: chime(107, 2.4, 1.7), gain: 0.24 },
+              { at: 1.1, sig: chime(112, 2.6, 1.8), gain: 0.2 },
+            ]),
+            1,
+            0.38,
+            2.6,
+          ),
+          -1.5,
+        ),
+        0.55,
+      );
+    },
+  },
 ];
 
 export const RECIPE_KEYS = RECIPES.map((r) => r.key);

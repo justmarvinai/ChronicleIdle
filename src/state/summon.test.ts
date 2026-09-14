@@ -212,7 +212,7 @@ describe('the Portal — the Exchange', () => {
   it('refuses a shard that is never sold, and a purse that is too light', () => {
     const { store, actions } = chronicle(0);
     expect(actions.exchangeShards('primordial', 1).ok).toBe(false);
-    actions.spendCurrency([{ currency: 'gems', amount: held(store, 'gems') }], 'test');
+    actions.spendCurrency([{ currency: 'gems', amount: held(store, 'gems') }]);
     expect(actions.exchangeShards('sacred', 1).ok).toBe(false);
     expect(held(store, 'shard_sacred')).toBe(0);
   });

@@ -41,6 +41,14 @@ export const SOUNDS = {
   'gate.portcullis': s('sfx.doors.portcullis_gate', 0.8, 0.02, 500),
   'torch.light': s('sfx.torch.light_torch', 0.6, 0.05, 200),
   'forge.hammer': s('sfx.mining.mine', 0.8, 0.06, 80),
+  // The summoning ritual (SUMMONING.md §5): the charge, the cracking, and one reveal per tier.
+  'summon.charge': s('sfx.summon.charge', 0.7, 0, 200),
+  'summon.crack': s('sfx.summon.crack', 0.8, 0.03, 80),
+  'summon.reveal.common': s('sfx.summon.reveal_common', 0.8, 0.02, 120),
+  'summon.reveal.rare': s('sfx.summon.reveal_rare', 0.85, 0.02, 120),
+  'summon.reveal.epic': s('sfx.summon.reveal_epic', 0.85, 0, 200),
+  'summon.reveal.legendary': s('sfx.summon.reveal_legendary', 0.9, 0, 400),
+  'summon.reveal.mythic': s('sfx.summon.reveal_mythic', 0.95, 0, 600),
   'gear.equip': s('sfx.sword.sword_unsheath', 0.7, 0.04, 150),
   // Battle (docs/tech/UI_DESIGN.md §7): owner attack/spell packs plus generated stingers.
   'battle.start': s('sfx.doors.portcullis_gate', 0.8, 0.02, 800),
