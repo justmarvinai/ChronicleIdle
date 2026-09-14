@@ -5,7 +5,14 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-*Nothing open. New questions are written here with the default they ship with.*
+**Q39 — Should a ×10 press play one ritual or ten?**
+*Why it matters:* `SUMMONING.md` §5 describes the ritual for a pull and then says a ×10 reveals
+its cards in a 5×2 grid, which leaves the ceremony's arithmetic open: ten rituals back to back is
+about eighteen seconds before the first card, one ritual is under two.
+*Default in use:* one ritual per press, lit in the colour of the **best** pull in it — the gate
+opens once and gives up ten champions, rarest last. A Legendary or Mythic anywhere in the ten
+therefore gets its pillar and its chime. Ten separate rituals would be a change in
+`RevealOverlay` (loop the ritual per card) rather than in the engine, so it stays switchable.
 
 ## 2. Answered
 

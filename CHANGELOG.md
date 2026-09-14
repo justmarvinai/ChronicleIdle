@@ -73,6 +73,11 @@ _Phase 9 (Idle Chest) starts after the owner's Phase 8 check-in._
   finished initialising now waits for it instead of skipping the ceremony — on a slow machine that
   was the difference between a ritual and a card appearing out of nowhere.
 
+### Open question
+
+- **Q39**: a ×10 plays one ritual, lit by the best pull in it, rather than ten rituals in a row
+  (`USER_QUESTIONS.md`). Switchable in `RevealOverlay` if the owner wants the longer ceremony.
+
 ## [0.0.7] — 2026-09-14 — Phase 7: The Forge
 
 ### Added
