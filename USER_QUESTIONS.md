@@ -5,14 +5,7 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-**Q38 — Where should Glyph Sigils come from until the weekly boss and the quests exist?**
-*Why it matters:* a Sigil is what lets a craft name its set (`GEAR.md` §6). Its designed homes —
-the weekly boss, the Chronicler's Path and the weekly quests (`ECONOMY.md` §2) — are Phases 9, 12
-and 13, so without an interim source the Forge ships with a chooser nobody can use.
-*Default in use:* the 20-star chest of each difficulty carries Sigils (Intro 1, Normal 2, Hard 3)
-on top of what it already gave. It is a slow supply that rewards clearing a settlement properly,
-and the later sources replace it rather than stack with it — one line in
-`STAR_CHESTS` (`src/content/balance/campaign.ts`) to take back out.
+*Nothing open. New questions are written here with the default they ship with.*
 
 ## 2. Answered
 
@@ -55,3 +48,4 @@ and the later sources replace it rather than stack with it — one line in
 | Q35 | Should a level-up refill interrupt a batch | As recommended | The refill lands mid-batch and the batch runs on; the celebration waits for the screen after the fight (`LEVEL_ENERGY_REFILL`) |
 | Q36 | Should the Armoury stay a screen of its own once the Forge lands | Keep the extra Armoury screen for now | The Armoury stays its own route; the Forge (Phase 7) is *Craft* / *Dismantle* / *Refine* and links to it rather than swallowing it (`UI_DESIGN.md` §5.11) |
 | Q37 | What a single piece's power is measured against | As recommended | The fixed reference champion stays: `GEAR_POWER_REFERENCE` keeps the racks' order stable as the selection changes (ADR-027) |
+| Q38 | Where should Glyph Sigils come from until the weekly boss and the quests exist | As recommended | The 20-star chests keep carrying Sigils (Intro 1, Normal 2, Hard 3) in `STAR_CHESTS`; the weekly boss and quest sources (Phases 9/12/13) replace that line rather than stack with it |
