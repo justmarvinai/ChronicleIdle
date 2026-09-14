@@ -89,6 +89,15 @@ export function applySummon(save: SaveGame, input: SummonInput): Result<SummonSu
   );
   if (!rolled.ok) return rolled;
 
+  // Resolve every champion before anything is written, so the all-or-nothing promise below is
+  // true rather than nearly true.
+  const rolls: { pull: Pull; def: ChampionDef }[] = [];
+  for (const pull of rolled.value.pulls) {
+    const def = content.championById(pull.championId);
+    if (!def) return fail('content_invalid', `Unknown champion ${pull.championId}`);
+    rolls.push({ pull, def });
+  }
+
   const paid = spend(save.wallet, [{ currency: SHARD_CURRENCY[input.shard], amount: input.count }]);
   if (!paid.ok) return paid;
 
@@ -99,9 +108,7 @@ export function applySummon(save: SaveGame, input: SummonInput): Result<SummonSu
 
   const pulls: SummonedChampion[] = [];
   let serial = save.counters.instances;
-  for (const pull of rolled.value.pulls) {
-    const def = content.championById(pull.championId);
-    if (!def) return fail('content_invalid', `Unknown champion ${pull.championId}`);
+  for (const { pull, def } of rolls) {
     const copiesBefore = copiesOf(save, pull.championId);
     serial += 1;
     // Only ever hand the draft freshly built objects: a plain clone can be read back safely once
