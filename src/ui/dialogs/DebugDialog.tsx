@@ -120,7 +120,7 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
       </div>
       <div className={styles.row}>
         <span className={styles.rowLabel}>Wallet</span>
-        <span style={{ display: 'flex', gap: 10 }}>
+        <span style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <Button
             size="sm"
             variant="secondary"
@@ -137,6 +137,29 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
           </Button>
           <Button size="sm" variant="secondary" onClick={() => actions.addEnergy(100, 'debug')}>
             {t('debug.energy')}
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            data-testid="debug-tavern-stock"
+            onClick={() =>
+              actions.grantCurrency(
+                [
+                  { currency: 'brew_justice', amount: 10 },
+                  { currency: 'brew_valor', amount: 10 },
+                  { currency: 'brew_faith', amount: 10 },
+                  { currency: 'brew_eclipse', amount: 10 },
+                  { currency: 'brew_universal', amount: 10 },
+                  { currency: 'tome_rare', amount: 5 },
+                  { currency: 'tome_epic', amount: 5 },
+                  { currency: 'tome_legendary', amount: 5 },
+                  { currency: 'tome_mythic', amount: 5 },
+                ],
+                'debug',
+              )
+            }
+          >
+            {t('debug.tavernStock')}
           </Button>
         </span>
       </div>

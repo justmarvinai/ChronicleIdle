@@ -293,6 +293,7 @@ export const ui = {
   'debug.gold': '+10,000 gold',
   'debug.gems': '+500 gems',
   'debug.energy': '+100 energy',
+  'debug.tavernStock': 'Stock the Tavern (brews + tomes)',
   'debug.campaign': 'Campaign',
   'debug.clearDifficulty': 'Clear {difficulty}',
   'debug.cleared': '{difficulty} cleared with three stars everywhere.',
