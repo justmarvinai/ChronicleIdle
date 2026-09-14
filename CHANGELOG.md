@@ -48,6 +48,14 @@ _Phase 8 (Summoning Portal) starts after the owner's Phase 7 check-in._
 - The development-only panel can stock a material chest, so the Forge can be played without a
   campaign grind first.
 
+### Fixed
+
+- **CI runs the e2e suite one browser at a time.** Playwright's default worker count (half the
+  CPUs) put two WebGL battle stages on one two-core runner, and they starved each other until a
+  click on a visible, enabled button timed out and a browser session crashed — the run then spent
+  its retries on the same starvation and hit the job's 30-minute cap. CI is pinned to one worker
+  and the job budget raised to 45 minutes; wall-clock is the cheaper thing to spend.
+
 ## [0.0.6] — 2026-09-14 — Phase 6: Gear
 
 ### Added

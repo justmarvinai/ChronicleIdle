@@ -11,6 +11,13 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
+  /*
+   * One browser at a time on CI. The suite drives a WebGL battle stage through swiftshader, and
+   * Playwright's default (half the CPUs) puts two of those on a two-core runner: they starve each
+   * other until a click on a visible, enabled button times out and a session crashes. Wall-clock
+   * is the cheaper thing to spend.
+   */
+  workers: process.env['CI'] ? 1 : undefined,
   retries: process.env['CI'] ? 1 : 0,
   reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {

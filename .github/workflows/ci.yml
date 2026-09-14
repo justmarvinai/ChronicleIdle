@@ -13,7 +13,9 @@ jobs:
   verify:
     name: Validate, typecheck, lint, test, build, e2e
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The e2e suite grows with every phase and runs one worker (see playwright.config.ts);
+    # 45 leaves room for the whole suite plus the one retry CI allows.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
