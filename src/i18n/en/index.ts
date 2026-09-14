@@ -6,6 +6,7 @@ import { enemies } from './enemies';
 import { features } from './features';
 import { gear } from './gear';
 import { sets } from './sets';
+import { summoning } from './summoning';
 import { tavern } from './tavern';
 import { titles } from './titles';
 import { ui } from './ui';
@@ -20,6 +21,7 @@ export const en = {
   ...features,
   ...gear,
   ...sets,
+  ...summoning,
   ...tavern,
   ...battle,
 } as const;

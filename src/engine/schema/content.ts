@@ -10,12 +10,14 @@ import type { SettlementDef } from '@content/stages/types';
 import type { GearSetDef } from '@content/sets/types';
 import type { TitleDef } from '@content/titles/types';
 import { SETTLEMENT_COUNT } from '@content/balance/campaign';
+import { SHARD_RATES } from '@content/balance/summon';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { statDeviation } from '@engine/champions/stats';
 import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
 import { enemySchema } from './enemy';
 import { settlementSchema, stageShapeIssues } from './stage';
+import { bannerSchema } from './banner';
 import { gearSetSchema } from './gear-set';
 import { titleSchema } from './title';
 
@@ -73,6 +75,8 @@ export function validateContentRegistry(
     settlements: readonly unknown[];
     titles: readonly unknown[];
     gearSets: readonly unknown[];
+    banners: readonly unknown[];
+    summonPool: readonly { id: string; rarity: string }[];
   },
   refs: ContentRefs,
 ): ValidationIssue[] {
@@ -89,6 +93,7 @@ export function validateContentRegistry(
     ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters),
     ...validateTitles(registry.titles, refs),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
+    ...validateBanners(registry.banners, registry.summonPool, refs),
   ];
 }
 
@@ -133,6 +138,68 @@ function validateGearSets(
   for (const [settlement, pool] of setPools)
     for (const id of pool)
       if (!seen.has(id)) error(`settlements.${settlement}.setPool`, `unknown gear set ${id}`);
+  return issues;
+}
+
+/**
+ * Banners (SUMMONING.md §3). Every shard's rate table must sum to 100 — a row that does not is a
+ * silent rate change — every rarity a shard can roll must have someone in the pool to roll, and a
+ * featured champion must be summonable at the rarity its slot claims.
+ */
+function validateBanners(
+  banners: readonly unknown[],
+  pool: readonly { id: string; rarity: string }[],
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const rarityOf = new Map(pool.map((def) => [def.id, def.rarity]));
+  const byRarity = new Map<string, number>();
+  for (const def of pool) byRarity.set(def.rarity, (byRarity.get(def.rarity) ?? 0) + 1);
+
+  // The tables themselves, once: they are shared by every banner.
+  for (const [shard, table] of Object.entries(SHARD_RATES)) {
+    const total = Object.values(table).reduce((sum, pp) => sum + (pp ?? 0), 0);
+    if (Math.abs(total - 100) > 0.001) error(`balance.summon.${shard}`, `rates sum to ${total}, not 100`);
+    for (const rarity of Object.keys(table))
+      if (!byRarity.get(rarity))
+        error(`balance.summon.${shard}`, `no summonable champion of rarity ${rarity}`);
+  }
+
+  const seen = new Set<string>();
+  banners.forEach((raw, index) => {
+    const result = bannerSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`banners[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = result.data;
+    const path = `banners.${def.id}`;
+    if (seen.has(def.id)) error(path, 'duplicate id');
+    seen.add(def.id);
+    for (const key of [def.name, def.description])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (def.kind === 'featured' && (def.rotations ?? []).length === 0)
+      error(path, 'a featured banner needs at least one rotation');
+    if (def.kind === 'standard' && def.rotations) error(path, 'the standard portal features nobody');
+    (def.rotations ?? []).forEach((rotation, r) => {
+      const named: [string, string][] = [
+        [rotation.legendary, 'legendary'],
+        ...rotation.epics.map((id): [string, string] => [id, 'epic']),
+        ...(rotation.mythic ? ([[rotation.mythic, 'mythic']] as [string, string][]) : []),
+      ];
+      for (const [id, expected] of named) {
+        const rarity = rarityOf.get(id);
+        if (!rarity) error(`${path}.rotations[${r}]`, `${id} is not in the summon pool`);
+        else if (rarity !== expected)
+          error(`${path}.rotations[${r}]`, `${id} is ${rarity}, featured as ${expected}`);
+      }
+      if (new Set(rotation.epics).size !== rotation.epics.length)
+        error(`${path}.rotations[${r}]`, 'the two featured Epics must differ');
+    });
+  });
   return issues;
 }
 

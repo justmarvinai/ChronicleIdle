@@ -21,6 +21,8 @@ import {
   STAGE_BY_ID,
 } from '@content/stages/index';
 import type { SettlementDef, StageDef } from '@content/stages/types';
+import { BANNERS, BANNER_BY_ID } from '@content/banners/index';
+import type { BannerDef } from '@content/banners/types';
 import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
 import type { GearSetDef } from '@content/sets/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
@@ -57,7 +59,15 @@ export interface ContentRegistry {
   /** The fourteen gear sets (GEAR.md §5); two-piece sets first. */
   gearSets: readonly GearSetDef[];
   gearSetById(id: string): GearSetDef | undefined;
+  /** The summoning banners (SUMMONING.md §3): the standard portal and the featured cycle. */
+  banners: readonly BannerDef[];
+  bannerById(id: string): BannerDef | undefined;
+  /** Champions a shard may pull: every definition whose `obtain` lists `summon`. */
+  summonPool: readonly ChampionDef[];
 }
+
+/** Eldric is mission-only, so the pool is whoever's own definition says it can be summoned. */
+const SUMMON_POOL: readonly ChampionDef[] = CHAMPIONS.filter((def) => def.obtain.includes('summon'));
 
 export function buildContentRegistry(): ContentRegistry {
   // Derived encounters are memoised: 360 of them exist in principle, a handful in a session.
@@ -100,6 +110,9 @@ export function buildContentRegistry(): ContentRegistry {
     titleById: (id) => TITLE_BY_ID[id],
     gearSets: GEAR_SETS,
     gearSetById: (id) => GEAR_SET_BY_ID[id],
+    banners: BANNERS,
+    bannerById: (id) => BANNER_BY_ID[id],
+    summonPool: SUMMON_POOL,
   };
 }
 
