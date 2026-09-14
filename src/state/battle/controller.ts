@@ -186,7 +186,13 @@ export function createBattleController(): BattleController {
       armed = !input.awaitPresenter || presenter !== instantPresenter;
       const seed = `${input.seed}:${hashString(`${input.encounterId}:${team.value.instanceIds.join(',')}`).toString(16)}`;
       state = createBattle(
-        { encounter, party, enemyById: (id) => content.enemyById(id), control: input.control },
+        {
+          encounter,
+          party,
+          enemyById: (id) => content.enemyById(id),
+          setById: (id) => content.gearSetById(id),
+          control: input.control,
+        },
         seed,
       );
       const view = snapshot(state);

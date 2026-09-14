@@ -13,7 +13,8 @@ import type {
 import type { EncounterDef } from '@content/encounters/types';
 import type { EnemyDef } from '@content/enemies/types';
 import { createInstance, type ChampionInstance } from '@engine/champions/instance';
-import { createBattle } from './create';
+import type { GearSetDef } from '@content/sets/types';
+import { createBattle, type PartyMember } from './create';
 import { step } from './step';
 import type { BattleEvent, BattleState, Decision, StepResult } from './types';
 
@@ -161,11 +162,13 @@ export function encounter(waves: EnemyDef[][], extra: Partial<EncounterDef> = {}
 }
 
 export interface BattleFixture {
-  party: { def: ChampionDef; instance: ChampionInstance }[];
+  party: PartyMember[];
   waves: EnemyDef[][];
   seed?: string;
   control?: 'manual' | 'auto';
   encounter?: Partial<EncounterDef>;
+  /** Resolves worn pieces' sets, so a geared fixture gets its set bonuses (`GEAR.md` §5). */
+  setById?: (id: string) => GearSetDef | undefined;
 }
 
 export function battle(fixture: BattleFixture): BattleState {
@@ -176,6 +179,7 @@ export function battle(fixture: BattleFixture): BattleState {
       encounter: encounter(fixture.waves, fixture.encounter),
       party: fixture.party,
       enemyById: (id) => enemies.get(id),
+      ...(fixture.setById ? { setById: fixture.setById } : {}),
       control: fixture.control ?? 'manual',
     },
     fixture.seed ?? 'test',

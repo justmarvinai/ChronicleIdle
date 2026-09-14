@@ -5,7 +5,10 @@
  */
 import { effectiveAbility } from '@engine/champions/describe';
 import type { ChampionInstance } from '@engine/champions/instance';
-import { baseStats } from '@engine/champions/stats';
+import { gearedStats } from '@engine/gear/champion-stats';
+import type { GearInstance } from '@engine/gear/instance';
+import { setPassives } from '@engine/gear/sets';
+import type { GearSetDef } from '@content/sets/types';
 import { createRng } from '@engine/rng/rng';
 import {
   BOSS_ATK_DEF_MULT,
@@ -25,6 +28,12 @@ import type { BattleState, BattleUnit, UnitFlags, WaveSpec } from './types';
 export interface PartyMember {
   instance: ChampionInstance;
   def: ChampionDef;
+  /**
+   * The gear the champion is wearing. Its stats are baked into the unit's base; its complete set
+   * groups arrive as passives, so the set bonuses run through the same engine champion passives do
+   * (`GEAR.md` §5).
+   */
+  worn?: readonly GearInstance[];
 }
 
 export interface BattleSetup {
@@ -32,6 +41,8 @@ export interface BattleSetup {
   /** Slot order; slot 0 is the leader whose aura applies. */
   party: PartyMember[];
   enemyById: (id: string) => EnemyDef | undefined;
+  /** Resolves a worn piece's set, so gear bonuses reach the units (`GEAR.md` §5). */
+  setById?: (id: string) => GearSetDef | undefined;
   control: 'manual' | 'auto';
 }
 
@@ -63,9 +74,15 @@ function abilitiesOf(defs: readonly AbilityDef[], upgrades: Record<string, numbe
   });
 }
 
-export function allyUnit(member: PartyMember, slot: number, leader: boolean): BattleUnit {
+export function allyUnit(
+  member: PartyMember,
+  slot: number,
+  leader: boolean,
+  setById: (id: string) => GearSetDef | undefined = () => undefined,
+): BattleUnit {
   const { instance, def } = member;
-  const stats = baseStats(def.stats, instance.stars, instance.level);
+  const worn = member.worn ?? [];
+  const stats = gearedStats(def, instance, worn);
   return {
     id: `a${slot}`,
     side: 'ally',
@@ -85,7 +102,7 @@ export function allyUnit(member: PartyMember, slot: number, leader: boolean): Ba
     alive: true,
     statuses: [],
     abilities: abilitiesOf(def.abilities, instance.skillUpgrades),
-    passives: def.passive ? [def.passive] : [],
+    passives: [...(def.passive ? [def.passive] : []), ...setPassives(worn, setById)],
     aura: leader && def.aura ? def.aura : null,
     isBoss: false,
     damageTakenMult: 1,
@@ -161,7 +178,9 @@ export function createBattle(setup: BattleSetup, seed: string): BattleState {
   if (setup.party.length === 0) throw new Error('A battle needs at least one champion');
   if (setup.party.length > encounter.partySize)
     throw new Error(`Party of ${setup.party.length} exceeds the encounter's ${encounter.partySize} slots`);
-  const allies = setup.party.map((member, slot) => allyUnit(member, slot, slot === 0));
+  const allies = setup.party.map((member, slot) =>
+    allyUnit(member, slot, slot === 0, setup.setById ?? (() => undefined)),
+  );
   const waves: WaveSpec[] = encounter.waves.map((wave, waveIndex) => ({
     enemies: wave.enemies.map((spawn, slot) => {
       const def = setup.enemyById(spawn.enemyId);

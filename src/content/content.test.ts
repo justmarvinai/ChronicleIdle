@@ -58,14 +58,21 @@ describe('content registry', () => {
       for (const home of set.homes) expect(content.settlementByIndex(home)?.setPool).toContain(set.id);
     }
     // The four-piece sets are the ones that carry behaviour rather than a flat stat.
-    expect(content.gearSetById('gear_set.retaliation')?.passive.effects).toEqual([
+    expect(content.gearSetById('gear_set.retaliation')?.passives[0]?.effects).toEqual([
       { kind: 'counterattack', chance: 30 },
     ]);
-    expect(content.gearSetById('gear_set.lifedrinker')?.passive.effects).toEqual([
-      { kind: 'lifesteal', percent: 30 },
-    ]);
-    expect(content.gearSetById('gear_set.ember_guard')?.passive.effects).toEqual([
+    // Lifedrinker heals per hit, so its passive hangs off `onHit` rather than sitting static.
+    expect(content.gearSetById('gear_set.lifedrinker')?.passives[0]).toMatchObject({
+      trigger: 'onHit',
+      effects: [{ kind: 'lifesteal', percent: 30 }],
+    });
+    expect(content.gearSetById('gear_set.ember_guard')?.passives[0]?.effects).toEqual([
       { kind: 'stat_mod', stat: 'hp', percent: 15 },
+    ]);
+    // Immortal changes a stat *and* acts on a trigger, so it grants one passive of each.
+    expect(content.gearSetById('gear_set.immortal')?.passives.map((p) => p.trigger)).toEqual([
+      'static',
+      'onTurnStart',
     ]);
   });
 

@@ -116,9 +116,13 @@ function validateGearSets(
     const path = `sets.${def.id}`;
     if (seen.has(def.id)) error(path, 'duplicate id');
     seen.add(def.id);
-    for (const key of [def.name, def.description, def.passive.name, def.passive.description])
+    for (const key of [def.name, def.description])
       if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
-    if (!refs.assetKeys.has(def.passive.icon)) error(path, `missing icon ${def.passive.icon}`);
+    for (const passive of def.passives) {
+      for (const key of [passive.name, passive.description])
+        if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+      if (!refs.assetKeys.has(passive.icon)) error(path, `missing icon ${passive.icon}`);
+    }
     for (const home of def.homes)
       if (!(setPools.get(home) ?? []).includes(def.id))
         error(path, `settlement ${home} does not list this set in its drop pool`);

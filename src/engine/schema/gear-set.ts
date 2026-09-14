@@ -9,7 +9,7 @@ export const gearSetSchema = z.object({
   description: z.string().min(1),
   /** Two-piece sets stack; four-piece sets carry the behaviour bonuses. */
   pieces: z.union([z.literal(2), z.literal(4)]),
-  passive: passiveSchema,
+  passives: z.array(passiveSchema).min(1),
   /** Settlements whose drops favour the set; every set has at least one home. */
   homes: z.array(z.number().int().min(1).max(SETTLEMENT_COUNT)).min(1),
   version: z.number().int().positive(),

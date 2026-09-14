@@ -17,8 +17,12 @@ export interface GearSetDef {
   description: string;
   /** Pieces needed for one complete group. */
   pieces: SetSize;
-  /** What a complete group gives the wearer. */
-  passive: PassiveDef;
+  /**
+   * What a complete group gives the wearer. Usually one passive; a set that both changes a stat
+   * and does something on a trigger needs one of each, because a `stat_mod` is only read off a
+   * static passive (`BATTLE.md` §6).
+   */
+  passives: readonly PassiveDef[];
   /** Settlements whose drops favour this set (GEAR.md §5); 1..12. */
   homes: readonly number[];
   version: number;
