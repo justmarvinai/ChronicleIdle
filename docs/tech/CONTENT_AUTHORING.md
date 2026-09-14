@@ -236,16 +236,17 @@ See the "Content shape" sections of `docs/design/BOSSES.md`, `SUMMONING.md`,
 | File | Contains |
 | --- | --- |
 | `stats.ts` | `STAR_MULT`, level factor, role templates, rarity budgets, power weights |
-| `xp.ts` | champion XP curve, player XP curve, brew values, food values |
+| `xp.ts` | champion XP curve, brew XP and the element-match multiplier, food XP by rarity and level, Tavern level gold, rank-up gold |
+| `levels.ts` | what a chronicle level pays: gold per level, the gem/Ancient/Sacred steps, the energy refill switch |
 | `energy.ts` | cap formula, regen seconds, refill price, overflow cap |
 | `battle.ts` | TM rate, DEF K, variance, status constants, turn limits, `DIFFICULTY_MULT`, `stageScale` |
 | `element.ts` | strong/weak modifiers |
-| `campaign.ts` | energy per band, star and defeat limits, star-chest thresholds, plate levels, gold/XP/drop rates, material ranges, first-clear and chest bundles, auto-repeat tiers |
+| `campaign.ts` | energy per band, star and defeat limits, star-chest thresholds, plate levels, gold/XP/drop rates, material ranges, first-clear, star-chest and all-3★ milestone bundles, auto-repeat tiers |
 | `enemies/archetypes.ts` | the six archetype bases and their shared kits (content, not balance) |
 | `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers |
 | `summon.ts` | shard rates, pity, exchange prices, featured weight, rotation epoch |
 | `idle.ts` | capacity bands, hourly yields, chance rolls |
-| `economy.ts` | rank-up gold, tavern gold, reset hour/day, gem/gold sanity targets |
+| `economy.ts` | starting wallet, name limits, reset hour/day, gem/gold sanity targets |
 | `unlocks.ts` | player-level unlock table |
 
 Each constant has a doc comment: what it does, what it affects, safe range.
