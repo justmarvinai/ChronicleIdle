@@ -167,13 +167,28 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   upgrade dots), passive, aura; *Upgrade* jumps to Tavern skills with this champion selected.
 
 ### 5.5 Tavern
-- Reference: `tavern_champion_upgrade_screen.png`.
-- Layout: left rail roster; centre: `bg5` interior with the selected champion's large portrait
-  and six offering slots around it (brews / food); right column tabs: *Upgrade Level*, *Upgrade
-  Rank*, *Upgrade Skills*; bottom-right: cost pill + **Upgrade** primary; "Auto-fill" picks the
-  cheapest food (never locked/favourite; confirms if a Rare+ would be consumed).
-- Motion: brews pour into a mug meter, XP bar fills with tick-up, level-up flash + stinger;
-  rank-up: stars ignite one by one, sprite gets a gold burst.
+- Reference: `tavern_champion_upgrade_screen.png` (its fourth tab, *Ascend*, is not ours: Q9 keeps
+  ascension in the backlog).
+- Layout: left rail roster (the Champions screen's filter bar and virtual grid, reused) picks who
+  is drinking; centre: `bg5` interior with the champion's portrait, name, stars, level and XP bar,
+  flanked by the offering seats — six on the Level track, exactly as many as the rank-up asks for
+  on the Rank track — with the brew row beneath; right column: vertical tabs *Upgrade Level*,
+  *Upgrade Rank*, *Upgrade Skills* over the track's own panel, and a cost pill + **Upgrade**
+  primary at its foot.
+- Level track: each seat opens the food picker (locked, favourite and already-seated champions
+  never appear; the picker prices each companion in XP), the brew row pours by the glass with the
+  champion's own element listed first, and the panel names the level the offering reaches, the XP
+  it carries and what would spill past the star tier's cap. *Auto-fill* seats the cheapest
+  companions; *Clear the table* empties it.
+- Rank track: the requirement line (`n × n★`), how many seats are filled, and the gold. *Auto-fill*
+  runs the food finder.
+- Skills track: one row per ability — icon, name, the next step in plain English, a dot per step
+  taken, and an **Upgrade** press that spends one tome of the champion's rarity. Rarities without
+  upgrades say so instead of showing dead buttons.
+- Before anyone Rare-or-better, or anyone levelled, is retired, a confirmation names them one by
+  one (`tavern-confirm`); a Common at level 1 goes without a question.
+- Motion and sound: seats spring in as they fill, the level flashes with `stinger.levelup`, a new
+  star bursts gold; the table clears itself the moment a press lands.
 
 ### 5.6 Campaign map
 - Reference: `campaign_settlement_screen.png` (RSL map), `_alternative_2.png` (banners).

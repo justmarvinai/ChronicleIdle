@@ -14,7 +14,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 2 | Battle System | 0.0.2 | ✅ shipped in 0.0.2 |
 | 3 | Campaign | 0.0.3 | ✅ shipped in 0.0.3 |
 | 4 | Player Level & Profile | 0.0.4 | ✅ shipped in 0.0.4 |
-| 5 | Tavern — Champion Upgrading | 0.0.5 | ⬜ |
+| 5 | Tavern — Champion Upgrading | 0.0.5 | ✅ shipped in 0.0.5 |
 | 6 | Gear | 0.0.6 | ⬜ |
 | 7 | The Forge — Crafting | 0.0.7 | ⬜ |
 | 8 | Summoning Portal | 0.0.8 | ⬜ |
@@ -186,6 +186,10 @@ level change; fixture save `v4.json` (Phase 3's schema, frozen); profile stats r
 counters; the milestone chests pay out once, on the run that completes the difficulty.
 
 ## Phase 5 — Tavern: Champion Upgrading (`0.0.5`)
+
+**Status.** ✅ shipped in 0.0.5 (2026-09-14). See `CHANGELOG.md` for what landed. Ascension is
+not part of it (owner's answer Q9 keeps it in the backlog), so the Tavern has three tracks rather
+than the reference screen's four.
 
 **Goal.** Level up (brews + food), rank up (stars), skill upgrades (Skill Tomes only) with the
 full Tavern screen and animations.

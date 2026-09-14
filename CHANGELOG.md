@@ -6,7 +6,49 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 5 (Tavern — Champion Upgrading) starts after the owner's Phase 4 check-in._
+_Phase 6 (Gear) starts after the owner's Phase 5 check-in._
+
+## [0.0.5] — 2026-09-14 — Phase 5: The Tavern
+
+### Added
+
+- **The Tavern, with its three tracks.** Upgrade Level pours brews and retires companions into
+  one champion's XP bar; Upgrade Rank spends `n` copies of `n★` and the gold from the table to
+  light one more star; Upgrade Skills spends one tome of the champion's rarity per step. The
+  rules are pure functions in `@engine/progression/tavern-*`, so the preview, the press and the
+  tests all read the same numbers (`ECONOMY.md` §3).
+- **Every safety rule lives in the engine.** A locked or favourite champion is never eligible, a
+  champion can never eat itself, rank-up food must be the exact star tier and the exact count, a
+  rarity's star ceiling holds, and an ability stops at its last step. A refusal spends nothing:
+  the wallet is checked before anything is written, so a half-paid upgrade cannot exist.
+- **The food finder.** Auto-fill seats the companions the chronicle loses least by — lowest
+  rarity, then lowest level, then longest held — and the Tavern asks before retiring anyone Rare
+  or better, or anyone who has been levelled.
+- **The Tavern screen** (`UI_DESIGN.md` §5.5): the roster rail picks who is drinking, six seats
+  flank the champion (the rank track shows exactly as many as it needs), a brew row pours by the
+  glass, and the right column runs the three tracks with a live cost pill. The level preview
+  names the level the offering reaches and warns when XP would spill past the star tier's cap.
+  Levelling flashes with its stinger; a new star bursts gold.
+- **Skill upgrades reach the battlefield.** The steps were already folded into abilities by
+  `effectiveAbility` (Phase 1) and read by the battle engine (Phase 2); the Tavern is what buys
+  them, so a sharpened ability changes its description text and its damage in the same press.
+
+### Changed
+
+- The Champions screen's Tavern button opens the Tavern with that champion already on the stool,
+  instead of the "not yet written" gate.
+- Champions eaten at the Tavern leave every team preset and "last used" they stood on, and the
+  session stops pointing at them.
+- `USER_QUESTIONS.md` §1 is empty: Q28–Q35 were answered "as recommended", so the eight defaults
+  that were already shipping are now decisions.
+
+### Fixed
+
+- **Reduced motion now stops Framer's animations too.** A token rule has stopped CSS keyframes
+  since 0.0.3, but Framer Motion animates in JavaScript and never saw the setting; the app is
+  wrapped in a `MotionConfig` that follows the chronicle's setting (and the OS preference before a
+  chronicle exists), so screen transitions, the level-up numeral and the Tavern's flares hold
+  still when they are asked to.
 
 ## [0.0.4] — 2026-09-14 — Phase 4: Player Level & Profile
 

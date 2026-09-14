@@ -45,13 +45,19 @@ xpToNext(L) = round(25 × L^1.7)          (L = current level; sum to 60 = 572,46
 Sources: battles (`CAMPAIGN.md` §7: `30 × energy × diffMult` per champion per win), brews
 (elemental 1,500 XP, ×1.5 if the element matches → 2,250; universal 1,500), food champions:
 `foodXp = 150 × RARITY_FOOD_MULT × (1 + 0.15 × foodLevel)` with `RARITY_FOOD_MULT`
-{C 1, U 2, R 4, E 8, L 16, M 32}. Gold cost per Tavern level-up action: `50 × targetLevel`.
+{C 1, U 2, R 4, E 8, L 16, M 32}. Gold cost per Tavern level-up action: `50 × targetLevel`, where
+the target level is the one the offering *reaches* — so one large offering costs less gold than
+the same XP poured a glass at a time. XP past the star tier's cap is not swallowed: the Tavern
+names it before the press so the player can rank up first.
 
 ### 3.2 Rank-up (stars)
 
 `n★ → (n+1)★` consumes `n` champions that are exactly `n★` (any rarity/level) plus gold
 {1→2: 500, 2→3: 2,000, 3→4: 8,000, 4→5: 30,000, 5→6: 100,000}. Locked/favourite champions
-cannot be consumed. The UI shows a "food finder" that suggests the cheapest valid food.
+cannot be consumed, nor can the champion itself, and rarity's star ceiling
+(`RARITY_STARS[rarity].max`) still holds — a Common never passes 2★. The rank-up keeps the level
+it already had; the new star only raises the cap. The "food finder" suggests the cheapest valid
+food: lowest rarity first, then lowest level, then longest held.
 
 ### 3.3 Skill upgrades
 
