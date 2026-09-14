@@ -7,6 +7,7 @@ import type { DecodedChronicle } from './chronicle-file';
 /** Screens (docs/tech/ARCHITECTURE.md §6): an in-memory stack; the URL is not used. */
 export type ChampionTab = 'info' | 'abilities' | 'lore' | 'gear';
 export type TavernTab = 'level' | 'rank' | 'skills';
+export type ForgeTab = 'craft' | 'dismantle' | 'refine';
 
 export type Route =
   | { name: 'title' }
@@ -17,6 +18,8 @@ export type Route =
   | { name: 'tavern'; instanceId?: string; tab?: TavernTab }
   /** The Armoury; `pieceId` opens with one piece already on the bench. */
   | { name: 'armoury'; pieceId?: string }
+  /** The Forge; `tab` deep-links one of its three benches (`GEAR.md` §4, §6). */
+  | { name: 'forge'; tab?: ForgeTab; pieceId?: string }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }

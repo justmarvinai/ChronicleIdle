@@ -65,6 +65,7 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     size: 130,
     glyph: 'glyph.hammer_hit',
     feature: 'forge',
+    route: { name: 'forge' },
     color: '#d8552f',
     labelBelow: true,
   },

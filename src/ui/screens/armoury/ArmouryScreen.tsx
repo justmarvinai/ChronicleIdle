@@ -16,6 +16,7 @@ import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Bar } from '@ui/components/Bar/Bar';
+import { Button } from '@ui/components/Button/Button';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
@@ -65,7 +66,16 @@ export default function ArmouryScreen({ route }: ScreenProps) {
     <div className={styles.root} data-testid="screen-armoury">
       <Backdrop asset="bg.bg5" grade="rgba(26, 20, 16, 0.5)" parallax={6} />
       <AmbientLayer preset="interior" />
-      <TopBar title={t('armoury.title')} onBack={() => actions.pop()} />
+      <TopBar title={t('armoury.title')} onBack={() => actions.pop()}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => actions.push({ name: 'forge' })}
+          data-testid="armoury-forge"
+        >
+          {t('armoury.forge')}
+        </Button>
+      </TopBar>
 
       <section className={styles.racks} aria-label={t('armoury.title')}>
         <GearFilterBar

@@ -171,6 +171,26 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
           >
             {t('debug.gearDrop')}
           </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            data-testid="debug-forge-stock"
+            onClick={() =>
+              actions.grantCurrency(
+                [
+                  { currency: 'mat_scrap_iron', amount: 200 },
+                  { currency: 'mat_ember_alloy', amount: 150 },
+                  { currency: 'mat_starsteel', amount: 100 },
+                  { currency: 'mat_arcane_dust', amount: 200 },
+                  { currency: 'mat_refining_core', amount: 40 },
+                  { currency: 'mat_glyph_sigil', amount: 10 },
+                ],
+                'debug',
+              )
+            }
+          >
+            {t('debug.forgeStock')}
+          </Button>
         </span>
       </div>
     </Dialog>

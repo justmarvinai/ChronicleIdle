@@ -1,0 +1,40 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.head {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 96px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+.armoury {
+  margin-left: auto;
+}
+
+.body {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 158px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+}
+
+.bodyContent {
+  height: 100%;
+  min-height: 0;
+}

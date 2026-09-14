@@ -294,6 +294,7 @@ export const ui = {
   'debug.gems': '+500 gems',
   'debug.energy': '+100 energy',
   'debug.gearDrop': '12 gear pieces',
+  'debug.forgeStock': 'Stock the Forge (materials)',
   'debug.tavernStock': 'Stock the Tavern (brews + tomes)',
   'debug.campaign': 'Campaign',
   'debug.clearDifficulty': 'Clear {difficulty}',
