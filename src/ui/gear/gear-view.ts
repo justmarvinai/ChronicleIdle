@@ -42,10 +42,14 @@ export function pieceName(piece: GearInstance): string {
   });
 }
 
-/** `+1,240` or `+12 %`, the way the design doc writes them. */
+/**
+ * `+1,240`, `+12 %` or a bare `+24` where the stat's own name already says "%" — "HP % +24 %"
+ * reads like a typo, and the cards have no room for the second sign either.
+ */
 export function formatGearValue(stat: GearStat, value: number): string {
   const rounded = Math.round(value);
-  return isPercentStat(stat) ? `+${rounded} %` : `+${rounded.toLocaleString('en-US')}`;
+  if (!isPercentStat(stat)) return `+${rounded.toLocaleString('en-US')}`;
+  return gearStatLabel(stat).includes('%') ? `+${rounded}` : `+${rounded} %`;
 }
 
 export function mainStatLine(piece: GearInstance): string {
