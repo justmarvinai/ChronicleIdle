@@ -1,0 +1,143 @@
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+
+.seats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 10px;
+  justify-items: center;
+}
+
+/* Three seats a side, flanking the champion (`UI_DESIGN.md` §5.5). */
+.flank {
+  grid-template-columns: auto;
+  grid-template-rows: repeat(3, auto);
+}
+
+.seated {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.portrait {
+  position: absolute;
+  inset: 4px;
+  background-size: cover;
+  background-position: center top;
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+  pointer-events: none;
+}
+
+.seatFoot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 1px 0;
+  background: linear-gradient(180deg, rgba(10, 8, 6, 0), rgba(10, 8, 6, 0.85) 40%);
+}
+
+.seatLevel {
+  font-size: 14px;
+  color: var(--gold-3);
+}
+
+.brews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+  width: 100%;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(28, 22, 16, 0.85), rgba(14, 11, 8, 0.85));
+  border: 1px solid rgba(201, 162, 74, 0.28);
+}
+
+.brewsLabel {
+  grid-column: 1 / -1;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-2);
+}
+
+.brew {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--text-1);
+}
+
+.brewName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.step {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--gold-3);
+  background: linear-gradient(180deg, rgba(60, 46, 24, 0.9), rgba(24, 18, 12, 0.9));
+  border: 1px solid rgba(201, 162, 74, 0.45);
+  cursor: var(--cursor-pointer);
+  transition:
+    filter 120ms ease,
+    transform 120ms ease;
+}
+
+.step:hover:not(:disabled) {
+  filter: brightness(1.25);
+  transform: translateY(-1px);
+}
+
+.step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.poured {
+  min-width: 26px;
+  text-align: center;
+  font-size: 18px;
+  color: var(--gold-3);
+}
+
+.held {
+  min-width: 68px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-3);
+}

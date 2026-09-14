@@ -4,6 +4,7 @@ import { champions } from './champions';
 import { currencies } from './currencies';
 import { enemies } from './enemies';
 import { features } from './features';
+import { tavern } from './tavern';
 import { titles } from './titles';
 import { ui } from './ui';
 
@@ -15,5 +16,6 @@ export const en = {
   ...campaign,
   ...titles,
   ...features,
+  ...tavern,
   ...battle,
 } as const;

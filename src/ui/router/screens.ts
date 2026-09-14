@@ -14,6 +14,7 @@ export const SCREENS: Record<RouteName, Lazy> = {
   hub: lazy(() => import('@ui/screens/hub/HubScreen')),
   champions: lazy(() => import('@ui/screens/champions/ChampionsScreen')),
   'game-modes': lazy(() => import('@ui/screens/game-modes/GameModesScreen')),
+  tavern: lazy(() => import('@ui/screens/tavern/TavernScreen')),
   campaign: lazy(() => import('@ui/screens/campaign/CampaignScreen')),
   settlement: lazy(() => import('@ui/screens/settlement/SettlementScreen')),
   'battle-setup': lazy(() => import('@ui/screens/battle-setup/BattleSetupScreen')),

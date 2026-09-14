@@ -1,0 +1,141 @@
+.panel {
+  position: absolute;
+  right: 24px;
+  top: 100px;
+  bottom: 24px;
+  width: 520px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tabs {
+  flex: 0 0 auto;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+
+.hint {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+.levelRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.level {
+  font-size: 26px;
+  color: var(--gold-3);
+}
+
+.cap {
+  font-size: 18px;
+  color: var(--text-3);
+}
+
+.xp {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-1);
+}
+
+.warn {
+  margin: 0;
+  font-size: 15px;
+  color: var(--warn);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.skill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.7), rgba(16, 13, 10, 0.6));
+  border-left: 3px solid var(--gold-1);
+}
+
+.skillText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.skillText strong {
+  font-size: 17px;
+  color: var(--text-1);
+}
+
+.skillText em {
+  font-style: normal;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.dots {
+  display: flex;
+  gap: 3px;
+}
+
+.dot,
+.dotOn {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(201, 162, 74, 0.6);
+}
+
+.dotOn {
+  background: var(--gold-3);
+  box-shadow: 0 0 6px rgba(240, 213, 122, 0.7);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(30, 24, 18, 0.9), rgba(14, 11, 8, 0.9));
+  border: 1px solid rgba(201, 162, 74, 0.32);
+}
+
+.cost {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.costLabel {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.costEntry {
+  font-size: 17px;
+  color: var(--gold-3);
+}

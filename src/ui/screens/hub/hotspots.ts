@@ -53,6 +53,7 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     size: 140,
     glyph: 'glyph.health_potion',
     feature: 'tavern_level',
+    route: { name: 'tavern' },
     color: '#f2a93b',
     labelBelow: true,
   },

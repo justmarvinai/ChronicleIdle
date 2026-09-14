@@ -1,0 +1,135 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.rail {
+  composes: surfaceStone from global;
+  position: absolute;
+  left: 24px;
+  top: 100px;
+  width: 590px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  padding: 0 12px 12px;
+}
+
+.stage {
+  position: absolute;
+  left: 630px;
+  right: 560px;
+  top: 100px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0 14px;
+}
+
+.scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.portrait {
+  position: relative;
+  display: block;
+  width: 260px;
+  height: 260px;
+  background-size: contain;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.6));
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* Decorative celebration flares; they never affect layout. */
+.burst,
+.burstGold {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  width: 420px;
+  height: 420px;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.burst {
+  background: radial-gradient(
+    circle,
+    rgba(240, 213, 122, 0.45) 0%,
+    rgba(201, 162, 74, 0.18) 40%,
+    rgba(201, 162, 74, 0) 70%
+  );
+}
+
+.burstGold {
+  background: radial-gradient(
+    circle,
+    rgba(255, 236, 170, 0.75) 0%,
+    rgba(240, 160, 60, 0.3) 38%,
+    rgba(240, 160, 60, 0) 72%
+  );
+}
+
+.name {
+  margin: 0;
+  font-size: 30px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.levelLine {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.levelNow {
+  font-size: 20px;
+  color: var(--text-1);
+}
+
+.levelCap {
+  font-size: 16px;
+  color: var(--text-3);
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: var(--text-2);
+}

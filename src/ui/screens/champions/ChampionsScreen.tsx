@@ -124,7 +124,10 @@ export default function ChampionsScreen({ route }: ScreenProps) {
               playSfx(favourite ? 'ui.confirm' : 'ui.cancel');
               actions.setChampionFavourite(selected.instance.instanceId, favourite);
             }}
-            onTavern={() => actions.push({ name: 'locked', feature: 'tavern_level', titleKey: 'hub.tavern' })}
+            onTavern={() => {
+              actions.setTavernTarget(selected.instance.instanceId);
+              actions.push({ name: 'tavern', instanceId: selected.instance.instanceId });
+            }}
           />
         </>
       ) : null}
