@@ -41,7 +41,7 @@ async function main(): Promise<void> {
   const full = {
     ...save,
     roster: generated.value.roster,
-    counters: generated.value.counters,
+    counters: { ...save.counters, instances: generated.value.counters.instances },
     profile: { ...save.profile, avatarChampionId: 'champ.ser_corvin' as const },
   };
   const text = await encodeChronicleFile(full, '0.0.1', NOW);

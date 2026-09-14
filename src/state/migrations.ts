@@ -64,6 +64,21 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       return { ...raw, saveVersion: 5, profile: { ...profile, title: null } };
     },
   },
+  {
+    // Phase 6: gear. A chronicle from before it owns nothing, and its champions wear nothing —
+    // the roster's `gear` slots have always been there and have always been null.
+    from: 5,
+    to: 6,
+    migrate: (raw) => {
+      const counters = { ...((raw['counters'] as Record<string, unknown> | undefined) ?? {}) };
+      return {
+        ...raw,
+        saveVersion: 6,
+        inventory: {},
+        counters: { instances: Number(counters['instances'] ?? 0), gear: 0 },
+      };
+    },
+  },
 ];
 
 export interface MigrationResult {

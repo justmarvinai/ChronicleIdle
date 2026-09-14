@@ -37,7 +37,7 @@ async function main(): Promise<void> {
   const full = {
     ...save,
     roster: state.roster,
-    counters: state.counters,
+    counters: { ...save.counters, instances: state.counters.instances },
     // Level 5 clears the Tavern's gate (level 2) with room to spare.
     profile: { ...save.profile, avatarChampionId: 'champ.ser_corvin' as const, level: 5 },
     wallet: walletWith([

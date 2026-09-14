@@ -15,6 +15,9 @@ export type DomainEvent =
   | { type: 'champion.rankedUp'; instanceId: string; stars: number }
   | { type: 'champion.skillUpgraded'; instanceId: string; abilityId: string; step: number }
   | { type: 'champion.consumed'; instanceId: string }
+  | { type: 'gear.equipped'; instanceId: string; pieceId: string }
+  | { type: 'gear.unequipped'; instanceId: string; pieceId: string }
+  | { type: 'gear.levelled'; pieceId: string; level: number }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

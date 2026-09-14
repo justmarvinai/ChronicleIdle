@@ -23,6 +23,8 @@ import { addEnergy } from '@engine/economy/energy';
 import { grant, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { createRng } from '@engine/rng/rng';
+import type { GearInstance } from '@engine/gear/instance';
+import { applyGearDrop } from './gear';
 import { NO_LEVEL_UP, applyPlayerXp, type LevelUpResult } from './progression';
 import type { SaveGame } from '@engine/schema/save';
 
@@ -112,6 +114,9 @@ export interface RunSummary {
   /** Wallet deltas, for the reward toast and the result screen. */
   changes: CurrencyChange[];
   levelUps: ChampionLevelUp[];
+  /** Gear the run minted, and whether the armoury was too full to hold any of it (GEAR.md §7). */
+  gear: GearInstance[];
+  gearLost: number;
   playerLevelsGained: number;
   /** What the chronicle levels this run bought paid, for the celebration (ECONOMY.md §4). */
   levelUp: LevelUpResult;
@@ -138,6 +143,8 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
     rewards: settled.rewards,
     changes: [],
     levelUps: [],
+    gear: [],
+    gearLost: 0,
     playerLevelsGained: 0,
     levelUp: NO_LEVEL_UP,
     completedDifficulty: settled.record.completedDifficulty,
@@ -153,6 +160,19 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   if (rewards.energy > 0) {
     save.energy = addEnergy(save.energy, rewards.energy, save.profile.level, input.now);
     summary.changes.push({ currency: 'energy', delta: rewards.energy, total: save.energy.value });
+  }
+
+  // A dropped piece is rolled now, from the same seed the rest of the run used.
+  for (const drop of rewards.gear) {
+    const piece = applyGearDrop(save, {
+      settlementIndex: input.pointer.settlement,
+      fromSetPool: drop.fromSetPool,
+      source: 'campaign_drop',
+      now: input.now,
+      rng,
+    });
+    if (piece) summary.gear.push(piece);
+    else summary.gearLost += 1;
   }
 
   for (const instanceId of input.party) {

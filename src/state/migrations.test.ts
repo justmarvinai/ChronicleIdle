@@ -45,7 +45,7 @@ describe('migrateSave', () => {
     expect(result.save.settings.launchFullscreen).toBe(false);
     expect(result.save.stats).toEqual({ playtime_ms: 3_600_000, hub_visits: 4 });
     expect(result.save.roster).toEqual({});
-    expect(result.save.counters).toEqual({ instances: 0 });
+    expect(result.save.counters).toEqual({ instances: 0, gear: 0 });
     expect(result.save.campaign.stars).toEqual({});
     expect('avatarKey' in result.save.profile).toBe(false);
   });
@@ -126,6 +126,30 @@ describe('migrateSave', () => {
     expect('titles' in result.save.profile).toBe(false);
     expect(result.save.profile.title).toBeNull();
     expect(titlesOf(result.save)).toContain('title.chronicler');
+  });
+
+  it('upgrades a Phase 5 (version 5) chronicle to an empty armoury', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v5.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(5);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // Everything Phases 4 and 5 wrote survives…
+    expect(result.save.profile.title).toBe('title.wayfarer');
+    expect(result.save.profile.level).toBe(9);
+    expect(result.save.stats['tavern.rankUps']).toBe(1);
+    const levelled = Object.values(result.save.roster).find((c) => c.stars === 4);
+    expect(levelled?.level).toBe(23);
+    expect(levelled?.skillUpgrades).toEqual({ 'ab.reva_ashblade.sunder': 2 });
+    expect(result.save.wallet.tome_rare).toBe(3);
+    // …and the armoury starts empty, with its own counter.
+    expect(result.save.inventory).toEqual({});
+    expect(result.save.counters).toEqual({ instances: 5, gear: 0 });
+    for (const champion of Object.values(result.save.roster))
+      expect(Object.values(champion.gear).every((id) => id === null)).toBe(true);
   });
 
   it('runs migration steps in order', () => {

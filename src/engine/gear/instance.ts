@@ -38,3 +38,11 @@ export type Inventory = Record<string, GearInstance>;
 export function gearInstanceIdFor(serial: number): string {
   return `gear-${serial}`;
 }
+
+/**
+ * A detached copy of a piece. State actions run inside an immer producer, so anything they hand
+ * back has to leave the draft behind: the proxies are revoked the moment the producer returns.
+ */
+export function clonePiece(piece: GearInstance): GearInstance {
+  return { ...piece, subs: piece.subs.map((sub) => ({ ...sub })) };
+}

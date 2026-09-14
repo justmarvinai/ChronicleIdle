@@ -8,7 +8,7 @@ import { immer } from 'zustand/middleware/immer';
 import { PLAYER_NAME_MAX_LENGTH, PLAYER_NAME_MIN_LENGTH } from '@content/balance/economy';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import type { Difficulty } from '@content/balance/battle';
-import { CHAMPION_IDS, type ChampionId, type ObtainSource } from '@content/champions/types';
+import { CHAMPION_IDS, type ChampionId, type GearSlot, type ObtainSource } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import { content } from '@content/registry';
 import { DEFAULT_ROSTER_VIEW, type RosterView } from '@engine/champions/query';
@@ -41,6 +41,16 @@ import {
 } from './campaign';
 import { EventBus } from './events';
 import type { Offering } from '@engine/progression/tavern-level';
+import {
+  applyEquip,
+  applyGearDrop,
+  applyGearLevel,
+  applyGearLock,
+  applyUnequip,
+  type EquipSummary,
+  type GearLevelSummary,
+} from './gear';
+import type { GearInstance } from '@engine/gear/instance';
 import {
   applyTavernFeed,
   applyTavernRankUp,
@@ -150,6 +160,16 @@ export interface GameActions {
   rankUpChampion(instanceId: string, foodIds: readonly string[]): Result<RankSummary>;
   /** Tavern — Upgrade Skills: one tome of the champion's rarity buys one step. */
   upgradeChampionSkill(instanceId: string, abilityId: string): Result<SkillSummary>;
+  /** Puts a piece on a champion, taking it off whoever wore it (`GEAR.md` §7). */
+  equipGear(instanceId: string, pieceId: string): Result<EquipSummary>;
+  /** Takes the piece off a slot; it stays in the armoury. */
+  unequipGear(instanceId: string, slot: GearSlot): Result<GearInstance>;
+  /** Buys levels for a piece, rolling a substat at +4/+8/+12/+16. */
+  levelGear(pieceId: string, levels: number): Result<GearLevelSummary>;
+  /** Locks a piece against the Forge's dismantle and refine. */
+  setGearLocked(pieceId: string, locked: boolean): Result<GearInstance>;
+  /** Dev/debug: a seeded piece straight into the armoury. */
+  debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
   generateDebugRoster(count: number, seed: string): Result<void>;
   setRosterView(patch: Partial<RosterView>): void;
@@ -535,7 +555,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               if (!seeded.ok) return seeded;
               withSave((save) => {
                 save.roster = seeded.value.state.roster;
-                save.counters = seeded.value.state.counters;
+                save.counters.instances = seeded.value.state.counters.instances;
                 save.profile.avatarChampionId = defId;
               });
               set((state) => {
@@ -571,7 +591,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               if (!added.ok) return added;
               withSave((save) => {
                 save.roster = added.value.state.roster;
-                save.counters = added.value.state.counters;
+                save.counters.instances = added.value.state.counters.instances;
               });
               events.emit({
                 type: 'champion.added',
@@ -723,6 +743,79 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               return result;
             },
 
+            equipGear(instanceId, pieceId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<EquipSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyEquip(state.save, { instanceId, pieceId });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (result.ok) events.emit({ type: 'gear.equipped', instanceId, pieceId });
+              return result;
+            },
+
+            unequipGear(instanceId, slot) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<GearInstance> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyUnequip(state.save, { instanceId, slot });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (result.ok)
+                events.emit({ type: 'gear.unequipped', instanceId, pieceId: result.value.instanceId });
+              return result;
+            },
+
+            levelGear(pieceId, levels) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const rng = createRng(
+                `gear:${current.seedRoot}:${pieceId}:${current.inventory[pieceId]?.level ?? 0}`,
+              );
+              let result: Result<GearLevelSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyGearLevel(state.save, { pieceId, levels, rng });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'gear' });
+              events.emit({ type: 'gear.levelled', pieceId, level: result.value.to });
+              return result;
+            },
+
+            setGearLocked(pieceId, locked) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<GearInstance> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyGearLock(state.save, { pieceId, locked });
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              return result;
+            },
+
+            debugGrantGear(settlementIndex) {
+              const current = get().save;
+              if (!current) return null;
+              const now = clock.now();
+              let piece: GearInstance | null = null;
+              set((state) => {
+                if (!state.save) return;
+                piece = applyGearDrop(state.save, {
+                  settlementIndex,
+                  fromSetPool: false,
+                  source: 'campaign_drop',
+                  now,
+                  rng: createRng(`debug-gear:${now}:${state.save.counters.gear}`),
+                });
+                state.save.updatedAt = now;
+              });
+              return piece;
+            },
+
             generateDebugRoster(count, seed) {
               const current = get().save;
               if (!current) return fail('invalid_argument', 'No chronicle loaded');
@@ -737,7 +830,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               if (!generated.ok) return generated;
               withSave((save) => {
                 save.roster = generated.value.roster;
-                save.counters = generated.value.counters;
+                save.counters.instances = generated.value.counters.instances;
               });
               return ok(undefined);
             },

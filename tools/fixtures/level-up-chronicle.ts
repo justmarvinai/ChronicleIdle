@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   const full = {
     ...save,
     roster: seeded.value.state.roster,
-    counters: seeded.value.state.counters,
+    counters: { ...save.counters, instances: seeded.value.state.counters.instances },
     profile: {
       ...save.profile,
       avatarChampionId: 'champ.ser_corvin' as const,

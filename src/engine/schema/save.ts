@@ -1,14 +1,15 @@
 /**
- * Save-game schema, version 5 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
+ * Save-game schema, version 6 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
  * current phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
 import { DIFFICULTY_MULT, type Difficulty } from '@content/balance/battle';
 import { SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
-import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES } from '@content/champions/types';
+import { CHAMPION_IDS, GEAR_SLOTS, OBTAIN_SOURCES, RARITIES } from '@content/champions/types';
+import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@content/balance/gear';
 import { CURRENCY_IDS } from '@content/currencies/types';
 
-export const SAVE_VERSION = 5 as const;
+export const SAVE_VERSION = 6 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -82,8 +83,32 @@ export const campaignSchema = z.object({
   autoRepeat: z.number().int().min(1).max(50),
 });
 
-export const saveSchemaV5 = z.object({
-  saveVersion: z.literal(5),
+/** One piece of gear (docs/design/GEAR.md §8); the main stat's value follows from star and level. */
+export const gearInstanceSchema = z.object({
+  instanceId: z.string().min(1),
+  slot: z.enum(GEAR_SLOTS),
+  setId: z.string().min(1),
+  rarity: z.enum(RARITIES),
+  stars: z.number().int().min(1).max(GEAR_MAX_STARS),
+  level: z.number().int().min(0).max(GEAR_MAX_LEVEL),
+  mainStat: z.enum(GEAR_STATS),
+  subs: z
+    .array(
+      z.object({
+        stat: z.enum(GEAR_STATS),
+        value: z.number().min(0),
+        rolls: z.number().int().min(1),
+      }),
+    )
+    .max(MAX_SUBSTATS),
+  equippedTo: z.string().nullable(),
+  locked: z.boolean(),
+  acquiredAt: z.number().int().nonnegative(),
+  source: z.enum(OBTAIN_SOURCES),
+});
+
+export const saveSchemaV6 = z.object({
+  saveVersion: z.literal(6),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -108,7 +133,9 @@ export const saveSchemaV5 = z.object({
   /** Owned champions by instance id; empty until the starter is chosen. */
   roster: z.record(z.string(), championInstanceSchema),
   /** Running counters that mint stable ids. */
-  counters: z.object({ instances: z.number().int().min(0) }),
+  counters: z.object({ instances: z.number().int().min(0), gear: z.number().int().min(0) }),
+  /** Every piece of gear the chronicle owns, worn or not (GEAR.md §7). */
+  inventory: z.record(z.string(), gearInstanceSchema),
   teams: z.object({ campaign: teamModeSchema, boss: teamModeSchema }),
   campaign: campaignSchema,
   settings: settingsSchema,
@@ -117,13 +144,13 @@ export const saveSchemaV5 = z.object({
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV5 = z.infer<typeof saveSchemaV5>;
-export type SaveGame = SaveGameV5;
+export type SaveGameV6 = z.infer<typeof saveSchemaV6>;
+export type SaveGame = SaveGameV6;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV5;
+export const saveSchema = saveSchemaV6;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };
