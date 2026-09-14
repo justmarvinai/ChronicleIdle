@@ -6,7 +6,72 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 8 (Summoning Portal) starts after the owner's Phase 7 check-in._
+_Phase 9 (Idle Chest) starts after the owner's Phase 8 check-in._
+
+## [0.0.8] — 2026-09-14 — Phase 8: Summoning Portal
+
+### Added
+
+- **The gacha, as data** (`SUMMONING.md` §1). Four shards with the rate rows the doc names
+  (Faded 60/30/10, Ancient 91/8/1, Sacred 92/8, Primordial 40/55/5), their mercy rules and their
+  Exchange prices all live in `src/content/balance/summon.ts`. The validator refuses a row that
+  does not sum to 100, a rarity with nobody summonable behind it, and a rotation that features a
+  champion who is not in the pool at the rarity it claims — a silent rate change is the one bug a
+  gacha must not have.
+- **A pull is two seeded rolls.** The rarity comes from the shard's row, the champion from
+  everyone summonable of it, with a featured champion weighted twice inside its own rarity.
+  100 000 pulls per shard land within half a percentage point of the authored row
+  (measured: Faded 60.03/29.94/10.04; Ancient 89.11 Rare / 9.41 Epic / 1.48 Legendary with mercy
+  running; Sacred 88.81/11.19; Primordial 39.12 Epic / 54.98 Legendary / 5.90 Mythic).
+- **Mercy that quotes what it rolls with** (`SUMMONING.md` §2). A hard guarantee replaces the
+  rarity outright; a soft climb bends the row and is taken out of the commonest rarity, so the
+  table still sums to 100 and a shard can never quietly out-give its own doc. The guarantee
+  replaces the *result*, not the roll: the rarity roll is still drawn, so a saved chronicle
+  replays its summons exactly. Epic within 20 Ancient pulls, Legendary within 15 Sacred, Mythic
+  within 50 Primordial — all three are tested, as is the worst gap over ten thousand pulls.
+- **The featured rotation, with no server** (`SUMMONING.md` §3). Fourteen days per turn from a
+  fixed UTC epoch, so the same instant gives the same rotation in every time zone and after every
+  reload; a test walks four zones. Every fourth turn is a Primordial Rotation: Varkos is featured
+  and his mercy climbs sooner. The cycle repeats when it runs out of authored rotations, so a
+  chronicle played far past the last row still sees a coherent banner.
+- **The reveal ritual** (`SUMMONING.md` §5). A Pixi scene on the violet gate: the chosen shard
+  hangs in the ring, drops when the press comes, twelve runes light in sequence, cracks spread and
+  leak light in the rarity's colour, and the burst opens the gate. A Legendary adds the gold pillar
+  and the screen flash; a Mythic adds the rose pillar, a shockwave and a beat of slow-motion.
+  Skipping cuts the running timeline to its end at any point — the result is the same, the waiting
+  is not.
+- **Seven synthesised sounds for it** (owner's answer Q24): a charging swell with four rune taps,
+  the cracking, and one reveal per tier, the Mythic's chime unique to it.
+- **The Portal screen** (`UI_DESIGN.md` §5.12): shards on the left with what the purse holds, the
+  gate in the middle, the banner on the right with its rotation timer, chances, mercy and the
+  Exchange, and **Summon ×1** / **Summon ×10** along the bottom. Rates and the last two hundred
+  summons are one tap away.
+- **Ten cards, rarest last.** A ×10 reveals in a 5×2 grid in sequence with the best saved for the
+  end and marked; every card says whether it is a first copy or rank-up material. Duplicates are
+  ordinary roster copies and are never auto-converted into anything (owner's answer Q8).
+- **The Intro milestone's Epic** (`CAMPAIGN.md` §7, carried from Phase 3). The picker offers every
+  summonable Epic, owned ones included. Which choices are *owed* is derived from the campaign's
+  stars and only the taking is stored, so a chronicle that mastered Intro before the Portal existed
+  is owed its Epic the moment it opens the Portal — and can never take a second.
+- **A new-champion badge.** A copy the Portal delivers wears a "NEW" ribbon in the Champions index
+  until the player opens it, and Emberhold puts a dot on the buildings that owe something: the
+  Champions hall while ribbons are outstanding, the Portal while a choice is unclaimed.
+- **Save v7** with the Portal's slice: mercy counters per shard type, a pull history bounded at
+  200 records, the copies not yet looked at, and the choices taken. Migration 6→7 opens a clean
+  Portal on any chronicle, with `tests/fixtures/saves/v6.json` frozen as the case.
+
+### Changed
+
+- The Exchange is the gem sink EA-0.1 ships instead of a Market (owner's answer Q5): Faded for
+  gold, Ancient and Sacred for gems, Primordial never sold.
+- A new chronicle starts the Portal on the Standard Gate and the Faded Shard, and a reset returns
+  it there.
+
+### Fixed
+
+- The ritual waits for its own scene. A press that lands before the (async) Pixi scene has
+  finished initialising now waits for it instead of skipping the ceremony — on a slow machine that
+  was the difference between a ritual and a card appearing out of nowhere.
 
 ## [0.0.7] — 2026-09-14 — Phase 7: The Forge
 

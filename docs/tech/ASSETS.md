@@ -46,6 +46,7 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | --- | --- | --- | --- | --- |
 | Free Pixel Effects Pack | `vfx/Free Pixel Effects Pack/` | 20 sheets + README | PNG grids of 100 × 100 px frames (600²–1100²) | public domain (README); magicspell, magic8, bluefire, casting, magickahit, flamelash, firespin, protectioncircle, brightfire, weaponhit, fire, nebula, vortex, phantom, loading, sunburn, felspell, midnight, freezing, magicbubbles |
 | GameFX export | `vfx/GameFXExport/SPRITESHEET_Files/` (+ `GIF_Files/` previews) | 22 strips + 22 GIFs | PNG horizontal strips, 64 / 96 / 133 px frames, 28–89 frames | Explosion ×3, FireBall ×3, FireBurst, FireCast, HolyExplosion, IceCast, IcePick, IceShatter ×2, LightCast, MagicBarrier, MediumStar, SmallStar, PoisonCast, PoisonClaw, Tornado ×3 |
+| Generated sounds (in-house) | `tools/audio/recipes.ts` → `public/assets/generated/audio/generated/` | 22 files | OGG Vorbis, mono-summed to stereo, loudness reported in the manifest | UI ticks, rewards, stingers, ambience drone, and the seven summon-ritual sounds (`sfx.summon.*`); rendered by `pnpm assets:build`, cached on the recipe sources |
 | Generated flipbooks (in-house) | `tools/vfx/recipes.ts` → `public/assets/generated/vfx/generated/` | 5 strips | PNG horizontal strips, 96 / 128 px frames, 8–16 frames, 20–30 fps | `fx.gen.slash_arc`, `sparks`, `rune_ring`, `smoke`, `speed_lines`; rendered by `pnpm assets:build`, cached on the recipe sources |
 
 ## 2. Usage map
@@ -167,7 +168,8 @@ Still needed for EA-0.1 and how they are covered:
 | Need | Plan |
 | --- | --- |
 | UI ticks, confirms, cancels, tabs, errors | generated (`tools/audio`) |
-| Reward, level-up, rank-up, victory/defeat, summon-tier stingers | generated, layered with the owner's `Spells` pack |
+| Reward, level-up, rank-up, victory/defeat stingers | generated, layered with the owner's `Spells` pack |
+| Summon ritual: `sfx.summon.charge`, `crack`, `reveal_{common,rare,epic,legendary,mythic}` | generated (`tools/audio/recipes.ts`), one reveal per tier |
 | Void/Eclipse and holy/Justice cast layers | generated drones/chimes layered on owner sounds |
 | Summon and title ambience | generated void drone + owner `Cave ambience` |
 | Slash arcs, impact sparks, rune rings, smoke, speed lines (shipped); rarity bursts (Summoning) | generated (`tools/vfx`) |

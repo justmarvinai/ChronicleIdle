@@ -251,6 +251,36 @@ moment it ships. Add a new condition kind to the union and the evaluator togethe
 See the "Content shape" sections of `docs/design/BOSSES.md`, `SUMMONING.md`,
 `QUESTS_MISSIONS.md`, `TUTORIAL.md`. All use the same `define*` helpers and validation.
 
+### Banners and the featured rotation (`src/content/banners/`)
+
+One file per banner (`standard.ts`, `featured.ts`), collected in `index.ts`:
+
+```ts
+const featured: BannerDef = {
+  id: 'banner.featured', kind: 'featured',
+  name: 'banner.featured.name', description: 'banner.featured.description',
+  shards: SHARD_IDS,
+  rotations: [{ legendary: 'champ.aurelia_dawnwarden', epics: ['champ.khazgor', 'champ.maruan'] }, …],
+  version: 1,
+};
+```
+
+- A rotation is one Legendary and exactly two Epics; a Primordial Rotation (every fourth turn)
+  also names `mythic`. `validateBanners` checks that every featured id is in the summonable pool
+  *at the rarity the row claims* and that the two Epics differ, so a typo is a build error rather
+  than a banner that quietly features nobody.
+- The wheel walks the list by rotation index and repeats from the top, so adding a row lengthens
+  the cycle without moving what is live now — but the index is absolute, so inserting a row in the
+  middle shifts every later rotation. Append.
+- Rates, mercy, the epoch and the featured weight are `balance/summon.ts`, never the banner.
+
+### Champion choices (`CHAMPION_CHOICES` in `balance/campaign.ts`)
+
+A reward that lets the player *name* a champion is a row here: the difficulty whose mastery owes
+it, the rarity offered and an i18n key saying where it came from. The entitlement is derived from
+the campaign's stars and only the taking is stored (ADR-032), so a row added later is owed
+immediately by every chronicle that already qualifies.
+
 ## 9. Balance files (`src/content/balance/`)
 
 | File | Contains |

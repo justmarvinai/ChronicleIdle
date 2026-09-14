@@ -265,3 +265,32 @@ never offers a protected piece in the first place, so the refusal is a guard, no
 **Consequences.** A press either does exactly what the preview said or nothing at all. The player
 never has to work out which half of a selection went, which is the one mistake a scrap heap cannot
 undo.
+
+## ADR-030 — A guarantee replaces the result, never the roll
+**Context.** Mercy can decide a pull's rarity before the dice are thrown (`SUMMONING.md` §2). The
+obvious implementation skips the rarity roll when a guarantee is owed.
+**Decision.** `summonOne` always draws the weighted rarity roll and then overrides the *result*
+when a hard guarantee is owed.
+**Consequences.** The seeded stream advances identically whether mercy fired or not, so a pull
+replays exactly from a save and a seed, and a ×10 cannot diverge from the run that produced it.
+The cost is one wasted draw per merciful pull, which is nothing.
+
+## ADR-031 — A soft climb is paid for by the commonest rarity
+**Context.** A soft pity adds percentage points to a rarity (`+1 pp per pull past 100`). Adding
+them to the row makes it sum to more than 100, and the other rarities' shares then depend on how
+the weighted roll normalises — a silent rate change nobody authored.
+**Decision.** `rarityWeights` takes the climb out of the commonest rarity on the row, capped at
+what that rarity has to give.
+**Consequences.** Every row always sums to 100, the doc's table is the whole truth about a shard,
+and a long dry streak trades commons for the rarity it owes rather than inflating the shard.
+
+## ADR-032 — Champion choices are derived, and only the taking is stored
+**Context.** Mastering a difficulty owes a champion of the player's choosing (`CAMPAIGN.md` §7).
+Storing "you are owed one" in the save would mean writing it at the moment of mastery — which a
+chronicle that mastered Intro before the Portal existed never got.
+**Decision.** `CHAMPION_CHOICES` names the entitlement (difficulty, rarity, reason);
+`openChoices(progress, taken)` derives what is owed from the campaign's stars, and the save stores
+only `summon.choices` — which choice became which copy.
+**Consequences.** Every chronicle that has mastered Intro is owed its Epic the moment the Portal
+opens, a claim is idempotent by construction, and no migration had to guess at past play. Later
+choice-granting rewards are one row in the table (CLAUDE.md §5.5).

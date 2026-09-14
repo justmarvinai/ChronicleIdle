@@ -3,7 +3,8 @@
 Related: `CHAMPIONS.md` §4 (pool), `ECONOMY.md` §2 (shards, gems), `docs/tech/UI_DESIGN.md` §5.12.
 
 Summoning is the main way to obtain strong champions. It is entirely local: rates, pity counters
-and the featured rotation are deterministic and stored in the save.
+and the featured rotation are deterministic and stored in the save. Shipped in `0.0.8`; the
+numbers live in `src/content/balance/summon.ts`, the rules in `src/engine/summon/*`.
 
 ## 1. Shards
 
@@ -26,7 +27,10 @@ Chronicler is never in any pool. Champions are never "exclusive" to a shard type
 | Primordial | Guaranteed Mythic within 50 pulls without one (Mythic chance +0.5 pp per pull after 20) |
 
 Counters are per shard type, persist across banners, and are shown on the portal ("Legendary in
-at most 143 more Ancient Shards").
+at most 143 more"). A guarantee replaces the *result* of the rarity roll, not the roll itself, so
+a saved chronicle replays its summons exactly. A soft climb is taken out of the commonest rarity
+on the row, so the table always sums to 100 and mercy can never make a shard more generous overall
+than this table says.
 
 ## 3. Banners
 
@@ -34,8 +38,8 @@ at most 143 more Ancient Shards").
 Always available; the four shard types above.
 
 ### Featured Banner
-A 14-day rotation computed from a fixed epoch (`ROTATION_EPOCH = 2026-01-05T00:00 local`) so no
-server is needed. Each rotation features **1 Legendary + 2 Epics**; featured champions get ×2 weight
+A 14-day rotation computed from a fixed **UTC** epoch (`ROTATION_EPOCH = 2026-01-05T00:00Z`) so no
+server is needed and the same instant gives the same rotation in every time zone. Each rotation features **1 Legendary + 2 Epics**; featured champions get ×2 weight
 inside their rarity bucket for Ancient and Sacred pulls. Every 4th rotation is a **Primordial
 Rotation**: Varkos is featured (Mythic chance stays 5 % but the pity counter accelerates: +1 pp
 per pull after 10).
@@ -52,6 +56,11 @@ per pull after 10).
 
 The banner card shows the featured champions with idle sprites, the rotation timer, rates and the
 player's pity counters.
+
+### Where a banner's featured weight applies
+Featured champions are weighted only on the Featured Banner and only inside their own rarity
+bucket — a featured Epic does not make Epics likelier, it makes *that* Epic likelier among them.
+The Standard Gate never favours anybody.
 
 ## 4. Free and scheduled summons
 
@@ -74,8 +83,20 @@ Pixi scene on backdrop `bg9` (the violet gate) with the shard hovering in the ri
 4. ×10: cards reveal in a 5×2 grid in sequence (fast-tap skips to results); best rarity reveals last.
 5. Results panel: "Continue", "Summon again" (if shards remain), "View champion".
 
-Skipping is always allowed after the burst (respect the player's time). Rates and pity are one tap
-away ("i").
+Skipping is always allowed (respect the player's time): it cuts the running timeline to its end,
+so the result is the one the ritual was going to show. Rates and mercy for all four shards are one
+tap away, as is the history — the last `HISTORY_LIMIT` (200) pulls, newest first, each row opening
+the champion it became.
+
+### The champion picker
+Some rewards are a champion of the player's choosing rather than a roll: Intro's all-3★ milestone
+chest is an Epic (`CAMPAIGN.md` §7). The picker offers every summonable champion of the named
+rarity, owned ones included — a second copy is rank-up material and a fine thing to want.
+
+Which choices are *owed* is derived from the campaign's stars (`CHAMPION_CHOICES` in
+`balance/campaign.ts`); the save stores only which have been taken. A chronicle that mastered a
+difficulty before the Portal existed is therefore owed its champion the moment it opens the
+Portal, and one that has taken it is never owed a second.
 
 ## 6. Content shape
 

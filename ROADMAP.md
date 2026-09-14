@@ -15,9 +15,9 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 3 | Campaign | 0.0.3 | ✅ shipped in 0.0.3 |
 | 4 | Player Level & Profile | 0.0.4 | ✅ shipped in 0.0.4 |
 | 5 | Tavern — Champion Upgrading | 0.0.5 | ✅ shipped in 0.0.5 |
-| 6 | Gear | 0.0.6 | ⬜ |
-| 7 | The Forge — Crafting | 0.0.7 | ⬜ |
-| 8 | Summoning Portal | 0.0.8 | ⬜ |
+| 6 | Gear | 0.0.6 | ✅ shipped in 0.0.6 |
+| 7 | The Forge — Crafting | 0.0.7 | ✅ shipped in 0.0.7 |
+| 8 | Summoning Portal | 0.0.8 | ✅ shipped in 0.0.8 |
 | 9 | Idle Chest | 0.0.9 | ⬜ |
 | 10 | Daily Boss | 0.0.10 | ⬜ |
 | 11 | Weekly Boss | 0.0.11 | ⬜ |
@@ -235,6 +235,11 @@ locked with its level named.
 statistically correct; refine keeps substats and re-bases the main stat; dismantle yields match.
 
 ## Phase 8 — Summoning Portal (`0.0.8`)
+
+**Status.** ✅ shipped in 0.0.8 (2026-09-14). See `CHANGELOG.md` for what landed. Save v7 carries
+the mercy counters, the pull history and the champion choices taken; the Intro milestone's Epic is
+owed by the campaign's stars rather than stored, so a chronicle that mastered Intro before the
+Portal existed is owed one the moment it opens.
 
 **Goal.** Four shard types, standard portal, featured banner with deterministic rotation, pity,
 exchange, the full reveal ritual (Pixi) with ×1/×10, history and rates panel.

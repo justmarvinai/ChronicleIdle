@@ -283,11 +283,26 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 
 ### 5.12 Summoning Portal
 - Reference: `summoning_screen.png` (rail of shards + centre ritual + right tabs),
-  `summoning_screen_alternative_2.png` (chances panel).
-- Layout: left rail: four shard cards with counts and rarity legend; centre: Pixi ritual on `bg9`;
-  right column: *Standard*, *Featured* tabs; featured card with rotation timer and featured
-  champions (idle sprites); pity counters; *Rates* info; bottom: **Summon ×1** / **Summon ×10**
-  with cost. Exchange sub-panel (Gold→Faded, Gems→Ancient/Sacred).
+  `summoning_screen_alternative_2.png` (chances panel). Shipped in `0.0.8`.
+- Layout: left rail: four shard cards with counts, blurb and selection frame; centre: the Pixi
+  ritual layer over `bg9` (full-stage, so the ring is a circle at every size) with the chosen shard
+  hanging in the ring; right column: *Standard* / *Featured* tabs over a stone panel with the
+  banner's name, the rotation (number, countdown, three featured champions as idle sprites, and the
+  Primordial Rotation marked), the selected shard's **Chances**, its **Mercy** lines, *Rates* and
+  *The last summons*, and the **Exchange** (Gold→Faded, Gems→Ancient/Sacred, Primordial never
+  sold); bottom bar: the shard and count, **Summon ×1** / **Summon ×10**, and *Claim your Epic*
+  while the campaign owes a champion choice.
+- Reveal: the press dims the scene, the ritual plays in the gate, then the cards land — one at
+  192 px, ten in a 5×2 grid in sequence with the rarest last and marked *Best of the ten*. Each
+  card carries the champion's name and either a "NEW" ribbon or "Duplicate — rank-up material".
+  *Skip* is offered throughout; the results row (*Continue* / *Summon again* / *View champion*)
+  sits clear of the bottom bar.
+- Dialogs: *Rates* (all four shards: the rarity rows, the pool size behind each and the mercy
+  owed), *The last summons* (the save's bounded history, newest first, each row opening the
+  champion it became) and the champion picker (every summonable champion of the owed rarity).
+- Badges: a copy the Portal delivered wears a "NEW" ribbon on its roster card until it is opened;
+  Emberhold shows a notification dot on the Champions hall while ribbons are outstanding and on the
+  Portal while a champion choice is unclaimed.
 
 ### 5.13 Bosses
 - Reference: `daily_weekly_boss_screen.png`.
@@ -387,7 +402,7 @@ the same atlas format. All keys live in `src/render/battle/fx/registry.ts`.
 
 `ui.hover`, `ui.confirm`, `ui.cancel`, `ui.tab`, `ui.error`, `reward.small/medium/large`,
 `levelup.champion`, `levelup.player`, `rankup`, `gear.equip`, `gear.upgrade`, `forge.hammer`,
-`forge.reveal`, `summon.place`, `summon.crack`, `summon.burst.{rarity}`, `battle.start`,
+`forge.reveal`, `summon.charge`, `summon.crack`, `summon.reveal.{common,rare,epic,legendary,mythic}`, `battle.start`,
 `battle.hit.{light,heavy,crit}`, `battle.cast.{element}`, `battle.heal`, `battle.buff`,
 `battle.debuff`, `battle.death`, `battle.victory`, `battle.defeat`, `chest.open`, `quest.claim`.
 Sources: the owner's SFX packs under `/game/assets/music_and_sounds/sfx` (44.1 kHz stereo WAV,
@@ -397,7 +412,7 @@ recipes). Variants are chosen round-robin with slight pitch jitter.
 | Key group | Source |
 | --- | --- |
 | `ui.*` | generated (short synthesised ticks/clicks in the ember palette) |
-| `reward.*`, `levelup.*`, `rankup`, `battle.victory/defeat`, `summon.burst.*` | generated stingers, layered with `Spells/Firebuff 1–2`, `Spells/Spell Impact 1–3`, `Spells/Wave Attack 1–2` (mythic) |
+| `reward.*`, `levelup.*`, `rankup`, `battle.victory/defeat` | generated stingers, layered with `Spells/Firebuff 1–2`, `Spells/Spell Impact 1–3`, `Spells/Wave Attack 1–2` (mythic) |
 | `chest.open` / `chest.close` | `Doors Gates and Chests/Chest Open 1–2`, `Chest Close 1–2` |
 | `quest.claim` | `Doors Gates and Chests/Lock Unlock` + generated chime |
 | `battle.start` | `Doors Gates and Chests/Gate Open`, `Portcullis Gate` |
@@ -414,7 +429,8 @@ recipes). Variants are chosen round-robin with slight pitch jitter.
 | `battle.step.{dirt,stone,water,wood}` | `Footsteps/*` (lunge steps, surface per settlement) |
 | `forge.hammer` / `gear.upgrade` | `Chopping and Mining/mine 1–5` |
 | `gear.equip` | `Attacks/Sword Unsheath 1–2` |
-| `summon.place` / `summon.crack` | `Spells/Rock Wall 1–2` / `Spells/Ice Freeze 1–2` |
+| `summon.charge` / `summon.crack` | generated: a rising filtered swell with four rune taps / dry splinters over a low strain |
+| `summon.reveal.*` | generated, one per tier: a two-note chime (Common/Uncommon), a bright triad (Rare), a violet swell with bells (Epic), a bass hit with brass and falling bells (Legendary), and a detonation with a shockwave and a crystalline sequence nothing else plays (Mythic) |
 | `torch.*` (hub lanterns) | `Torch/Light Torch 1–2`, `Torch Loop` |
 
 Ambience (`AmbienceDirector`, per screen, cross-faded): hub → `Town ambience` + `Night ambience`;

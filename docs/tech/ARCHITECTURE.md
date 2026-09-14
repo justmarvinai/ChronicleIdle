@@ -127,6 +127,12 @@ squash-stretch, lunges and projectile flights rather than authored attack animat
 Each is a folder of reducers + calculators + tests. Cross-cutting rules (unlock gating, cost
 checks) are helpers in `engine/progression/unlocks.ts` and `engine/economy/wallet.ts`.
 
+`engine/summon/` is four files: `summon.ts` (the rarity row and the champion roll), `pity.ts`
+(mercy counters, guarantees, soft climbs), `rotation.ts` (the fourteen-day wheel from a fixed UTC
+epoch, and which mercy rules a Primordial Rotation swaps in) and `choices.ts` (which champion
+choices the campaign owes). A pull takes its rarity roll even when a guarantee has already decided
+the answer, so the seeded stream advances identically and a replay cannot diverge.
+
 ### 3.6 Gear module
 
 ```
@@ -212,7 +218,11 @@ interface SaveGame {
   campaign: { stages: Record<string, { stars: 0|1|2|3; clears: number; bestTurns: number | null }>;
               unlocked: { normal: boolean; hard: boolean }; speeds: { x3: boolean; x4: boolean }; starChests: string[] };
   bosses: Record<BossId, { periodKey: string; keys: number; damage: Record<string, number>; chests: Record<string, number[]>; records: Record<string, { damage: number; team: string[]; at: number }> }>;
-  summon: { pity: Record<ShardId, { sinceEpic: number; sinceLegendary: number; sinceMythic: number }>; history: SummonRecord[] };
+  // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
+  // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
+  // the campaign's stars, so the ledger cannot disagree with the play).
+  summon: { pity: Record<ShardId, Partial<Record<Rarity, number>>>; history: SummonRecord[];
+            unseen: string[]; choices: Record<string, { championId: ChampionId; instanceId: string; at: number }> };
   quests: { daily: PeriodProgress; weekly: PeriodProgress };
   missions: { chapter: number; completed: string[]; claimed: string[]; progress: Record<string, number> };
   idle: { lastClaimAt: number };
@@ -243,7 +253,9 @@ interface SaveGame {
 
 ## 5. Rendering
 
-- One Pixi `Application` per stage (battle, summon); created on screen entry, destroyed on exit;
+- One Pixi `Application` per stage (battle, summon — `render/summon/ritualScene.ts`, mounted by
+  `RitualLayer` as a full-stage layer so the ring stays a circle at every window size); created on
+  screen entry, destroyed on exit;
   shared texture cache via `Assets`.
 - Renderer preference: WebGPU → WebGL2; `roundPixels: true`; nearest-neighbour scaling for
   pixel-art atlases; sprites positioned at integer virtual pixels scaled by the viewport factor.

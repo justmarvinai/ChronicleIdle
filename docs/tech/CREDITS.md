@@ -22,4 +22,6 @@ external credit.
 
 ## Additions
 
-_(none yet — add a row above for every new owner file, CC0 source or generated set)_
+| Set | Origin | Licence | Added |
+| --- | --- | --- | --- |
+| Summon ritual sounds (`sfx.summon.charge`, `crack`, `reveal_common/rare/epic/legendary/mythic`) | Generated in-house by `tools/audio/recipes.ts` | Original work of this project | Phase 8 (`0.0.8`) |
