@@ -235,8 +235,10 @@ function StageRow({
   );
 }
 
-/** Gear sets arrive with the Forge (Phase 6); until then the pool is shown by its id's tail. */
+/** The set's own name, or a readable fallback if a settlement names a set that has gone. */
 function setName(id: string): string {
+  const set = content.gearSetById(id);
+  if (set) return translate(set.name);
   return id
     .replace('gear_set.', '')
     .split('_')

@@ -26,7 +26,7 @@ export const gear = {
 
   'armoury.title': 'The Armoury',
   'armoury.subtitle': 'Everything the campaign left on the field.',
-  'armoury.empty': 'Nothing here yet — the campaign drops its first pieces from the second stand on.',
+  'armoury.empty': 'Nothing here yet — about one campaign run in five leaves a piece behind.',
   'armoury.noMatch': 'No piece matches these filters.',
   'armoury.capacity': '{count} / {cap} pieces',
   'armoury.capacityWarn': 'The racks are nearly full — {count} of {cap}.',

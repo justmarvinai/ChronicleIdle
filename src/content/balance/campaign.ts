@@ -63,7 +63,7 @@ export const CHAMPION_XP_PER_ENERGY = 30;
 export const PLAYER_XP_PER_ENERGY = 10;
 export const XP_DIFFICULTY: Readonly<Record<Difficulty, number>> = { intro: 1, normal: 1.5, hard: 2 };
 
-/** Chance of a gear drop; the gear itself arrives with the Forge (Phase 6). */
+/** Chance that a run leaves a piece of gear behind; the piece itself is rolled by `@engine/gear`. */
 export const GEAR_DROP_CHANCE: Readonly<Record<Difficulty, number>> = {
   intro: 0.18,
   normal: 0.18,

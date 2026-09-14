@@ -37,7 +37,7 @@ export interface SettlementDef {
   grade: string;
   music: 'battle' | 'boss';
   surface: 'dirt' | 'stone' | 'water' | 'wood';
-  /** Gear sets this settlement favours when a gear drop lands (Phase 6). */
+  /** Gear sets this settlement favours when a gear drop lands (`GEAR.md` §5). */
   setPool: readonly string[];
   /** Exactly ten stages. */
   stages: readonly StageDef[];

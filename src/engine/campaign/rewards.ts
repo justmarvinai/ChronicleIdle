@@ -2,8 +2,8 @@
  * What a campaign run pays (docs/design/CAMPAIGN.md §7).
  *
  * Every roll goes through the injected `Rng`, so a run's drops replay exactly from its seed and
- * `tools/sim` can measure drop rates over 10k runs. The gear *item* arrives with the Forge
- * (Phase 6); until then a run reports that a piece dropped and which set pool it came from.
+ * `tools/sim` can measure drop rates over 10k runs. A gear drop is reported as *that* a piece
+ * fell and which pool it came from; the piece is rolled by `@engine/gear` from the same stream.
  */
 import type { Difficulty } from '@content/balance/battle';
 import {
