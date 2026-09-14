@@ -33,8 +33,8 @@ async function main(): Promise<void> {
   console.log(
     `[content] OK — ${content.currencies.length} currencies, ${content.champions.length} champions, ` +
       `${content.enemies.length} enemies, ${content.settlements.length} settlements ` +
-      `(${content.stages.length} stages) and ${content.titles.length} titles validated against ` +
-      `${assetKeys.size} assets and ` +
+      `(${content.stages.length} stages), ${content.titles.length} titles and ` +
+      `${content.gearSets.length} gear sets validated against ${assetKeys.size} assets and ` +
       `${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );
 }

@@ -14,6 +14,8 @@ export interface TriggerExtra {
   healed?: BattleUnit | undefined;
   /** For `onDebuffLanded`: the debuffed unit. */
   debuffed?: BattleUnit | undefined;
+  /** For `onHit`: what that hit took off, shield included — lifesteal heals a share of it. */
+  damage?: number | undefined;
 }
 
 export interface ActionContext {

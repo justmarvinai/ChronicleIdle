@@ -149,7 +149,7 @@ export const passiveEffectSchema: z.ZodType<Loosen<PassiveEffect>> = z.lazy(() =
       value: z.number().min(0).max(1),
       if: conditionSchema.optional(),
     }),
-    z.object({ kind: z.literal('counterattack') }),
+    z.object({ kind: z.literal('counterattack'), chance: percent.optional() }),
     z.object({
       kind: z.literal('survive_lethal'),
       hpPercent: z.number().min(1).max(100),
@@ -160,6 +160,7 @@ export const passiveEffectSchema: z.ZodType<Loosen<PassiveEffect>> = z.lazy(() =
     z.object({ kind: z.literal('status_value_override'), status: z.enum(STATUS_IDS), value: z.number() }),
     z.object({ kind: z.literal('retarget_single_attacks'), while: z.literal('any_ally_alive') }),
     z.object({ kind: z.literal('extra_turn_chance'), chance: percent }),
+    z.object({ kind: z.literal('lifesteal'), percent }),
     z.object({
       kind: z.literal('shield_ally_below'),
       hpPercent: percent,
@@ -187,6 +188,12 @@ const assetKey = z.string().min(1);
  */
 const ABILITY_ID = /^ab\.[a-z0-9_]+(\.[a-z0-9_]+){1,2}$/;
 
+/**
+ * Passives are also worn, not only known: a gear set's bonus is a passive whose id belongs to the
+ * set (`gear_set.ember_guard.bonus`), so the passive namespace is wider than the ability one.
+ */
+const PASSIVE_ID = /^(ab|gear_set)\.[a-z0-9_]+(\.[a-z0-9_]+){1,2}$/;
+
 export const abilitySchema = z.object({
   slot: z.enum(ABILITY_SLOTS),
   id: z.string().regex(ABILITY_ID),
@@ -206,7 +213,7 @@ export const abilitySchema = z.object({
 });
 
 export const passiveSchema = z.object({
-  id: z.string().regex(ABILITY_ID),
+  id: z.string().regex(PASSIVE_ID),
   name: i18nKey,
   description: i18nKey,
   icon: assetKey,

@@ -46,6 +46,29 @@ describe('content registry', () => {
     ]);
   });
 
+  it('ships the fourteen gear sets, every one of them reachable (GEAR.md §5)', () => {
+    expect(content.gearSets).toHaveLength(14);
+    const twoPiece = content.gearSets.filter((s) => s.pieces === 2);
+    const fourPiece = content.gearSets.filter((s) => s.pieces === 4);
+    expect(twoPiece).toHaveLength(8);
+    expect(fourPiece).toHaveLength(6);
+    // Every set is somebody's home drop, and every home lists it back (the validator checks both).
+    for (const set of content.gearSets) {
+      expect(set.homes.length).toBeGreaterThan(0);
+      for (const home of set.homes) expect(content.settlementByIndex(home)?.setPool).toContain(set.id);
+    }
+    // The four-piece sets are the ones that carry behaviour rather than a flat stat.
+    expect(content.gearSetById('gear_set.retaliation')?.passive.effects).toEqual([
+      { kind: 'counterattack', chance: 30 },
+    ]);
+    expect(content.gearSetById('gear_set.lifedrinker')?.passive.effects).toEqual([
+      { kind: 'lifesteal', percent: 30 },
+    ]);
+    expect(content.gearSetById('gear_set.ember_guard')?.passive.effects).toEqual([
+      { kind: 'stat_mod', stat: 'hp', percent: 15 },
+    ]);
+  });
+
   it('ships twelve settlements of ten stages each (CAMPAIGN.md §1)', () => {
     expect(content.settlements.map((s) => s.index)).toEqual(
       Array.from({ length: SETTLEMENT_COUNT }, (_, i) => i + 1),

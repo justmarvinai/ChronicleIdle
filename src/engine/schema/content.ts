@@ -7,6 +7,7 @@ import type { EncounterDef } from '@content/encounters/types';
 import { FACTION_ARCHETYPES, type EnemyDef } from '@content/enemies/types';
 import type { FactionDef } from '@content/enemies/faction';
 import type { SettlementDef } from '@content/stages/types';
+import type { GearSetDef } from '@content/sets/types';
 import type { TitleDef } from '@content/titles/types';
 import { SETTLEMENT_COUNT } from '@content/balance/campaign';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
@@ -15,6 +16,7 @@ import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
 import { enemySchema } from './enemy';
 import { settlementSchema, stageShapeIssues } from './stage';
+import { gearSetSchema } from './gear-set';
 import { titleSchema } from './title';
 
 export const currencySchema = z.object({
@@ -70,6 +72,7 @@ export function validateContentRegistry(
     factions: readonly FactionDef[];
     settlements: readonly unknown[];
     titles: readonly unknown[];
+    gearSets: readonly unknown[];
   },
   refs: ContentRefs,
 ): ValidationIssue[] {
@@ -85,7 +88,47 @@ export function validateContentRegistry(
     ...settlements.issues,
     ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters),
     ...validateTitles(registry.titles, refs),
+    ...validateGearSets(registry.gearSets, settlements.setPools, refs),
   ];
+}
+
+/**
+ * Gear sets are passives a champion wears (GEAR.md §5). Every set must be reachable: some
+ * settlement's drop pool names it, and its homes must agree with those pools.
+ */
+function validateGearSets(
+  sets: readonly unknown[],
+  setPools: ReadonlyMap<number, readonly string[]>,
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const seen = new Set<string>();
+  const parsed: GearSetDef[] = [];
+  sets.forEach((raw, index) => {
+    const result = gearSetSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues) error(`sets[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = result.data as GearSetDef;
+    const path = `sets.${def.id}`;
+    if (seen.has(def.id)) error(path, 'duplicate id');
+    seen.add(def.id);
+    for (const key of [def.name, def.description, def.passive.name, def.passive.description])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (!refs.assetKeys.has(def.passive.icon)) error(path, `missing icon ${def.passive.icon}`);
+    for (const home of def.homes)
+      if (!(setPools.get(home) ?? []).includes(def.id))
+        error(path, `settlement ${home} does not list this set in its drop pool`);
+    parsed.push(def);
+  });
+  // The other direction: a settlement may not favour a set that does not exist.
+  for (const [settlement, pool] of setPools)
+    for (const id of pool)
+      if (!seen.has(id)) error(`settlements.${settlement}.setPool`, `unknown gear set ${id}`);
+  return issues;
 }
 
 /** Titles name a condition the save can meet; the engine derives the rest (ECONOMY.md §4). */
@@ -157,9 +200,10 @@ function validateSettlements(
   factions: readonly FactionDef[],
   enemyIds: ReadonlySet<string>,
   refs: ContentRefs,
-): { issues: ValidationIssue[]; spawned: Set<string> } {
+): { issues: ValidationIssue[]; spawned: Set<string>; setPools: Map<number, readonly string[]> } {
   const issues: ValidationIssue[] = [];
   const spawned = new Set<string>();
+  const setPools = new Map<number, readonly string[]>();
   const error = (path: string, message: string): void =>
     void issues.push({ path, message, severity: 'error' });
   const factionById = new Map(factions.map((f) => [f.id, f]));
@@ -179,6 +223,7 @@ function validateSettlements(
     const path = `settlements.${def.id}`;
     if (indices.has(def.index)) error(path, `duplicate settlement index ${def.index}`);
     indices.add(def.index);
+    setPools.set(def.index, def.setPool);
     if (!def.id.startsWith(`settlement.${pad(def.index)}.`))
       error(`${path}.id`, `id must carry its index (settlement.${pad(def.index)}.…)`);
     for (const key of [def.name, def.description])
@@ -225,7 +270,7 @@ function validateSettlements(
     if (!indices.has(index)) error(`settlements[${index}]`, 'settlement index declared but not defined');
   for (const faction of factions)
     if (!usedFactions.has(faction.id)) error(`factions.${faction.id}`, 'no settlement fields this faction');
-  return { issues, spawned };
+  return { issues, spawned, setPools };
 }
 
 /** Every authored enemy must be fightable somewhere: a campaign wave or a standalone encounter. */

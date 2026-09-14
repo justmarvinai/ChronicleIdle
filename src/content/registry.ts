@@ -21,6 +21,8 @@ import {
   STAGE_BY_ID,
 } from '@content/stages/index';
 import type { SettlementDef, StageDef } from '@content/stages/types';
+import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
+import type { GearSetDef } from '@content/sets/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
 import type { TitleDef } from '@content/titles/types';
 import type { Difficulty } from '@content/balance/battle';
@@ -52,6 +54,9 @@ export interface ContentRegistry {
   /** Titles in display order, earliest first (ECONOMY.md §4). */
   titles: readonly TitleDef[];
   titleById(id: string): TitleDef | undefined;
+  /** The fourteen gear sets (GEAR.md §5); two-piece sets first. */
+  gearSets: readonly GearSetDef[];
+  gearSetById(id: string): GearSetDef | undefined;
 }
 
 export function buildContentRegistry(): ContentRegistry {
@@ -93,6 +98,8 @@ export function buildContentRegistry(): ContentRegistry {
     settlementOfStage: (id) => SETTLEMENT_OF_STAGE[id],
     titles: TITLES,
     titleById: (id) => TITLE_BY_ID[id],
+    gearSets: GEAR_SETS,
+    gearSetById: (id) => GEAR_SET_BY_ID[id],
   };
 }
 

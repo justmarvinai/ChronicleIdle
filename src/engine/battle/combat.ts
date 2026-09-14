@@ -139,16 +139,26 @@ export function applyHit(
     for (const ally of alliesAlive(ctx, target))
       if (ally.id !== target.id) ctx.trigger('onAllyHit', ally, { target, attacker: source });
     // Counterattack (buff or passive): retaliate with A1 at COUNTER_DMG_MULT, never against a counter.
-    const counters =
-      hasStatus(target, 'counter') ||
-      target.passives.some(
-        (p) => p.trigger === 'static' && p.effects.some((e) => e.kind === 'counterattack'),
-      );
+    // The Counter buff always retaliates; a passive may be a roll instead (Retaliation: 30 %).
+    const counters = hasStatus(target, 'counter') || rollsCounter(ctx, target);
     if (counters && ctx.counterDepth === 0 && source.alive && source.side !== target.side) {
       counterattack(ctx, target, source);
     }
   }
   return dealt + absorbed;
+}
+
+/** True when one of the unit's `counterattack` passives fires; a missing chance means always. */
+function rollsCounter(ctx: ActionContext, unit: BattleUnit): boolean {
+  for (const passive of unit.passives) {
+    if (passive.trigger !== 'static') continue;
+    for (const effect of passive.effects) {
+      if (effect.kind !== 'counterattack') continue;
+      const chance = effect.chance ?? 100;
+      if (chance >= 100 || ctx.state.rng.chance(chance / 100)) return true;
+    }
+  }
+  return false;
 }
 
 function alliesAlive(ctx: ActionContext, unit: BattleUnit): BattleUnit[] {

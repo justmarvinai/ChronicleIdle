@@ -159,7 +159,7 @@ export function strike(
     redirectedFrom: null,
     triggers: true,
   });
-  ctx.trigger('onHit', source, { target });
+  ctx.trigger('onHit', source, { target, damage: dealt });
   return { dealt, killed: wasAlive && !target.alive };
 }
 

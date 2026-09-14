@@ -132,7 +132,10 @@ export type PassiveEffect =
     }
   | { kind: 'crit_rate_per'; per: 'enemy_with_def_down'; value: number; max: number }
   | { kind: 'damage_reduction'; value: number; if?: Condition }
-  | { kind: 'counterattack' }
+  /** Retaliate with A1 when hit; `chance` (default 100) makes it a roll — the Retaliation set. */
+  | { kind: 'counterattack'; chance?: number }
+  /** Heal a share of each hit's damage — the Lifedrinker set (`GEAR.md` §5). */
+  | { kind: 'lifesteal'; percent: number }
   | { kind: 'survive_lethal'; hpPercent: number; oncePerBattle: true; shield?: number; healNextTurn?: number }
   | { kind: 'status_value_override'; status: StatusId; value: number }
   | { kind: 'retarget_single_attacks'; while: 'any_ally_alive' }

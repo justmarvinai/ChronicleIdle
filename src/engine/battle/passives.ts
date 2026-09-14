@@ -5,7 +5,7 @@
  * read where they matter (stats, damage, targeting) and never "fire".
  */
 import type { Effect, PassiveEffect, PassiveTrigger } from './imports';
-import { changeTm } from './combat';
+import { changeTm, healUnit } from './combat';
 import type { ActionContext, TriggerExtra } from './context';
 import { hpFraction } from './stats';
 import { applyStatus } from './statuses';
@@ -22,6 +22,7 @@ const PASSIVE_ONLY = new Set<string>([
   'status_value_override',
   'retarget_single_attacks',
   'extra_turn_chance',
+  'lifesteal',
   'shield_ally_below',
   'on_heal_grant',
   'on_stun_gain_tm',
@@ -87,6 +88,13 @@ function reactTo(ctx: ActionContext, unit: BattleUnit, effect: PassiveEffect, ex
       if (!debuffed || !debuffed.statuses.some((s) => s.id === 'stun' && s.sourceId === unit.id))
         return false;
       changeTm(ctx, unit, unit, effect.delta);
+      return true;
+    }
+    case 'lifesteal': {
+      // A share of the hit that just landed (GEAR.md §5, Lifedrinker).
+      const amount = Math.floor((extra.damage ?? 0) * (effect.percent / 100));
+      if (amount <= 0) return false;
+      healUnit(ctx, unit, unit, amount, 'leech');
       return true;
     }
     default:
