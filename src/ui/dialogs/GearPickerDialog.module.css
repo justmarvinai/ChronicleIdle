@@ -1,0 +1,134 @@
+.body {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.racks {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.scroll {
+  padding-right: 6px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.compare {
+  composes: surfaceStone from global;
+  flex: 0 0 380px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 460px;
+  overflow: hidden auto;
+}
+
+.empty {
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+  font-size: 17px;
+  color: var(--text-3);
+}
+
+.name {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-1);
+}
+
+.note {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+.power {
+  margin: 6px 0 0;
+  font-size: 19px;
+  color: var(--gold-3);
+}
+
+.section {
+  margin: 10px 0 2px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 700;
+}
+
+.rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 3px 6px;
+  background: rgba(16, 14, 20, 0.5);
+}
+
+.stat {
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.before {
+  font-size: 16px;
+  color: var(--text-3);
+}
+
+.after {
+  font-size: 17px;
+  min-width: 92px;
+  text-align: right;
+  color: var(--text-1);
+}
+
+.after[data-delta='up'] {
+  color: var(--ok);
+}
+
+.after[data-delta='down'] {
+  color: var(--danger);
+}
+
+.gain {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--ok);
+}
+
+.loss {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--danger);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 14px;
+}
+
+.confirmText {
+  margin-right: auto;
+  font-size: 17px;
+  color: var(--ember-3);
+}

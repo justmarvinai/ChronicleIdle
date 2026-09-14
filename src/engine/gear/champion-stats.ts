@@ -7,23 +7,18 @@
  * `stat_mod`, so baking them in here would count them twice. `totalStats` adds the set bonuses
  * and is what the screens show, where there is no passive engine to do it.
  */
-import type { ChampionDef, ChampionStats, StatId } from '@content/champions/types';
+import type { ChampionDef, ChampionStats } from '@content/champions/types';
 import type { GearSetDef } from '@content/sets/types';
 import type { ChampionInstance } from '@engine/champions/instance';
 import { baseStats, power } from '@engine/champions/stats';
 import type { GearInstance } from './instance';
 import { setGroups } from './sets';
-import { contributionOf, mergeContributions, type GearContribution } from './stats';
-
-function applied(base: ChampionStats, contribution: GearContribution): ChampionStats {
-  const out = { ...base };
-  for (const stat of Object.keys(out) as StatId[]) {
-    const flat = contribution.flat[stat] ?? 0;
-    const percent = contribution.percent[stat] ?? 0;
-    out[stat] = Math.round((base[stat] + flat) * (1 + percent / 100));
-  }
-  return out;
-}
+import {
+  applyContribution as applied,
+  contributionOf,
+  mergeContributions,
+  type GearContribution,
+} from './stats';
 
 /** Base stats at the champion's star and level, plus everything the worn pieces carry. */
 export function gearedStats(

@@ -5,12 +5,14 @@
 import {
   GEAR_MAX_LEVEL,
   GEAR_MAX_STARS,
+  GEAR_POWER_REFERENCE,
   MAIN_STAT_FAMILY,
   MAIN_STAT_TABLE,
   PERCENT_GEAR_STATS,
   type GearStat,
 } from '@content/balance/gear';
-import type { StatId } from '@content/champions/types';
+import type { ChampionStats, StatId } from '@content/champions/types';
+import { power } from '@engine/champions/stats';
 import type { GearInstance } from './instance';
 
 export function clampGearStars(stars: number): number {
@@ -94,4 +96,25 @@ export function mergeContributions(contributions: readonly GearContribution[]): 
       out.percent[stat as StatId] = (out.percent[stat as StatId] ?? 0) + (value ?? 0);
   }
   return out;
+}
+
+/** `stat → (base + flat) × (1 + percent / 100)`, the order CHAMPIONS.md §6 states. */
+export function applyContribution(base: ChampionStats, contribution: GearContribution): ChampionStats {
+  const out = { ...base };
+  for (const stat of Object.keys(out) as StatId[]) {
+    const flat = contribution.flat[stat] ?? 0;
+    const percent = contribution.percent[stat] ?? 0;
+    out[stat] = Math.round((base[stat] + flat) * (1 + percent / 100));
+  }
+  return out;
+}
+
+/**
+ * What one piece is worth on its own: the power it adds to the reference champion
+ * (`GEAR_POWER_REFERENCE`). It is a yardstick for sorting an armoury, not a promise about what
+ * the piece will do for any particular champion.
+ */
+export function piecePower(piece: GearInstance): number {
+  const base = { ...GEAR_POWER_REFERENCE };
+  return Math.max(0, power(applyContribution(base, contributionOf(piece))) - power(base));
 }

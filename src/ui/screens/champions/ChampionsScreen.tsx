@@ -3,7 +3,13 @@ import { playSfx } from '@audio/index';
 import { sortAndFilter } from '@engine/champions/query';
 import { countOwned } from '@engine/champions/roster';
 import { t } from '@i18n/index';
-import { selectActions, selectRoster, selectRosterView, selectSelectedChampion } from '@state/selectors';
+import {
+  selectActions,
+  selectInventory,
+  selectRoster,
+  selectRosterView,
+  selectSelectedChampion,
+} from '@state/selectors';
 import { useGameStore } from '@state/store';
 import type { ChampionTab, Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -34,12 +40,13 @@ export default function ChampionsScreen({ route }: ScreenProps) {
   const params = route as ChampionsRoute;
   const actions = useGameStore(selectActions);
   const roster = useGameStore(selectRoster);
+  const inventory = useGameStore(selectInventory);
   const view = useGameStore(selectRosterView);
   const selectedId = useGameStore(selectSelectedChampion);
   const [tab, setTab] = useState<ChampionTab>(params.tab ?? 'info');
   useSceneAudio('hub', 'interior');
 
-  const entries = useMemo(() => entriesOf(roster), [roster]);
+  const entries = useMemo(() => entriesOf(roster, inventory), [roster, inventory]);
   const shown = useMemo(() => sortAndFilter(entries, view), [entries, view]);
   // One handler per instance, reused across renders so memoised cards skip their re-render.
   const selectHandlers = useMemo(() => {

@@ -12,6 +12,7 @@ import { CHAMPION_IDS, type ChampionId, type GearSlot, type ObtainSource } from 
 import type { CurrencyAmount } from '@content/currencies/types';
 import { content } from '@content/registry';
 import { DEFAULT_ROSTER_VIEW, type RosterView } from '@engine/champions/query';
+import { DEFAULT_GEAR_VIEW, type GearView } from '@engine/gear/query';
 import {
   addChampion,
   generateRoster,
@@ -90,6 +91,8 @@ export interface UiState {
   fullscreenDeclined: boolean;
   /** Champions index state (sort, filters, selection) — kept for the session, never saved. */
   roster: { view: RosterView; selected: string | null };
+  /** The Armoury's racks: how they are sorted and filtered, and the piece on the bench. */
+  armoury: { view: GearView; selected: string | null };
   /**
    * The Tavern's table: who is drinking and what is on it. Transient — a reload starts with an
    * empty table, and nothing is spent until the Upgrade press.
@@ -174,6 +177,9 @@ export interface GameActions {
   generateDebugRoster(count: number, seed: string): Result<void>;
   setRosterView(patch: Partial<RosterView>): void;
   selectChampion(instanceId: string | null): void;
+  /** The Armoury's rack view; filters are replaced whole, so a patch never half-applies. */
+  setGearView(patch: Partial<GearView>): void;
+  selectGearPiece(pieceId: string | null): void;
   /** Stores a team preset (ordered instance ids, slot 0 = leader) for a party-size mode. */
   saveTeamPreset(
     mode: TeamMode,
@@ -305,6 +311,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             fullscreenOffered: false,
             fullscreenDeclined: false,
             roster: { view: DEFAULT_ROSTER_VIEW, selected: null },
+            armoury: { view: DEFAULT_GEAR_VIEW, selected: null },
             tavern: { targetId: null, offering: { brews: {}, food: [] } },
             levelUp: null,
           },
@@ -843,6 +850,16 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             selectChampion(instanceId) {
               set((state) => {
                 state.ui.roster.selected = instanceId;
+              });
+            },
+            setGearView(patch) {
+              set((state) => {
+                Object.assign(state.ui.armoury.view, patch);
+              });
+            },
+            selectGearPiece(pieceId) {
+              set((state) => {
+                state.ui.armoury.selected = pieceId;
               });
             },
 

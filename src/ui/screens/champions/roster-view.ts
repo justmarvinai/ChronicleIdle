@@ -5,11 +5,19 @@
 import type { ChampionDef, Element, Rarity, Role } from '@content/champions/types';
 import { content } from '@content/registry';
 import { rosterEntries, type RosterEntry } from '@engine/champions/query';
+import { wornBy } from '@engine/gear/equip';
+import type { Inventory } from '@engine/gear/instance';
 import type { Roster } from '@engine/champions/instance';
 import { t, translate, type I18nKey } from '@i18n/index';
 
-export function entriesOf(roster: Roster): RosterEntry[] {
-  return rosterEntries(roster, content.championById, (def) => translate(def.name));
+const NO_INVENTORY: Inventory = {};
+
+/** Display entries for the roster; with an armoury, every power number includes what is worn. */
+export function entriesOf(roster: Roster, inventory: Inventory = NO_INVENTORY): RosterEntry[] {
+  return rosterEntries(roster, content.championById, (def) => translate(def.name), {
+    worn: (instance) => wornBy(instance, inventory),
+    setById: content.gearSetById,
+  });
 }
 
 export const rarityLabel = (rarity: Rarity): string => t(`rarity.${rarity}` as I18nKey);

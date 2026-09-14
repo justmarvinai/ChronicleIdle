@@ -1,0 +1,48 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.racks {
+  composes: surfaceStone from global;
+  position: absolute;
+  left: 24px;
+  right: 564px;
+  top: 100px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  padding: 0 14px 12px;
+}
+
+.capacity {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.warn {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ember-3);
+}
+
+.emptyBench {
+  composes: surfaceStone from global;
+  position: absolute;
+  right: 24px;
+  top: 100px;
+  width: 520px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 18px;
+}

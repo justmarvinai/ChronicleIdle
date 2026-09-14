@@ -35,6 +35,7 @@ function set(input: SetInput): GearSetDef {
     id,
     name: `${id}.name`,
     description: `${id}.description`,
+    icon: input.icon,
     pieces: input.pieces,
     passives,
     homes: input.homes,

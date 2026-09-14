@@ -3,6 +3,7 @@
  * group and the passive joins its unit in battle, using the same shape champions' own passives
  * use, so the engine has nothing new to learn beyond the two mechanics the sets introduce.
  */
+import type { SpellKey } from '@assets/manifest.generated';
 import type { PassiveDef } from '@content/champions/types';
 
 /** Two-piece sets stack (three groups on six slots); four-piece sets take two thirds of a build. */
@@ -15,6 +16,8 @@ export interface GearSetDef {
   /** i18n keys. */
   name: string;
   description: string;
+  /** The set's painted crest: worn by its pieces on every card in the armoury. */
+  icon: SpellKey;
   /** Pieces needed for one complete group. */
   pieces: SetSize;
   /**

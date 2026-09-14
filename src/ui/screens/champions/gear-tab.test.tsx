@@ -1,0 +1,180 @@
+import { readFileSync } from 'node:fs';
+import type { ReactNode } from 'react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AssetManifest } from '@assets/manifest-types';
+import { setManifestForTests } from '@assets/manifest';
+import { content } from '@content/registry';
+import type { GearInstance } from '@engine/gear/instance';
+import { useGameStore } from '@state/store';
+import { DialogHost } from '@ui/dialogs/DialogHost';
+import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
+import ChampionsScreen from './ChampionsScreen';
+
+vi.mock('@render/ambient/AmbientLayer', () => ({ AmbientLayer: () => null }));
+vi.mock('@ui/hooks/useSceneAudio', () => ({ useSceneAudio: () => undefined }));
+vi.mock('@audio/index', () => ({ playSfx: () => undefined, playMusic: () => undefined }));
+
+function stage(children: ReactNode) {
+  return (
+    <ViewportContext.Provider
+      value={{
+        scale: 1,
+        windowWidth: VIRTUAL_WIDTH,
+        windowHeight: VIRTUAL_HEIGHT,
+        offsetX: 0,
+        offsetY: 0,
+        backdrop: null,
+        setBackdrop: () => undefined,
+      }}
+    >
+      {children}
+    </ViewportContext.Provider>
+  );
+}
+
+setManifestForTests(
+  JSON.parse(readFileSync('public/assets/generated/manifest.json', 'utf8')) as AssetManifest,
+);
+
+const save = () => useGameStore.getState().save!;
+const actions = () => useGameStore.getState().actions;
+const starter = (): string =>
+  Object.values(save().roster).find((i) => i.defId === 'champ.ser_corvin')!.instanceId;
+
+function chronicle(): void {
+  const a = actions();
+  a.resetGame();
+  a.newGame('Tester');
+  a.chooseStarter('champ.ser_corvin');
+  a.grantCurrency([{ currency: 'gold', amount: 500_000 }], 'test');
+  // Level 3 opens the gear feature (`unlocks.ts`), which the tab is gated on.
+  a.grantPlayerXp(4_000, 'test');
+}
+
+/** One piece of a named slot and set, straight onto the racks. */
+function stock(slot: GearInstance['slot'], setId: string, serial: number): GearInstance {
+  const piece: GearInstance = {
+    instanceId: `gear-test-${serial}`,
+    slot,
+    setId,
+    rarity: 'epic',
+    stars: 5,
+    level: 0,
+    mainStat: slot === 'weapon' ? 'atk' : slot === 'helmet' ? 'hp' : 'def',
+    subs: [{ stat: 'spd', value: 6, rolls: 1 }],
+    equippedTo: null,
+    locked: false,
+    acquiredAt: Date.UTC(2026, 8, 12) + serial,
+    source: 'campaign_drop',
+  };
+  useGameStore.setState((state) => {
+    if (state.save) state.save.inventory[piece.instanceId] = piece;
+    return state;
+  });
+  return piece;
+}
+
+function openGearTab(instanceId: string) {
+  actions().selectChampion(instanceId);
+  return render(
+    stage(
+      <>
+        <ChampionsScreen route={{ name: 'champions', instanceId, tab: 'gear' }} />
+        <DialogHost />
+      </>,
+    ),
+  );
+}
+
+describe('the champion Gear tab', () => {
+  beforeEach(chronicle);
+
+  it('shows six empty slots and no set bonus on a bare champion', () => {
+    openGearTab(starter());
+    expect(screen.getByTestId('panel-gear')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^gear-slot-/)).toHaveLength(6);
+    expect(screen.getByTestId('gear-sets-none')).toBeInTheDocument();
+  });
+
+  it('equips a piece through the picker and shows the compare before it does', async () => {
+    const user = userEvent.setup();
+    const piece = stock('weapon', 'gear_set.warcry', 1);
+    openGearTab(starter());
+
+    await user.click(within(screen.getByTestId('gear-slot-weapon')).getByRole('button'));
+    const picker = await screen.findByTestId('dialog-gear-picker');
+    expect(screen.getByTestId('gear-equip')).toBeDisabled();
+
+    await user.click(within(picker).getAllByRole('button', { name: /Warcry/ })[0] as HTMLElement);
+    // The compare panel answers before anything is spent.
+    expect(screen.getByTestId('gear-compare-name')).toHaveTextContent('Warcry Weapon');
+    const atk = within(screen.getByTestId('compare-atk')).getAllByRole('definition');
+    expect(atk[1]).toHaveAttribute('data-delta', 'up');
+
+    await user.click(screen.getByTestId('gear-equip'));
+    expect(save().roster[starter()]?.gear.weapon).toBe(piece.instanceId);
+    expect(save().inventory[piece.instanceId]?.equippedTo).toBe(starter());
+    expect(screen.getByTestId('gear-main-weapon')).toHaveTextContent('ATK');
+  });
+
+  it('counts a complete set as a live bonus', async () => {
+    const user = userEvent.setup();
+    const first = stock('weapon', 'gear_set.warcry', 2);
+    const second = stock('helmet', 'gear_set.warcry', 3);
+    actions().equipGear(starter(), first.instanceId);
+    actions().equipGear(starter(), second.instanceId);
+    openGearTab(starter());
+    const line = screen.getByTestId('gear-set-gear_set.warcry');
+    expect(line).toHaveTextContent('Warcry');
+    expect(line).toHaveTextContent('1 ×');
+    // And the power on the tab is the geared one, above the bare champion's.
+    const powered = Number(screen.getByTestId('gear-power').textContent?.replace(/,/g, ''));
+    await user.click(screen.getByTestId('gear-remove-weapon'));
+    const bare = Number(screen.getByTestId('gear-power').textContent?.replace(/,/g, ''));
+    expect(powered).toBeGreaterThan(bare);
+  });
+
+  it('asks before taking a piece off another champion', async () => {
+    const user = userEvent.setup();
+    const other = Object.keys(save().roster).find((id) => id !== starter()) as string;
+    const piece = stock('weapon', 'gear_set.warcry', 4);
+    actions().equipGear(other, piece.instanceId);
+    const otherName = content.championById(save().roster[other]!.defId)?.name ?? '';
+    expect(otherName).not.toBe('');
+
+    openGearTab(starter());
+    await user.click(within(screen.getByTestId('gear-slot-weapon')).getByRole('button'));
+    const picker = await screen.findByTestId('dialog-gear-picker');
+    await user.click(within(picker).getAllByRole('button', { name: /Warcry/ })[0] as HTMLElement);
+
+    // The button now offers to take it, and the press only asks; nothing moves yet.
+    await user.click(screen.getByTestId('gear-equip'));
+    expect(save().roster[other]?.gear.weapon).toBe(piece.instanceId);
+
+    await user.click(screen.getByTestId('gear-take-confirm'));
+    expect(save().roster[other]?.gear.weapon).toBeNull();
+    expect(save().roster[starter()]?.gear.weapon).toBe(piece.instanceId);
+  });
+
+  it('takes a piece off from the slot itself', async () => {
+    const user = userEvent.setup();
+    const piece = stock('boots', 'gear_set.swiftfoot', 5);
+    actions().equipGear(starter(), piece.instanceId);
+    openGearTab(starter());
+    await user.click(screen.getByTestId('gear-remove-boots'));
+    expect(save().roster[starter()]?.gear.boots).toBeNull();
+    expect(save().inventory[piece.instanceId]?.equippedTo).toBeNull();
+  });
+
+  it('adds the gear bonus to the Info tab’s stat table', async () => {
+    const user = userEvent.setup();
+    const piece = stock('weapon', 'gear_set.warcry', 6);
+    actions().equipGear(starter(), piece.instanceId);
+    openGearTab(starter());
+    await user.click(screen.getByTestId('tab-info'));
+    expect(screen.getByTestId('stat-bonus-atk')).not.toBeEmptyDOMElement();
+    expect(screen.getByTestId('stat-bonus-atk')).toHaveTextContent('+');
+  });
+});

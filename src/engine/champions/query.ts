@@ -12,6 +12,9 @@ import {
   type Rarity,
   type Role,
 } from './imports';
+import type { GearSetDef } from '@content/sets/types';
+import { totalPower } from '@engine/gear/champion-stats';
+import type { GearInstance } from '@engine/gear/instance';
 import type { ChampionInstance, Roster } from './instance';
 import { baseStats, power } from './stats';
 
@@ -43,10 +46,21 @@ export const DEFAULT_ROSTER_VIEW: RosterView = {
 export interface RosterEntry {
   instance: ChampionInstance;
   def: ChampionDef;
+  /** Power with everything worn: the number the index, the rail and the compare panel rank by. */
   power: number;
+  /** The pieces the champion is wearing, in slot order; empty while the armoury is untouched. */
+  worn: readonly GearInstance[];
   /** Display name resolved by the caller; kept here so name sorting is stable. */
   name: string;
 }
+
+/** How a caller resolves what a champion wears; omitted, every champion is counted bare. */
+export interface GearLookup {
+  worn: (instance: ChampionInstance) => readonly GearInstance[];
+  setById: (id: string) => GearSetDef | undefined;
+}
+
+const NOTHING_WORN: readonly GearInstance[] = [];
 
 const RARITY_RANK = Object.fromEntries(RARITIES.map((r, i) => [r, i])) as Record<Rarity, number>;
 const ELEMENT_RANK = Object.fromEntries(ELEMENTS.map((e, i) => [e, i])) as Record<Element, number>;
@@ -57,15 +71,21 @@ export function rosterEntries(
   roster: Roster,
   championById: (id: ChampionId) => ChampionDef | undefined,
   nameOf: (def: ChampionDef) => string,
+  gear?: GearLookup,
 ): RosterEntry[] {
   const entries: RosterEntry[] = [];
   for (const instance of Object.values(roster)) {
     const def = championById(instance.defId);
     if (!def) continue;
+    const worn = gear ? gear.worn(instance) : NOTHING_WORN;
     entries.push({
       instance,
       def,
-      power: power(baseStats(def.stats, instance.stars, instance.level)),
+      power:
+        gear && worn.length > 0
+          ? totalPower(def, instance, worn, gear.setById)
+          : power(baseStats(def.stats, instance.stars, instance.level)),
+      worn,
       name: nameOf(def),
     });
   }

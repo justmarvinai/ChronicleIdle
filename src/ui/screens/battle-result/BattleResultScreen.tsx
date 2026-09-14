@@ -13,6 +13,7 @@ import { selectActions } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { championAvatar } from '@ui/champions/art';
+import { pieceName } from '@ui/gear/gear-view';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
 import { Panel } from '@ui/components/Frame/Panel';
@@ -60,6 +61,9 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const last = campaign.summaries[campaign.summaries.length - 1] ?? null;
   const repeated = campaign.requested > 1;
   const rewards = repeated ? batchRewards(campaign) : (last?.rewards ?? null);
+  // Every piece the batch minted, and the drops the racks were too full to hold (GEAR.md §7).
+  const dropped = campaign.summaries.flatMap((summary) => summary.gear);
+  const gearLost = campaign.summaries.reduce((sum, summary) => sum + summary.gearLost, 0);
   const allies = outcome.units.filter((u) => u.side === 'ally');
   const teamIds = allies.map((u) => u.instanceId).filter((id): id is string => !!id);
   const enemyTurns = outcome.turns - outcome.allyTurns;
@@ -230,7 +234,20 @@ export default function BattleResultScreen(_props: ScreenProps) {
                   {t('battleResult.starChest', { stars: threshold })}
                 </p>
               ))}
-              {rewards.gear.length ? <p className={styles.gear}>{t('battleResult.gearDrop')}</p> : null}
+              {dropped.map((piece) => (
+                <p
+                  key={piece.instanceId}
+                  className={styles.gear}
+                  data-testid={`result-gear-${piece.instanceId}`}
+                >
+                  {t('battleResult.gearDrop', { piece: pieceName(piece) })}
+                </p>
+              ))}
+              {gearLost > 0 ? (
+                <p className={styles.bonus} data-testid="result-gear-lost">
+                  {t('battleResult.gearLost', { count: gearLost })}
+                </p>
+              ) : null}
               {(last?.levelUps ?? []).map((up) => {
                 const def = content.championById(
                   (useGameStore.getState().save?.roster[up.instanceId]?.defId ?? '') as never,

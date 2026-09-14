@@ -118,6 +118,7 @@ function validateGearSets(
     seen.add(def.id);
     for (const key of [def.name, def.description])
       if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (!refs.assetKeys.has(def.icon)) error(path, `missing icon ${def.icon}`);
     for (const passive of def.passives) {
       for (const key of [passive.name, passive.description])
         if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);

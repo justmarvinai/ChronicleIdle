@@ -1,4 +1,5 @@
 import type { FeatureId } from '@content/balance/unlocks';
+import type { GearSlot } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { I18nKey, I18nParams } from '@i18n/index';
 import type { DecodedChronicle } from './chronicle-file';
@@ -14,6 +15,8 @@ export type Route =
   | { name: 'champions'; instanceId?: string; tab?: ChampionTab }
   /** The Tavern; `tab` deep-links one of its three tracks (`ECONOMY.md` §3). */
   | { name: 'tavern'; instanceId?: string; tab?: TavernTab }
+  /** The Armoury; `pieceId` opens with one piece already on the bench. */
+  | { name: 'armoury'; pieceId?: string }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }
@@ -49,6 +52,8 @@ export type DialogRoute =
       food: string[];
       brews: Record<string, number>;
     }
+  /** The racks, filtered to one champion's slot: pick a piece, compare it, wear it. */
+  | { name: 'gear-picker'; instanceId: string; slot: GearSlot }
   | { name: 'level-up' }
   | { name: 'title-picker' }
   | { name: 'battle-pause' }

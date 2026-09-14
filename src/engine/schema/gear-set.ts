@@ -7,6 +7,7 @@ export const gearSetSchema = z.object({
   id: z.string().regex(/^gear_set\.[a-z0-9_]+$/),
   name: z.string().min(1),
   description: z.string().min(1),
+  icon: z.string().min(1),
   /** Two-piece sets stack; four-piece sets carry the behaviour bonuses. */
   pieces: z.union([z.literal(2), z.literal(4)]),
   passives: z.array(passiveSchema).min(1),

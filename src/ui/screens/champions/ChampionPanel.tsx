@@ -1,16 +1,11 @@
-import {
-  GEAR_SLOTS,
-  STAT_IDS,
-  type AbilityDef,
-  type ChampionDef,
-  type StatId,
-} from '@content/champions/types';
-import { unlockLevel } from '@engine/progression/unlocks';
+import { STAT_IDS, type AbilityDef, type ChampionDef, type StatId } from '@content/champions/types';
+import { content } from '@content/registry';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import type { ChampionInstance } from '@engine/champions/instance';
 import type { RosterEntry } from '@engine/champions/query';
 import { baseStats, levelCap } from '@engine/champions/stats';
 import { canLevel, championXpToNext } from '@engine/champions/xp';
+import { totalStats } from '@engine/gear/champion-stats';
 import { t, translate, type I18nKey } from '@i18n/index';
 import type { ChampionTab } from '@state/ui-types';
 import { AbilityIcon } from '@ui/components/AbilityIcon/AbilityIcon';
@@ -20,9 +15,9 @@ import { Divider } from '@ui/components/Divider/Divider';
 import { Panel } from '@ui/components/Frame/Panel';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
-import { Slot } from '@ui/components/Slot/Slot';
 import { Tabs } from '@ui/components/Tab/Tabs';
-import { SLOT_GLYPH } from '@ui/styles/display-maps';
+import { formatStat } from '@ui/gear/gear-view';
+import { GearTab } from './GearTab';
 import styles from './ChampionPanel.module.css';
 
 const TABS: readonly ChampionTab[] = ['info', 'abilities', 'lore', 'gear'];
@@ -64,7 +59,7 @@ export function ChampionPanel({
           {tab === 'info' ? <InfoTab entry={entry} /> : null}
           {tab === 'abilities' ? <AbilitiesTab def={def} instance={instance} /> : null}
           {tab === 'lore' ? <LoreTab def={def} instance={instance} copies={copies} /> : null}
-          {tab === 'gear' ? <GearTab /> : null}
+          {tab === 'gear' ? <GearTab entry={entry} /> : null}
         </ScrollArea>
       </Panel>
       <div className={styles.actions}>
@@ -97,8 +92,10 @@ export function ChampionPanel({
 }
 
 function InfoTab({ entry }: { entry: RosterEntry }) {
-  const { def, instance } = entry;
+  const { def, instance, worn } = entry;
   const stats = baseStats(def.stats, instance.stars, instance.level);
+  // What the gear and its complete sets add on top of the base — the second column of the table.
+  const geared = totalStats(def, instance, worn, content.gearSetById);
   const cap = levelCap(instance.stars);
   const next = championXpToNext(instance.level);
   return (
@@ -132,8 +129,8 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
             <dd className={`num ${styles.statValue}`} data-testid={`stat-${stat}`}>
               {formatStat(stat, stats[stat])}
             </dd>
-            <dd className={`num ${styles.statBonus}`} aria-hidden="true">
-              +0
+            <dd className={`num ${styles.statBonus}`} data-testid={`stat-bonus-${stat}`}>
+              {geared[stat] > stats[stat] ? `+${formatStat(stat, geared[stat] - stats[stat])}` : ''}
             </dd>
           </div>
         ))}
@@ -141,11 +138,6 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
       <p className={styles.hint}>{t('champions.stat.gearHint')}</p>
     </div>
   );
-}
-
-function formatStat(stat: StatId, value: number): string {
-  if (stat === 'critRate' || stat === 'critDmg') return `${value}%`;
-  return value.toLocaleString('en-US');
 }
 
 function AbilitiesTab({ def, instance }: { def: ChampionDef; instance: ChampionInstance }) {
@@ -249,32 +241,6 @@ function LoreTab({
       </p>
       <p className={styles.meta}>{t('champions.copies', { count: copies })}</p>
       {def.art.placeholder ? <p className={styles.hint}>{t('champions.placeholder.hint')}</p> : null}
-    </div>
-  );
-}
-
-function GearTab() {
-  return (
-    <div className={styles.gear} data-testid="panel-gear">
-      <div className={styles.slots}>
-        {GEAR_SLOTS.map((slot) => (
-          <div key={slot} className={styles.gearSlot}>
-            <Slot
-              size="md"
-              locked
-              emptyGlyph={SLOT_GLYPH[slot]}
-              label={t(`champions.gear.slot.${slot}` as I18nKey)}
-            />
-            <span className={`display ${styles.slotName}`}>
-              {t(`champions.gear.slot.${slot}` as I18nKey)}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className={styles.note}>
-        <Glyph glyph="glyph.broken_shackle" size={22} color="var(--gold-2)" />
-        <span>{t('champions.gear.locked', { level: unlockLevel('gear') })}</span>
-      </p>
     </div>
   );
 }

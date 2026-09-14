@@ -11,7 +11,14 @@ import { findRankFood, rankRequirement } from '@engine/progression/tavern-rank';
 import { tomeFor } from '@engine/progression/tavern-skills';
 import { t, translate } from '@i18n/index';
 import { canAffordFeed, feedCost, tavernLookupOf } from '@state/tavern';
-import { selectActions, selectRoster, selectRosterView, selectSave, selectTavern } from '@state/selectors';
+import {
+  selectActions,
+  selectInventory,
+  selectRoster,
+  selectRosterView,
+  selectSave,
+  selectTavern,
+} from '@state/selectors';
 import { useGameStore } from '@state/store';
 import type { Route, TavernTab } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -47,6 +54,7 @@ export default function TavernScreen({ route }: ScreenProps) {
   const actions = useGameStore(selectActions);
   const save = useGameStore(selectSave);
   const roster = useGameStore(selectRoster);
+  const inventory = useGameStore(selectInventory);
   const view = useGameStore(selectRosterView);
   const [tab, setTab] = useState<TavernTab>(params.tab ?? 'level');
   const table = useGameStore(selectTavern);
@@ -54,7 +62,7 @@ export default function TavernScreen({ route }: ScreenProps) {
   const offering = table.offering;
   useSceneAudio('hub', 'interior');
 
-  const entries = useMemo(() => entriesOf(roster), [roster]);
+  const entries = useMemo(() => entriesOf(roster, inventory), [roster, inventory]);
   const shown = useMemo(() => sortAndFilter(entries, view), [entries, view]);
   const target = (targetId ? roster[targetId] : undefined) ?? shown[0]?.instance ?? entries[0]?.instance;
   const def = target ? content.championById(target.defId) : undefined;

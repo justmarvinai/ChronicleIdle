@@ -1,0 +1,199 @@
+.panel {
+  position: absolute;
+  right: 24px;
+  top: 100px;
+  width: 520px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.bodyContent {
+  height: 100%;
+  min-height: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.art {
+  --rarity: var(--gold-2);
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      color-mix(in srgb, var(--rarity) 35%, transparent) 0%,
+      transparent 70%
+    ),
+    rgba(12, 11, 15, 0.8);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--rarity) 60%, transparent),
+    0 0 14px color-mix(in srgb, var(--rarity) 30%, transparent);
+}
+
+.icon {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+  color: var(--text-1);
+  letter-spacing: 0.02em;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.level {
+  color: var(--gold-3);
+  font-size: 17px;
+}
+
+.powerRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.powerLabel {
+  font-size: 18px;
+  color: var(--text-2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.power {
+  font-size: 32px;
+  color: var(--gold-3);
+  text-shadow: 0 0 12px rgba(233, 184, 90, 0.35);
+}
+
+.section {
+  margin: 14px 0 6px;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.main {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-1);
+}
+
+.subs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sub {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 8px;
+  background: rgba(16, 14, 20, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(90, 85, 78, 0.35);
+}
+
+.subValue {
+  font-size: 19px;
+  color: var(--text-1);
+}
+
+.rolls {
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.setName {
+  margin: 0;
+  font-size: 20px;
+  color: var(--gold-3);
+}
+
+.hint {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-3);
+}
+
+.wearer {
+  font: inherit;
+  color: var(--gold-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.wearer:hover {
+  color: var(--text-1);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.actions > * {
+  flex: 1 1 0;
+}
+
+.buy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+}
+
+.cost {
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.error {
+  margin: 0;
+  font-size: 15px;
+  color: var(--danger);
+}

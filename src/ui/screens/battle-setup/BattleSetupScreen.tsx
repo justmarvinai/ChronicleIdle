@@ -12,7 +12,7 @@ import type { FeatureId } from '@content/balance/unlocks';
 import { sortAndFilter, DEFAULT_ROSTER_VIEW } from '@engine/champions/query';
 import { t, translate } from '@i18n/index';
 import type { TeamMode } from '@engine/schema/save';
-import { selectActions, selectRoster, selectSave } from '@state/selectors';
+import { selectActions, selectInventory, selectRoster, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -52,6 +52,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const encounter = content.encounterById(encounterId);
   const actions = useGameStore(selectActions);
   const roster = useGameStore(selectRoster);
+  const inventory = useGameStore(selectInventory);
   const save = useGameStore(selectSave);
   useSceneAudio('hub', 'interior');
   // The encounter id carries the stage and the difficulty, so the pointer needs no route field.
@@ -59,7 +60,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const ref = pointer ? stageRefOf(pointer) : null;
   const partySize = encounter?.partySize ?? 3;
   const mode: TeamMode = partySize === 4 ? 'boss' : 'campaign';
-  const entries = useMemo(() => entriesOf(roster), [roster]);
+  const entries = useMemo(() => entriesOf(roster, inventory), [roster, inventory]);
   const powerOf = useMemo(() => {
     const map = new Map(entries.map((e) => [e.instance.instanceId, e.power]));
     return (id: string): number => map.get(id) ?? 0;

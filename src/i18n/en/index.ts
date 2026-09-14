@@ -4,6 +4,7 @@ import { champions } from './champions';
 import { currencies } from './currencies';
 import { enemies } from './enemies';
 import { features } from './features';
+import { gear } from './gear';
 import { sets } from './sets';
 import { tavern } from './tavern';
 import { titles } from './titles';
@@ -17,6 +18,7 @@ export const en = {
   ...campaign,
   ...titles,
   ...features,
+  ...gear,
   ...sets,
   ...tavern,
   ...battle,

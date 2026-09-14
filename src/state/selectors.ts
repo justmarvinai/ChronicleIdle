@@ -10,12 +10,16 @@ import type { GameStore } from './store';
 
 import type { StagePointer } from '@engine/campaign/progress';
 import type { Roster } from '@engine/champions/instance';
+import type { Inventory } from '@engine/gear/instance';
 import type { CampaignSave } from '@engine/schema/save';
 import type { Route } from './ui-types';
 
 export const selectSave = (s: GameStore) => s.save;
 const EMPTY_ROSTER: Roster = {};
 export const selectRoster = (s: GameStore): Roster => s.save?.roster ?? EMPTY_ROSTER;
+const EMPTY_INVENTORY: Inventory = {};
+/** Every piece of gear the chronicle owns, worn or not (`GEAR.md` §7). */
+export const selectInventory = (s: GameStore): Inventory => s.save?.inventory ?? EMPTY_INVENTORY;
 export const selectRosterView = (s: GameStore) => s.ui.roster.view;
 export const selectSelectedChampion = (s: GameStore) => s.ui.roster.selected;
 export const selectAvatarChampionId = (s: GameStore) => s.save?.profile.avatarChampionId ?? null;
@@ -109,3 +113,13 @@ export function earnedTitleIds(s: GameStore): string[] {
 
 /** The Tavern's table: the champion being upgraded and what is on it (`ECONOMY.md` §3). */
 export const selectTavern = (s: GameStore) => s.ui.tavern;
+
+// ---------------------------------------------------------------------------------------------
+// The Armoury (docs/design/GEAR.md §7)
+// ---------------------------------------------------------------------------------------------
+
+export const selectGearView = (s: GameStore) => s.ui.armoury.view;
+export const selectSelectedPiece = (s: GameStore): string | null => s.ui.armoury.selected;
+/** Pieces held against the cap, for the racks' capacity band. */
+export const selectInventoryCount = (s: GameStore): number =>
+  s.save ? Object.keys(s.save.inventory).length : 0;

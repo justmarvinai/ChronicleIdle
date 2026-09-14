@@ -161,6 +161,16 @@ export default function DebugDialog({ onClose }: { onClose: () => void }) {
           >
             {t('debug.tavernStock')}
           </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            data-testid="debug-gear-drop"
+            onClick={() => {
+              for (let i = 0; i < 12; i += 1) actions.debugGrantGear(6 + (i % 6));
+            }}
+          >
+            {t('debug.gearDrop')}
+          </Button>
         </span>
       </div>
     </Dialog>

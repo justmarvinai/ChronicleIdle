@@ -3,7 +3,7 @@
  * screen and the stat calculator; changing a row changes what every future drop is worth, so the
  * tables are keyed by star and stated in the doc's own units.
  */
-import type { GearSlot } from '@content/champions/types';
+import type { GearSlot, StatId } from '@content/champions/types';
 import type { Rarity } from '@content/champions/types';
 
 /**
@@ -292,3 +292,20 @@ export function dropStarRange(settlementIndex: number): readonly [number, number
   const max = Math.max(min, Math.min(GEAR_MAX_STARS, Math.ceil(index / 2) + 1));
   return [min, max];
 }
+
+/**
+ * The yardstick a single piece is weighed against. A percentage stat is worth nothing on its own
+ * — 20 % of what? — so the armoury's power column measures every piece against one imaginary
+ * mid-campaign champion. Raising these numbers makes percentage rolls look better next to flat
+ * ones; it changes no gameplay, only the order pieces sort in.
+ */
+export const GEAR_POWER_REFERENCE: Readonly<Record<StatId, number>> = {
+  hp: 12_000,
+  atk: 900,
+  def: 700,
+  spd: 100,
+  critRate: 15,
+  critDmg: 50,
+  res: 15,
+  acc: 15,
+};

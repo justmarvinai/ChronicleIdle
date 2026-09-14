@@ -19,6 +19,7 @@ const selectDailyBoss = selectFeatureUnlocked('daily_boss');
 const selectWeeklyBoss = selectFeatureUnlocked('weekly_boss');
 const selectMissions = selectFeatureUnlocked('missions');
 const selectQuests = selectFeatureUnlocked('quests_daily');
+const selectGear = selectFeatureUnlocked('gear');
 
 /** Emberhold — the home screen (clones the reference hub: hotspots on the art, chrome around it). */
 export default function HubScreen(_props: ScreenProps) {
@@ -27,6 +28,7 @@ export default function HubScreen(_props: ScreenProps) {
   const weeklyBoss = useGameStore(selectWeeklyBoss);
   const missions = useGameStore(selectMissions);
   const quests = useGameStore(selectQuests);
+  const gear = useGameStore(selectGear);
   useSceneAudio('hub', 'hub');
 
   const open = (def: HubHotspotDef, unlocked: boolean): void => {
@@ -83,6 +85,17 @@ export default function HubScreen(_props: ScreenProps) {
                 actions.push({ name: 'locked', feature: 'quests_daily', titleKey: 'hub.quests' })
               }
               testId="nav-quests"
+            />
+            <NavButton
+              label={t('hub.armoury')}
+              glyph="glyph.ribcage_armor"
+              unlocked={gear}
+              onClick={() =>
+                actions.push(
+                  gear ? { name: 'armoury' } : { name: 'locked', feature: 'gear', titleKey: 'hub.armoury' },
+                )
+              }
+              testId="nav-armoury"
             />
           </>
         }

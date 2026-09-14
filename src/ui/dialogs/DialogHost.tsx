@@ -7,6 +7,7 @@ import { AvatarPickerDialog } from './AvatarPickerDialog';
 import { BattlePauseDialog } from './BattlePauseDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { FoodPickerDialog } from './FoodPickerDialog';
+import { GearPickerDialog } from './GearPickerDialog';
 import { ImportConfirmDialog } from './ImportConfirmDialog';
 import { LevelUpDialog } from './LevelUpDialog';
 import { NewGameConfirmDialog } from './NewGameConfirmDialog';
@@ -67,6 +68,14 @@ export function DialogHost() {
           instanceId={dialog.instanceId}
           food={dialog.food}
           brews={dialog.brews}
+          onClose={closeDialog}
+        />
+      ) : null}
+      {dialog?.name === 'gear-picker' ? (
+        <GearPickerDialog
+          key="gear-picker"
+          instanceId={dialog.instanceId}
+          slot={dialog.slot}
           onClose={closeDialog}
         />
       ) : null}
