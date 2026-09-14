@@ -71,8 +71,32 @@ milestones and the top weekly chest. Common/Uncommon champions have no upgrades.
   1 Ancient Shard; levels 20/40/60/80/100 an extra Sacred Shard.
 - Unlock schedule: `GAME_DESIGN.md` §6.
 
-Profile screen shows avatar (chosen champion), name, level, XP bar, total power of best team,
-stats (stages cleared, stars, champions owned, boss records), titles.
+Profile dialog shows the avatar (chosen champion), name, worn title, level and XP bar, the
+standing grid (energy cap, stands cleared, champions owned, strongest champion, battles,
+victories, chronicle begun, time played), stars per difficulty, the titles earned so far and the
+next three level gates.
+
+### 4.1 Titles
+
+A title is **earned, never bought**: each one names a condition the save either meets or does not,
+so the earned set is recomputed on read and never stored (CLAUDE.md §5.5). The player chooses
+which single title to wear; that choice is the only part kept in the save (`profile.title`).
+
+| Title | Earned by |
+| --- | --- |
+| Chronicler | beginning a chronicle (level 1) |
+| Wayfarer | beating Thornwood Crossing's boss on Intro |
+| Road Warden | beating the Old Kingsroad's boss on Intro |
+| Gatebreaker | clearing every stand of Intro |
+| Collector | owning 10 champions |
+| Seasoned | chronicle level 25 |
+| Lorekeeper | clearing every stand of Normal |
+| Keeper of the Chronicle | chronicle level 50 |
+| Undimmed | clearing every stand of Hard |
+| Warden of Veyrath | three stars on every stand of Hard (`CAMPAIGN.md` §7 milestone) |
+| Loremaster | chronicle level 100 |
+
+Titles live in `src/content/titles/`; adding one is a data change (`CONTENT_AUTHORING.md` §7).
 
 ## 5. Energy
 

@@ -144,19 +144,22 @@ genre; a "battle in progress" flag prevents double-spend on reload).
 Selectors compute derived data (total stats, power, unlocks, quest progress) and are memoised with
 `reselect`-style helpers; React components subscribe to narrow selectors.
 
-### 4.1 Save schema (v2 — target shape)
+### 4.1 Save schema (v5 — target shape)
 
 Shipped so far: v1 (Phase 0: profile, wallet, energy, settings, stats, periods, provisions),
 v2 (Phase 1: `roster`, `counters`, `profile.avatarChampionId`; migration 1→2 drops the old
-`avatarKey`) and v3 (Phase 2: `teams` with three presets and the last team per party-size mode;
-`settings.battleSpeed` / `settings.autoBattle`). Fields below that no phase has shipped yet are
-the planned shape and are added by their phase with a migration and a fixture in
+`avatarKey`), v3 (Phase 2: `teams` with three presets and the last team per party-size mode;
+`settings.battleSpeed` / `settings.autoBattle`), v4 (Phase 3: `campaign` — stars, best turns, the
+selected pointer and the auto-repeat count) and v5 (Phase 4: `profile.titles` becomes
+`profile.title`, the one title the chronicle *wears*; which titles are **earned** is derived from
+the play by `@engine/progression/titles`, never stored). Fields below that no phase has shipped
+yet are the planned shape and are added by their phase with a migration and a fixture in
 `tests/fixtures/saves/`.
 
 ```ts
 interface SaveGame {
-  saveVersion: 2; createdAt: number; updatedAt: number; seedRoot: string;
-  profile: { name: string; level: number; xp: number; avatarChampionId: ChampionId | null; titles: string[] };
+  saveVersion: 5; createdAt: number; updatedAt: number; seedRoot: string;
+  profile: { name: string; level: number; xp: number; avatarChampionId: ChampionId | null; title: string | null };
   wallet: Record<CurrencyId, number>;
   energy: { value: number; lastTickAt: number };
   roster: Record<string, ChampionInstance>;   // instance ids are `<def>-<n>` from `counters.instances`

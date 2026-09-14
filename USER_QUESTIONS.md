@@ -59,6 +59,24 @@ the idle chest (Phases 9, 12, 13) will shorten that a lot.
 **Default until answered.** The gates stay as designed. `AUTO_REPEAT_TIERS` and
 `FEATURE_UNLOCK_LEVEL` are one edit each if you want ×10 from the start.
 
+### Q34 — Should a title be worn, and is one at a time enough?
+**Why it matters.** `ECONOMY.md` §4 listed titles as something the profile *shows*. Phase 4 makes
+which titles are earned derived from the play (never stored, CLAUDE.md §5.5) and adds one stored
+choice: the title the chronicle wears, shown beside the name in the top-bar chip and in the
+profile. Anything more — several at once, a frame or colour per title, titles as a reward the
+summon or the shop can grant — changes what a title *is*.
+**Default until answered.** One worn title, chosen from those earned, or none. `profile.title` in
+the save is the only stored part; adding a second slot later is a migration and a picker change.
+
+### Q35 — A level-up refills energy by the new cap; should it also interrupt a batch?
+**Why it matters.** Q15's refill is generous on purpose: early levels hand out 70–150 energy at a
+run cost of 4, so an auto-repeat batch that levels the chronicle keeps going far past where its
+energy would have run out. That is the intended feel (a level-up should change the evening), but
+it does mean a ×50 batch on a cheap stand can run much longer than the player expected.
+**Default until answered.** The refill lands mid-batch and the batch continues; the celebration
+waits for the screen after the fight. `LEVEL_ENERGY_REFILL` in `balance/levels.ts` turns the
+refill off in one edit if a batch should stop at the energy it started with.
+
 ## 2. Answered
 
 | # | Question | Owner's answer | Resulting change |

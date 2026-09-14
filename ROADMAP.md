@@ -13,7 +13,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 1 | Champions & Collection | 0.0.1 | ✅ shipped in 0.0.1 |
 | 2 | Battle System | 0.0.2 | ✅ shipped in 0.0.2 |
 | 3 | Campaign | 0.0.3 | ✅ shipped in 0.0.3 |
-| 4 | Player Level & Profile | 0.0.4 | ⬜ |
+| 4 | Player Level & Profile | 0.0.4 | ✅ shipped in 0.0.4 |
 | 5 | Tavern — Champion Upgrading | 0.0.5 | ⬜ |
 | 6 | Gear | 0.0.6 | ⬜ |
 | 7 | The Forge — Crafting | 0.0.7 | ⬜ |
@@ -163,6 +163,10 @@ lists, battle setup, energy, drops, stars, first-clear and star chests, speed un
   team through Intro end; Hard end requires "endgame" team (bands in `tools/sim/teams.ts`).
 
 ## Phase 4 — Player Level & Profile (`0.0.4`)
+
+**Status.** ✅ shipped in 0.0.4 (2026-09-14). See `CHANGELOG.md` for what landed. Intro's
+all-3★ chest (an Epic champion of the player's choice) is the one piece still waiting: it needs
+the Summoning Portal's picker, so `MILESTONE_CHESTS.intro` is `null` until Phase 8.
 
 **Goal.** Player XP, levels 1–100, level-up rewards and energy cap growth, the unlock schedule,
 the Profile screen with stats and titles.

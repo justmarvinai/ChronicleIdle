@@ -256,10 +256,28 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   ("Fills in 6 h at level 10–19"), guaranteed contents preview, **Open**; reward burst.
 
 ### 5.17 Profile & Settings
-- Reference: `player_profile.png` (chip). Profile dialog: avatar picker (owned champions), name
-  edit, level/XP, stats grid, titles. Settings: music/sfx sliders, default speed, auto, reduced
-  motion, fullscreen, language (en), *Export save*, *Import save*, *Reset chronicle* (typed
-  confirmation), credits.
+- Reference: `player_profile.png` (chip). The chip carries the avatar ring with the level badge,
+  the name, the worn title and the XP bar; the ring flares and the badge pops on a level-up
+  (skipped under `prefers-reduced-motion`).
+- Profile dialog: identity header (avatar, name + *Rename*, worn title + *Choose*, level and XP
+  bar, *Choose avatar*) over a scrolling body — standing grid (energy cap, stands cleared,
+  champions owned, strongest champion, battles, victories, chronicle begun, time played), stars
+  per difficulty, titles earned, and the next three level gates with what each opens. The avatar
+  and title pickers open in place of the profile and return to it when they close.
+- Title picker: two-column list of every title, earned ones in gold with a trophy glyph and
+  selectable, locked ones dimmed with a shackle glyph and a "Locked" tag; *No title* is always
+  available.
+- Settings: music/sfx sliders, default speed, auto, reduced motion, fullscreen, language (en),
+  *Export save*, *Import save*, *Reset chronicle* (typed confirmation), credits.
+
+### 5.17a Level-up
+- The moment (`ECONOMY.md` §4) is a dialog, never an overlay on a fight: levels earned during a
+  battle queue in `ui.levelUp` and celebrate on the screen that follows it.
+- Layout: ember burst behind a large numeral for the level reached ("Level 4 → 7" when a batch
+  crossed several), then *Paid out* (gold, gems, shards, the energy refill and the new cap),
+  *Now open to you* (one row per feature the levels unlocked, with its one-line hint) and *Title
+  earned* when a level brought one. The body scrolls; **Continue** clears the queue.
+- Motion and sound: spring-in numeral, burst flare, `stinger.levelup` on open.
 
 ### 5.18 Tutorial overlay
 - Dim layer with spotlight cut-out (mask), Eldric panel bottom-left (portrait in `panel-arch`,

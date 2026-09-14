@@ -6,7 +6,57 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 4 (Player Level & Profile) starts after the owner's Phase 3 check-in._
+_Phase 5 (Tavern — Champion Upgrading) starts after the owner's Phase 4 check-in._
+
+## [0.0.4] — 2026-09-14 — Phase 4: Player Level & Profile
+
+### Added
+
+- **The level-up moment.** Every level a chronicle crosses pays `level × 200` gold, 50 gems on
+  every fifth level, an Ancient Shard on every tenth and a Sacred Shard at 20/40/60/80/100, and
+  tops the energy up by the **new** cap on top of whatever was left — the overflow is deliberate
+  (owner's answer Q15). The numbers live in `src/content/balance/levels.ts`; `levelUpRewards`
+  merges a whole run of levels into one payout, so a batch that crosses five levels pays and
+  celebrates once.
+- **The level-up dialog.** An ember burst behind the level reached ("Level 1 → 7" after a batch),
+  what it paid, every feature it opened with a one-line hint, and any title it earned; spring-in
+  numeral and `stinger.levelup`. It never interrupts a fight: levels gained mid-battle queue in
+  `ui.levelUp` and celebrate on the screen that follows (`UI_DESIGN.md` §5.17a).
+- **Titles.** Eleven titles in `src/content/titles/`, from *Chronicler* at level 1 to *Loremaster*
+  at 100, with *Warden of Veyrath* for three stars on every stand of Hard. Which ones are earned
+  is **derived** from level, campaign progress and roster size on every read (CLAUDE.md §5.5), so
+  they can never disagree with the play; the only stored part is the single title the chronicle
+  wears. The picker lists every title — earned in gold, locked dimmed with what they ask for.
+- **The profile, filled in.** Identity header (avatar, name, worn title, level and XP bar) over a
+  scrolling body: the standing grid (energy cap, stands cleared, champions owned, strongest
+  champion, battles, victories, chronicle begun, time played), stars per difficulty, titles
+  earned, and the next three level gates with what each opens. The top-bar chip carries the worn
+  title and flares on a level-up (skipped under `prefers-reduced-motion`).
+- **All-3★ milestone chests** (`CAMPAIGN.md` §7, carried from Phase 3): Normal pays 300 Gems and
+  2 Sacred Shards, Hard pays 1,000 Gems, a Primordial Shard and the title *Warden of Veyrath*.
+  The chest pays once, on the run that puts the last third star on the difficulty. Intro's chest
+  (an Epic champion of the player's choice) waits for the Summoning Portal's picker in Phase 8,
+  so `MILESTONE_CHESTS.intro` is `null`.
+- **`actions.grantPlayerXp`** — the one door chronicle XP comes through. Campaign runs already
+  used it; bosses, quests and missions will hand their XP to the same function, which fills the
+  bar, pays every level crossed, queues the celebration and reports the titles it earned.
+
+### Changed
+
+- **Save v5.** `profile.titles` (a stored list) becomes `profile.title` (the one worn, or none);
+  earned titles are derived. Migration 4→5 drops the list, and `tests/fixtures/saves/v4.json`
+  freezes a Phase 3 chronicle — roster, campaign stars, best turns, wallet and all — as the
+  regression fixture for it.
+- **The result screen no longer plays the level-up stinger for the chronicle** — the dialog that
+  follows it does. A champion levelling still gets its cue there.
+- The avatar and title pickers return to the profile dialog they were opened from instead of
+  dropping the player back to the game.
+
+### Balance
+
+- `LEVEL_ENERGY_REFILL` (on) documents and controls the refill: with it, an auto-repeat batch that
+  levels the chronicle keeps running well past the energy it started with — intended, and recorded
+  as Q35 with the one-line switch if it should stop instead.
 
 ## [0.0.3] — 2026-09-13 — Phase 3: Campaign
 

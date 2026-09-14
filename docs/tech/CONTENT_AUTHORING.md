@@ -212,12 +212,26 @@ Two-piece stat sets use `{ trigger: 'static', effects: [{ kind: 'stat_mod', stat
 ```
 Adding a currency: add here, add its English name, add sources/sinks to `docs/design/ECONOMY.md` §2.
 
-## 7. Boss, banner, quests, missions, tutorial
+## 7. Title
+
+```ts
+title('gatebreaker', { kind: 'difficulty_cleared', difficulty: 'intro' })
+// → { id: 'title.gatebreaker', name: 'title.gatebreaker.name', description: '…', condition, version: 1 }
+```
+
+One entry in `src/content/titles/index.ts` plus a name and a description in `src/i18n/en/titles.ts`.
+Conditions are data, evaluated by `@engine/progression/titles`: `level`, `difficulty_cleared`,
+`difficulty_mastered` (three stars everywhere), `settlement_boss` and `champions_owned`. The list
+order is display order. A title is never stored in the save — only the one the chronicle wears
+(`ECONOMY.md` §4.1) — so a new condition changes what every existing chronicle has earned the
+moment it ships. Add a new condition kind to the union and the evaluator together, with tests.
+
+## 8. Boss, banner, quests, missions, tutorial
 
 See the "Content shape" sections of `docs/design/BOSSES.md`, `SUMMONING.md`,
 `QUESTS_MISSIONS.md`, `TUTORIAL.md`. All use the same `define*` helpers and validation.
 
-## 8. Balance files (`src/content/balance/`)
+## 9. Balance files (`src/content/balance/`)
 
 | File | Contains |
 | --- | --- |
@@ -236,7 +250,7 @@ See the "Content shape" sections of `docs/design/BOSSES.md`, `SUMMONING.md`,
 
 Each constant has a doc comment: what it does, what it affects, safe range.
 
-## 9. Adding a champion model
+## 10. Adding a champion model
 
 1. Create `/game/assets/champions/<id>/` with `<id>_avatar.png` (square, ≥ 1024), `still/<id>_still.png`
    (64²), `idle/frame_000..008.png` (88², 9 frames @ 200 ms). Optional later: `attack/`, `hit/`, `cast/`
@@ -245,7 +259,7 @@ Each constant has a doc comment: what it does, what it affects, safe range.
 3. Set `art.facing` by looking at the still (left/right) so the presenter flips correctly.
 4. Replace the placeholder reference in the champion file; remove the tint.
 
-## 10. Sounds and visual effects
+## 11. Sounds and visual effects
 
 - Owner-provided sounds live under `/game/assets/music_and_sounds/{sfx,ambience_sounds,background_music}`
   and VFX sheets under `/game/assets/music_and_sounds/vfx`. They are never renamed; the pipeline
@@ -260,7 +274,7 @@ Each constant has a doc comment: what it does, what it affects, safe range.
   heals, buffs, debuffs, shields, DoT ticks, deaths and turn-meter gains have their own keys.
 - Every new asset gets a row in `docs/tech/CREDITS.md`.
 
-## 11. Tuning workflow
+## 12. Tuning workflow
 
 1. Change a balance constant or an object number.
 2. `pnpm content:validate` → `pnpm test` → `pnpm sim:balance` (prints win and three-star rates per
