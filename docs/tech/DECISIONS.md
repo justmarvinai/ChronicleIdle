@@ -246,3 +246,22 @@ champion; the compare panel, which does have a champion, uses `totalPower` inste
 **Consequences.** The racks keep a stable order as the selection changes, and flat and percentage
 rolls are comparable. The reference is a balance number with a comment, so re-weighting how
 percentage rolls look is a one-line change (`USER_QUESTIONS.md` Q37).
+
+## ADR-028 — A craft is a drop with a narrower band
+**Context.** Crafting could have had its own roller — its own main-stat weights, its own substat
+ranges — and `GEAR.md` §6 only fixes the rarity and star bands per tier.
+**Decision.** `craftGear` calls the same `generateGear` a campaign drop calls, passing the tier's
+rolled rarity, its rolled star and the set (the Sigil's choice or a roll on the tier's pool). The
+tier decides *nothing* else.
+**Consequences.** "Crafted gear rolls exactly like a drop" is true by construction rather than by
+two tables being kept in step, and the Phase 6 generator tests cover the crafted piece too. A
+future tier that must roll differently needs a new argument on the generator, not a second roller.
+
+## ADR-029 — A dismantle is all or nothing
+**Context.** A multi-select can contain a piece that must not be broken — one somebody is wearing,
+or one the player locked. Breaking the rest and skipping those would be the forgiving behaviour.
+**Decision.** `planDismantle` refuses the entire selection and names the offending piece; the UI
+never offers a protected piece in the first place, so the refusal is a guard, not a workflow.
+**Consequences.** A press either does exactly what the preview said or nothing at all. The player
+never has to work out which half of a selection went, which is the one mistake a scrap heap cannot
+undo.

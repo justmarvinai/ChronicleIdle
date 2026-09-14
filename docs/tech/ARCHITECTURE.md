@@ -16,7 +16,7 @@ Related: `CLAUDE.md` §3–5 (stack, layout, rules), `DECISIONS.md` (why), `CONT
 │         │  commands             │ reducers/calculators      │ events             │ events  │
 │         ▼                       ▼                           ▼                    ▼         │
 │  ┌──────────────────────────── engine/ (pure TypeScript) ─────────────────────────────┐   │
-│  │ battle · gear · economy · progression · summon · quests · rng · time · schema       │   │
+│  │ battle · gear · forge · economy · progression · summon · quests · rng · time · schema│   │
 │  └────────────────────────────────────┬────────────────────────────────────────────────┘   │
 │                                       │ reads                                              │
 │  ┌────────────────────────────────────▼────────────────────────────────────────────────┐   │
@@ -151,7 +151,25 @@ gearEntries / sortAndFilterGear(entries, view)           // the Armoury's racks
   a percentage roll is worth nothing without a champion to apply it to — and is a sorting
   yardstick only.
 
-### 3.7 Time
+### 3.7 Forge module
+
+```
+craftCost(tier, withSigil) → CurrencyAmount[]        // the recipe, as the wallet reads it
+craftPool(tier, sets) → string[]                     // which sets the tier carries
+craftGear(input, rng) → Result<GearInstance>         // the drop generator, with the tier's bands
+planDismantle(pieces, goldSpentOn) → Result<DismantlePlan>   // merged yield + the level refund
+planRefine(piece, sacrifice) → Result<RefinePlan>    // the climb, and the re-based main stat
+```
+
+- A craft is the *same* generator a drop goes through (`@engine/gear/generate`); the tier only
+  decides the rarity band, the star band and the set pool, so a struck piece can never be a
+  different kind of thing from a fallen one.
+- `planDismantle` refuses the whole selection when any piece is worn or locked: a multi-select is
+  exactly where a partial action is unrecoverable, because the player cannot see which half went.
+- A refine keeps the piece's identity — same `instanceId`, rarity, level and substat values — and
+  only its star changes, which re-bases the main stat through `mainStatValue`.
+
+### 3.8 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
 `FixedClock` (tests). Daily boundary 00:00 local, weekly boundary Monday 00:00 local, by default (`balance/economy.ts`).

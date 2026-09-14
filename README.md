@@ -3,9 +3,10 @@
 A 2D pixel-art, dark-fantasy, **turn-based idle gacha champion-collection RPG** for desktop
 browsers (and later Steam via Electron). Single player, no accounts, no monetisation.
 
-> Status: **`0.0.6` — Phase 6 (Gear) shipped.** Phases 0–6 are in: the game shell, the roster of
-> 23 champions, deterministic animated battles, the twelve-settlement campaign, chronicle levels
-> and titles, the Tavern, and gear with its fourteen sets.
+> Status: **`0.0.7` — Phase 7 (The Forge) shipped.** Phases 0–7 are in: the game shell, the roster
+> of 23 champions, deterministic animated battles, the twelve-settlement campaign, chronicle
+> levels and titles, the Tavern, gear with its fourteen sets, and the Forge that crafts, breaks
+> and refines it.
 > See `ROADMAP.md` for the phase plan to Early Access 0.1 and `CHANGELOG.md` for what landed.
 
 ## Documents

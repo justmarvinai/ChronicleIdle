@@ -252,11 +252,24 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - **Two screens, by the owner's decision** (Q36): the Armoury keeps its own route and the Forge is
   *Craft* / *Dismantle* / *Refine*. Each links to the other, so a full rack is two clicks from the
   hammer either way.
-- Forge tabs: *Craft* (slot picker, three tier cards with material costs, set chooser using a
-  Glyph Sigil, anvil scene with hammer animation and reveal), *Dismantle* (grid of `GearCard`,
-  multi-select with the quick filters of `GEAR.md` §6, a running yield preview, *Dismantle*),
-  *Refine* (piece picker, sacrifice picker of the same slot and star, cores and gold, result
-  preview showing the re-based main stat).
+- Forge (`screen-forge`, off the hub's forge hotspot, gated at player level 8): backdrop `bg5`
+  with the hearth's own glows; horizontal tabs and the bench's one-line hint at the top, *Open the
+  Armoury* on the right, and one stone panel holding the bench.
+  - *Craft*: the six slots as `Slot` buttons, three tier cards (name, set pool, one line of what
+    the tier is for, and its material lines — red when the chest is short), and a set chooser
+    whose rows are the tier's pool, with the Sigils held beside it. Right: the anvil — a stone
+    block over the hearth's light with the hammer falling on every strike, sparks on impact, and
+    the struck piece revealed under it in its rarity colour; below, **Strike** and the recipe's
+    running cost.
+  - *Dismantle*: the quick picks of `GEAR.md` §6 (*Common & Uncommon*, *Never levelled*, *1–2★*),
+    a *Clear the selection* link and the count; a `GearCard` grid of everything free to break
+    (worn and locked pieces are never listed); right, *Returns* with the merged yield, the level
+    refund line, and **Dismantle n** pinned to the bottom.
+  - *Refine*: two racks — the pieces that can climb, then the twins that may feed the chosen one
+    (same slot, same star, unworn, unlocked) — and a panel with the piece's name, its stars
+    `n★ → n+1★`, the main stat either side, the note that rarity, level and substats survive, the
+    cores and gold, and **Light the star**. Below player level 18 the tab shows that level
+    instead.
 - **The Armoury** (`screen-armoury`, reached from the hub's bottom bar, the champion Gear tab and
   the Forge): the racks and the bench. Backdrop `bg5` — the armory interior. Left: the
   filter bar (sort + direction, set and minimum-star dropdowns, one-tap chips for slot, rarity,

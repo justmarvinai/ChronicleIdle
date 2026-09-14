@@ -220,6 +220,9 @@ tests (e.g. Retaliation counters ~30 %); equip/unequip persists; capacity overfl
 
 ## Phase 7 — The Forge: Crafting (`0.0.7`)
 
+**Status.** ✅ shipped in 0.0.7 (2026-09-14). See `CHANGELOG.md` for what landed. Glyph Sigils
+ride the 20-star chests until the weekly boss and the quests arrive (`USER_QUESTIONS.md` Q38).
+
 **Goal.** Craft (three tiers, set choice via Glyph Sigil), dismantle (multi-select), refine
 (star-up), with the Forge screen and animations; materials wired into campaign drops.
 

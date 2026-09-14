@@ -6,7 +6,47 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 7 (The Forge) starts after the owner's Phase 6 check-in._
+_Phase 8 (Summoning Portal) starts after the owner's Phase 7 check-in._
+
+## [0.0.7] — 2026-09-14 — Phase 7: The Forge
+
+### Added
+
+- **Crafting, three tiers deep** (`GEAR.md` §6). Scrap, Ember and Star each name their own
+  materials, gold, rarity band, star band and set pool; a craft goes through the *same* generator
+  a drop does, so a struck piece is exactly as good as a fallen one of its rarity and star. Ten
+  thousand crafts per tier are checked against the table, and the tier tables live in
+  `src/content/balance/forge.ts` where a balance pass can find them.
+- **A Glyph Sigil names the set.** With one spent, the craft comes out as the set the recipe
+  asked for; without one the tier's pool is rolled. A Sigil naming a set the tier does not carry
+  is refused rather than quietly spent.
+- **Dismantling, by the selection.** A press breaks what is chosen, returns the materials its
+  rarities list and a fifth of the gold its levels cost, and refuses the whole selection when one
+  piece is worn or locked — a partial break is worse than none, because the player cannot see
+  which half went. Quick picks take the Common and Uncommon, the never-levelled, or the 1–2★.
+- **Refining, one star at a time** (`GEAR.md` §4). A twin of the same slot and star is consumed,
+  Refining Cores and gold are paid, and the piece keeps its rarity, its level and every substat
+  value; only the main stat is re-based onto the new star's row — which is the point of it, and
+  what makes a refined piece a little weaker than a native drop of that star.
+- **The Forge screen** (`UI_DESIGN.md` §5.11): three benches around one anvil. The hammer falls
+  on a stone block over the hearth's light and the struck piece is revealed on it; the dismantle
+  bench prices a selection before it breaks it; the refine bench shows the stars and the main
+  stat either side of the climb. Below player level 18 the refine tab names the level it opens at
+  rather than hiding.
+- **Both screens are one press apart.** The Armoury keeps its own route (owner's answer Q36) and
+  the Forge links to it, and back. The hub's forge hotspot finally opens something.
+- **Glyph Sigils have a source.** Their designed homes are the weekly boss and the quests
+  (Phases 9–13), so until then the 20-star chest of each difficulty carries them — Intro 1,
+  Normal 2, Hard 3 (`USER_QUESTIONS.md` Q38).
+
+### Changed
+
+- Gear carries its own provenance vocabulary (`GEAR_SOURCES`: a drop or a craft) rather than
+  borrowing the champions' `OBTAIN_SOURCES`: a champion is never struck at the Forge and a piece
+  is never summoned. Every value an existing save holds stays valid, so no migration is needed.
+- The lock finally protects something: dismantle and refine both refuse a locked piece.
+- The development-only panel can stock a material chest, so the Forge can be played without a
+  campaign grind first.
 
 ## [0.0.6] — 2026-09-14 — Phase 6: Gear
 

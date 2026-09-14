@@ -70,6 +70,7 @@ Documentation
 | a currency | `src/content/currencies/index.ts` + icon manifest key | `docs/design/ECONOMY.md` §2 |
 | a quest / mission | `src/content/quests/*.ts` or `src/content/missions/chapter_<n>.ts` using goal types | `docs/design/QUESTS_MISSIONS.md` |
 | a banner | `src/content/banners/<id>.ts` with rate table + rotation | `docs/design/SUMMONING.md` |
+| a craft tier or forge cost | edit `src/content/balance/forge.ts` (materials, gold, rarity/star weights, set pool); the 10k-craft test guards the bands | `docs/design/GEAR.md` §6 |
 | a balance tweak | edit `src/content/balance/*.ts`, run `pnpm sim:balance`, note in CHANGELOG "Balance" | `docs/design/*` tables |
 | a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes/`; map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
 | a visual effect | owner sheet under `/game/assets/music_and_sounds/vfx/**` or a procedural recipe in `tools/vfx/recipes.ts`; register in `src/render/battle/fx/registry.ts`; add a credits row | `docs/tech/UI_DESIGN.md` §6.3 |
