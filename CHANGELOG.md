@@ -78,7 +78,8 @@ across them. Losing costs nothing but the key — whatever the party did to him 
 - The e2e suite runs one browser at a time everywhere, not only on CI (`playwright.config.ts`).
   Playwright's default puts two software-WebGL stages side by side, and they starve each other:
   a boss race that takes 35 seconds alone ran past a seven-minute budget next to the Portal's
-  rituals. Wall-clock is the cheaper thing to spend.
+  rituals. Wall-clock is the cheaper thing to spend — and CI now spends it in two shards on two
+  runners (`ci.yml`), because one serial job with a 50-turn boss race in it ran out its budget.
 
 ### Performance
 
