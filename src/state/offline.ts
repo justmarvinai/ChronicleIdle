@@ -1,7 +1,11 @@
 /**
  * Applies everything that should have happened while the game was closed (docs/tech/ARCHITECTURE.md
  * §2 step 5): energy regeneration and period-key bookkeeping. Idempotent — running it twice for
- * the same `now` changes nothing. Later phases add boss keys, quests and chest accrual here.
+ * the same `now` changes nothing. Later phases add boss keys and quest periods here.
+ *
+ * The Idle Chest deliberately does *not* appear: it stores when it was last emptied and derives
+ * what it holds from that instant and the clock (`ECONOMY.md` §6), so there is nothing to apply
+ * on load and nothing that can be applied twice.
  */
 import { DAILY_RESET_HOUR, WEEKLY_RESET_WEEKDAY } from '@content/balance/economy';
 import { regenerateEnergy } from '@engine/economy/energy';

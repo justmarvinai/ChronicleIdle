@@ -6,7 +6,57 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 9 (Idle Chest) starts after the owner's Phase 8 check-in._
+_Phase 10 (Daily Boss) starts after the owner's Phase 9 check-in._
+
+## [0.0.9] — 2026-09-15 — Phase 9: Idle Chest
+
+### Added
+
+- **The chest at the docks** (`ECONOMY.md` §6). It fills whether the game is open or closed, up to
+  a capacity that grows with the chronicle's level (3 h at level 1, 24 h from 60), and pays the
+  farm tier's hourly yield when it is opened. Everything past capacity is lost, which is the "come
+  back in time" tension the brief asks for.
+- **One stored number.** The save keeps only when the chest was last emptied; how full it is and
+  what is inside are derived from that instant and the clock (ADR-033). Nothing accrues in the
+  save, so a reload, an import or a clock that jumped cannot desynchronise the chest from the time
+  the player actually waited — and a clock moved backwards waits rather than paying out.
+- **The farm tier** 1–36: the highest settlement whose boss has fallen, counted across the three
+  difficulties end to end, taking the best of the three (ADR-034) so a chronicle that has just
+  unlocked Normal keeps the tier it earned on Intro. Gold per hour is `250 × tier^1.25` (250 at
+  tier 1, 5.6k at 12, 22k at 36); brews, Arcane Dust, the band's own Forge material, energy and
+  chronicle XP follow the table in `balance/idle.ts`.
+- **Luck, once an hour, capped per fill**: 10 % for 5 gems (three times at most), 6 % for a Faded
+  Shard (twice), 1 % for an Ancient Shard (2 % from tier 25, once), 8 % for a piece of gear
+  (twice). The rolls are seeded from the fill's own start instant, so reading the chest a dozen
+  times before opening it changes nothing inside — and a gear piece rolls from the settlement the
+  chest farms, exactly as a run there would drop it.
+- **The chest wears its state where the player already looks**: a gold ring and a countdown on the
+  building at the docks, the same chest framed like a currency pill in the top bar (reachable from
+  every screen), and a dot on both once it has stopped counting.
+- **The claim dialog**: how full, how long until it stops paying, which settlement it farms, and
+  the guaranteed contents — the luck is left unlisted because it is the point of opening it. The
+  haul then replaces the preview with a line for each stroke of luck, the pieces it minted, and a
+  word about the armoury when one could not be kept. Energy lands in the pool rather than the
+  purse, and chronicle XP is paid last so a level-up's refill lands on the new cap.
+- **Save v8** with the chest's timestamp. Migration 7→8 sets it to the chronicle's last save, so a
+  player returning to a game that predates the chest is paid for the time they were away instead
+  of finding it empty; `tests/fixtures/saves/v7.json` is frozen as the case.
+
+### Fixed
+
+- **The notification dot was a square.** It had been rendering as an orange rectangle on hub
+  hotspots since Phase 0 — a dot is one of the round shapes the design language allows, and the
+  counted variant is now a bevelled badge rather than a pill.
+- The fill ring is an SVG arc rather than a masked conic gradient: exact at any size, and it
+  cannot be defeated by a renderer that ignores the mask, which is what happened here — the masked
+  ring read as a solid disc in a production build.
+
+### Balance
+
+- Idle income at tier 12 with a six-hour chest is ≈ 33.5k gold, 9 brews, 20 dust, 9 iron and 24
+  energy per fill; at tier 36 with a 24-hour chest, ≈ 529k gold, 83 brews and 60 energy. The
+  30-day economy simulation in Phase 15 checks this against the gold and gem budgets
+  (`ECONOMY.md` §7–§8).
 
 ## [0.0.8] — 2026-09-14 — Phase 8: Summoning Portal
 

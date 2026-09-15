@@ -294,3 +294,24 @@ only `summon.choices` — which choice became which copy.
 **Consequences.** Every chronicle that has mastered Intro is owed its Epic the moment the Portal
 opens, a claim is idempotent by construction, and no migration had to guess at past play. Later
 choice-granting rewards are one row in the table (CLAUDE.md §5.5).
+
+## ADR-033 — The Idle Chest is a timestamp, not an accumulator
+**Context.** The chest earns rewards per hour, online and offline. The obvious implementation adds
+what is owed to the save on a timer and on load.
+**Decision.** The save stores only `idle.lastClaimAt`. Fill, capacity, hours held and the whole
+payout are derived from that instant and the clock; `applyOfflineElapsed` deliberately ignores the
+chest.
+**Consequences.** There is nothing to apply on load and nothing that can be applied twice, so an
+import, a reload or a second tab cannot double-pay. A clock moved backwards waits instead of
+paying out, and the rolls — seeded from that same instant — cannot be re-rolled by looking at the
+chest. The cost is that the chest cannot carry more than its capacity, which is exactly what the
+design asks for.
+
+## ADR-034 — The farm tier is the best of the three difficulties
+**Context.** `ECONOMY.md` §6 defines the farm tier as "the highest settlement whose boss was
+cleared on the highest unlocked difficulty". Read literally, unlocking Normal drops the tier to
+zero until a Normal boss falls — a chronicle would be punished for progressing.
+**Decision.** `farmTier` takes the maximum of `offset(difficulty) + highestBossCleared(difficulty)`
+over all three difficulties.
+**Consequences.** The tier is monotone: it never falls, and mastering Intro is worth exactly the
+twelfth tier until the first Normal boss goes down. The doc now says so.

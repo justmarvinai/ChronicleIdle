@@ -18,7 +18,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 6 | Gear | 0.0.6 | ✅ shipped in 0.0.6 |
 | 7 | The Forge — Crafting | 0.0.7 | ✅ shipped in 0.0.7 |
 | 8 | Summoning Portal | 0.0.8 | ✅ shipped in 0.0.8 |
-| 9 | Idle Chest | 0.0.9 | ⬜ |
+| 9 | Idle Chest | 0.0.9 | ✅ shipped in 0.0.9 |
 | 10 | Daily Boss | 0.0.10 | ⬜ |
 | 11 | Weekly Boss | 0.0.11 | ⬜ |
 | 12 | Daily & Weekly Quests | 0.0.12 | ⬜ |
@@ -252,6 +252,10 @@ rotation computed identically across reloads and time zones for the same instant
 are ordinary roster copies (rank-up food) and are never auto-converted; reveal skippable; new-champion badge.
 
 ## Phase 9 — Idle Chest (`0.0.9`)
+
+**Status.** ✅ shipped in 0.0.9 (2026-09-15). See `CHANGELOG.md` for what landed. The chest stores
+one timestamp and derives everything else from it, so there is no accrual to apply on load and a
+clock that jumped cannot desynchronise it (ADR-033).
 
 **Goal.** The accumulating chest with level-band capacities, farm-tier yields, seeded rolls,
 offline computation, hub presence and claim dialog.

@@ -136,7 +136,13 @@ every grant so they can be tuned in one place.
 ## 6. Idle Chest
 
 The chest accumulates rewards every hour, online or offline, until full. The player opens it from
-the hub (chest at the docks) or anywhere via the top bar.
+the hub (chest at the docks) or anywhere via the top bar. Shipped in `0.0.9`; the numbers live in
+`src/content/balance/idle.ts`, the rules in `src/engine/economy/idle.ts`.
+
+The save stores **one** number — when the chest was last emptied — and how full it is and what is
+inside are derived from that instant and the clock (ADR-033). Accrual is truncated to the minute,
+which is the resolution the table below is read at, and a clock moved backwards waits rather than
+paying out.
 
 ### Capacity by player level (from the brief)
 
@@ -152,15 +158,17 @@ the hub (chest at the docks) or anywhere via the top bar.
 
 ### Farm tier
 
-`farmTier` = highest settlement whose boss was cleared on the highest unlocked difficulty, mapped
-to 1–36 (Intro 1–12, Normal 13–24, Hard 25–36). Hourly yield:
+`farmTier` = the highest settlement whose boss has fallen, counted across the three difficulties
+end to end (Intro 1–12, Normal 13–24, Hard 25–36) and taking the **best** of the three, so a
+chronicle that has just unlocked a harder difficulty keeps the tier it earned on the easier one
+(ADR-034). Tier 0 — no boss down yet — pays nothing and the chest says so. Hourly yield:
 
 | Reward | Per hour | Notes |
 | --- | --- | --- |
 | Gold | `250 × farmTier^1.25` | tier 1: 250; tier 12: 5.6k; tier 36: 22k |
 | Elemental Brews | `0.6 + 0.08 × farmTier` (fractional accrues) | element weighted to recent settlements |
 | Arcane Dust | `1 + 0.2 × farmTier` | |
-| Scrap Iron / Ember Alloy / Starsteel | tier-dependent 1.5 / 0.6 / 0.25 per hour | tier bands 1–12 / 13–24 / 25–36 |
+| Scrap Iron / Ember Alloy / Starsteel | 1.5 / 0.6 / 0.25 per hour | a tier pays only its own band's material (1–12 / 13–24 / 25–36), which keeps the three Forge tiers on different farms |
 | Player XP | `20 × farmTier` | never levels you past unlocks alone |
 | Gems | 10 % chance/hour of 5 gems (max 3 procs per fill) | |
 | Faded Shard | 6 % chance/hour (max 2 per fill) | |
@@ -168,9 +176,16 @@ to 1–36 (Intro 1–12, Normal 13–24, Hard 25–36). Hourly yield:
 | Gear piece | 8 % chance/hour of a piece at current campaign rarity table (max 2 per fill) | |
 | Energy | 4 per hour (max 60 per fill) | |
 
-Rolls are seeded from `lastClaimAt` so reloading cannot reroll. The chest UI shows fill %, time to
-full, and a preview of guaranteed contents; opening plays a burst with counted-up rewards.
-Offline gains beyond capacity are lost — the "come back in time" tension the brief asks for.
+Rolls are seeded from `lastClaimAt` so reloading cannot reroll, and one roll is taken per chance
+per **whole** hour held, capped per fill by the table above. A gear piece rolls from the settlement
+the chest farms, exactly as a run there would drop it; brews arrive as whole potions spread over
+the three settlements most recently farmed, nearest first. Energy lands in the pool (with its cap
+and overflow rules, §5), never in the purse.
+
+The chest shows fill %, time to full, the settlement and tier it farms, and a preview of the
+**guaranteed** contents — the luck is deliberately unlisted, because finding it is the point of
+opening it. Offline gains beyond capacity are lost — the "come back in time" tension the brief
+asks for — and the chest says as much when it is opened full.
 
 ## 7. Gem budget (sanity)
 

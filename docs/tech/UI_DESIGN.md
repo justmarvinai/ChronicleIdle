@@ -140,14 +140,27 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Reference: `main_hub_screen.png` (structure), `main_hub_screen_alternative_2.png` (mood).
 - Layout: full-bleed `bg8` (night harbour town) with hotspots placed on real buildings; top bar
   (profile chip left: avatar `frame-round-sm`, name, level, XP bar, power; currencies centre-right:
-  Energy, Gold, Gems, +; settings right); left edge: Idle Chest at the docks (chest icon with fill
-  ring and timer); bottom bar: **Missions**, **Quests**, **Armoury**, **Index**, **Champions**,
+  Energy, Gold, Gems, +; the Idle Chest as a framed pill with its countdown, once it is unlocked;
+  settings right); left edge: Idle Chest at the docks — the hourglass hotspot wearing a gold
+  `FillRing` (an SVG arc, exact at any size) with its countdown under the banner and a dot once it
+  is full; bottom bar: **Missions**, **Quests**, **Armoury**, **Index**, **Champions**,
   primary **BATTLE** (opens Game Modes). Right column: Daily Boss / Weekly Boss gate cards with timers.
 - Hotspots (label banner `banner-plain` + glow ring + dot): Tavern, Forge, Portal (statue replaced
   with a violet gate overlay), Chronicler's Hall (missions), Campaign gate (world map), Champions
   barracks, Boss gate.
 - Motion: lantern flicker sprites, fog drift, fireflies, water shimmer, hotspot bob on hover,
   camera parallax on mouse (±12 px), notification dots pulse; ambient hub SFX loop + music.
+
+#### The Idle Chest dialog (`ECONOMY.md` §6)
+- Opened from the hotspot at the docks or the top-bar pill, on any screen. Head: the chest, an
+  ember `Bar` of the fill ("4h 20m of 6h 00m"), the countdown or the word *Full*, and the
+  settlement and tier it farms — or a line saying to fell a settlement boss first.
+- Body: **Waiting inside** lists the guaranteed contents; the luck is unlisted ("gems, shards and
+  gear turn up on their own"). Opening it swaps the list for **The chest gives up**, adds *A
+  stroke of luck* for each chance that fired, names the pieces it minted, warns when the armoury
+  was too full to keep one, and says when the hours past capacity were lost.
+- The button is *Open the chest* / *Still filling* (disabled while nothing has accrued), then
+  *Continue*. Sound: `chest.open` on the claim, the reward toast with the hours it paid.
 
 ### 5.3 Champions (Index)
 - Reference: left rail of `champions_gearing_info_screen.png`, `_alternative_3.png`.

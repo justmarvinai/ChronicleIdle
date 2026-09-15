@@ -225,6 +225,7 @@ interface SaveGame {
             unseen: string[]; choices: Record<string, { championId: ChampionId; instanceId: string; at: number }> };
   quests: { daily: PeriodProgress; weekly: PeriodProgress };
   missions: { chapter: number; completed: string[]; claimed: string[]; progress: Record<string, number> };
+  // Shipped in save v8. The chest's whole state: when it was last emptied (ADR-033).
   idle: { lastClaimAt: number };
   tutorial: { completedSteps: string[]; activeStep: string | null; skippedChapters: string[] };
   settings: { music: number; sfx: number; speed: 1|2|3|4; auto: boolean; reducedMotion: boolean; fullscreen: boolean; language: 'en' };
