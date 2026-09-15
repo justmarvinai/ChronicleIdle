@@ -68,6 +68,9 @@ describe('the Idle Chest dialog', () => {
 
     expect(screen.getByTestId('idle-timer')).toHaveTextContent(/Full in/);
     expect(screen.getByTestId('idle-tier')).toHaveTextContent('tier 4');
+    // The band line is where the game teaches that levelling widens the chest.
+    expect(screen.getByTestId('idle-capacity')).toHaveTextContent('Holds 6h 00m');
+    expect(screen.getByTestId('idle-capacity')).toHaveTextContent('12h 00m from chronicle level 20');
     const rewards = screen.getByTestId('idle-rewards');
     expect(within(rewards).getByText('Gold')).toBeInTheDocument();
     expect(screen.getByTestId('idle-claim')).toBeEnabled();

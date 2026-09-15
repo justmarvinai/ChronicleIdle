@@ -17,6 +17,7 @@ import {
   idleFill,
   idleGuaranteed,
   idleHaul,
+  idleNextCapacity,
   type IdleFill,
   type IdleGuaranteed,
 } from '@engine/economy/idle';
@@ -35,6 +36,8 @@ const BREW_MEMORY = 3;
 export interface IdleView {
   fill: IdleFill;
   capacityHours: number;
+  /** The band the chronicle is levelling towards, or `null` at the widest one. */
+  nextCapacity: { level: number; hours: number } | null;
   tier: number;
   /** Settlement 1–12 the tier farms; 0 before the first boss falls. */
   settlementIndex: number;
@@ -49,6 +52,7 @@ export function idleView(save: SaveGame, now: number): IdleView {
   return {
     fill,
     capacityHours: idleCapacityHours(save.profile.level),
+    nextCapacity: idleNextCapacity(save.profile.level),
     tier,
     settlementIndex: farmSettlement(tier),
     guaranteed: idleGuaranteed({ tier, hours: fill.hours, brewElements: brewElements(tier) }),

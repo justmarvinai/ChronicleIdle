@@ -34,10 +34,12 @@ _Phase 10 (Daily Boss) starts after the owner's Phase 9 check-in._
   building at the docks, the same chest framed like a currency pill in the top bar (reachable from
   every screen), and a dot on both once it has stopped counting.
 - **The claim dialog**: how full, how long until it stops paying, which settlement it farms, and
-  the guaranteed contents — the luck is left unlisted because it is the point of opening it. The
-  haul then replaces the preview with a line for each stroke of luck, the pieces it minted, and a
-  word about the armoury when one could not be kept. Energy lands in the pool rather than the
-  purse, and chronicle XP is paid last so a level-up's refill lands on the new cap.
+  the guaranteed contents. The luck is left unlisted because it is the point of opening it. Under
+  the tier sits the band line — what the chest holds now and what the next chronicle level band
+  holds — which is the one place the game says out loud that levelling widens the chest. Opening it
+  replaces the preview with a line for each stroke of luck, the pieces it minted, and a word about
+  the armoury when one could not be kept. Energy lands in the pool rather than the purse, and
+  chronicle XP is paid last so a level-up's refill lands on the new cap.
 - **Save v8** with the chest's timestamp. Migration 7→8 sets it to the chronicle's last save, so a
   player returning to a game that predates the chest is paid for the time they were away instead
   of finding it empty; `tests/fixtures/saves/v7.json` is frozen as the case.

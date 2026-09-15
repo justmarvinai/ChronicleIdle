@@ -119,6 +119,15 @@ export function IdleChestDialog({ onClose }: { onClose: () => void }) {
               {t('idle.noFarm')}
             </p>
           )}
+          <p className={styles.capacity} data-testid="idle-capacity">
+            {view.nextCapacity
+              ? translate('idle.capacity', {
+                  hours: hoursLabel(view.capacityHours),
+                  next: hoursLabel(view.nextCapacity.hours),
+                  level: view.nextCapacity.level,
+                })
+              : translate('idle.capacityMax', { hours: hoursLabel(view.capacityHours) })}
+          </p>
         </div>
       </div>
 

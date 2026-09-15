@@ -60,6 +60,13 @@
   color: var(--warn);
 }
 
+/* The band line teaches that levelling widens the chest, so it stays quiet under the tier. */
+.capacity {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
 .scroll {
   margin-top: 4px;
 }

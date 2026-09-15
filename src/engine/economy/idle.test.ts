@@ -19,6 +19,7 @@ import {
   idleGoldPerHour,
   idleGuaranteed,
   idleHaul,
+  idleNextCapacity,
   idleRolls,
 } from './idle';
 
@@ -44,6 +45,16 @@ describe('the chest capacity', () => {
     // Past the table's last row the widest band carries on.
     expect(idleCapacityHours(100)).toBe(24);
     expect(idleCapacityHours(140)).toBe(IDLE_CAPACITY_BANDS[IDLE_CAPACITY_BANDS.length - 1]?.hours);
+  });
+
+  it('names the next band a chronicle is levelling towards', () => {
+    expect(idleNextCapacity(1)).toEqual({ level: 10, hours: 6 });
+    expect(idleNextCapacity(9)).toEqual({ level: 10, hours: 6 });
+    expect(idleNextCapacity(20)).toEqual({ level: 30, hours: 16 });
+    expect(idleNextCapacity(59)).toEqual({ level: 60, hours: 24 });
+    // The widest band is the end of the road: there is nothing left to promise.
+    expect(idleNextCapacity(60)).toBeNull();
+    expect(idleNextCapacity(140)).toBeNull();
   });
 });
 

@@ -156,6 +156,9 @@ paying out.
 | 50–59 | 21 h |
 | 60–100 | 24 h |
 
+The chest names its own band: the dialog says what it holds now and what the next band holds, so
+the reward for levelling is visible before it arrives.
+
 ### Farm tier
 
 `farmTier` = the highest settlement whose boss has fallen, counted across the three difficulties

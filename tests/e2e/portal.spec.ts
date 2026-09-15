@@ -6,7 +6,12 @@ import { collectConsole, importChronicleFile, settle } from './helpers';
 const PORTAL_SAVE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'portal.chronicle');
 
 test.describe('the Summoning Portal', () => {
-  test.setTimeout(240_000);
+  /*
+   * Two Pixi ritual scenes and eleven card reveals, all through swiftshader: two minutes on an
+   * idle machine, twice that when a local run puts a second worker on the same cores. The battle
+   * specs carry the same budget for the same reason.
+   */
+  test.setTimeout(480_000);
 
   test('summons once and ten times, and claims the milestone Epic', async ({ page }) => {
     const problems = collectConsole(page);

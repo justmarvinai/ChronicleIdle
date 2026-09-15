@@ -43,6 +43,22 @@ export function idleCapacityMs(level: number): number {
   return idleCapacityHours(level) * MS_PER_HOUR;
 }
 
+/**
+ * The next band that holds more than this level's does, and the level it starts at — what the
+ * chest tells the player they are levelling towards. `null` once the last band is reached.
+ */
+export function idleNextCapacity(level: number): { level: number; hours: number } | null {
+  const current = idleCapacityHours(level);
+  for (let index = 0; index < IDLE_CAPACITY_BANDS.length; index += 1) {
+    const band = IDLE_CAPACITY_BANDS[index];
+    if (!band || band.hours <= current) continue;
+    // Bands are inclusive ranges, so the one after `upTo` starts on the next level.
+    const previous = IDLE_CAPACITY_BANDS[index - 1];
+    return { level: (previous?.upTo ?? 0) + 1, hours: band.hours };
+  }
+  return null;
+}
+
 /** The elemental brew the chest pays, by name. */
 const BREW_OF: Readonly<Record<Element, CurrencyId>> = {
   justice: 'brew_justice',

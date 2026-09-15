@@ -154,7 +154,10 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 #### The Idle Chest dialog (`ECONOMY.md` §6)
 - Opened from the hotspot at the docks or the top-bar pill, on any screen. Head: the chest, an
   ember `Bar` of the fill ("4h 20m of 6h 00m"), the countdown or the word *Full*, and the
-  settlement and tier it farms — or a line saying to fell a settlement boss first.
+  settlement and tier it farms — or a line saying to fell a settlement boss first — and, quietly
+  under it, the band line: what the chest holds now and what the next chronicle level band holds
+  ("Holds 12h 00m · 16h 00m from chronicle level 30"), which is where the game teaches that
+  levelling widens the chest.
 - Body: **Waiting inside** lists the guaranteed contents; the luck is unlisted ("gems, shards and
   gear turn up on their own"). Opening it swaps the list for **The chest gives up**, adds *A
   stroke of luck* for each chance that fired, names the pieces it minted, warns when the armoury
