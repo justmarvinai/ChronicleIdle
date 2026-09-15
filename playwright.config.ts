@@ -12,13 +12,13 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: false,
   /*
-   * One browser at a time on CI. The suite drives a WebGL battle stage through swiftshader, and
-   * Playwright's default (half the CPUs) puts two of those on a two-core runner: they starve each
-   * other until a click on a visible, enabled button times out and a session crashes. Wall-clock
-   * is the cheaper thing to spend.
+   * One browser at a time, everywhere. The suite drives a WebGL battle stage through swiftshader,
+   * and Playwright's default (half the CPUs) puts two of those side by side: they starve each
+   * other until a click on a visible, enabled button times out, a session crashes, or a boss race
+   * that takes 35 s alone runs past a seven-minute budget. Wall-clock is the cheaper thing to
+   * spend.
    */
-  // `exactOptionalPropertyTypes`: the key is absent locally rather than explicitly undefined.
-  ...(process.env['CI'] ? { workers: 1 } : {}),
+  workers: 1,
   retries: process.env['CI'] ? 1 : 0,
   reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {

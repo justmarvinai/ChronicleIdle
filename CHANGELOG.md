@@ -72,6 +72,11 @@ across them. Losing costs nothing but the key — whatever the party did to him 
   into Gravemaw's pool and the run's own stars, drops and clear were never recorded. Each launch
   now clears the other kind's session, on both sides, and a test holds that line.
 
+- The e2e suite runs one browser at a time everywhere, not only on CI (`playwright.config.ts`).
+  Playwright's default puts two software-WebGL stages side by side, and they starve each other:
+  a boss race that takes 35 seconds alone ran past a seven-minute budget next to the Portal's
+  rituals. Wall-clock is the cheaper thing to spend.
+
 ### Performance
 
 - The perf bench (`/?screen=perf`) fights either scenario now, and `pnpm perf:battle --boss` drives
