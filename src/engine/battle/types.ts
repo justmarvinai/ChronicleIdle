@@ -64,6 +64,8 @@ export interface UnitFlags {
   extraTurn: boolean;
   /** TM the acting unit gained during its own action; applied after the end-of-turn reset. */
   pendingTm: number;
+  /** Distinct debuff kinds that have landed on this unit (Gravemaw's hide counts them). */
+  debuffKindsTaken: StatusId[];
 }
 
 export interface BattleUnit {
@@ -226,6 +228,11 @@ export type BattleEvent =
       reason: 'expired' | 'cleansed' | 'stripped' | 'consumed' | 'woke';
     }
   | { type: 'tm.changed'; targetId: string; sourceId: string; delta: number; tmAfter: number }
+  /**
+   * A passive's condition can no longer be met for the rest of the fight — Gravemaw's hide once
+   * five distinct debuffs have landed. The HUD calls it out; nothing in the simulation reads it.
+   */
+  | { type: 'passive.broken'; unitId: string; passiveId: string }
   | { type: 'unit.died'; unitId: string; killerId: string | null }
   | {
       type: 'unit.revived';

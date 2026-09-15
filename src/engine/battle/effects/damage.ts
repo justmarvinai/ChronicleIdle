@@ -147,7 +147,7 @@ export function strike(
     attackerLevel: source.level,
     defIgnore: effect.defIgnore ?? 0,
     outgoing: outgoingBonus(ctx, source, target, crit),
-    incoming: damageReduction(ctx, target, source) - incomingPenalty(target),
+    incoming: damageReduction(ctx, target, source, crit) - incomingPenalty(target),
     varianceRoll: ctx.state.rng.next(),
     takenMult: target.damageTakenMult,
   });

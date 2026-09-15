@@ -39,17 +39,28 @@ export function hit(
 export function status(
   id: StatusId,
   turns: number,
-  opts: { target?: Target; chance?: number; value?: number } = {},
+  opts: { target?: Target; chance?: number; value?: number; maxTargets?: number } = {},
 ): Effect {
-  const { target = 'single_enemy', chance = 100, value } = opts;
-  return value === undefined
-    ? { kind: 'apply_status', target, status: id, turns, chance }
-    : { kind: 'apply_status', target, status: id, value, turns, chance };
+  const { target = 'single_enemy', chance = 100, value, maxTargets } = opts;
+  return {
+    kind: 'apply_status',
+    target,
+    status: id,
+    turns,
+    chance,
+    ...(value === undefined ? {} : { value }),
+    ...(maxTargets === undefined ? {} : { maxTargets }),
+  };
 }
 
 /** Heal `mult × stat` on the target (`TARGET_MAX_HP` = percentage of the target's own max HP). */
-export function heal(mult: number, target: Target = 'single_ally', stat: HealStat = 'TARGET_MAX_HP'): Effect {
-  return { kind: 'heal', target, mult, stat };
+export function heal(
+  mult: number,
+  target: Target = 'single_ally',
+  stat: HealStat = 'TARGET_MAX_HP',
+  opts: { per?: 'target_debuff' } = {},
+): Effect {
+  return { kind: 'heal', target, mult, stat, ...(opts.per === undefined ? {} : { per: opts.per }) };
 }
 
 export function cleanse(target: Target, count: number | 'all'): Effect {

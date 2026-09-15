@@ -43,6 +43,7 @@ export const targetSchema: z.ZodType<Loosen<Target>> = z.union([
 export const conditionSchema: z.ZodType<Loosen<Condition>> = z.union([
   z.object({ targetHas: z.enum(STATUS_IDS) }),
   z.object({ targetHasAnyDebuff: z.literal(true) }),
+  z.object({ selfDistinctDebuffsBelow: z.number().int().min(1).max(14) }),
   z.object({ targetHpBelow: percent }),
   z.object({ killedThisAction: z.literal(true) }),
   z.object({ selfHpBelow: percent }),
@@ -78,6 +79,7 @@ export const effectSchema: z.ZodType<Loosen<Effect>> = z.lazy(() =>
       target: targetSchema,
       mult: positive,
       stat: z.enum(['ATK', 'HP', 'CASTER_MAX_HP', 'TARGET_MAX_HP']),
+      per: z.literal('target_debuff').optional(),
     }),
     z.object({
       kind: z.literal('apply_status'),
@@ -86,6 +88,7 @@ export const effectSchema: z.ZodType<Loosen<Effect>> = z.lazy(() =>
       value: z.number().optional(),
       turns: z.number().int().min(1).max(10),
       chance: percent,
+      maxTargets: z.number().int().min(1).max(6).optional(),
     }),
     z.object({
       kind: z.literal('remove_status'),
@@ -147,6 +150,7 @@ export const passiveEffectSchema: z.ZodType<Loosen<PassiveEffect>> = z.lazy(() =
     z.object({
       kind: z.literal('damage_reduction'),
       value: z.number().min(0).max(1),
+      scope: z.enum(['all', 'crit']).optional(),
       if: conditionSchema.optional(),
     }),
     z.object({ kind: z.literal('counterattack'), chance: percent.optional() }),

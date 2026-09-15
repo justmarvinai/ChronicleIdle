@@ -21,13 +21,22 @@ export interface HitMeta {
   triggers: boolean;
 }
 
-/** Σ `damage_reduction` passive values that apply to `target` against `attacker` right now. */
-export function damageReduction(ctx: ActionContext, target: BattleUnit, attacker: BattleUnit | null): number {
+/**
+ * Σ `damage_reduction` passive values that apply to `target` against `attacker` right now. A
+ * reduction scoped to crits (Gravemaw's hide) only counts when the incoming hit is one.
+ */
+export function damageReduction(
+  ctx: ActionContext,
+  target: BattleUnit,
+  attacker: BattleUnit | null,
+  crit = false,
+): number {
   let total = 0;
   for (const passive of target.passives) {
     if (passive.trigger !== 'static') continue;
     for (const effect of passive.effects) {
       if (effect.kind !== 'damage_reduction') continue;
+      if (effect.scope === 'crit' && !crit) continue;
       if (
         effect.if &&
         !evaluateCondition(ctx.state, effect.if, {

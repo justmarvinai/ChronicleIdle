@@ -33,7 +33,9 @@ describe('content registry', () => {
       ).toEqual([...FACTION_ARCHETYPES]);
       expect(faction.boss.archetype, faction.id).toBe('boss');
     }
-    expect(content.enemies).toHaveLength(SETTLEMENT_COUNT * (FACTION_ARCHETYPES.length + 1));
+    // Twelve factions of six plus their stage boss, and one enemy per boss tier (BOSSES.md §1).
+    const bossTiers = content.bosses.reduce((n, boss) => n + boss.tiers.length, 0);
+    expect(content.enemies).toHaveLength(SETTLEMENT_COUNT * (FACTION_ARCHETYPES.length + 1) + bossTiers);
     // Titles are content too: every one names a condition and ships its strings.
     expect(content.titles.length).toBeGreaterThanOrEqual(10);
     expect(content.titleById('title.warden_of_veyrath')?.condition).toEqual({

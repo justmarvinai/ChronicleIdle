@@ -81,6 +81,8 @@ export type Target =
 export type Condition =
   | { targetHas: StatusId }
   | { targetHasAnyDebuff: true }
+  /** Fewer than `n` *distinct* debuffs have landed on me this fight (Gravemaw's Tyrant's Hide). */
+  | { selfDistinctDebuffsBelow: number }
   | { targetHpBelow: number }
   | { killedThisAction: true }
   | { selfHpBelow: number }
@@ -110,8 +112,24 @@ export type Effect =
       /** Extra hits added per kill up to `maxHits` (Vorrak's Feeding Frenzy). */
       extendOnKill?: { maxHits: number };
     }
-  | { kind: 'heal'; target: Target; mult: number; stat: HealStat }
-  | { kind: 'apply_status'; target: Target; status: StatusId; value?: number; turns: number; chance: number }
+  | {
+      kind: 'heal';
+      target: Target;
+      mult: number;
+      stat: HealStat;
+      /** Multiplies the heal by the debuffs on the action's target (Gravemaw's Devour). */
+      per?: 'target_debuff';
+    }
+  | {
+      kind: 'apply_status';
+      target: Target;
+      status: StatusId;
+      value?: number;
+      turns: number;
+      chance: number;
+      /** Most targets it may land on, however many it was aimed at (Gravemaw's Grave Quake). */
+      maxTargets?: number;
+    }
   | { kind: 'remove_status'; target: Target; which: 'debuffs' | 'buffs'; count: number | 'all' }
   | { kind: 'tm'; target: Target; delta: number; chance?: number }
   | { kind: 'revive'; target: Target; hpPercent: number }
@@ -131,7 +149,7 @@ export type PassiveEffect =
       max: number;
     }
   | { kind: 'crit_rate_per'; per: 'enemy_with_def_down'; value: number; max: number }
-  | { kind: 'damage_reduction'; value: number; if?: Condition }
+  | { kind: 'damage_reduction'; value: number; scope?: 'all' | 'crit'; if?: Condition }
   /** Retaliate with A1 when hit; `chance` (default 100) makes it a roll — the Retaliation set. */
   | { kind: 'counterattack'; chance?: number }
   /** Heal a share of each hit's damage — the Lifedrinker set (`GEAR.md` §5). */

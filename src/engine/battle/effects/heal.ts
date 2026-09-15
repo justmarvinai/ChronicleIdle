@@ -2,6 +2,7 @@
 import type { Effect } from '@engine/battle/imports';
 import type { ActionContext } from '@engine/battle/context';
 import { healUnit } from '@engine/battle/combat';
+import { isDebuff } from '@engine/battle/conditions';
 import { healing } from '@engine/battle/formulas';
 import { effectiveStat } from '@engine/battle/stats';
 import type { BattleUnit } from '@engine/battle/types';
@@ -32,15 +33,27 @@ export function healReduction(target: BattleUnit): number {
   return Math.min(1, total);
 }
 
+/**
+ * `per: 'target_debuff'` multiplies the heal by the debuffs on the action's target — Gravemaw
+ * eats the curses off a champion. With none on them the heal is worth nothing at all.
+ */
+function perMultiplier(ctx: ActionContext, effect: HealEffect): number {
+  if (effect.per !== 'target_debuff') return 1;
+  const target = ctx.primaryTarget;
+  return target ? target.statuses.filter((status) => isDebuff(status.id)).length : 0;
+}
+
 export function resolveHeal(
   ctx: ActionContext,
   source: BattleUnit,
   targets: BattleUnit[],
   effect: HealEffect,
 ): void {
+  const mult = effect.mult * perMultiplier(ctx, effect);
+  if (mult <= 0) return;
   for (const target of targets) {
     if (!target.alive) continue;
-    const amount = healing(effect.mult, healStat(ctx, source, target, effect.stat), 0, healReduction(target));
+    const amount = healing(mult, healStat(ctx, source, target, effect.stat), 0, healReduction(target));
     healUnit(ctx, source, target, amount, 'ability');
   }
 }

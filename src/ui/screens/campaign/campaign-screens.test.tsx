@@ -46,6 +46,11 @@ function chronicle(): void {
   const { actions } = useGameStore.getState();
   actions.resetGame();
   actions.newGame('Tester');
+  // A new chronicle seeds itself from the clock, so anything rolled would differ run to run.
+  useGameStore.setState((state) => {
+    if (state.save) state.save.seedRoot = 'test-seed';
+    return state;
+  });
   actions.chooseStarter('champ.ser_corvin');
 }
 

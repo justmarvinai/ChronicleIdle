@@ -45,6 +45,26 @@ export function statusValue(source: BattleUnit, id: StatusId, value: number | un
   return v;
 }
 
+/**
+ * Remembers that a *kind* of debuff has landed on a unit, and says so once a passive that counts
+ * them can no longer hold (Gravemaw's hide breaks on the fifth distinct debuff). The count only
+ * ever grows, so a broken passive stays broken for the fight.
+ */
+function noteDebuffKind(ctx: ActionContext, target: BattleUnit, id: StatusId): void {
+  if (target.flags.debuffKindsTaken.includes(id)) return;
+  target.flags.debuffKindsTaken.push(id);
+  const count = target.flags.debuffKindsTaken.length;
+  for (const passive of target.passives) {
+    if (passive.trigger !== 'static') continue;
+    for (const effect of passive.effects) {
+      if (effect.kind !== 'damage_reduction' || !effect.if) continue;
+      if (!('selfDistinctDebuffsBelow' in effect.if) || effect.if.selfDistinctDebuffsBelow !== count)
+        continue;
+      ctx.events.push({ type: 'passive.broken', unitId: target.id, passiveId: passive.id });
+    }
+  }
+}
+
 /** Applies (or refreshes) a status with all landing rules; emits the matching event. */
 export function applyStatus(
   ctx: ActionContext,
@@ -81,6 +101,7 @@ export function applyStatus(
   const existing = target.statuses.find((s) => s.id === id);
   const maxStacks = STATUS_MAX_STACKS[id] ?? 1;
   if (existing) {
+    if (debuff) noteDebuffKind(ctx, target, id);
     if (maxStacks > 1 && existing.stacks < maxStacks) {
       existing.stacks += 1;
       existing.turns = Math.max(existing.turns, turns);
@@ -105,6 +126,7 @@ export function applyStatus(
     return { outcome: 'applied', status: existing, refreshed: true };
   }
   if (target.statuses.length >= MAX_STATUSES_PER_UNIT) return fail('full');
+  if (debuff) noteDebuffKind(ctx, target, id);
   const status: StatusInstance = {
     id,
     turns,

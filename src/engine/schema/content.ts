@@ -13,11 +13,13 @@ import { SETTLEMENT_COUNT } from '@content/balance/campaign';
 import { SHARD_RATES } from '@content/balance/summon';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { statDeviation } from '@engine/champions/stats';
+import { unlockLevel } from '@engine/progression/unlocks';
 import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
 import { enemySchema } from './enemy';
 import { settlementSchema, stageShapeIssues } from './stage';
 import { bannerSchema } from './banner';
+import { bossSchema } from './boss';
 import { gearSetSchema } from './gear-set';
 import { titleSchema } from './title';
 
@@ -76,6 +78,7 @@ export function validateContentRegistry(
     titles: readonly unknown[];
     gearSets: readonly unknown[];
     banners: readonly unknown[];
+    bosses: readonly unknown[];
     summonPool: readonly { id: string; rarity: string }[];
   },
   refs: ContentRefs,
@@ -90,10 +93,11 @@ export function validateContentRegistry(
     ...validateEncounters(registry.encounters, enemies.ids, refs),
     ...factions,
     ...settlements.issues,
-    ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters),
+    ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters, registry.bosses),
     ...validateTitles(registry.titles, refs),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
+    ...validateBosses(registry.bosses, refs),
   ];
 }
 
@@ -146,6 +150,54 @@ function validateGearSets(
  * silent rate change — every rarity a shard can roll must have someone in the pool to roll, and a
  * featured champion must be summonable at the rarity its slot claims.
  */
+/**
+ * A boss is a damage race with a ladder (BOSSES.md §1): the tiers must climb, every tier must be
+ * harder than the one below it, and the chest ladder must end in the kill. The tier enemies are
+ * validated with every other enemy, so this checks the boss's own shape and its strings.
+ */
+function validateBosses(bosses: readonly unknown[], refs: ContentRefs): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const seen = new Set<string>();
+  bosses.forEach((raw, index) => {
+    const result = bossSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`bosses[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = result.data;
+    const path = `bosses.${def.id}`;
+    if (seen.has(def.id)) error(path, 'duplicate id');
+    seen.add(def.id);
+    for (const key of [def.name, def.title, def.lore])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+    if (!refs.assetKeys.has(def.backdrop)) error(path, `missing backdrop ${def.backdrop}`);
+    if (!refs.assetKeys.has(def.art.model)) error(path, `missing model ${def.art.model}`);
+    if (def.unlockLevel > unlockLevel(def.feature))
+      error(path, `unlocks at ${def.unlockLevel} but its feature opens at ${unlockLevel(def.feature)}`);
+    def.tiers.forEach((tier, t) => {
+      const tierPath = `${path}.${tier.id}`;
+      if (!refs.i18nKeys.has(tier.name)) error(tierPath, `missing i18n key ${tier.name}`);
+      if (tier.enemy.id !== `enemy.${def.id.replace('boss.', '')}_${tier.id}`)
+        error(tierPath, `enemy id ${tier.enemy.id} does not match the tier`);
+      if (tier.enemy.stats.hp !== tier.stats.hp)
+        error(tierPath, 'the tier enemy does not carry the tier stats');
+      if (tier.enemy.boss?.fixedStats !== true)
+        error(tierPath, 'a period boss fights at its printed stats (`fixedStats`)');
+      if (tier.enrageTurn >= tier.turnLimit) error(tierPath, 'it would never enrage');
+      const previous = def.tiers[t - 1];
+      if (previous && tier.stats.hp <= previous.stats.hp)
+        error(tierPath, 'every tier is a bigger pool than the one below it');
+      if (previous && tier.playerXp <= previous.playerXp)
+        error(tierPath, 'every tier pays more chronicle XP than the one below it');
+    });
+    if (def.tiers.length !== new Set(def.tiers.map((tier) => tier.id)).size) error(path, 'duplicate tier id');
+  });
+  return issues;
+}
+
 function validateBanners(
   banners: readonly unknown[],
   pool: readonly { id: string; rarity: string }[],
@@ -350,6 +402,7 @@ function validateEnemyReach(
   enemyIds: ReadonlySet<string>,
   spawned: ReadonlySet<string>,
   encounters: readonly unknown[],
+  bosses: readonly unknown[],
 ): ValidationIssue[] {
   const reachable = new Set(spawned);
   for (const raw of encounters) {
@@ -357,11 +410,18 @@ function validateEnemyReach(
     if (!parsed.success) continue;
     for (const wave of parsed.data.waves) for (const spawn of wave.enemies) reachable.add(spawn.enemyId);
   }
+  // A boss tier's enemy is fielded by the encounter a key buys, which is derived rather than
+  // authored (`@engine/bosses/encounter`), so the boss itself is what reaches it.
+  for (const raw of bosses) {
+    const parsed = bossSchema.safeParse(raw);
+    if (!parsed.success) continue;
+    for (const tier of parsed.data.tiers) reachable.add(tier.enemy.id);
+  }
   return [...enemyIds]
     .filter((id) => !reachable.has(id))
     .map((id) => ({
       path: `enemies.${id}`,
-      message: 'no stage or encounter fields this enemy',
+      message: 'no stage, encounter or boss tier fields this enemy',
       severity: 'error' as const,
     }));
 }

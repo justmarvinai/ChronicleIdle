@@ -43,6 +43,11 @@ function chronicle(): void {
   const a = actions();
   a.resetGame();
   a.newGame('Caller');
+  // A new chronicle seeds itself from the clock, so anything rolled would differ run to run.
+  useGameStore.setState((state) => {
+    if (state.save) state.save.seedRoot = 'test-seed';
+    return state;
+  });
   a.chooseStarter('champ.ser_corvin');
   a.grantCurrency([{ currency: 'shard_ancient', amount: 4 }], 'test');
   a.setRosterView({ ...DEFAULT_ROSTER_VIEW, filters: { ...DEFAULT_ROSTER_VIEW.filters } });

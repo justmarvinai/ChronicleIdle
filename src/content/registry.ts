@@ -23,12 +23,15 @@ import {
 import type { SettlementDef, StageDef } from '@content/stages/types';
 import { BANNERS, BANNER_BY_ID } from '@content/banners/index';
 import type { BannerDef } from '@content/banners/types';
+import { BOSSES, BOSS_BY_ID, bossTier } from '@content/bosses/index';
+import type { BossDef, BossTierDef } from '@content/bosses/types';
 import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
 import type { GearSetDef } from '@content/sets/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
 import type { TitleDef } from '@content/titles/types';
 import type { Difficulty } from '@content/balance/battle';
 import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounter';
+import { bossEncounter, parseBossEncounterId } from '@engine/bosses/encounter';
 
 export interface ContentRegistry {
   currencies: readonly CurrencyDef[];
@@ -62,6 +65,12 @@ export interface ContentRegistry {
   /** The summoning banners (SUMMONING.md §3): the standard portal and the featured cycle. */
   banners: readonly BannerDef[];
   bannerById(id: string): BannerDef | undefined;
+  /** The period bosses (BOSSES.md): Gravemaw daily, Nyxara weekly. */
+  bosses: readonly BossDef[];
+  bossById(id: string): BossDef | undefined;
+  bossTier(bossId: string, tierId: string): BossTierDef | undefined;
+  /** The encounter a key buys on a boss tier (BOSSES.md §1). */
+  bossEncounter(bossId: string, tierId: string): EncounterDef | undefined;
   /** Champions a shard may pull: every definition whose `obtain` lists `summon`. */
   summonPool: readonly ChampionDef[];
 }
@@ -83,6 +92,15 @@ export function buildContentRegistry(): ContentRegistry {
     derived.set(id, encounter);
     return encounter;
   };
+  const tierOf = (bossId: string, tierId: string): BossTierDef | undefined => {
+    const boss = BOSS_BY_ID[bossId];
+    return boss ? bossTier(boss, tierId) : undefined;
+  };
+  const bossEncounterOf = (bossId: string, tierId: string): EncounterDef | undefined => {
+    const boss = BOSS_BY_ID[bossId];
+    const tier = tierOf(bossId, tierId);
+    return boss && tier ? bossEncounter(boss, tier) : undefined;
+  };
   return {
     currencies: CURRENCIES,
     currencyById: CURRENCY_BY_ID,
@@ -95,7 +113,9 @@ export function buildContentRegistry(): ContentRegistry {
       const authored = ENCOUNTER_BY_ID[id];
       if (authored) return authored;
       const stage = parseStageEncounterId(id);
-      return stage ? stageEncounterOf(stage.stageId, stage.difficulty) : undefined;
+      if (stage) return stageEncounterOf(stage.stageId, stage.difficulty);
+      const boss = parseBossEncounterId(id);
+      return boss ? bossEncounterOf(boss.bossId, boss.tierId) : undefined;
     },
     stageEncounter: stageEncounterOf,
     factions: FACTIONS,
@@ -112,6 +132,10 @@ export function buildContentRegistry(): ContentRegistry {
     gearSetById: (id) => GEAR_SET_BY_ID[id],
     banners: BANNERS,
     bannerById: (id) => BANNER_BY_ID[id],
+    bosses: BOSSES,
+    bossById: (id) => BOSS_BY_ID[id],
+    bossTier: tierOf,
+    bossEncounter: bossEncounterOf,
     summonPool: SUMMON_POOL,
   };
 }

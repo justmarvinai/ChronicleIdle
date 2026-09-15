@@ -30,6 +30,11 @@ export interface EnemyBossConfig {
   enrageAfterTurn: number;
   /** Damage taken multiplier (bosses have large HP pools, not immunity). */
   damageTakenMult: number;
+  /**
+   * The daily and weekly bosses carry the stats their tier prints (BOSSES.md §2–§3): no
+   * difficulty multiplier, no stage curve and no stage-boss promotion on top.
+   */
+  fixedStats?: boolean;
 }
 
 export interface EnemyDef {

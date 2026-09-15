@@ -34,7 +34,8 @@ async function main(): Promise<void> {
     `[content] OK — ${content.currencies.length} currencies, ${content.champions.length} champions, ` +
       `${content.enemies.length} enemies, ${content.settlements.length} settlements ` +
       `(${content.stages.length} stages), ${content.titles.length} titles and ` +
-      `${content.gearSets.length} gear sets, ${content.banners.length} banners and ` +
+      `${content.gearSets.length} gear sets, ${content.banners.length} banners, ` +
+      `${content.bosses.length} boss(es) over ${content.bosses.reduce((n, b) => n + b.tiers.length, 0)} tiers and ` +
       `${content.summonPool.length} summonable champions validated against ${assetKeys.size} assets and ` +
       `${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );

@@ -75,6 +75,11 @@ function chronicle({ shards = 40, gold = 500_000 } = {}): void {
   const a = actions();
   a.resetGame();
   a.newGame('Caller');
+  // A new chronicle seeds itself from the clock, so anything rolled would differ run to run.
+  useGameStore.setState((state) => {
+    if (state.save) state.save.seedRoot = 'test-seed';
+    return state;
+  });
   a.chooseStarter('champ.ser_corvin');
   a.grantCurrency(
     [

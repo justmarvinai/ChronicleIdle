@@ -47,6 +47,11 @@ function chronicle(drops = 6): GearInstance[] {
   const { actions: a } = useGameStore.getState();
   a.resetGame();
   a.newGame('Tester');
+  // A new chronicle seeds itself from the clock, so anything rolled would differ run to run.
+  useGameStore.setState((state) => {
+    if (state.save) state.save.seedRoot = 'test-seed';
+    return state;
+  });
   a.chooseStarter('champ.ser_corvin');
   a.grantCurrency([{ currency: 'gold', amount: 500_000 }], 'test');
   const pieces: GearInstance[] = [];
@@ -155,6 +160,10 @@ describe('the Armoury', () => {
     const { actions: a } = useGameStore.getState();
     a.resetGame();
     a.newGame('Tester');
+    useGameStore.setState((state) => {
+      if (state.save) state.save.seedRoot = 'test-seed';
+      return state;
+    });
     a.chooseStarter('champ.ser_corvin');
     render(stage(<ArmouryScreen route={ARMOURY} />));
     const bench = screen.getByTestId('armoury-no-selection');

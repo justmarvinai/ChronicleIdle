@@ -9,6 +9,7 @@ export const enemyBossSchema = z.object({
   immunities: z.array(z.enum(STATUS_IDS)),
   enrageAfterTurn: z.number().int().min(0),
   damageTakenMult: z.number().positive().max(1),
+  fixedStats: z.boolean().optional(),
 });
 
 export const enemySchema = z.object({

@@ -1,4 +1,5 @@
 import { battle } from './battle';
+import { bosses } from './bosses';
 import { campaign } from './campaign';
 import { champions } from './champions';
 import { currencies } from './currencies';
@@ -26,4 +27,5 @@ export const en = {
   ...summoning,
   ...tavern,
   ...battle,
+  ...bosses,
 } as const;

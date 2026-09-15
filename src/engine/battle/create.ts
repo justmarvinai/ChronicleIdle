@@ -59,6 +59,7 @@ function freshFlags(): UnitFlags {
     firedOnce: [],
     extraTurn: false,
     pendingTm: 0,
+    debuffKindsTaken: [],
   };
 }
 
@@ -117,6 +118,19 @@ export function allyUnit(
 
 /** `archetypeBase × DIFFICULTY_MULT × stageScale(stageIndex)` (+ boss multipliers). */
 export function scaledEnemyStats(def: EnemyDef, encounter: EncounterDef, statMult = 1): ChampionStats {
+  // A daily or weekly boss is authored at its tier's exact numbers: nothing scales it (BOSSES.md).
+  if (def.boss?.fixedStats) {
+    return {
+      hp: Math.round(def.stats.hp * statMult),
+      atk: Math.round(def.stats.atk * statMult),
+      def: Math.round(def.stats.def * statMult),
+      spd: def.stats.spd,
+      critRate: def.stats.critRate,
+      critDmg: def.stats.critDmg,
+      res: def.stats.res,
+      acc: def.stats.acc,
+    };
+  }
   const scale = DIFFICULTY_MULT[encounter.difficulty] * stageScale(encounter.stageIndex) * statMult;
   const boss = def.boss
     ? { hp: BOSS_HP_MULT, atkDef: BOSS_ATK_DEF_MULT, spd: BOSS_SPD_ADD }
