@@ -37,6 +37,15 @@ export const RARITY_TINT: Record<Rarity, number> = {
   mythic: 0xff4d6d,
 };
 
+/**
+ * The longest the gate may hold the card reveal, in real time. The ceremony is under three
+ * seconds of timeline, but GSAP stretches a timeline's wall-clock when frames are scarce (its lag
+ * smoothing advances animations in small steps rather than jumping), so on a starved machine the
+ * burst can crawl. A press has already spent its shards by the time the gate lights: past this cap
+ * the ritual is landed where it would have ended and the cards go on.
+ */
+const RITUAL_CAP_MS = 6_000;
+
 /** The three moments the ritual asks for a sound (SUMMONING.md §5). */
 export type RitualCue = 'charge' | 'crack' | 'burst';
 
@@ -56,7 +65,8 @@ export interface RitualHandle {
   setPaused(paused: boolean): void;
   /**
    * Plays the ritual for one press. `shardUrl` is the shard's icon; it falls into the ring.
-   * Resolves when the burst has finished — the point the card reveal takes over.
+   * Resolves when the burst has finished — the point the card reveal takes over — or at
+   * `RITUAL_CAP_MS` if frames are too scarce to get there, whichever comes first.
    */
   reveal(rarity: Rarity, shardUrl: string): Promise<void>;
   /** Hangs a shard in the ring while the gate waits (SUMMONING.md §5). */
@@ -413,7 +423,21 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     });
 
     await new Promise<void>((resolve) => {
-      tl.eventCallback('onComplete', () => resolve());
+      let settled = false;
+      const finish = (): void => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(guard);
+        resolve();
+      };
+      // `finish` only ever runs from the timer or from `onComplete`, both after this assignment.
+      const guard = setTimeout(() => {
+        // Starved of frames: land the gate where the ceremony would have ended and let the cards
+        // through. `progress(1)` still fires the cues, so the burst is heard as well as seen.
+        tl.progress(1);
+        finish();
+      }, RITUAL_CAP_MS);
+      tl.eventCallback('onComplete', finish);
       tl.play();
     });
     timeline = null;

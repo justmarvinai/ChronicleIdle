@@ -84,9 +84,13 @@ Pixi scene on backdrop `bg9` (the violet gate) with the shard hovering in the ri
 5. Results panel: "Continue", "Summon again" (if shards remain), "View champion".
 
 Skipping is always allowed (respect the player's time): it cuts the running timeline to its end,
-so the result is the one the ritual was going to show. Rates and mercy for all four shards are one
-tap away, as is the history — the last `HISTORY_LIMIT` (200) pulls, newest first, each row opening
-the champion it became.
+so the result is the one the ritual was going to show. The gate also cuts itself short: the shards
+are spent before it lights, so a ceremony starved of frames is landed at its end after six seconds
+and the cards go on regardless — a press that shows nothing is the one outcome a summon may never
+have.
+
+Rates and mercy for all four shards are one tap away, as is the history — the last `HISTORY_LIMIT`
+(200) pulls, newest first, each row opening the champion it became.
 
 ### The champion picker
 Some rewards are a champion of the player's choosing rather than a roll: Intro's all-3★ milestone

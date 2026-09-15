@@ -12,7 +12,7 @@ import styles from './RevealOverlay.module.css';
 
 export interface RevealOverlayProps {
   summary: SummonSummary;
-  /** Runs the Pixi ritual; resolves when the burst is over. */
+  /** Runs the Pixi ritual; resolves when the burst is over (the gate caps how long that takes). */
   ritual: (rarity: SummonSummary['best']['record']['rarity']) => Promise<void>;
   /** Cuts the ritual short (the player pressed Skip). */
   skipRitual: () => void;
@@ -27,6 +27,14 @@ type Phase = 'ritual' | 'cards' | 'done';
 
 /** Milliseconds between two cards of a ×10 (SUMMONING.md §5.4). */
 const CARD_STEP = 190;
+
+/**
+ * The longest the cards wait for the gate before landing anyway. The gate caps its own ceremony,
+ * so this is the backstop for a ritual that never answers at all — a scene that failed to build,
+ * or a shard icon still loading. The shards are spent before the gate lights: the cards are owed
+ * either way, and a press that shows nothing is the one outcome a summon may never have.
+ */
+const RITUAL_BACKSTOP_MS = 8_000;
 
 /**
  * The reveal (docs/design/SUMMONING.md §5): the ritual plays in the gate behind this overlay, then
@@ -57,6 +65,7 @@ export function RevealOverlay({
   useEffect(() => {
     let live = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let landed = false;
 
     const step = (index: number): void => {
       if (!live) return;
@@ -73,15 +82,26 @@ export function RevealOverlay({
       timer = setTimeout(() => step(index + 1), reduced ? 60 : CARD_STEP);
     };
 
-    void ritual(rarity).then(() => {
-      if (!live) return;
+    // Whichever comes first: the gate finishing, the gate failing, or the backstop.
+    const land = (): void => {
+      if (!live || landed) return;
+      landed = true;
+      clearTimeout(backstop);
+      if (skipped.current) return;
       setPhase('cards');
       step(0);
-    });
+    };
+
+    // `land` only ever runs from one of these two, so the timer it clears is already assigned.
+    const backstop = setTimeout(land, RITUAL_BACKSTOP_MS);
+    void ritual(rarity)
+      .catch(() => undefined)
+      .then(land);
 
     return () => {
       live = false;
       if (timer) clearTimeout(timer);
+      clearTimeout(backstop);
     };
   }, [rarity, cards, ritual, reduced]);
 

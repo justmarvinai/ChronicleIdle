@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import type { ReactNode, Ref } from 'react';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
@@ -21,6 +21,9 @@ vi.mock('@audio/index', () => ({
   playMusic: () => undefined,
   duckMusic: () => undefined,
 }));
+/** Lets one test ask for a gate that never answers (the real one is capped; see below). */
+const gate = vi.hoisted(() => ({ silent: false }));
+
 // The ritual is a Pixi scene; in jsdom it stands in as an instant, silent one.
 vi.mock('@render/summon/RitualLayer', async () => {
   const { useImperativeHandle } = await import('react');
@@ -29,7 +32,7 @@ vi.mock('@render/summon/RitualLayer', async () => {
       useImperativeHandle(
         ref,
         () => ({
-          reveal: () => Promise.resolve(),
+          reveal: () => (gate.silent ? new Promise<void>(() => undefined) : Promise.resolve()),
           hover: () => undefined,
           skip: () => undefined,
           busy: () => false,
@@ -91,7 +94,10 @@ function chronicle({ shards = 40, gold = 500_000 } = {}): void {
 }
 
 describe('the Portal', () => {
-  beforeEach(() => chronicle());
+  beforeEach(() => {
+    gate.silent = false;
+    chronicle();
+  });
 
   it('shows the four shards and what the purse holds', () => {
     render(stage(<PortalScreen route={PORTAL} />));
@@ -132,6 +138,29 @@ describe('the Portal', () => {
     expect(screen.getByTestId('summon-results')).toBeInTheDocument();
     expect(held('shard_ancient')).toBe(30);
     expect(save().summon.history).toHaveLength(10);
+  });
+
+  it('lands the cards even when the gate never answers', async () => {
+    // The shards are spent before the gate lights, so the reveal may never be hostage to the
+    // renderer: a ritual that stalls (a starved machine, an icon still loading) must still pay out.
+    gate.silent = true;
+    vi.useFakeTimers();
+    try {
+      render(stage(<PortalScreen route={PORTAL} />));
+      act(() => {
+        fireEvent.click(screen.getByTestId('portal-summon-1'));
+      });
+      expect(screen.queryByTestId('summon-card-0')).toBeNull();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(9_000);
+      });
+
+      expect(screen.getByTestId('summon-card-0')).toBeInTheDocument();
+      expect(screen.getByTestId('summon-results')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('will not offer a ×10 the purse cannot pay for', async () => {

@@ -4,7 +4,7 @@ import { createRitualScene, type RitualHandle, type RitualHooks } from './ritual
 import styles from './RitualLayer.module.css';
 
 export interface RitualControl {
-  /** Plays the ritual for a press; resolves when the burst has finished. */
+  /** Plays the ritual for a press; resolves when the burst has finished, or at the scene's cap. */
   reveal(rarity: Rarity, shardUrl: string): Promise<void>;
   /** Hangs a shard in the ring while the gate waits. */
   hover(shardUrl: string): void;

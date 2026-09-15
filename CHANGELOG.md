@@ -46,6 +46,12 @@ _Phase 10 (Daily Boss) starts after the owner's Phase 9 check-in._
 
 ### Fixed
 
+- **A summon could spend its shards and show nothing.** The reveal waited for the gate's ritual to
+  finish, and GSAP stretches a timeline's wall-clock when frames are scarce — so on a machine busy
+  enough (a software renderer, a laptop under load) the ceremony crawled and the cards never
+  landed, shards already gone. The gate now lands itself at its end after six seconds and the
+  reveal has its own backstop for a ritual that never answers at all: a press that shows nothing is
+  the one outcome a summon may never have.
 - **The notification dot was a square.** It had been rendering as an orange rectangle on hub
   hotspots since Phase 0 — a dot is one of the round shapes the design language allows, and the
   counted variant is now a bevelled badge rather than a pill.
