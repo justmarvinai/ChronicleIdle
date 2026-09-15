@@ -72,6 +72,9 @@ across them. Losing costs nothing but the key — whatever the party did to him 
   into Gravemaw's pool and the run's own stars, drops and clear were never recorded. Each launch
   now clears the other kind's session, on both sides, and a test holds that line.
 
+- A Game Modes card that is not open yet goes to the locked screen again. Giving the Daily Boss
+  card a route made it push that route even while the feature was still shut, which skipped the
+  screen that says when it opens; the card now hands its unlocked state to the press.
 - The e2e suite runs one browser at a time everywhere, not only on CI (`playwright.config.ts`).
   Playwright's default puts two software-WebGL stages side by side, and they starve each other:
   a boss race that takes 35 seconds alone ran past a seven-minute budget next to the Portal's

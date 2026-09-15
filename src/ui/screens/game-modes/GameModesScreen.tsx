@@ -87,8 +87,13 @@ export default function GameModesScreen(_props: ScreenProps) {
                   })} · ${translate(settlement.name)} · ${t(`campaign.difficulty.${here.difficulty}`)}`,
                 }
               : {})}
-            onOpen={() =>
-              actions.push(mode.route ?? { name: 'locked', feature: mode.feature, titleKey: mode.titleKey })
+            // A card that is not open yet says so on the locked screen, route or no route.
+            onOpen={(unlocked) =>
+              actions.push(
+                unlocked && mode.route
+                  ? mode.route
+                  : { name: 'locked', feature: mode.feature, titleKey: mode.titleKey },
+              )
             }
           />
         ))}
@@ -107,7 +112,7 @@ function ModeCard({
   index: number;
   /** Where the player stands in this mode (the campaign's current stand). */
   note?: string;
-  onOpen: () => void;
+  onOpen: (unlocked: boolean) => void;
 }) {
   const unlocked = useGameStore(selectFeatureUnlocked(mode.feature));
   const art = backdrop(mode.art);
@@ -140,7 +145,7 @@ function ModeCard({
           </p>
         ) : null}
         {unlocked ? (
-          <Button variant="primary" size="md" onClick={onOpen}>
+          <Button variant="primary" size="md" onClick={() => onOpen(true)}>
             {t('gameModes.enter')}
           </Button>
         ) : (
@@ -148,7 +153,7 @@ function ModeCard({
             variant="secondary"
             size="md"
             sound="ui.cancel"
-            onClick={() => (playSfx('ui.error'), onOpen())}
+            onClick={() => (playSfx('ui.error'), onOpen(false))}
           >
             {t('common.unlocksAtLevel', { level: unlockLevel(mode.feature) })}
           </Button>
