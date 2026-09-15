@@ -5,14 +5,7 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-**Q39 — Should a ×10 press play one ritual or ten?**
-*Why it matters:* `SUMMONING.md` §5 describes the ritual for a pull and then says a ×10 reveals
-its cards in a 5×2 grid, which leaves the ceremony's arithmetic open: ten rituals back to back is
-about eighteen seconds before the first card, one ritual is under two.
-*Default in use:* one ritual per press, lit in the colour of the **best** pull in it — the gate
-opens once and gives up ten champions, rarest last. A Legendary or Mythic anywhere in the ten
-therefore gets its pillar and its chime. Ten separate rituals would be a change in
-`RevealOverlay` (loop the ritual per card) rather than in the engine, so it stays switchable.
+*Nothing open. New questions are written here with the default they ship with.*
 
 ## 2. Answered
 
@@ -56,3 +49,4 @@ therefore gets its pillar and its chime. Ten separate rituals would be a change 
 | Q36 | Should the Armoury stay a screen of its own once the Forge lands | Keep the extra Armoury screen for now | The Armoury stays its own route; the Forge (Phase 7) is *Craft* / *Dismantle* / *Refine* and links to it rather than swallowing it (`UI_DESIGN.md` §5.11) |
 | Q37 | What a single piece's power is measured against | As recommended | The fixed reference champion stays: `GEAR_POWER_REFERENCE` keeps the racks' order stable as the selection changes (ADR-027) |
 | Q38 | Where should Glyph Sigils come from until the weekly boss and the quests exist | As recommended | The 20-star chests keep carrying Sigils (Intro 1, Normal 2, Hard 3) in `STAR_CHESTS`; the weekly boss and quest sources (Phases 9/12/13) replace that line rather than stack with it |
+| Q39 | Should a ×10 press play one ritual or ten | As recommended | One ritual per press, lit by the best pull in it: the gate opens once and gives up ten champions, rarest last, and a Legendary or Mythic anywhere in the ten still gets its pillar and its chime |

@@ -85,6 +85,16 @@ export function clearedStages(progress: CampaignProgress, difficulty: Difficulty
   return total;
 }
 
+/**
+ * The highest settlement whose boss stand has fallen on `difficulty`, or 0 when none has. It is
+ * what the Idle Chest's farm tier is read from (`ECONOMY.md` §6).
+ */
+export function highestBossCleared(progress: CampaignProgress, difficulty: Difficulty): number {
+  for (let settlement = SETTLEMENT_COUNT; settlement >= 1; settlement -= 1)
+    if (isStageCleared(progress, stageIdOf(settlement, BOSS_STAGE_NUMBER), difficulty)) return settlement;
+  return 0;
+}
+
 export function isDifficultyComplete(progress: CampaignProgress, difficulty: Difficulty): boolean {
   return clearedStages(progress, difficulty) === SETTLEMENT_COUNT * STAGES_PER_SETTLEMENT;
 }
