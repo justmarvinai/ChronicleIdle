@@ -51,6 +51,11 @@ _Phase 10 (Daily Boss) starts after the owner's Phase 9 check-in._
   cannot be defeated by a renderer that ignores the mask, which is what happened here — the masked
   ring read as a solid disc in a production build.
 
+### Open question
+
+- **Q40**: a chronicle that predates the chest is paid for the time it was away — the migration
+  sets the chest's start to the last save rather than to the upgrade (`USER_QUESTIONS.md`).
+
 ### Balance
 
 - Idle income at tier 12 with a six-hour chest is ≈ 33.5k gold, 9 brews, 20 dust, 9 iron and 24

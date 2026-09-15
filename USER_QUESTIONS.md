@@ -5,7 +5,13 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-*Nothing open. New questions are written here with the default they ship with.*
+**Q40 — Should a chronicle that predates the Idle Chest be paid for the time it was away?**
+*Why it matters:* the chest is new in `0.0.9`, and every existing save has a "last saved" instant
+days or weeks old. The migration has to choose what the chest was doing before it existed.
+*Default in use:* migration 7→8 sets `idle.lastClaimAt` to the chronicle's last save, so a
+returning player finds the chest as full as their absence allows (capped at capacity, as always)
+rather than empty. The alternative — starting it empty at the moment of the upgrade — is one line
+in the migration step. The choice only ever affects the first claim after upgrading.
 
 ## 2. Answered
 

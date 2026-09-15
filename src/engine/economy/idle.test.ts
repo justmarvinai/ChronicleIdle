@@ -66,6 +66,16 @@ describe('the chest fill', () => {
     expect(fresh.claimable).toBe(false);
   });
 
+  it('pays exactly one hour after an hour away', () => {
+    const fill = idleFill({ now: at(1), lastClaimAt: T0, level: 10 });
+    expect(fill.hours).toBe(1);
+    expect(fill.full).toBe(false);
+    expect(fill.msToFull).toBe(5 * MS_PER_HOUR);
+    const haul = idleGuaranteed({ tier: 10, hours: fill.hours, brewElements: ['justice'] });
+    expect(haul.currencies.find((c) => c.currency === 'gold')?.amount).toBe(Math.floor(idleGoldPerHour(10)));
+    expect(haul.playerXp).toBe(200);
+  });
+
   it('caps at capacity and stays there', () => {
     const level10 = { lastClaimAt: T0, level: 10 };
     const overflowing = idleFill({ now: at(26), ...level10 });
