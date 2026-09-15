@@ -65,6 +65,8 @@ export type DialogRoute =
   | { name: 'summon-history' }
   /** Takes a champion choice the campaign owes (`CAMPAIGN.md` §7). */
   | { name: 'champion-picker'; choiceId: string }
+  /** The Idle Chest at the docks (`ECONOMY.md` §6). */
+  | { name: 'idle-chest' }
   | { name: 'level-up' }
   | { name: 'title-picker' }
   | { name: 'battle-pause' }

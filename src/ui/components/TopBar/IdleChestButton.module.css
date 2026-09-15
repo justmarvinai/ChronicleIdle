@@ -1,0 +1,64 @@
+.pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 52px;
+  min-width: 124px;
+  padding: 0 12px 0 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: filter var(--t-base);
+}
+
+.pill:hover {
+  filter: brightness(1.12);
+}
+
+.pill:active {
+  filter: brightness(0.95);
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.icon,
+.text {
+  position: relative;
+  z-index: 1;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+}
+
+.text {
+  flex: 1 1 auto;
+  font-size: 19px;
+  text-align: right;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+/* How full the chest is, as a seam of light along the bottom of the pill. */
+.progress {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 4px;
+  height: 3px;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    var(--gold-3) 0,
+    var(--gold-3) var(--fill),
+    rgba(20, 18, 24, 0.7) var(--fill),
+    rgba(20, 18, 24, 0.7) 100%
+  );
+}

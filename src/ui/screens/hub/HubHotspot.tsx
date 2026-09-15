@@ -3,6 +3,7 @@ import { t } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { selectFeatureUnlocked } from '@state/selectors';
 import { useGameStore } from '@state/store';
+import { FillRing } from '@ui/components/FillRing/FillRing';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { NotificationDot } from '@ui/components/NotificationDot/NotificationDot';
 import { Tooltip } from '@ui/components/Tooltip/Tooltip';
@@ -14,12 +15,16 @@ export interface HubHotspotProps {
   def: HubHotspotDef;
   onOpen: (def: HubHotspotDef, unlocked: boolean) => void;
   notify?: boolean;
+  /** 0..1 drawn as a ring around the building — the Idle Chest's fill (`ECONOMY.md` §6). */
+  progress?: number;
+  /** A line under the label: a countdown, a count, a state. */
+  sublabel?: string;
 }
 
 const neverUnlocked = (): boolean => false;
 
 /** A building on the Emberhold artwork: glowing ring, glyph, banner label, lock state. */
-export function HubHotspot({ def, onOpen, notify }: HubHotspotProps) {
+export function HubHotspot({ def, onOpen, notify, progress, sublabel }: HubHotspotProps) {
   const unlocked = useGameStore(
     def.feature === 'later-phase' ? neverUnlocked : selectFeatureUnlocked(def.feature),
   );
@@ -45,6 +50,15 @@ export function HubHotspot({ def, onOpen, notify }: HubHotspotProps) {
         <span className={styles.body}>
           <span className={styles.ring} style={{ width: def.size, height: def.size }} aria-hidden="true">
             <span className={styles.ringInner} />
+            {progress !== undefined && unlocked ? (
+              <FillRing
+                fraction={progress}
+                size={def.size - 10}
+                thickness={5}
+                color="var(--gold-3)"
+                className={styles.fill ?? ''}
+              />
+            ) : null}
             <Glyph
               glyph={unlocked ? def.glyph : 'glyph.broken_shackle'}
               size={def.size * 0.34}
@@ -58,6 +72,7 @@ export function HubHotspot({ def, onOpen, notify }: HubHotspotProps) {
           >
             <span className={`display ${styles.label}`}>{label}</span>
             {!unlocked ? <span className={styles.lock}>{lockText}</span> : null}
+            {unlocked && sublabel ? <span className={`num ${styles.sublabel}`}>{sublabel}</span> : null}
           </span>
         </span>
       </button>

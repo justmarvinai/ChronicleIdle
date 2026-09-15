@@ -136,10 +136,3 @@ export const selectPortalUi = (s: GameStore) => s.ui.portal;
 export const selectSummon = (s: GameStore): SummonSave | null => s.save?.summon ?? null;
 /** Copies the player has not opened yet — the "NEW" badge (SUMMONING.md §5.3). */
 export const selectUnseen = (s: GameStore): readonly string[] => s.save?.summon.unseen ?? EMPTY_IDS;
-
-// ---------------------------------------------------------------------------------------------
-// The Idle Chest (docs/design/ECONOMY.md §6)
-// ---------------------------------------------------------------------------------------------
-
-/** When the chest was last emptied; what it holds is derived from this and the clock. */
-export const selectIdleClaimedAt = (s: GameStore): number | null => s.save?.idle.lastClaimAt ?? null;

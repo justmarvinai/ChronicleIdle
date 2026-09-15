@@ -1,5 +1,7 @@
 import { t } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
+import { formatDuration } from '@engine/time/clock';
+import { idleView } from '@state/idle';
 import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -10,6 +12,7 @@ import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
 import { TopBar } from '@ui/components/TopBar/TopBar';
+import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { HubHotspot } from './HubHotspot';
@@ -32,17 +35,24 @@ export default function HubScreen(_props: ScreenProps) {
   const gear = useGameStore(selectGear);
   const unseen = useGameStore(selectUnseen);
   const save = useGameStore(selectSave);
+  // The chest accrues by the minute; the ring and its countdown follow at that pace.
+  const now = useNow(30_000);
   useSceneAudio('hub', 'hub');
+
+  // The Idle Chest wears its fill on the building itself (`UI_DESIGN.md` §5.2).
+  const chest = save ? idleView(save, now) : null;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
   const notices: Record<string, boolean> = {
     champions: unseen.length > 0,
     portal: save ? openChampionChoices(save).length > 0 : false,
+    idle: chest?.fill.full ?? false,
   };
 
   const open = (def: HubHotspotDef, unlocked: boolean): void => {
-    if (unlocked && def.route) actions.push(def.route);
+    if (unlocked && def.dialog) actions.openDialog(def.dialog);
+    else if (unlocked && def.route) actions.push(def.route);
     else actions.push({ name: 'locked', feature: def.feature, titleKey: def.labelKey });
   };
 
@@ -53,7 +63,18 @@ export default function HubScreen(_props: ScreenProps) {
       <TopBar />
 
       {HUB_HOTSPOTS.map((def) => (
-        <HubHotspot key={def.id} def={def} onOpen={open} notify={notices[def.id] ?? false} />
+        <HubHotspot
+          key={def.id}
+          def={def}
+          onOpen={open}
+          notify={notices[def.id] ?? false}
+          {...(def.id === 'idle' && chest
+            ? {
+                progress: chest.fill.fraction,
+                sublabel: chest.fill.full ? t('hub.idleChest.full') : formatDuration(chest.fill.msToFull),
+              }
+            : {})}
+        />
       ))}
 
       <aside className={styles.bossColumn} aria-label={t('hub.bossGate')}>

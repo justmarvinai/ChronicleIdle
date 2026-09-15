@@ -70,6 +70,15 @@
 .locked .ringInner {
   animation: none;
 }
+.fill {
+  position: absolute;
+  inset: 5px;
+}
+.sublabel {
+  font-size: 14px;
+  color: var(--gold-3);
+  white-space: nowrap;
+}
 .banner {
   display: flex;
   flex-direction: column;

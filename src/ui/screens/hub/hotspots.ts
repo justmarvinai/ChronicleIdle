@@ -2,7 +2,7 @@ import type { FeatureId } from '@content/balance/unlocks';
 import type { GlyphKey } from '@assets/manifest.generated';
 import type { I18nKey } from '@i18n/index';
 import type { GlowPoint } from '@render/ambient/presets';
-import type { Route } from '@state/ui-types';
+import type { DialogRoute, Route } from '@state/ui-types';
 
 /** Stage-space (1920×1080) placement of Emberhold's buildings on the `bg8` artwork. */
 export interface HubHotspotDef {
@@ -16,6 +16,8 @@ export interface HubHotspotDef {
   feature: FeatureId | 'later-phase';
   /** Screen opened when unlocked; absent while the feature's screen is a later chapter. */
   route?: Route;
+  /** Dialog opened when unlocked, for buildings that are a panel rather than a screen. */
+  dialog?: DialogRoute;
   /** Accent colour of the ring/glow. */
   color: string;
   labelBelow?: boolean;
@@ -112,6 +114,7 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     size: 130,
     glyph: 'glyph.hourglass',
     feature: 'idle_chest',
+    dialog: { name: 'idle-chest' },
     color: '#63c96a',
     labelBelow: true,
   },

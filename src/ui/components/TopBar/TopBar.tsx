@@ -5,6 +5,7 @@ import { useGameStore } from '@state/store';
 import { useShallow } from 'zustand/react/shallow';
 import { IconButton } from '@ui/components/Button/IconButton';
 import { CurrencyPill } from '@ui/components/CurrencyPill/CurrencyPill';
+import { IdleChestButton } from '@ui/components/TopBar/IdleChestButton';
 import { ProfileChip } from '@ui/components/TopBar/ProfileChip';
 import { useNow } from '@ui/hooks/useNow';
 import { kitBorder } from '@ui/styles/kit';
@@ -57,6 +58,7 @@ export function TopBar({ title, onBack, onClose, children }: TopBarProps) {
               ),
             )
           : null}
+        <IdleChestButton />
         <IconButton
           kind="settings"
           label={t('topbar.settings')}

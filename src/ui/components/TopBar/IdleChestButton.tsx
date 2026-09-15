@@ -1,0 +1,59 @@
+import { playSfx } from '@audio/index';
+import { formatDuration } from '@engine/time/clock';
+import { t, translate } from '@i18n/index';
+import { idleView } from '@state/idle';
+import { selectActions, selectFeatureUnlocked, selectSave } from '@state/selectors';
+import { useGameStore } from '@state/store';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
+import { NotificationDot } from '@ui/components/NotificationDot/NotificationDot';
+import { useNow } from '@ui/hooks/useNow';
+import { kitBorder } from '@ui/styles/kit';
+import styles from './IdleChestButton.module.css';
+
+const selectIdleUnlocked = selectFeatureUnlocked('idle_chest');
+
+/**
+ * The chest in the top bar (docs/tech/UI_DESIGN.md §5.2): the same chest as the one at the docks,
+ * reachable from any screen. It is framed like the currency pills beside it, counts down to full,
+ * and wears a dot once it has stopped counting.
+ */
+export function IdleChestButton() {
+  const actions = useGameStore(selectActions);
+  const save = useGameStore(selectSave);
+  const unlocked = useGameStore(selectIdleUnlocked);
+  const now = useNow(30_000);
+  if (!save || !unlocked) return null;
+
+  const { fill } = idleView(save, now);
+  const label = fill.full
+    ? `${t('idle.title')} — ${t('hub.idleChest.full')}`
+    : translate('idle.filling', { time: formatDuration(fill.msToFull) });
+
+  return (
+    <button
+      type="button"
+      className={styles.pill}
+      style={kitBorder('ui.dark_ember.frame_sm_thin', 0.3)}
+      aria-label={label}
+      title={label}
+      data-testid="topbar-idle"
+      onMouseEnter={() => playSfx('ui.hover')}
+      onClick={() => {
+        playSfx('ui.open');
+        actions.openDialog({ name: 'idle-chest' });
+      }}
+    >
+      <span className={styles.fill} style={kitBorder('ui.dark_ember.bg_tile_sm', 0.5)} aria-hidden="true" />
+      <AssetImage asset="ui.stone_vine.icon_chest" className={styles.icon} alt="" />
+      <span className={`num ${styles.text}`}>
+        {fill.full ? t('hub.idleChest.full') : formatDuration(fill.msToFull)}
+      </span>
+      <span
+        className={styles.progress}
+        style={{ ['--fill' as string]: `${Math.round(fill.fraction * 100)}%` }}
+        aria-hidden="true"
+      />
+      {fill.full ? <NotificationDot /> : null}
+    </button>
+  );
+}

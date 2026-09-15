@@ -4,6 +4,8 @@
   right: -6px;
   width: 16px;
   height: 16px;
+  /* A dot is one of the round shapes the design language allows (CLAUDE.md §7.1). */
+  border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #ff8a5c, var(--ember-2) 70%);
   border: 2px solid var(--bg-0);
   box-shadow: 0 0 0 0 rgba(216, 85, 47, 0.7);
@@ -17,6 +19,8 @@
   padding: 0 5px;
   display: grid;
   place-items: center;
+  /* With a number inside it is a badge, not a dot: bevelled, never a pill. */
+  border-radius: 4px;
 }
 .count {
   font-size: 14px;
