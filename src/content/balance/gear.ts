@@ -41,7 +41,7 @@ export const PERCENT_GEAR_STATS: ReadonlySet<GearStat> = new Set<GearStat>([
  * deliberately separate, because a champion is never struck at the Forge and a piece is never
  * summoned. Every value a save has ever stored must stay in this list.
  */
-export const GEAR_SOURCES = ['campaign_drop', 'craft'] as const;
+export const GEAR_SOURCES = ['campaign_drop', 'craft', 'boss_chest'] as const;
 export type GearSource = (typeof GEAR_SOURCES)[number];
 
 /** Gear levels run 0 → 16 (GEAR.md §3). */

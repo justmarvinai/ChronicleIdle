@@ -110,6 +110,13 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       idle: { lastClaimAt: Number(raw['updatedAt'] ?? 0) },
     }),
   },
+  {
+    from: 8,
+    to: 9,
+    // Phase 10: the period bosses. Nobody has spent a key yet, so the record is simply empty —
+    // the first fight writes the period it belongs to (BOSSES.md §1).
+    migrate: (raw) => ({ ...raw, saveVersion: 9, bosses: {} }),
+  },
 ];
 
 export interface MigrationResult {

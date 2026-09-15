@@ -36,6 +36,15 @@ export type DomainEvent =
       hours: number;
       tier: number;
     }
+  | {
+      type: 'boss.fightFinished';
+      bossId: string;
+      tierId: string;
+      /** Damage this fight did, and the period's pool after it (`BOSSES.md` §1). */
+      damage: number;
+      total: number;
+      killed: boolean;
+    }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

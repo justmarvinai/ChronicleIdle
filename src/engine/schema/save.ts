@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 8 as const;
+export const SAVE_VERSION = 9 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -159,8 +159,27 @@ export const summonSchema = z.object({
   choices: z.record(z.string(), championChoiceSchema),
 });
 
-export const saveSchemaV8 = z.object({
-  saveVersion: z.literal(8),
+/**
+ * One boss's period (docs/design/BOSSES.md §1). `periodKey` is the same daily/weekly key the rest
+ * of the game resets on: a record from an older period reads as a fresh one, so keys, damage and
+ * claims come back without anything having to run at midnight. `records` outlive the reset.
+ */
+const bossRecordSchema = z.object({
+  damage: z.number().min(0),
+  at: z.number().int().nonnegative(),
+  team: z.array(z.string()),
+});
+
+const bossSaveSchema = z.object({
+  periodKey: z.string(),
+  keysUsed: z.number().int().min(0),
+  damage: z.record(z.string(), z.number().min(0)),
+  claimed: z.array(z.string()),
+  records: z.record(z.string(), bossRecordSchema),
+});
+
+export const saveSchemaV9 = z.object({
+  saveVersion: z.literal(9),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -197,14 +216,16 @@ export const saveSchemaV8 = z.object({
    * it holds is derived from that instant and the clock, so it cannot disagree with the wait.
    */
   idle: z.object({ lastClaimAt: z.number().int().nonnegative() }),
+  /** The period bosses, by boss id (BOSSES.md §1). Absent until the first key is spent. */
+  bosses: z.record(z.string(), bossSaveSchema),
   settings: settingsSchema,
   /** Lifetime counters used by quests, missions and the profile screen. */
   stats: z.record(z.string(), z.number()),
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV8 = z.infer<typeof saveSchemaV8>;
-export type SaveGame = SaveGameV8;
+export type SaveGameV9 = z.infer<typeof saveSchemaV9>;
+export type SaveGame = SaveGameV9;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
@@ -212,7 +233,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV8;
+export const saveSchema = saveSchemaV9;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

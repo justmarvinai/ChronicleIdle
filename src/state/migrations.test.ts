@@ -194,6 +194,21 @@ describe('migrateSave', () => {
     expect(result.save.idle.lastClaimAt).toBe(result.save.updatedAt);
   });
 
+  it('upgrades a Phase 9 (version 8) chronicle to a save that knows the bosses', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v8.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(8);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // Nothing is owed on a chronicle that has never spent a key: the record is simply empty.
+    expect(result.save.bosses).toEqual({});
+    // And Phase 9's chest is carried forward untouched.
+    expect(result.save.idle.lastClaimAt).toBe(result.save.updatedAt);
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [

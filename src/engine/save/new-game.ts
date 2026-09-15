@@ -38,6 +38,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     campaign: emptyCampaign(),
     summon: emptySummon(),
     idle: { lastClaimAt: now },
+    bosses: {},
     settings: { ...DEFAULT_SETTINGS, ...settings },
     stats: {},
     periods: {

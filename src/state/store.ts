@@ -63,6 +63,14 @@ import type { CraftTier } from '@content/balance/forge';
 import type { ShardId } from '@content/balance/summon';
 import { applyIdleClaim, type IdleClaimSummary } from './idle';
 import {
+  applyBossChestClaim,
+  applyBossFightFinish,
+  applyBossFightStart,
+  type BossChestSummary,
+  type BossFightStarted,
+  type BossFightSummary,
+} from './bosses';
+import {
   applyChampionChoice,
   applyExchange,
   applySummon,
@@ -217,6 +225,17 @@ export interface GameActions {
   setPortalSelection(patch: Partial<{ bannerId: string; shard: ShardId }>): void;
   /** Opens the Idle Chest (`ECONOMY.md` §6): its hours are paid and it starts filling again. */
   claimIdleChest(): Result<IdleClaimSummary>;
+  /** Spends a boss key on a tier and hands back the fight it bought (`BOSSES.md` §1). */
+  startBossFight(bossId: string, tierId: string): Result<BossFightStarted>;
+  /** Banks a finished boss fight: its damage joins the period's pool for that tier. */
+  finishBossFight(input: {
+    bossId: string;
+    tierId: string;
+    outcome: BattleOutcome;
+    team: readonly string[];
+  }): Result<BossFightSummary>;
+  /** Takes one earned boss chest; each threshold pays once per period. */
+  claimBossChest(bossId: string, tierId: string, pct: number): Result<BossChestSummary>;
   /** Dev/debug: a seeded piece straight into the armoury. */
   debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
@@ -1011,6 +1030,61 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               events.emit({ type: 'idle.claimed', hours: result.value.hours, tier: result.value.tier });
               // The chest can carry a chronicle over a level; the celebration is the shared one.
               noteLevelUp(result.value.levelUp, 'idle');
+              return result;
+            },
+
+            startBossFight(bossId, tierId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<BossFightStarted> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyBossFightStart(state.save, { bossId, tierId, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              return result;
+            },
+
+            finishBossFight(input) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<BossFightSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyBossFightFinish(state.save, { ...input, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const summary = result.value;
+              if (summary.changes.length)
+                events.emit({ type: 'currency.changed', changes: summary.changes, reason: 'boss' });
+              events.emit({
+                type: 'boss.fightFinished',
+                bossId: summary.bossId,
+                tierId: summary.tierId,
+                damage: summary.damage,
+                total: summary.total,
+                killed: summary.killed,
+              });
+              // The fight already paid the level; the celebration waits for the result screen.
+              noteLevelUp(summary.levelUp, 'boss', false);
+              return result;
+            },
+
+            claimBossChest(bossId, tierId, pct) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              // Seeded by the chest itself, so the piece it holds cannot be rerolled by reloading.
+              const rng = createRng(`boss:${current.seedRoot}:${bossId}:${tierId}:${pct}:${now}`);
+              let result: Result<BossChestSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyBossChestClaim(state.save, { bossId, tierId, pct, now, rng });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'boss' });
               return result;
             },
 
