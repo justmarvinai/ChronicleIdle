@@ -37,6 +37,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     teams: emptyTeams(),
     campaign: emptyCampaign(),
     summon: emptySummon(),
+    idle: { lastClaimAt: now },
     settings: { ...DEFAULT_SETTINGS, ...settings },
     stats: {},
     periods: {

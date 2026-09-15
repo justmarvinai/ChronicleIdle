@@ -30,6 +30,13 @@ export type DomainEvent =
       /** The rarest of the press — what the music and the stinger answer to. */
       best: Rarity;
     }
+  | {
+      type: 'idle.claimed';
+      /** Hours the chest was holding. */
+      hours: number;
+      tier: number;
+      gear: number;
+    }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

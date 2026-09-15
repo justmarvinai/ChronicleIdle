@@ -1,5 +1,5 @@
 /**
- * Save-game schema, version 7 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
+ * Save-game schema, version 8 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
  * current phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 7 as const;
+export const SAVE_VERSION = 8 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -159,8 +159,8 @@ export const summonSchema = z.object({
   choices: z.record(z.string(), championChoiceSchema),
 });
 
-export const saveSchemaV7 = z.object({
-  saveVersion: z.literal(7),
+export const saveSchemaV8 = z.object({
+  saveVersion: z.literal(8),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -192,14 +192,19 @@ export const saveSchemaV7 = z.object({
   campaign: campaignSchema,
   /** The Portal: mercy counters, pull history and the champion choices already taken. */
   summon: summonSchema,
+  /**
+   * The Idle Chest (docs/design/ECONOMY.md §6): when it was last emptied, and nothing else. What
+   * it holds is derived from that instant and the clock, so it cannot disagree with the wait.
+   */
+  idle: z.object({ lastClaimAt: z.number().int().nonnegative() }),
   settings: settingsSchema,
   /** Lifetime counters used by quests, missions and the profile screen. */
   stats: z.record(z.string(), z.number()),
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
 });
 
-export type SaveGameV7 = z.infer<typeof saveSchemaV7>;
-export type SaveGame = SaveGameV7;
+export type SaveGameV8 = z.infer<typeof saveSchemaV8>;
+export type SaveGame = SaveGameV8;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
@@ -207,7 +212,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV7;
+export const saveSchema = saveSchemaV8;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

@@ -98,6 +98,18 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       },
     }),
   },
+  {
+    // Phase 9: the Idle Chest. It starts filling from when the chronicle was last saved, so a
+    // returning player is paid for the time they were away (capped at capacity, as always) rather
+    // than finding an empty chest for having been offline before it existed.
+    from: 7,
+    to: 8,
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 8,
+      idle: { lastClaimAt: Number(raw['updatedAt'] ?? 0) },
+    }),
+  },
 ];
 
 export interface MigrationResult {

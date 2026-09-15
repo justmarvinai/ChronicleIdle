@@ -175,6 +175,25 @@ describe('migrateSave', () => {
     expect(result.save.summon.choices).toEqual({});
   });
 
+  it('upgrades a Phase 8 (version 7) chronicle to a chest that starts filling', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v7.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(7);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // The Portal Phase 8 wrote survives: mercy, history, the badge and the choice taken.
+    expect(result.save.summon.pity.ancient).toEqual({ epic: 7, legendary: 41 });
+    expect(result.save.summon.history).toHaveLength(2);
+    expect(result.save.summon.unseen).toEqual(['khazgor-6']);
+    expect(result.save.summon.choices['choice.milestone.intro']?.championId).toBe('champ.khazgor');
+    expect(Object.keys(result.save.inventory)).toHaveLength(3);
+    // …and the chest starts filling from when the chronicle was last saved, not from zero.
+    expect(result.save.idle.lastClaimAt).toBe(result.save.updatedAt);
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [

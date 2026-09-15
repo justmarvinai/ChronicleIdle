@@ -61,6 +61,7 @@ import {
 } from './forge';
 import type { CraftTier } from '@content/balance/forge';
 import type { ShardId } from '@content/balance/summon';
+import { applyIdleClaim, type IdleClaimSummary } from './idle';
 import {
   applyChampionChoice,
   applyExchange,
@@ -214,6 +215,8 @@ export interface GameActions {
   markSeen(instanceIds: readonly string[]): void;
   /** Remembers the Portal's banner tab and shard. */
   setPortalSelection(patch: Partial<{ bannerId: string; shard: ShardId }>): void;
+  /** Opens the Idle Chest (`ECONOMY.md` §6): its hours are paid and it starts filling again. */
+  claimIdleChest(): Result<IdleClaimSummary>;
   /** Dev/debug: a seeded piece straight into the armoury. */
   debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
@@ -988,6 +991,32 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               set((state) => {
                 Object.assign(state.ui.portal, patch);
               });
+            },
+
+            claimIdleChest() {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              // Seeded by when the chest started filling: reading it before opening cannot reroll
+              // what is inside (ECONOMY.md §6).
+              const rng = createRng(`idle:${current.seedRoot}:${current.idle.lastClaimAt}`);
+              let result: Result<IdleClaimSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyIdleClaim(state.save, { now, rng });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'idle' });
+              events.emit({
+                type: 'idle.claimed',
+                hours: result.value.hours,
+                tier: result.value.tier,
+                gear: result.value.gear.length,
+              });
+              // The chest can carry a chronicle over a level; the celebration is the shared one.
+              noteLevelUp(result.value.levelUp, 'idle');
+              return result;
             },
 
             debugGrantGear(settlementIndex) {
