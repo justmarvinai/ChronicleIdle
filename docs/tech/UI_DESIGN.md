@@ -319,9 +319,32 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   Emberhold shows a notification dot on the Champions hall while ribbons are outstanding and on the
   Portal while a champion choice is unclaimed.
 
-### 5.13 Bosses
-- Reference: `daily_weekly_boss_screen.png`.
-- Layout per `docs/design/BOSSES.md` §4; tabs *Daily* / *Weekly*; key count in the top bar.
+### 5.13 Bosses — the boss gate
+- Reference: `daily_weekly_boss_screen.png`. Backdrop: the boss's own (`bg3` for Gravemaw) with
+  the interior ambient preset and two lantern glows on the gate.
+- Layout per `docs/design/BOSSES.md` §4. Left rail (340 px): period tabs *Daily* / *Weekly* over
+  the **Records** panel — best damage per tier with the team's avatars and the date, and a footer
+  saying how many keys a period holds and that every key feeds the same pool. Centre: the boss's
+  nameplate, its sprite on the scene (placeholder art washed to its tint, `ASSETS.md` §3), and a
+  strip carrying the reset countdown, the keys left and *How it fights*. Right column (536 px): a
+  scrolling `TierCard` per tier — name, enemy level, chronicle XP a key, an ember `Bar` of the
+  period's damage against the pool ("54,838 of 250,000"), the chest ladder as five buttons
+  (locked / claimable / claimed, each with its contents on hover) and the personal best. Bottom
+  bar: what a key opens (or why it cannot) and the primary **Battle**.
+- The mechanics sheet (*How it fights*) prints the kit in rotation order from the boss's own data,
+  what never lands on it, and the four tips — including the enrage's real numbers.
+- Motion: the selected tier card lifts to the ember frame; a claimed chest swaps its glyph for a
+  trophy; the reward toast names the chest.
+
+#### The boss HUD in the fight (`BOSSES.md` §4)
+- The pool bar keeps the boss's own name and statuses, and carries three chips under it:
+  **Unshakeable** (the immunity list on hover), the enrage — "Enrages in N of its turns" until the
+  first step, then "Enraged ×N · +X % ATK" with a pulsing ember frame — and one chip per counting
+  passive the party has broken, which enters with a flash. The stage shouts the same beats
+  ("ENRAGED", "ARMOUR BROKEN") and both land in the battle log.
+- The result screen replaces stars and spoils with what the key bought: the damage this fight did,
+  the period's pool after it, a personal-best line, the chests the damage has just earned, and
+  *Back to the gate* as the primary press.
 
 ### 5.14 Quests
 - Tabs Daily / Weekly; points track with five chest nodes; quest rows with progress and *Claim*;
@@ -332,8 +355,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   chapter track with chest nodes; Eldric portrait + line.
 
 ### 5.16 Idle chest
-- Dialog: chest art (`stone-vine/icon-chest` large) with fill ring, timer, capacity band note
-  ("Fills in 6 h at level 10–19"), guaranteed contents preview, **Open**; reward burst.
+- See §5.2: the chest lives on the hub (the hotspot at the docks and the top-bar pill) and its
+  dialog is specified there.
 
 ### 5.17 Profile & Settings
 - Reference: `player_profile.png` (chip). The chip carries the avatar ring with the level badge,

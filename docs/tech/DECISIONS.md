@@ -328,6 +328,39 @@ future rebalance argues with a run rather than with taste. Anything the chest no
 line removed, not a number set to zero — if the owner wants gear or dust back, it returns as a
 table row.
 
+## ADR-036 — A boss's enrage is the boss's own cadence
+**Context.** Enrage arrived in Phase 2 as one global constant — ATK +10 % every 8 of a boss's own
+turns, past a per-enemy threshold — which suits a campaign stage boss that takes a dozen turns in a
+fight it is expected to win. BOSSES.md gave Gravemaw a 50 ally-turn limit and an enrage turn of 20.
+Measured with `tools/sim`, a race lasts him 6–16 own turns: at that threshold the first step would
+have landed on his 28th, so the mechanic the design leans on to end a race would never once have
+fired in the shipped game.
+**Decision.** The cadence belongs to the boss block (`enrageEvery`, defaulting to the campaign's
+eight), the daily boss enrages from his 12th own turn every 2, and the content validator rejects a
+tier whose first step could not land inside half the ally-turn limit — the share of the race a boss
+actually gets to act in.
+**Consequences.** A long race now turns lethal as designed (about +60 % ATK by the turn limit) while
+short ones are untouched, and campaign enemies keep the numbers Phase 3 was balanced against. The
+validator makes the next boss state its own cadence rather than inherit one that does not fit, and
+a mechanic that cannot fire is a build error instead of a doc that lies.
+
+## ADR-037 — Placeholder art is washed at load, not filtered at render
+**Context.** BOSSES.md asks for the daily boss to stand in as bone-white until it has a model of
+its own, but the tint every placeholder uses is a *multiply*: it can only darken, so a pale tint
+did nothing and Gravemaw was a green lizard with a bone-coloured name. A `ColorMatrixFilter` on the
+sprite fixed the look and brought two costs: a filter pass on the stage's hot path — the project
+had none until then, deliberately (CLAUDE.md §5.6) — and a Pixi warning on every boss teardown,
+because the renderer destroys the filter's pooled texture sources while its bind group still holds
+them.
+**Decision.** `art.desaturate` is content, and each renderer implements it without a filter: the
+Pixi stage bakes one greyscale copy of the model's atlas at load (canvas, Rec. 601 luma, cached per
+model) and tints that; the DOM `SpriteView` blends its masked tint layer with `mix-blend-mode:
+color`, which is the same operation — the model's light and shade, the tint's colour.
+**Consequences.** The look is identical in both layers, the stage keeps a filter-free render path,
+and the teardown is quiet. The cost is one extra decode and a canvas pass per washed model (a 84 px
+atlas, once) and a second texture in memory for it, which is why the flag is opt-in per definition
+rather than "anything with a tint".
+
 ## ADR-034 — The farm tier is the best of the three difficulties
 **Context.** `ECONOMY.md` §6 defines the farm tier as "the highest settlement whose boss was
 cleared on the highest unlocked difficulty". Read literally, unlocking Normal drops the tier to

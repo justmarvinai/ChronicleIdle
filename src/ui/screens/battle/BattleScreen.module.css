@@ -177,6 +177,10 @@
   display: flex;
   gap: 4px;
 }
+/* The boss's pool bar and its chips take the top of the screen, so the banner steps down. */
+.root[data-boss='true'] .turnBanner {
+  top: 156px;
+}
 .turnBanner {
   position: absolute;
   top: 120px;

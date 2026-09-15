@@ -6,7 +6,9 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
 import { createBattle } from '@engine/battle/create';
+import { runAuto } from '@engine/battle/step';
 import { createInstance } from '@engine/champions/instance';
+import { levelCap } from '@engine/champions/stats';
 import type { PartyMember } from '@engine/battle/create';
 import { BOSS_BY_ID } from './index';
 
@@ -67,6 +69,39 @@ describe('Gravemaw, the Bone Tyrant', () => {
       expect(encounter.turnLimit).toBe(50);
       expect(encounter.timeUpIsDefeat).toBe(false);
     });
+  });
+
+  it('casts its kit in the printed order, the same way on the same seed', () => {
+    const encounter = content.bossEncounter('boss.gravemaw', 'easy');
+    if (!encounter || !gravemaw) throw new Error('missing content');
+    // A party that survives long enough for the rotation to come round twice.
+    const party: PartyMember[] = ['champ.khazgor', 'champ.anuria', 'champ.maruan'].map((id, index) => {
+      const def = content.championById(id as 'champ.khazgor');
+      if (!def) throw new Error(id);
+      const instance = createInstance(def, { instanceId: `r${index}`, now: 0, source: 'starter' });
+      return { def, instance: { ...instance, stars: 4, level: levelCap(4) } };
+    });
+    const casts = (): string[] => {
+      const state = createBattle(
+        { encounter, party, enemyById: (id) => content.enemyById(id), control: 'auto' },
+        'rotation',
+      );
+      return runAuto(state)
+        .events.filter((event) => event.type === 'ability.cast' && event.unitId === 'w0e0')
+        .map((event) => (event.type === 'ability.cast' ? event.abilityId : ''));
+    };
+
+    const first = casts();
+    // The same seed, the same fight: a race can be replayed turn for turn (BATTLE.md §2).
+    expect(casts()).toEqual(first);
+    expect(first.length).toBeGreaterThan(6);
+    // `A1 A1 A2 A1 A3` with Devour starting on cooldown: the bite cannot open the fight.
+    expect(first[0]).toBe('ab.gravemaw.bone_crush');
+    expect(first[1]).toBe('ab.gravemaw.bone_crush');
+    expect(first.slice(0, 3)).not.toContain('ab.gravemaw.devour');
+    expect(first).toContain('ab.gravemaw.grave_quake');
+    expect(first).toContain('ab.gravemaw.devour');
+    expect(new Set(first).size).toBe(3);
   });
 
   it('pays a ladder of chests that ends in the kill', () => {

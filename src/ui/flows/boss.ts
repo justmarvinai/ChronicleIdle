@@ -10,6 +10,7 @@ import { maxBattleSpeed } from '@engine/campaign/progress';
 import { fail, ok, type Result } from '@engine/errors';
 import { battleController, type BattleSpeed } from '@state/battle/index';
 import { beginBossFight, bossSession, clearBossSession, noteBossFightFinished } from '@state/boss-session';
+import { clearCampaignSession } from '@state/campaign-session';
 import { progressOf } from '@state/campaign';
 import { useGameStore } from '@state/store';
 
@@ -25,6 +26,8 @@ export function launchBossFight(input: BossLaunchInput): Result<void> {
   const { save, actions } = useGameStore.getState();
   if (!save) return fail('invalid_argument', 'No chronicle loaded');
   const control = input.control ?? (save.settings.autoBattle ? 'auto' : 'manual');
+  // A race is never repeated and never carries a campaign batch's state into the HUD.
+  clearCampaignSession();
   const charged = actions.startBossFight(input.bossId, input.tierId);
   if (!charged.ok) return charged;
 

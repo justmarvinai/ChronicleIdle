@@ -131,6 +131,12 @@ Placeholder champions/enemies are the lizard model with a per-definition tint (m
 and, for bosses, a scale (1.35 stage boss, 2.0 daily boss, 2.4 weekly boss) plus a rarity-coloured
 ground ring so units are distinguishable. Names and element sigils do the rest.
 
+A multiply tint can only darken, so a placeholder that has to read *pale* — Gravemaw's bone —
+also sets `art.desaturate`. The renderers then take the model's light and shade and paint the tint
+over it: `mix-blend-mode: color` on the DOM sprite's masked tint layer, a `ColorMatrixFilter`
+desaturate under the tint on the Pixi stage. Both give the same result, and the flag is content:
+nothing in the engine or the UI knows which model is standing in for what.
+
 ## 4. Pipeline outputs
 
 See `ARCHITECTURE.md` §8. Manifest keys: `model.<id>`, `avatar.<id>`, `bg.<id>`, `ui.<kit>.<name>`,

@@ -286,7 +286,12 @@ export default function BattleScreen({ route }: ScreenProps) {
   const seconds = Math.floor((elapsed % 60_000) / 1000);
 
   return (
-    <div className={styles.root} data-testid="screen-battle" data-status={status}>
+    <div
+      className={styles.root}
+      data-testid="screen-battle"
+      data-status={status}
+      data-boss={boss ? 'true' : 'false'}
+    >
       <BattleStageMount
         backdrop={encounter.backdrop}
         initialView={view}

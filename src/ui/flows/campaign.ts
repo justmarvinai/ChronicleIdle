@@ -10,6 +10,7 @@ import { stageEncounterId } from '@engine/campaign/encounter';
 import { maxBattleSpeed, nextStage, type StagePointer } from '@engine/campaign/progress';
 import { fail, ok, type Result } from '@engine/errors';
 import { battleController, type BattleSpeed } from '@state/battle/index';
+import { clearBossSession } from '@state/boss-session';
 import {
   beginCampaignBatch,
   campaignSession,
@@ -61,6 +62,8 @@ export function launchCampaignRun(input: CampaignLaunchInput): Result<void> {
   if (!save) return fail('invalid_argument', 'No chronicle loaded');
   const control = input.control ?? (save.settings.autoBattle ? 'auto' : 'manual');
   const repeat = Math.max(1, input.repeat ?? 1);
+  // A stand is not a boss: whatever a previous race left behind must not settle this fight.
+  clearBossSession();
   beginCampaignBatch({ pointer: input.pointer, team: input.instanceIds, control, requested: repeat });
   const started = startRunBattle(input.pointer, input.instanceIds, control);
   if (!started.ok) {

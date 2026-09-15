@@ -36,8 +36,9 @@ Related: `CLAUDE.md` §3–5 (stack, layout, rules), `DECISIONS.md` (why), `CONT
    cross-reference checks (`ContentError` halts boot with a readable panel).
 4. `platform/storage` opens IndexedDB `chronicleidle` (stores: `saves`, `backups`, `settings`).
 5. `state/persistence.load()` → migrate (`saveVersion` → latest) → `applyOfflineElapsed(now)`:
-   energy regen, period resets (daily/weekly), boss key refills, idle-chest accrual is computed
-   lazily on claim from `lastClaimAt`.
+   energy regen, period resets (daily/weekly) and the boss rollover — a spent period's unclaimed
+   chests are paid as tribute on the way in (BOSSES.md §1) and the keys come back with it, while
+   idle-chest accrual is computed lazily on claim from `lastClaimAt`.
 6. Store hydrated → router shows **Title** (no save) or **Hub** (save exists, "Continue").
 7. Non-critical atlas groups (`battle`, `summon`, champion models) preload in the background with
    priority hints; screens await their group on entry with a short in-universe transition.
@@ -217,7 +218,11 @@ interface SaveGame {
   teams: Record<'campaign' | 'boss', { presets: string[][]; lastUsed: string[] }>;   // 3 presets per mode (Q25)
   campaign: { stages: Record<string, { stars: 0|1|2|3; clears: number; bestTurns: number | null }>;
               unlocked: { normal: boolean; hard: boolean }; speeds: { x3: boolean; x4: boolean }; starChests: string[] };
-  bosses: Record<BossId, { periodKey: string; keys: number; damage: Record<string, number>; chests: Record<string, number[]>; records: Record<string, { damage: number; team: string[]; at: number }> }>;
+  // Shipped in save v9. The period a boss's numbers belong to is stored, not a reset timer: a
+  // record from an older period reads as a fresh one, so nothing has to run at midnight (ADR-033's
+  // discipline). `claimed` holds `<tierId>:<pct>` per chest taken; `records` outlive every reset.
+  bosses: Record<BossId, { periodKey: string; keysUsed: number; damage: Record<string, number>;
+            claimed: string[]; records: Record<string, { damage: number; team: string[]; at: number }> }>;
   // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
   // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
   // the campaign's stars, so the ledger cannot disagree with the play).

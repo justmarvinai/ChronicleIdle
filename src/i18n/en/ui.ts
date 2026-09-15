@@ -495,7 +495,7 @@ export const ui = {
   'battleResult.hint.healer': 'Focus the mender first; its healing outlasted your damage.',
   'battleResult.hint.turns': 'Too many turns: bring more damage or clear the turn limit faster.',
   'battleResult.hint.level':
-    'Your champions are under-levelled for this fight. Champion levelling arrives with the Tavern.',
+    'Your champions are under-levelled for this fight: level and rank them up at the Tavern.',
   'battleResult.replay': 'Replay',
   'battleResult.team': 'Team',
   'battleResult.hub': 'Emberhold',
@@ -506,6 +506,7 @@ export const ui = {
     'Runs the Stress Bench fight (4 v 4, two waves, ×4, auto) with four maxed legendaries and reports frame times. Budget: p95 ≤ 16 ms on an Iris Xe class iGPU.',
   'perf.needSave': 'Open or create a chronicle first: the bench fights on the normal battle screen.',
   'perf.run': 'Run ×4 stress battle',
+  'perf.runBoss': 'Run ×4 boss race',
   'perf.rerun': 'Run again',
   'perf.back': 'Return to Emberhold',
   'perf.report': 'Last run',

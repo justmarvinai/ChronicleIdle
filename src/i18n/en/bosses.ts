@@ -62,6 +62,7 @@ export const bosses = {
   'bosses.sheet.tip.damage': 'Losing costs nothing but the key: whatever damage you did still counts.',
 
   // The fight, and what it banked.
+  'bosses.hint.race': 'A race often ends on the turn limit — every point of damage still counts.',
   'bosses.result.damage': 'Damage this key',
   'bosses.result.total': 'The pool now holds {damage} — {pct} % of it.',
   'bosses.result.record': 'A personal best.',

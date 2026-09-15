@@ -1,12 +1,14 @@
 /**
  * Battle perf bench (CLAUDE.md §5.6, AGENTS.md DoD "Performance"): `/?screen=perf` in every build,
- * never linked from the game. It starts the Stress Bench encounter at ×4 with four maxed
- * legendaries on the real battle screen and shows the frame statistics the stage measured.
- * `tools/perf/battle-bench.ts` drives it headlessly and prints the report.
+ * never linked from the game. It fights one of two scenarios at ×4 with four maxed legendaries on
+ * the real battle screen and shows the frame statistics the stage measured: the Stress Bench
+ * (4 v 4, two waves, every cast and hit colour) and a boss race (one huge washed sprite, its own
+ * HUD, a fight that runs to the turn limit). `tools/perf/battle-bench.ts` drives both headlessly.
  */
 import { useMemo } from 'react';
 import { useStore } from 'zustand';
 import { content } from '@content/registry';
+import { bossEncounterId } from '@engine/bosses/encounter';
 import { createInstance, type Roster } from '@engine/champions/instance';
 import { t } from '@i18n/index';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -20,7 +22,16 @@ import { TopBar } from '@ui/components/TopBar/TopBar';
 import type { ScreenProps } from '@ui/router/screens';
 import styles from './PerfScreen.module.css';
 
-const BENCH_ENCOUNTER = 'encounter.bench.stress';
+/** The two fights the bench can run; `perf-run` stays the stress one. */
+const SCENARIOS = [
+  { id: 'stress', encounterId: 'encounter.bench.stress', testId: 'perf-run', label: 'perf.run' },
+  {
+    id: 'boss',
+    encounterId: bossEncounterId('boss.gravemaw', 'easy'),
+    testId: 'perf-run-boss',
+    label: 'perf.runBoss',
+  },
+] as const;
 /** Four maxed legendaries of four elements: every cast, projectile and hit colour fires. */
 const BENCH_TEAM = [
   'champ.kaelith_stormcaller',
@@ -51,9 +62,9 @@ export default function PerfScreen(_props: ScreenProps) {
   const outcome = useStore(battleController.store, (s) => s.outcome);
   const roster = useMemo(() => benchRoster(), []);
 
-  const run = (): void => {
+  const run = (encounterId: string): void => {
     const started = battleController.start({
-      encounterId: BENCH_ENCOUNTER,
+      encounterId,
       instanceIds: Object.keys(roster),
       roster,
       control: 'auto',
@@ -79,9 +90,18 @@ export default function PerfScreen(_props: ScreenProps) {
         <p className={styles.body}>{t('perf.body')}</p>
         {!save ? <p className={styles.warning}>{t('perf.needSave')}</p> : null}
         <div className={styles.actions}>
-          <Button variant="primary" size="lg" onClick={run} disabled={!save} data-testid="perf-run">
-            {stats ? t('perf.rerun') : t('perf.run')}
-          </Button>
+          {SCENARIOS.map((scenario) => (
+            <Button
+              key={scenario.id}
+              variant={scenario.id === 'stress' ? 'primary' : 'secondary'}
+              size="lg"
+              onClick={() => run(scenario.encounterId)}
+              disabled={!save}
+              data-testid={scenario.testId}
+            >
+              {t(scenario.label)}
+            </Button>
+          ))}
           <Button variant="secondary" size="md" onClick={leave}>
             {t('perf.back')}
           </Button>

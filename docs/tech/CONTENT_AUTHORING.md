@@ -156,9 +156,49 @@ bosses ×1.8 HP and ×1.25 ATK/DEF. Strings live in `src/i18n/en/campaign.ts`.
 
 Campaign encounters are **not** authored: `stageEncounter(settlement, stage, difficulty)` derives
 all 360 of them from the stage, and the registry resolves and memoises them by the id
-`encounter.stage.<nn>.<nn>.<difficulty>`. The only authored `EncounterDef` left is the perf bench
-(`src/content/encounters/bench.ts`); later phases add the daily and weekly bosses the same way.
-The validator checks enemy ids, i18n keys, the backdrop key and the party size per kind.
+`encounter.stage.<nn>.<nn>.<difficulty>`. Period bosses derive theirs too (§3.2), so the only
+authored `EncounterDef` left is the perf bench (`src/content/encounters/bench.ts`). The validator
+checks enemy ids, i18n keys, the backdrop key and the party size per kind.
+
+### 3.2 Period boss
+
+One file per boss (`src/content/bosses/<slug>.ts`). `defineBoss` authors the kit **once** — a boss
+does not fight differently on Brutal, it hits harder — and every tier becomes an `EnemyDef` with
+the stats the table prints (`fixedStats`: no difficulty multiplier, no stage curve) plus a derived
+`encounter.boss.<slug>.<tier>`:
+
+```ts
+export default defineBoss({
+  slug: 'gravemaw',
+  period: 'daily', keysPerPeriod: 2, unlockLevel: 10,
+  feature: 'daily_boss', keyCurrency: 'key_daily',
+  element: 'eclipse', role: 'health',
+  art: { tint: '#efe6d2', scale: 2, desaturate: true },   // washed placeholder (ASSETS.md §3)
+  backdrop: 'bg.bg3', surface: 'stone',
+  immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],   // shown as "Unshakeable"
+  enrageEvery: 2,                                                // own turns between +10 % ATK steps
+  rotation: ['a1', 'a1', 'a2', 'a1', 'a3'],
+  abilities: [{ slot: 'a1', key: 'bone_crush', icon: 'spell.earth_boulder_fist', prefer: 'highest_atk', effects: [...] }, …],
+  passives: [{ key: 'tyrants_hide', icon: 'spell.earth_monolith', trigger: 'static', effects: [...] }],
+  tiers: [
+    {
+      id: 'easy',
+      stats: [250_000, 900, 700, 100, 15, 50, 60, 60],   // exactly what BOSSES.md prints
+      turnLimit: 50, enrageTurn: 12, enemyLevel: 20, playerXp: 150,
+      chests: [{ pct: 5, currencies: [...] }, …, { pct: 100, currencies: [...], gear: { rarity: 'legendary', stars: 5 } }],
+    },
+    …
+  ],
+});
+```
+
+Ids and strings derive from the slug (`ab.gravemaw.devour.name`, `boss.gravemaw.tier.easy`) and
+live in `src/i18n/en/bosses.ts`; register the file in `src/content/bosses/index.ts`. The validator
+holds the promises the design makes: chest thresholds climb and end at the kill, each tier is a
+bigger pool and pays more chronicle XP than the one below it, the tier enemy carries the tier's
+stats and the boss's enrage cadence, and the first enrage step must land inside half the ally-turn
+limit — the share of a race a boss actually gets to act in, so a mechanic that could never fire is
+a build error (ADR-036).
 
 ## 4. Settlement and stands
 

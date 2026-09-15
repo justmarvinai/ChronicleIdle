@@ -76,19 +76,31 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const teamIds = allies.map((u) => u.instanceId).filter((id): id is string => !!id);
   const enemyTurns = outcome.turns - outcome.allyTurns;
   const hints: I18nKey[] = [];
-  if (!victory && outcome.kind !== 'retreat') {
+  if (boss.summary) {
+    // A race is its own puzzle (BOSSES.md §2): the turn limit is a normal ending, and the way
+    // through a wall that shrugs off crowd control is damage over time and curses.
+    if (outcome.kind === 'timeout') hints.push('bosses.hint.race');
+    if (boss.summary.percent < 100) {
+      hints.push('bosses.sheet.tip.dots');
+      hints.push('bosses.sheet.tip.debuffs');
+    }
+  } else if (!victory && outcome.kind !== 'retreat') {
     if (enemyTurns > outcome.allyTurns * 1.4) hints.push('battleResult.hint.outsped');
     const healers = encounter.waves.some((w) =>
       w.enemies.some((e) => content.enemyById(e.enemyId)?.archetype === 'mender'),
     );
     if (healers && outcome.wavesCleared < outcome.waveCount) hints.push('battleResult.hint.healer');
     if (outcome.kind === 'timeout') hints.push('battleResult.hint.turns');
-    hints.push('battleResult.hint.level');
+    // Only when it is true: a party at the encounter's level does not need to hear this.
+    const levels = teamIds.map((id) => save?.roster[id]?.level ?? 0);
+    if (levels.some((level) => level > 0 && level < encounter.enemyLevel))
+      hints.push('battleResult.hint.level');
   }
   /** Every exit clears the run: the next fight is charged and seeded on its own. */
   const leave = (route: 'team' | 'hub' | 'campaign'): void => {
     battleController.end();
     clearCampaignSession();
+    clearBossSession();
     actions.resetStack({ name: 'hub' });
     if (route === 'hub') return;
     actions.push({ name: 'campaign' });

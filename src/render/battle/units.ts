@@ -1,16 +1,9 @@
 /**
- * Unit sprites on the battle stage: idle loop from the model atlas, multiply tint for
- * placeholders, drop shadow, highlight ring and the state changes the presenter animates.
+ * Unit sprites on the battle stage: idle loop from the model atlas, multiply tint for placeholders
+ * (washed to luminance first when the art asks for a pale one), drop shadow, highlight ring and
+ * the state changes the presenter animates.
  */
-import {
-  AnimatedSprite,
-  Assets,
-  ColorMatrixFilter,
-  Container,
-  Graphics,
-  type Spritesheet,
-  type Texture,
-} from 'pixi.js';
+import { AnimatedSprite, Assets, Container, Graphics, Rectangle, Texture, type Spritesheet } from 'pixi.js';
 import { atlas } from '@assets/manifest';
 import type { ModelKey } from '@assets/manifest.generated';
 import type { UnitView } from '@engine/battle/index';
@@ -29,6 +22,75 @@ async function loadSheet(model: ModelKey): Promise<Spritesheet> {
   const promise = Assets.load<Spritesheet>({ src: entry.json, data: { cachePrefix: `${model}/` } });
   sheetCache.set(model, promise);
   return promise;
+}
+
+/**
+ * Greyscale copies of an atlas, one per model, so placeholder art that has to read pale can be
+ * *tinted* pale (docs/tech/ASSETS.md §3): a multiply tint only darkens, and the luminance has to
+ * come from somewhere. Baked once at load rather than filtered every frame — the stage keeps its
+ * frame budget (CLAUDE.md §5.6) and the renderer keeps no filter bind groups.
+ */
+const washCache = new Map<ModelKey, Promise<Texture[]>>();
+
+/** Rec. 601 luma, the same weights `filter: grayscale(1)` uses in the DOM sprites. */
+function drainColour(pixels: Uint8ClampedArray): void {
+  for (let i = 0; i < pixels.length; i += 4) {
+    const luma = Math.round(
+      0.299 * (pixels[i] ?? 0) + 0.587 * (pixels[i + 1] ?? 0) + 0.114 * (pixels[i + 2] ?? 0),
+    );
+    pixels[i] = luma;
+    pixels[i + 1] = luma;
+    pixels[i + 2] = luma;
+  }
+}
+
+async function loadWashedFrames(model: ModelKey): Promise<Texture[]> {
+  const cached = washCache.get(model);
+  if (cached) return cached;
+  const entry = atlas(model);
+  const promise = (async (): Promise<Texture[]> => {
+    const response = await fetch(entry.url);
+    const bitmap = await createImageBitmap(await response.blob());
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('no 2d context for the wash');
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    drainColour(image.data);
+    ctx.putImageData(image, 0, 0);
+    const source = Texture.from(canvas).source;
+    source.scaleMode = 'nearest';
+    // The atlas manifest is the frame layout the DOM sprites already use, so both paths agree.
+    const names = entry.animations['idle']?.frames ?? ['still'];
+    return names
+      .map((name) => entry.frames[name])
+      .filter((frame): frame is NonNullable<typeof frame> => !!frame)
+      .map((frame) => new Texture({ source, frame: new Rectangle(frame.x, frame.y, frame.w, frame.h) }));
+  })().catch((error: unknown) => {
+    // A failed wash must not stick: the next fight tries again rather than inheriting the failure.
+    washCache.delete(model);
+    throw error;
+  });
+  washCache.set(model, promise);
+  return promise;
+}
+
+/** The model's idle loop, in order; the still frame when it has no animation. */
+async function sheetFrames(model: ModelKey): Promise<Texture[]> {
+  const sheet = await loadSheet(model);
+  const frames: Texture[] = [];
+  for (let i = 0; i < 9; i += 1) {
+    const texture = sheet.textures[`idle_${i}`];
+    if (texture) frames.push(texture);
+  }
+  if (!frames.length) {
+    const still = sheet.textures['still'];
+    if (still) frames.push(still);
+  }
+  return frames;
 }
 
 export async function preloadModels(models: readonly ModelKey[]): Promise<void> {
@@ -66,18 +128,11 @@ export class UnitSprite {
 
   async load(): Promise<void> {
     const model = this.view.art.model as ModelKey;
-    const sheet = await loadSheet(model);
-    if (this.disposed) return;
-    const frames: Texture[] = [];
-    for (let i = 0; i < 9; i++) {
-      const t = sheet.textures[`idle_${i}`];
-      if (t) frames.push(t);
-    }
-    if (!frames.length) {
-      const still = sheet.textures['still'];
-      if (still) frames.push(still);
-    }
-    if (!frames.length) return;
+    // A boss that cannot be washed is still a boss: the plain atlas is the fallback, never a gap.
+    const frames: Texture[] = this.view.art.desaturate
+      ? await loadWashedFrames(model).catch(() => sheetFrames(model))
+      : await sheetFrames(model);
+    if (this.disposed || !frames.length) return;
     const sprite = new AnimatedSprite({ textures: frames, autoUpdate: true });
     sprite.animationSpeed = IDLE_FPS / 60;
     sprite.loop = true;
@@ -88,13 +143,6 @@ export class UnitSprite {
     if (this.view.art.tint) {
       this.baseTint = this.view.art.tint;
       sprite.tint = this.view.art.tint;
-    }
-    // A multiply tint can only darken, so a placeholder that has to read pale (Gravemaw's bone)
-    // asks for its own colours to be washed out first — one filter, on that one sprite.
-    if (this.view.art.desaturate) {
-      const wash = new ColorMatrixFilter();
-      wash.desaturate();
-      sprite.filters = [wash];
     }
     sprite.play();
     this.sprite = sprite;
@@ -122,8 +170,6 @@ export class UnitSprite {
 
   destroy(): void {
     this.disposed = true;
-    // Unbind the wash first: Pixi warns when a texture source is destroyed under a live shader.
-    if (this.sprite) this.sprite.filters = [];
     this.root.destroy({ children: true });
   }
 }

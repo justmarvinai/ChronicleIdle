@@ -6,7 +6,88 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 10 (Daily Boss) is next._
+_Phase 11 (Weekly Boss) is next._
+
+## [0.0.10] — 2026-09-15 — Phase 10: Daily Boss
+
+Gravemaw, the Bone Tyrant: a damage race in four tiers, two keys a day, and damage that adds up
+across them. Losing costs nothing but the key — whatever the party did to him still counts.
+
+### Added
+
+- **The boss gate** (`bosses` route, `UI_DESIGN.md` §5.13): records on the left (best damage per
+  tier with the team that set it), Gravemaw on his own stage under the dungeon gate, a card per
+  tier with the period's damage against the pool, the chest ladder (5 / 15 / 30 / 60 / 100 % of the
+  pool, locked / claimable / claimed, contents on hover) and the personal best. The bottom bar says
+  what a key opens; the reset and the keys left tick in the header.
+- **Gravemaw's kit, authored as data** (`content/bosses/gravemaw.ts`): Bone Crush, Grave Quake,
+  Devour and the passive *Tyrant's Hide*, on the fixed rotation `A1 A1 A2 A1 A3`, with the four
+  tiers' printed stats (250k → 60M pools, levels 20–60) and per-tier chests. Four engine effects
+  grew to carry it: a status with a target cap, a heal that counts the curses on its target, a
+  damage reduction that only answers crits, and the distinct-debuff counter that breaks it.
+- **Keys, pools, chests and records** (`engine/bosses/period.ts`, save v9): the period a boss's
+  numbers belong to is stored, so keys, damage and claims are all fresh again the moment the day
+  turns — nothing runs at midnight, and a clock that moved cannot desynchronise it. Unclaimed
+  chests are not lost at a reset: the next visit pays them as tribute in the Welcome Back panel.
+- **A boss HUD in the fight**: the pool bar carries *Unshakeable* (with the immunity list),
+  the enrage as a countdown in the boss's own turns and then "Enraged ×N · +X % ATK", and a chip
+  for every counting passive the party breaks — the stage shouts it, the battle log records it.
+- **A boss result screen**: no stars, no spoils — the damage this key did, the pool after it, a
+  personal-best line, the chests it just earned, and *Back to the gate*.
+- **The mechanics sheet** (*How it fights*): the kit in rotation order described from its own data,
+  what never lands on him, and four tips — including the enrage's real numbers.
+- `tests/e2e/boss.spec.ts` and `tools/fixtures/boss-chronicle.ts`: two keys into one pool, a chest
+  taken once, and the period surviving a reload, in a production build. `period-dst.test.ts` asks
+  the reset question in a time zone that shifts — on the 23-hour night the period is still one day
+  and the countdown is 22 hours, not 24 — and the content tests replay a race twice on one seed to
+  hold the rotation to `A1 A1 A2 A1 A3` with Devour starting on cooldown.
+
+### Changed
+
+- **A boss's enrage is its own cadence, and it fires** (ADR-036). One global constant (+10 % ATK
+  every 8 own turns) suited a campaign stage boss; measured with `tools/sim`, a race lasts Gravemaw
+  6–16 own turns, so the design's "enrage turn 20" would never once have landed. The cadence now
+  belongs to the boss block, Gravemaw enrages from his 12th own turn every 2 (about +60 % ATK by
+  the turn limit), campaign enemies keep the numbers Phase 3 was balanced against, and the content
+  validator rejects a threshold that could not fire inside a race.
+- **Placeholder art can read pale** (`art.desaturate`, `ASSETS.md` §3, ADR-037): a multiply tint
+  can only darken, so the Bone Tyrant was a green lizard with a bone-coloured name. Both renderers
+  now take the model's light and shade and paint the tint over it — `mix-blend-mode: color` on the
+  DOM sprite's tint layer, a greyscale copy of the atlas baked once at load on the Pixi stage — so
+  he is bone at the gate and in the arena, and the stage's render path stays filter-free (the
+  frame budget is why: CLAUDE.md §5.6).
+
+### Fixed
+
+- Each model atlas loads into its own Pixi cache namespace, so entering a battle no longer warns
+  about the `idle_0…idle_8` frame keys every model shares.
+- Leaving a boss fight no longer warns about texture sources destroyed under a live shader: the
+  wash that caused it is baked at load rather than filtered per frame, so the renderer holds no
+  filter bind groups to tear down (ADR-037).
+- The result screen's hints are true again: "your champions are under-levelled" only appears when
+  one of them actually is, and it no longer points at the Tavern as something still to come. A boss
+  result reads its own advice instead of the campaign's.
+- **Leaving a boss result through *Emberhold* poisoned the next campaign run.** The race session
+  stayed standing, and the battle screen asks the race first, so the next stand's damage was banked
+  into Gravemaw's pool and the run's own stars, drops and clear were never recorded. Each launch
+  now clears the other kind's session, on both sides, and a test holds that line.
+
+### Performance
+
+- The perf bench (`/?screen=perf`) fights either scenario now, and `pnpm perf:battle --boss` drives
+  the new one: the boss race is what the phase added to the render path (one 2× washed sprite, the
+  pool bar and its chips, a fight that runs to the turn limit).
+- `pnpm perf:battle --software` in this GPU-less build environment (SwiftShader, 1920 × 1080, ×4,
+  auto, four maxed legendaries):
+
+  | scenario | p50 | p95 | max | frames | fight |
+  | --- | --- | --- | --- | --- | --- |
+  | Stress Bench, 4 v 4 × 2 waves | 400.0 ms | 466.7 ms | 516.7 ms | 60 | 31.9 s, victory |
+  | Gravemaw Easy, 4 v 1 race | 366.7 ms | 433.3 ms | 466.5 ms | 55 | 31.3 s, victory |
+
+  Software WebGL renders the stage at two or three frames a second, so these runs only prove the
+  bench pipeline and that the boss fight is no heavier than the stress fight; the 16 ms p95 budget
+  is still signed off on the owner's iGPU laptop (`USER_QUESTIONS.md` Q30).
 
 ## [0.0.9.1] — 2026-09-15 — Chest pass
 
