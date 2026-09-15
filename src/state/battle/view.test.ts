@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
 import { createInstance } from '@engine/champions/instance';
+import { bossEncounterId } from '@engine/bosses/encounter';
 import { createBattle, runAuto, snapshot } from '@engine/battle/index';
 import { applyEventToView } from './view';
 
@@ -47,6 +48,39 @@ describe('presented battle view', () => {
       expect(unit.hp, unit.id).toBe(sim?.hp);
       expect(unit.alive, unit.id).toBe(sim?.alive);
     }
+  });
+
+  it("keeps the boss HUD's facts in step with the fight", () => {
+    const encounter = content.encounterById(bossEncounterId('boss.gravemaw', 'easy'));
+    if (!encounter) throw new Error('missing boss encounter');
+    const state = createBattle({ ...setup(), encounter }, 'view-boss');
+    let view = snapshot(state);
+    const bossId = view.units.find((u) => u.isBoss)?.id;
+    expect(bossId).toBeDefined();
+    const bossOf = (): NonNullable<(typeof view.units)[number]['boss']> => {
+      const boss = view.units.find((u) => u.id === bossId)?.boss;
+      if (!boss) throw new Error('the boss lost its HUD facts');
+      return boss;
+    };
+    expect(bossOf().turnsTaken).toBe(0);
+
+    const { events } = runAuto(state);
+    let ownTurns = 0;
+    for (const event of events) {
+      view = applyEventToView(view, event);
+      if (event.type === 'turn.started' && event.unitId === bossId) {
+        ownTurns += 1;
+        // The chip's countdown is the boss's own turn count, counted as each turn lands.
+        expect(bossOf().turnsTaken).toBe(ownTurns);
+      }
+      if (event.type === 'enraged') expect(bossOf().enrageSteps).toBe(event.steps);
+      if (event.type === 'passive.broken') expect(bossOf().brokenPassives).toContain(event.passiveId);
+    }
+    expect(ownTurns).toBeGreaterThan(0);
+    const simulated = snapshot(state).units.find((u) => u.id === bossId)?.boss;
+    expect(bossOf()).toEqual(simulated);
+    // Unshakeable is content, not simulation: it reads the same at the end as at the start.
+    expect(bossOf().immunities).toEqual(['stun', 'freeze', 'sleep', 'provoke', 'fear']);
   });
 
   it('returns the same view object when an event changes nothing visible', () => {

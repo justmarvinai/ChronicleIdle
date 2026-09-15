@@ -186,7 +186,12 @@ function validateBosses(bosses: readonly unknown[], refs: ContentRefs): Validati
         error(tierPath, 'the tier enemy does not carry the tier stats');
       if (tier.enemy.boss?.fixedStats !== true)
         error(tierPath, 'a period boss fights at its printed stats (`fixedStats`)');
-      if (tier.enrageTurn >= tier.turnLimit) error(tierPath, 'it would never enrage');
+      if (tier.enemy.boss?.enrageEvery !== def.enrageEvery)
+        error(tierPath, 'the tier enemy does not carry the boss enrage cadence');
+      // A boss takes roughly half the ally-turn limit in own turns (measured in tools/sim), so a
+      // first step later than that is a mechanic that never fires.
+      if (tier.enrageTurn + def.enrageEvery > tier.turnLimit / 2)
+        error(tierPath, 'it would never enrage inside a race this long');
       const previous = def.tiers[t - 1];
       if (previous && tier.stats.hp <= previous.stats.hp)
         error(tierPath, 'every tier is a bigger pool than the one below it');

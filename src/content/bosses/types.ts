@@ -61,11 +61,13 @@ export interface BossDef {
   keyCurrency: 'key_daily' | 'key_weekly';
   element: Element;
   role: Role;
-  art: { model: ModelKey; tint: string; scale: number };
+  art: { model: ModelKey; tint: string; scale: number; desaturate: boolean };
   backdrop: BackdropKey;
   surface: 'dirt' | 'stone' | 'water' | 'wood';
   /** Statuses that never land on this boss, shown as "Unshakeable". */
   immunities: StatusId[];
+  /** Own turns between the +10 % ATK enrage steps (BOSSES.md §1). */
+  enrageEvery: number;
   tiers: BossTierDef[];
   version: number;
 }

@@ -4,6 +4,7 @@ import { playSfx } from '@audio/index';
 import { sanitizeTeam, suggestTeam } from '@engine/battle/teams';
 import { scaledEnemyStats } from '@engine/battle/index';
 import { parseStageEncounterId } from '@engine/campaign/encounter';
+import { parseBossEncounterId } from '@engine/bosses/encounter';
 import { parseStageId, type StagePointer } from '@engine/campaign/progress';
 import { autoRepeatTiers } from '@engine/campaign/run';
 import { unlockLevel } from '@engine/progression/unlocks';
@@ -28,6 +29,7 @@ import { TopBar } from '@ui/components/TopBar/TopBar';
 import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { launchBattle } from '@ui/flows/battle';
+import { launchBossFight } from '@ui/flows/boss';
 import { launchCampaignRun } from '@ui/flows/campaign';
 import { pointerCost, runsAffordable, stageRefOf } from '@state/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
@@ -57,6 +59,8 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   useSceneAudio('hub', 'interior');
   // The encounter id carries the stage and the difficulty, so the pointer needs no route field.
   const pointer = stagePointerOf(encounterId);
+  // A boss fight costs a key instead of energy, and its own flow spends it (BOSSES.md §1).
+  const boss = parseBossEncounterId(encounterId);
   const ref = pointer ? stageRefOf(pointer) : null;
   const partySize = encounter?.partySize ?? 3;
   const mode: TeamMode = partySize === 4 ? 'boss' : 'campaign';
@@ -113,7 +117,9 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const start = (): void => {
     const result = pointer
       ? launchCampaignRun({ pointer, instanceIds: team, control, repeat })
-      : launchBattle({ encounterId, instanceIds: team, control });
+      : boss
+        ? launchBossFight({ bossId: boss.bossId, tierId: boss.tierId, instanceIds: team, control })
+        : launchBattle({ encounterId, instanceIds: team, control });
     if (!result.ok) {
       setError(
         result.error.code === 'insufficient_energy'
@@ -355,6 +361,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
           >
             {t('battleSetup.start')}
             {pointer ? ` · ${t('battleSetup.cost', { cost })}` : ''}
+            {boss ? ` · ${t('bosses.keyCost')}` : ''}
           </Button>
         </div>
       </section>

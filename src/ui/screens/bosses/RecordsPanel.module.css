@@ -1,0 +1,82 @@
+.panel {
+  min-height: 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  color: var(--gold-3);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.row {
+  padding: 8px 10px;
+  border: 1px solid rgba(141, 133, 119, 0.28);
+  background: linear-gradient(180deg, rgba(34, 29, 38, 0.8), rgba(20, 17, 24, 0.85));
+}
+
+.rowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tier {
+  font-size: 16px;
+  color: var(--text-1);
+}
+
+.damage {
+  font-size: 18px;
+  color: var(--gold-2);
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.face {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(240, 213, 122, 0.4);
+  object-fit: cover;
+}
+
+.when {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.empty {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-3);
+}

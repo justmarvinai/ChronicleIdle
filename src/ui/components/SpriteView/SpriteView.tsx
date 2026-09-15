@@ -12,8 +12,13 @@ export interface SpriteViewProps {
   facing?: 'left' | 'right';
   /** CSS colour multiplied onto the sprite (placeholder tinting, docs/tech/ASSETS.md §3). */
   tint?: string | null;
+  /**
+   * Take only the model's light and shade and paint the tint over it (`mix-blend-mode: color`), so
+   * a pale tint reads at all — a multiply can never lighten a sprite (docs/tech/ASSETS.md §3).
+   */
+  desaturate?: boolean;
   playing?: boolean;
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -26,6 +31,7 @@ export function SpriteView({
   scale = 2,
   facing = 'right',
   tint = null,
+  desaturate = false,
   playing = true,
   className,
 }: SpriteViewProps) {
@@ -40,6 +46,8 @@ export function SpriteView({
   );
   const first = frames[0];
   const el = useRef<HTMLDivElement>(null);
+  /** The tint layer masks itself with the same frame, so it has to move with it. */
+  const tintEl = useRef<HTMLDivElement>(null);
   const flip = facing !== entry.facing;
 
   useEffect(() => {
@@ -56,9 +64,15 @@ export function SpriteView({
         index = (index + 1) % frames.length;
         const f = frames[index];
         if (f) {
-          node.style.backgroundPosition = `${-f.x * scale}px ${-f.y * scale}px`;
+          const position = `${-f.x * scale}px ${-f.y * scale}px`;
+          node.style.backgroundPosition = position;
           node.style.width = `${f.w * scale}px`;
           node.style.height = `${f.h * scale}px`;
+          const tintNode = tintEl.current;
+          if (tintNode) {
+            tintNode.style.maskPosition = position;
+            tintNode.style.webkitMaskPosition = position;
+          }
         }
       }
       raf = requestAnimationFrame(tick);
@@ -94,7 +108,14 @@ export function SpriteView({
       style={style}
       data-testid="sprite"
     >
-      {tintStyle ? <div className={styles.tint} style={tintStyle} aria-hidden="true" /> : null}
+      {tintStyle ? (
+        <div
+          ref={tintEl}
+          className={[styles.tint, desaturate ? styles.wash : ''].join(' ')}
+          style={tintStyle}
+          aria-hidden="true"
+        />
+      ) : null}
     </div>
   );
 }

@@ -535,6 +535,16 @@ export async function createBattleStage(
           whiteFlash(tl, 0.12);
           shake(tl, 10, 0.25, '<');
           break;
+        // The hide gives way: the same shout the HUD's chip echoes (BOSSES.md §2).
+        case 'passive.broken':
+          land(e);
+          tl.call(() => {
+            const c = centreOf(e.unitId);
+            numbers.show('status', 'ARMOUR BROKEN', c.x, c.y - 60, speed);
+            void playFx(fxLayer, 'cleanse', { x: c.x, y: c.y, speed });
+          });
+          tl.to({}, { duration: 0.22 });
+          break;
         case 'wave.cleared':
           land(e);
           tl.to(camera.scale, { x: 1.03, y: 1.03, duration: 0.25, ease: 'power2.out' }).to(camera.scale, {

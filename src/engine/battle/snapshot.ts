@@ -3,6 +3,23 @@ import type { AbilitySlot, Element, Role, StatusId } from './imports';
 import { shieldTotal } from './stats';
 import type { BattleOutcome, BattleState, BattleUnit, DecisionRequest } from './types';
 
+/**
+ * Boss-only facts the HUD prints (docs/design/BOSSES.md §1 and §4): what the boss shrugs off,
+ * how close the enrage is, and which counting passive has already broken.
+ */
+export interface BossUnitView {
+  /** Statuses that never land on it — the HUD's "Unshakeable". */
+  immunities: StatusId[];
+  /** Own turn after which ATK starts growing, and the cadence of the steps. */
+  enrageAfterTurn: number | null;
+  enrageEvery: number;
+  /** Steps already applied, and the boss's own turns so far (the countdown). */
+  enrageSteps: number;
+  turnsTaken: number;
+  /** Ids of counting passives that have broken this fight (Gravemaw's hide). */
+  brokenPassives: string[];
+}
+
 export interface UnitView {
   id: string;
   side: 'ally' | 'enemy';
@@ -21,7 +38,9 @@ export interface UnitView {
   isBoss: boolean;
   statuses: { id: StatusId; turns: number; stacks: number; value: number }[];
   abilities: { id: string; slot: AbilitySlot; cooldown: number; ready: boolean }[];
-  art: { model: string; tint: string | null; facing: 'left' | 'right'; scale: number };
+  art: { model: string; tint: string | null; facing: 'left' | 'right'; scale: number; desaturate: boolean };
+  /** Boss HUD facts; `null` for every other unit. */
+  boss: BossUnitView | null;
 }
 
 export interface BattleView {
@@ -36,6 +55,27 @@ export interface BattleView {
   control: BattleState['control'];
   pending: DecisionRequest | null;
   outcome: BattleOutcome | null;
+}
+
+/**
+ * Counting passives that can no longer hold: a `damage_reduction` whose `selfDistinctDebuffsBelow`
+ * threshold the unit has already passed (BOSSES.md §2, Tyrant's Hide).
+ */
+function brokenPassives(u: BattleUnit): string[] {
+  const taken = u.flags.debuffKindsTaken.length;
+  return u.passives
+    .filter(
+      (passive) =>
+        passive.trigger === 'static' &&
+        passive.effects.some(
+          (effect) =>
+            effect.kind === 'damage_reduction' &&
+            effect.if !== undefined &&
+            'selfDistinctDebuffsBelow' in effect.if &&
+            taken >= effect.if.selfDistinctDebuffsBelow,
+        ),
+    )
+    .map((passive) => passive.id);
 }
 
 /** The serialisable view of one unit (plates, result screen, spawn events). */
@@ -64,6 +104,16 @@ export function unitView(u: BattleUnit): UnitView {
       ready: a.cooldown === 0,
     })),
     art: { ...u.art },
+    boss: u.isBoss
+      ? {
+          immunities: [...u.immunities],
+          enrageAfterTurn: u.enrageAfterTurn,
+          enrageEvery: u.enrageEvery,
+          enrageSteps: u.flags.enrageSteps,
+          turnsTaken: u.flags.turnsTaken,
+          brokenPassives: brokenPassives(u),
+        }
+      : null,
   };
 }
 

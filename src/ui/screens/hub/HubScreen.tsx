@@ -1,6 +1,7 @@
 import { t } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { formatDuration } from '@engine/time/clock';
+import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
 import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
@@ -10,6 +11,7 @@ import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { BottomBar } from '@ui/components/BottomBar/BottomBar';
 import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { NotificationDot } from '@ui/components/NotificationDot/NotificationDot';
 import { Panel } from '@ui/components/Frame/Panel';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useNow } from '@ui/hooks/useNow';
@@ -41,6 +43,8 @@ export default function HubScreen(_props: ScreenProps) {
 
   // The Idle Chest wears its fill on the building itself (`UI_DESIGN.md` §5.2).
   const chest = save ? idleView(save, now) : null;
+  // The gate's own cards: keys left this period, and a dot when a chest is waiting (BOSSES.md §4).
+  const daily = save ? bossView(save, 'boss.gravemaw', now) : null;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
@@ -84,7 +88,13 @@ export default function HubScreen(_props: ScreenProps) {
           glyph="glyph.flaming_skull"
           unlocked={dailyBoss}
           level={unlockLevel('daily_boss')}
-          onClick={() => actions.push({ name: 'locked', feature: 'daily_boss', titleKey: 'hub.dailyBoss' })}
+          keys={daily ? `${daily.keysLeft}/${daily.boss.keysPerPeriod}` : '0'}
+          notify={(daily?.claimable ?? 0) > 0}
+          onClick={() =>
+            dailyBoss
+              ? actions.push({ name: 'bosses', boss: 'boss.gravemaw' })
+              : actions.push({ name: 'locked', feature: 'daily_boss', titleKey: 'hub.dailyBoss' })
+          }
           testId="boss-daily"
         />
         <BossCard
@@ -203,6 +213,8 @@ function BossCard({
   glyph,
   unlocked,
   level,
+  keys = '0',
+  notify = false,
   onClick,
   testId,
 }: {
@@ -211,6 +223,10 @@ function BossCard({
   glyph: Parameters<typeof Glyph>[0]['glyph'];
   unlocked: boolean;
   level: number;
+  /** Keys left this period, as `left/of`. */
+  keys?: string;
+  /** A chest is waiting behind this gate. */
+  notify?: boolean;
   onClick: () => void;
   testId: string;
 }) {
@@ -238,8 +254,9 @@ function BossCard({
         </div>
       </div>
       <div className={styles.bossFoot}>
-        {unlocked ? `${t('hub.bossCard.keys')} 0` : t('common.unlocksAtLevel', { level })}
+        {unlocked ? `${t('hub.bossCard.keys')} ${keys}` : t('common.unlocksAtLevel', { level })}
       </div>
+      {notify ? <NotificationDot /> : null}
     </Panel>
   );
 }

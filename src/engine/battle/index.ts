@@ -2,7 +2,7 @@
 export { createBattle, type BattleSetup, type PartyMember, scaledEnemyStats } from './create';
 export { step, retreat, runAuto, replay, setControl, advanceTurnMeter } from './step';
 export { autoDecide, pickTarget, estimateDamage } from './ai';
-export { snapshot, type BattleView, type UnitView } from './snapshot';
+export { snapshot, type BattleView, type BossUnitView, type UnitView } from './snapshot';
 export { effectiveStat, hpFraction, shieldTotal } from './stats';
 export {
   damage,

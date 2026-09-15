@@ -125,6 +125,12 @@ export function describeEvents(events: readonly BattleEvent[], view: BattleView 
       case 'enraged':
         push(t('battle.log.enraged', { name: nameOf(e.unitId) }), 'bad');
         break;
+      case 'passive.broken':
+        push(
+          t('battle.log.passiveBroken', { name: nameOf(e.unitId), passive: abilityName(e.passiveId) }),
+          'good',
+        );
+        break;
       case 'battle.ended':
         push(t('battle.log.ended', { outcome: t(`battleResult.${e.outcome.kind}` as I18nKey) }), 'system');
         break;

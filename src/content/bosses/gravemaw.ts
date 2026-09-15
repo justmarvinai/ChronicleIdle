@@ -26,11 +26,14 @@ export default defineBoss({
   keyCurrency: 'key_daily',
   element: 'eclipse',
   role: 'health',
-  // Bone-white over the placeholder model, twice a champion's size (CLAUDE.md §2.7).
-  art: { tint: '#e8e2d0', scale: 2 },
+  // Bone over the placeholder model, twice a champion's size (CLAUDE.md §2.7): the lizard's own
+  // greens are washed out first, or a pale multiply tint would do nothing at all.
+  art: { tint: '#efe6d2', scale: 2, desaturate: true },
   backdrop: 'bg.bg3',
   surface: 'stone',
   immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],
+  // A race lasts him a dozen own turns or so (tools/sim), so the steps come every other turn.
+  enrageEvery: 2,
   rotation: ['a1', 'a1', 'a2', 'a1', 'a3'],
   abilities: [
     {
@@ -82,7 +85,7 @@ export default defineBoss({
       id: 'easy',
       stats: [250_000, 900, 700, 100, 15, 50, 60, 60],
       turnLimit: 50,
-      enrageTurn: 20,
+      enrageTurn: 12,
       enemyLevel: 20,
       playerXp: 150,
       chests: [
@@ -110,7 +113,7 @@ export default defineBoss({
       id: 'normal',
       stats: [2_000_000, 1_600, 1_100, 105, 15, 50, 90, 90],
       turnLimit: 50,
-      enrageTurn: 20,
+      enrageTurn: 12,
       enemyLevel: 35,
       playerXp: 300,
       chests: [
@@ -140,7 +143,7 @@ export default defineBoss({
       id: 'hard',
       stats: [12_000_000, 2_600, 1_500, 110, 15, 50, 120, 120],
       turnLimit: 50,
-      enrageTurn: 20,
+      enrageTurn: 12,
       enemyLevel: 50,
       playerXp: 600,
       chests: [
@@ -169,7 +172,7 @@ export default defineBoss({
       id: 'brutal',
       stats: [60_000_000, 4_000, 2_100, 115, 15, 50, 160, 160],
       turnLimit: 50,
-      enrageTurn: 20,
+      enrageTurn: 12,
       enemyLevel: 60,
       playerXp: 1_200,
       chests: [

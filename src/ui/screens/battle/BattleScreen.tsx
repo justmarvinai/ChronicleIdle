@@ -13,10 +13,12 @@ import { Glyph } from '@ui/components/Glyph/Glyph';
 import { StatusIcon } from '@ui/components/StatusIcon/StatusIcon';
 import { STATUS_BY_ID } from '@content/statuses/index';
 import { batchRewards, campaignSession, stopCampaignBatch } from '@state/campaign-session';
+import { settleBossFight } from '@ui/flows/boss';
 import { settleCampaignRun } from '@ui/flows/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { AbilityBar } from './AbilityBar';
+import { BossChips } from './BossChips';
 import { BattleStageMount } from './BattleStageMount';
 import { CutIn, type CutInState } from './CutIn';
 import { InfoPanel } from './InfoPanel';
@@ -125,8 +127,8 @@ export default function BattleScreen({ route }: ScreenProps) {
     if (recorded.current) return;
     recorded.current = true;
     actions.recordBattle(outcome, encounter.id);
-    // A campaign run settles here: it pays out, and an auto-repeat batch starts its next fight.
-    if (settleCampaignRun(outcome).repeated) return;
+    // A boss fight banks its damage here; a campaign run pays out and may start the next of a batch.
+    if (!settleBossFight(outcome) && settleCampaignRun(outcome).repeated) return;
     const id = window.setTimeout(() => actions.replace({ name: 'battle-result' }), RESULT_DELAY_MS);
     return () => window.clearTimeout(id);
   }, [status, outcome, encounter, actions, bench]);
@@ -380,6 +382,7 @@ export default function BattleScreen({ route }: ScreenProps) {
               );
             })}
           </div>
+          {boss.boss ? <BossChips boss={boss.boss} /> : null}
         </div>
       ) : null}
 

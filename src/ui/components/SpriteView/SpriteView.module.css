@@ -3,6 +3,8 @@
   flex: none;
   background-repeat: no-repeat;
   image-rendering: pixelated;
+  /* The tint layer blends with the sprite alone, never with the scene behind it. */
+  isolation: isolate;
 }
 .tint {
   position: absolute;
@@ -12,4 +14,10 @@
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   image-rendering: pixelated;
+}
+
+/* Placeholder art that has to read pale: the sprite's light and shade, the tint's colour. */
+.wash {
+  mix-blend-mode: color;
+  opacity: 1;
 }

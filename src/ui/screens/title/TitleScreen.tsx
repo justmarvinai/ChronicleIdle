@@ -48,7 +48,8 @@ export default function TitleScreen(_props: ScreenProps) {
 
   const continueGame = (): void => {
     actions.resetStack(entryRoute(useGameStore.getState()));
-    if (lastOffline && lastOffline.elapsedMs >= WELCOME_BACK_AFTER_MS)
+    // A tribute is worth saying out loud even after a short absence across the reset.
+    if (lastOffline && (lastOffline.elapsedMs >= WELCOME_BACK_AFTER_MS || lastOffline.bossTributes.length))
       actions.openDialog({ name: 'welcome-back' });
   };
 

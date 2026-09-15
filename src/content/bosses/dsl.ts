@@ -58,10 +58,13 @@ export interface BossInput {
   keyCurrency: BossDef['keyCurrency'];
   element: BossDef['element'];
   role: BossDef['role'];
-  art: { tint: string; scale: number; model?: ModelKey };
+  /** `desaturate` washes the placeholder's own colours out first, so a pale tint reads. */
+  art: { tint: string; scale: number; model?: ModelKey; desaturate?: boolean };
   backdrop: BossDef['backdrop'];
   surface: BossDef['surface'];
   immunities: BossDef['immunities'];
+  /** Own turns between enrage steps; a race is long, so a boss sets its own cadence. */
+  enrageEvery: number;
   rotation: AbilitySlot[];
   abilities: BossAbilityInput[];
   passives?: BossPassiveInput[];
@@ -86,6 +89,7 @@ export function defineBoss(input: BossInput): BossDef {
   const bossBlock = {
     rotation: input.rotation,
     immunities: input.immunities,
+    enrageEvery: input.enrageEvery,
     damageTakenMult: 1,
     fixedStats: true,
   };
@@ -101,6 +105,7 @@ export function defineBoss(input: BossInput): BossDef {
       tint: input.art.tint,
       scale: input.art.scale,
       ...(input.art.model ? { model: input.art.model } : {}),
+      ...(input.art.desaturate ? { desaturate: true } : {}),
     },
     abilities: input.abilities.map((a) => ({
       slot: a.slot,
@@ -157,10 +162,12 @@ export function defineBoss(input: BossInput): BossDef {
       model: input.art.model ?? 'model.teritorial_lizard',
       tint: input.art.tint,
       scale: input.art.scale,
+      desaturate: input.art.desaturate ?? false,
     },
     backdrop: input.backdrop,
     surface: input.surface,
     immunities: input.immunities,
+    enrageEvery: input.enrageEvery,
     tiers,
     version,
   };

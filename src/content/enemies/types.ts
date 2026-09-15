@@ -26,8 +26,10 @@ export interface EnemyBossConfig {
   rotation: AbilitySlot[];
   /** Statuses that never land. */
   immunities: StatusId[];
-  /** Boss ATK grows by BOSS_ENRAGE_STEP every BOSS_ENRAGE_EVERY own turns after this own turn. */
+  /** Boss ATK grows by BOSS_ENRAGE_STEP every `enrageEvery` own turns after this own turn. */
   enrageAfterTurn: number;
+  /** Own turns between enrage steps; defaults to BOSS_ENRAGE_EVERY (the campaign's cadence). */
+  enrageEvery?: number;
   /** Damage taken multiplier (bosses have large HP pools, not immunity). */
   damageTakenMult: number;
   /**
@@ -47,7 +49,18 @@ export interface EnemyDef {
   role: Role;
   /** Intro, index-0 base stats; the encounter scales them. */
   stats: ChampionStats;
-  art: { model: ModelKey; tint: string | null; facing: 'left' | 'right'; scale: number };
+  art: {
+    model: ModelKey;
+    tint: string | null;
+    facing: 'left' | 'right';
+    scale: number;
+    /**
+     * Wash the model's own colours out before the tint (docs/tech/ASSETS.md §3). A multiply tint
+     * alone cannot lighten a sprite, so a placeholder standing in for something pale — Gravemaw's
+     * bone — needs the luminance first.
+     */
+    desaturate?: boolean;
+  };
   abilities: AbilityDef[];
   passives: PassiveDef[];
   boss?: EnemyBossConfig;

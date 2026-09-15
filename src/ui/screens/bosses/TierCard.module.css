@@ -1,0 +1,131 @@
+.card {
+  cursor: var(--cursor-pointer);
+  transition:
+    transform var(--t-base) var(--ease-snap),
+    filter var(--t-base);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.card:active {
+  transform: translateY(0) scale(0.995);
+}
+
+.selected {
+  /* The chosen tier is the one the key would open. */
+  box-shadow: 0 0 22px rgba(216, 85, 47, 0.28);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-size: 22px;
+  color: var(--text-1);
+}
+
+.level {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.xp {
+  margin-left: auto;
+  font-size: 15px;
+  color: var(--gold-2);
+  white-space: nowrap;
+}
+
+.chests {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.chests > li {
+  flex: 1;
+}
+
+.chest {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: 1px solid rgba(141, 133, 119, 0.35);
+  background: linear-gradient(180deg, rgba(38, 33, 42, 0.85), rgba(22, 19, 26, 0.9));
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: var(--cursor-pointer);
+  transition:
+    filter var(--t-base),
+    border-color var(--t-base);
+}
+
+.chest:disabled {
+  cursor: default;
+}
+
+.locked {
+  opacity: 0.62;
+}
+
+.claimable {
+  border-color: var(--gold-2);
+  color: var(--gold-2);
+  box-shadow: 0 0 14px rgba(240, 213, 122, 0.25);
+  animation: waiting 2.4s ease-in-out infinite;
+}
+
+.claimable:hover {
+  filter: brightness(1.18);
+}
+
+.claimed {
+  border-color: rgba(120, 180, 120, 0.5);
+  color: #9ec79b;
+  opacity: 0.9;
+}
+
+.record {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.tipTitle {
+  color: var(--gold-3);
+}
+
+@keyframes waiting {
+  0%,
+  100% {
+    box-shadow: 0 0 14px rgba(240, 213, 122, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(240, 213, 122, 0.45);
+  }
+}

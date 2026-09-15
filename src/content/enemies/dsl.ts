@@ -40,7 +40,13 @@ export interface EnemyInput {
   role: EnemyDef['role'];
   /** HP / ATK / DEF / SPD / C.RATE / C.DMG / RES / ACC at Intro, stage index 0. */
   stats: [number, number, number, number, number, number, number, number];
-  art: { tint: string; scale?: number; model?: ModelKey; facing?: 'left' | 'right' };
+  art: {
+    tint: string;
+    scale?: number;
+    model?: ModelKey;
+    facing?: 'left' | 'right';
+    desaturate?: boolean;
+  };
   abilities: EnemyAbilityInput[];
   passives?: EnemyPassiveInput[];
   boss?: EnemyBossConfig;
@@ -84,6 +90,7 @@ export function defineEnemy(input: EnemyInput): EnemyDef {
       tint: input.art.tint,
       facing: input.art.facing ?? 'left',
       scale: input.art.scale ?? 1,
+      ...(input.art.desaturate ? { desaturate: true } : {}),
     },
     abilities,
     passives,

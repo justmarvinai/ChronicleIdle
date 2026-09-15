@@ -100,9 +100,18 @@ export interface BattleUnit {
   rotation: AbilitySlot[] | null;
   rotationIndex: number;
   enrageAfterTurn: number | null;
+  /** Own turns between enrage steps (the boss block's cadence, BOSSES.md §1). */
+  enrageEvery: number;
   flags: UnitFlags;
   /** Presentation hints carried so the renderer never looks content up mid-battle. */
-  art: { model: string; tint: string | null; facing: 'left' | 'right'; scale: number };
+  art: {
+    model: string;
+    tint: string | null;
+    facing: 'left' | 'right';
+    scale: number;
+    /** Wash the model's own colours out before the tint (docs/tech/ASSETS.md §3). */
+    desaturate: boolean;
+  };
 }
 
 export interface WaveSpec {

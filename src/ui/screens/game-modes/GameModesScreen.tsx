@@ -49,6 +49,7 @@ const MODES: readonly ModeDef[] = [
     bodyKey: 'gameModes.dailyBoss.body',
     art: 'bg.bg3',
     glyph: 'glyph.flaming_skull',
+    route: { name: 'bosses', boss: 'boss.gravemaw' },
   },
   {
     id: 'weekly',

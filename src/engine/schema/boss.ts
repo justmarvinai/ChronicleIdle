@@ -51,10 +51,12 @@ export const bossSchema = z.object({
     model: z.string().min(1),
     tint: z.string().regex(/^#[0-9a-f]{6}$/i),
     scale: z.number().positive().max(3),
+    desaturate: z.boolean(),
   }),
   backdrop: z.string().min(1),
   surface: z.enum(['dirt', 'stone', 'water', 'wood']),
   immunities: z.array(z.enum(STATUS_IDS)),
+  enrageEvery: z.number().int().min(1).max(20),
   tiers: z.array(bossTierSchema).min(1).max(6),
   version: z.number().int().positive(),
 });

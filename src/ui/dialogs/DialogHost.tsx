@@ -9,6 +9,7 @@ import { BattlePauseDialog } from './BattlePauseDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { FoodPickerDialog } from './FoodPickerDialog';
 import { GearPickerDialog } from './GearPickerDialog';
+import { BossSheetDialog } from './BossSheetDialog';
 import { IdleChestDialog } from './IdleChestDialog';
 import { ImportConfirmDialog } from './ImportConfirmDialog';
 import { LevelUpDialog } from './LevelUpDialog';
@@ -84,6 +85,9 @@ export function DialogHost() {
         />
       ) : null}
       {dialog?.name === 'idle-chest' ? <IdleChestDialog key="idle-chest" onClose={closeDialog} /> : null}
+      {dialog?.name === 'boss-sheet' ? (
+        <BossSheetDialog key="boss-sheet" bossId={dialog.bossId} onClose={closeDialog} />
+      ) : null}
       {dialog?.name === 'summon-rates' ? (
         <SummonRatesDialog key="summon-rates" bannerId={dialog.bannerId} onClose={closeDialog} />
       ) : null}

@@ -2,7 +2,15 @@
  * Unit sprites on the battle stage: idle loop from the model atlas, multiply tint for
  * placeholders, drop shadow, highlight ring and the state changes the presenter animates.
  */
-import { AnimatedSprite, Assets, Container, Graphics, type Spritesheet, type Texture } from 'pixi.js';
+import {
+  AnimatedSprite,
+  Assets,
+  ColorMatrixFilter,
+  Container,
+  Graphics,
+  type Spritesheet,
+  type Texture,
+} from 'pixi.js';
 import { atlas } from '@assets/manifest';
 import type { ModelKey } from '@assets/manifest.generated';
 import type { UnitView } from '@engine/battle/index';
@@ -16,7 +24,9 @@ async function loadSheet(model: ModelKey): Promise<Spritesheet> {
   const cached = sheetCache.get(model);
   if (cached) return cached;
   const entry = atlas(model);
-  const promise = Assets.load<Spritesheet>(entry.json);
+  // Every model names its frames `idle_0…`, so each sheet needs its own cache namespace or Pixi
+  // warns about the collision on the second model it loads (the sheet's own keys stay bare).
+  const promise = Assets.load<Spritesheet>({ src: entry.json, data: { cachePrefix: `${model}/` } });
   sheetCache.set(model, promise);
   return promise;
 }
@@ -79,6 +89,13 @@ export class UnitSprite {
       this.baseTint = this.view.art.tint;
       sprite.tint = this.view.art.tint;
     }
+    // A multiply tint can only darken, so a placeholder that has to read pale (Gravemaw's bone)
+    // asks for its own colours to be washed out first — one filter, on that one sprite.
+    if (this.view.art.desaturate) {
+      const wash = new ColorMatrixFilter();
+      wash.desaturate();
+      sprite.filters = [wash];
+    }
     sprite.play();
     this.sprite = sprite;
     this.body.addChild(sprite);
@@ -105,6 +122,8 @@ export class UnitSprite {
 
   destroy(): void {
     this.disposed = true;
+    // Unbind the wash first: Pixi warns when a texture source is destroyed under a live shader.
+    if (this.sprite) this.sprite.filters = [];
     this.root.destroy({ children: true });
   }
 }

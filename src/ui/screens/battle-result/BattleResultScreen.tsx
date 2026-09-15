@@ -4,8 +4,10 @@ import { content } from '@content/registry';
 import { playSfx } from '@audio/index';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { battleController } from '@state/battle/index';
+import { bossSession, clearBossSession } from '@state/boss-session';
 import { batchRewards, batchStars, campaignSession, clearCampaignSession } from '@state/campaign-session';
 import { currentRunView, launchCampaignRun, nextPointerAfter } from '@ui/flows/campaign';
+import { BossOutcomePanel } from './BossOutcomePanel';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
@@ -36,6 +38,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const save = useGameStore(selectSave);
   const session = useStore(battleController.store);
   const campaign = useStore(campaignSession);
+  // A boss fight banks damage instead of stars, so its result reads its own panel (BOSSES.md §1).
+  const boss = useStore(bossSession);
   const outcome = session.outcome;
   const encounter = session.encounter;
   const victory = outcome?.kind === 'victory';
@@ -142,12 +146,17 @@ export default function BattleResultScreen(_props: ScreenProps) {
           {t(TITLE[outcome.kind] ?? 'battleResult.defeat')}
         </h1>
         <p className={styles.subtitle}>
-          {run
-            ? `${t('settlement.stage', {
-                settlement: run.pointer.settlement,
-                stage: run.pointer.stage,
-              })} · ${translate(run.settlementName)}`
-            : translate(encounter.name)}
+          {boss.summary
+            ? `${translate(encounter.name)} · ${t(
+                (content.bossTier(boss.summary.bossId, boss.summary.tierId)?.name ??
+                  'bosses.title') as I18nKey,
+              )}`
+            : run
+              ? `${t('settlement.stage', {
+                  settlement: run.pointer.settlement,
+                  stage: run.pointer.stage,
+                })} · ${translate(run.settlementName)}`
+              : translate(encounter.name)}
         </p>
       </header>
 
@@ -199,7 +208,9 @@ export default function BattleResultScreen(_props: ScreenProps) {
               ))}
             </ul>
           ) : null}
-          {rewards ? (
+          {boss.summary ? (
+            <BossOutcomePanel summary={boss.summary} />
+          ) : rewards ? (
             <div className={styles.rewards} data-testid="result-rewards">
               <h3 className={`display ${styles.rewardTitle}`}>{t('battleResult.rewards')}</h3>
               <ul className={styles.rewardList}>
@@ -330,9 +341,32 @@ export default function BattleResultScreen(_props: ScreenProps) {
         <Button variant="secondary" size="md" onClick={() => leave('hub')} data-testid="result-hub">
           {t('battleResult.hub')}
         </Button>
-        <Button variant="secondary" size="md" onClick={() => leave('campaign')} data-testid="result-campaign">
-          {t('battleResult.campaign')}
-        </Button>
+        {boss.summary ? (
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => {
+              battleController.end();
+              const bossId = boss.summary?.bossId;
+              clearBossSession();
+              actions.resetStack({ name: 'hub' });
+              if (bossId) actions.push({ name: 'bosses', boss: bossId });
+            }}
+            data-testid="result-gate"
+          >
+            {t('bosses.result.back')}
+          </Button>
+        ) : null}
+        {boss.summary ? null : (
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => leave('campaign')}
+            data-testid="result-campaign"
+          >
+            {t('battleResult.campaign')}
+          </Button>
+        )}
         <Button variant="secondary" size="md" onClick={() => leave('team')} data-testid="result-team">
           {t('battleResult.team')}
         </Button>
@@ -346,7 +380,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
             {t('battleResult.replay')}
           </Button>
         ) : null}
-        {victory && next ? (
+        {boss.summary ? null : victory && next ? (
           <Button variant="primary" size="lg" onClick={goNext} data-testid="result-next">
             {t('battleResult.nextStage')}
           </Button>

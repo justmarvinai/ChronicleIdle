@@ -59,9 +59,13 @@ export function applyEventToView(view: BattleView, event: BattleEvent): BattleVi
         ...view,
         turn: event.turn,
         allyTurns: event.allyTurns,
-        units: view.units.map((u) =>
-          event.tm[u.id] === undefined ? u : { ...u, tm: event.tm[u.id] as number },
-        ),
+        // The engine counts the turn before it announces it, so the boss's countdown follows here.
+        units: view.units.map((u) => {
+          const tm = event.tm[u.id] === undefined ? u.tm : (event.tm[u.id] as number);
+          const boss =
+            u.id === event.unitId && u.boss ? { ...u.boss, turnsTaken: u.boss.turnsTaken + 1 } : u.boss;
+          return tm === u.tm && boss === u.boss ? u : { ...u, tm, boss };
+        }),
       };
     case 'turn.ended':
       return {
@@ -82,6 +86,16 @@ export function applyEventToView(view: BattleView, event: BattleEvent): BattleVi
         units: spawned.length || kept.length !== view.units.length ? [...kept, ...spawned] : view.units,
       };
     }
+    case 'enraged':
+      return updateUnit(view, event.unitId, (u) =>
+        u.boss ? { ...u, boss: { ...u.boss, enrageSteps: event.steps } } : u,
+      );
+    case 'passive.broken':
+      return updateUnit(view, event.unitId, (u) =>
+        u.boss && !u.boss.brokenPassives.includes(event.passiveId)
+          ? { ...u, boss: { ...u.boss, brokenPassives: [...u.boss.brokenPassives, event.passiveId] } }
+          : u,
+      );
     case 'battle.ended':
       return { ...view, outcome: event.outcome, phase: 'ended' };
     default:

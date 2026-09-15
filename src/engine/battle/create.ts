@@ -12,6 +12,7 @@ import type { GearSetDef } from '@content/sets/types';
 import { createRng } from '@engine/rng/rng';
 import {
   BOSS_ATK_DEF_MULT,
+  BOSS_ENRAGE_EVERY,
   BOSS_HP_MULT,
   BOSS_SPD_ADD,
   DIFFICULTY_MULT,
@@ -111,8 +112,9 @@ export function allyUnit(
     rotation: null,
     rotationIndex: 0,
     enrageAfterTurn: null,
+    enrageEvery: BOSS_ENRAGE_EVERY,
     flags: freshFlags(),
-    art: { model: def.art.model, tint: def.art.tint, facing: def.art.facing, scale: 1 },
+    art: { model: def.art.model, tint: def.art.tint, facing: def.art.facing, scale: 1, desaturate: false },
   };
 }
 
@@ -182,8 +184,15 @@ export function enemyUnit(
     rotation: def.boss?.rotation ?? null,
     rotationIndex: 0,
     enrageAfterTurn: def.boss?.enrageAfterTurn ?? null,
+    enrageEvery: def.boss?.enrageEvery ?? BOSS_ENRAGE_EVERY,
     flags: freshFlags(),
-    art: { model: def.art.model, tint: def.art.tint, facing: def.art.facing, scale: def.art.scale },
+    art: {
+      model: def.art.model,
+      tint: def.art.tint,
+      facing: def.art.facing,
+      scale: def.art.scale,
+      desaturate: def.art.desaturate ?? false,
+    },
   };
 }
 

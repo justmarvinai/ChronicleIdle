@@ -4,14 +4,7 @@
  * resumes with that decision. `runAuto` drives a whole battle; `replay` proves determinism.
  */
 import { unitView } from './snapshot';
-import {
-  BOSS_ENRAGE_EVERY,
-  BOSS_ENRAGE_STEP,
-  COUNTER_DMG_MULT,
-  FEAR_SKIP_CHANCE,
-  TM_PER_SPD,
-  type Effect,
-} from './imports';
+import { BOSS_ENRAGE_STEP, COUNTER_DMG_MULT, FEAR_SKIP_CHANCE, TM_PER_SPD, type Effect } from './imports';
 import { autoDecide, pickTarget } from './ai';
 import { applyHit, healUnit, registerCounterattack } from './combat';
 import { tmSnapshot, type ActionContext, type TriggerExtra } from './context';
@@ -168,7 +161,7 @@ function startTurn(state: BattleState, unit: BattleUnit, events: BattleEvent[]):
   }
   if (!unit.alive) return false;
   if (unit.isBoss && unit.enrageAfterTurn !== null && unit.flags.turnsTaken > unit.enrageAfterTurn) {
-    if ((unit.flags.turnsTaken - unit.enrageAfterTurn) % BOSS_ENRAGE_EVERY === 0) {
+    if ((unit.flags.turnsTaken - unit.enrageAfterTurn) % unit.enrageEvery === 0) {
       unit.flags.enrageSteps += 1;
       unit.base = { ...unit.base, atk: Math.round(unit.base.atk * (1 + BOSS_ENRAGE_STEP)) };
       events.push({ type: 'enraged', unitId: unit.id, steps: unit.flags.enrageSteps });

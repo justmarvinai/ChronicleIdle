@@ -22,6 +22,8 @@ export type Route =
   | { name: 'forge'; tab?: ForgeTab; pieceId?: string }
   /** The Summoning Portal; `banner` opens on a banner tab (`SUMMONING.md` §3). */
   | { name: 'portal'; banner?: string }
+  /** The boss gate; `boss` opens on one of its tabs and `tier` selects a card (`BOSSES.md` §4). */
+  | { name: 'bosses'; boss?: string; tier?: string }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }
@@ -67,6 +69,8 @@ export type DialogRoute =
   | { name: 'champion-picker'; choiceId: string }
   /** The Idle Chest at the docks (`ECONOMY.md` §6). */
   | { name: 'idle-chest' }
+  /** A boss's mechanics sheet: its kit, what never lands on it, and how to fight it. */
+  | { name: 'boss-sheet'; bossId: string }
   | { name: 'level-up' }
   | { name: 'title-picker' }
   | { name: 'battle-pause' }

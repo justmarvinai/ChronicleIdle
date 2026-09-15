@@ -8,6 +8,7 @@ export const enemyBossSchema = z.object({
   rotation: z.array(z.enum(ABILITY_SLOTS)).min(1).max(12),
   immunities: z.array(z.enum(STATUS_IDS)),
   enrageAfterTurn: z.number().int().min(0),
+  enrageEvery: z.number().int().min(1).max(20).optional(),
   damageTakenMult: z.number().positive().max(1),
   fixedStats: z.boolean().optional(),
 });
@@ -27,6 +28,7 @@ export const enemySchema = z.object({
       .nullable(),
     facing: z.enum(['left', 'right']),
     scale: z.number().positive().max(3),
+    desaturate: z.boolean().optional(),
   }),
   abilities: z.array(abilitySchema).min(1).max(4),
   passives: z.array(passiveSchema).max(3),
