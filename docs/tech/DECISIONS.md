@@ -307,6 +307,27 @@ paying out, and the rolls — seeded from that same instant — cannot be re-rol
 chest. The cost is that the chest cannot carry more than its capacity, which is exactly what the
 design asks for.
 
+## ADR-035 — The Idle Chest is a bonus, priced against a run
+**Context.** Phase 9 shipped the chest with the reward table the design docs had carried since
+Phase 0: brews, dust, a band material, chronicle XP, energy and a gear roll, all by the hour. Seen
+in the running game, a twelve-hour chest at tier 12 paid 67k gold, 18 brews across three elements,
+40 dust and a piece of gear. Measured against the rest of the economy that was not a bonus: 18
+brews is 27,000 champion XP where a campaign run drops a brew 12 % of the time, and the gold was
+roughly two thirds of what a whole day of active play pays. The owner's steer was explicit — "this
+chest should be a nice little bonus only. Do not add too many rewards."
+**Decision.** The chest is priced against a single campaign run at the tier it farms: one idle hour
+owes about one run's gold (`120 × tier`, linear like the campaign's own gold), the tier's own band
+material and nothing from the bands below it, a quarter of the chronicle XP it used to pay, and
+energy. Brews move out of the owed list into the luck table (6 % an hour, at most two per fill, the
+farm settlement's element only). Arcane Dust and the gear roll are gone: the campaign drops dust
+every run, and gear that the racks are too full to hold is a reward that vanishes.
+**Consequences.** Four owed lines and four chances, so the preview reads at a glance; a full chest
+is worth a dozen to two dozen runs against the ~180 an active day spends, and roughly a tenth of a
+day's levelling. The numbers live in `balance/idle.ts` with the calibration in the comment, so a
+future rebalance argues with a run rather than with taste. Anything the chest no longer pays is a
+line removed, not a number set to zero — if the owner wants gear or dust back, it returns as a
+table row.
+
 ## ADR-034 — The farm tier is the best of the three difficulties
 **Context.** `ECONOMY.md` §6 defines the farm tier as "the highest settlement whose boss was
 cleared on the highest unlocked difficulty". Read literally, unlocking Normal drops the tier to

@@ -5,13 +5,7 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-**Q40 — Should a chronicle that predates the Idle Chest be paid for the time it was away?**
-*Why it matters:* the chest is new in `0.0.9`, and every existing save has a "last saved" instant
-days or weeks old. The migration has to choose what the chest was doing before it existed.
-*Default in use:* migration 7→8 sets `idle.lastClaimAt` to the chronicle's last save, so a
-returning player finds the chest as full as their absence allows (capped at capacity, as always)
-rather than empty. The alternative — starting it empty at the moment of the upgrade — is one line
-in the migration step. The choice only ever affects the first claim after upgrading.
+_Nothing open._
 
 ## 2. Answered
 
@@ -56,3 +50,4 @@ in the migration step. The choice only ever affects the first claim after upgrad
 | Q37 | What a single piece's power is measured against | As recommended | The fixed reference champion stays: `GEAR_POWER_REFERENCE` keeps the racks' order stable as the selection changes (ADR-027) |
 | Q38 | Where should Glyph Sigils come from until the weekly boss and the quests exist | As recommended | The 20-star chests keep carrying Sigils (Intro 1, Normal 2, Hard 3) in `STAR_CHESTS`; the weekly boss and quest sources (Phases 9/12/13) replace that line rather than stack with it |
 | Q39 | Should a ×10 press play one ritual or ten | As recommended | One ritual per press, lit by the best pull in it: the gate opens once and gives up ten champions, rarest last, and a Legendary or Mythic anywhere in the ten still gets its pillar and its chime |
+| Q40 | Should a chronicle that predates the Idle Chest be paid for the time it was away | As recommended | Yes: migration 7→8 starts the chest at the chronicle's last save, so a returning player finds it as full as their absence allows. The cap means that is at most one chest — a welcome back, not a windfall (`ECONOMY.md` §6) |

@@ -35,7 +35,6 @@ export type DomainEvent =
       /** Hours the chest was holding. */
       hours: number;
       tier: number;
-      gear: number;
     }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }

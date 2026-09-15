@@ -13,12 +13,8 @@
 import {
   FARM_TIER_BAND,
   FARM_TIER_MAX,
-  IDLE_BREW_BASE,
-  IDLE_BREW_PER_TIER,
   IDLE_CAPACITY_BANDS,
   IDLE_CHANCES,
-  IDLE_DUST_BASE,
-  IDLE_DUST_PER_TIER,
   IDLE_ENERGY_PER_FILL,
   IDLE_ENERGY_PER_HOUR,
   IDLE_GOLD_BASE,
@@ -135,11 +131,8 @@ export interface IdleHaulInput {
   tier: number;
   /** Held hours, from `idleFill`. */
   hours: number;
-  /**
-   * Dominant elements of the settlements most recently farmed, nearest first: the brew the chest
-   * pays leans towards where the chronicle has been (ECONOMY.md §6).
-   */
-  brewElements: readonly Element[];
+  /** The farm settlement's own element — the brew the chest can turn up (ECONOMY.md §6). */
+  brewElement: Element | null;
 }
 
 /** Gold per hour at a farm tier. */
@@ -148,8 +141,9 @@ export function idleGoldPerHour(tier: number): number {
 }
 
 /**
- * Everything the chest owes for certain: gold, brews, dust, the band's material, energy and
- * chronicle XP. No dice — the preview can show this before the chest is opened.
+ * Everything the chest owes for certain: gold, the band's material, energy and chronicle XP. No
+ * dice — the preview can show this before the chest is opened. Brews are luck, not a line here
+ * (`IDLE_CHANCES`), and the chest pays no Arcane Dust at all: the campaign drops it every run.
  */
 export function idleGuaranteed(input: IdleHaulInput): IdleGuaranteed {
   if (input.tier <= 0 || input.hours <= 0) return { currencies: [], playerXp: 0 };
@@ -161,18 +155,10 @@ export function idleGuaranteed(input: IdleHaulInput): IdleGuaranteed {
   };
 
   add('gold', Math.floor(idleGoldPerHour(tier) * hours));
-  const brews = Math.floor((IDLE_BREW_BASE + IDLE_BREW_PER_TIER * tier) * hours);
-  // Brews arrive as whole potions of one element per "recency slot", nearest settlement first.
-  if (brews > 0) {
-    const elements = input.brewElements.length > 0 ? input.brewElements : (['justice'] as Element[]);
-    for (let i = 0; i < brews; i += 1) {
-      const element = elements[i % elements.length] ?? 'justice';
-      add(BREW_OF[element], 1);
-    }
-  }
-  add('mat_arcane_dust', Math.floor((IDLE_DUST_BASE + IDLE_DUST_PER_TIER * tier) * hours));
-  for (const material of IDLE_MATERIALS)
-    if (tier >= material.minTier) add(material.currency, Math.floor(material.perHour * hours));
+  // The tier's own band and no other: one material line, not one for every band beneath it —
+  // that is what keeps the three Forge tiers on three different farms (ECONOMY.md §6).
+  const material = IDLE_MATERIALS.findLast((entry) => tier >= entry.minTier);
+  if (material) add(material.currency, Math.floor(material.perHour * hours));
   add('energy', Math.min(IDLE_ENERGY_PER_FILL, Math.floor(IDLE_ENERGY_PER_HOUR * hours)));
 
   return {
@@ -183,8 +169,6 @@ export function idleGuaranteed(input: IdleHaulInput): IdleGuaranteed {
 
 export interface IdleRolls {
   currencies: CurrencyAmount[];
-  /** Gear pieces the chest rolled; the armoury mints them. */
-  gearPieces: number;
   /** How many times each chance fired, for the dialog's lucky lines. */
   procs: Record<string, number>;
 }
@@ -196,8 +180,7 @@ export interface IdleRolls {
 export function idleRolls(input: IdleHaulInput, rng: Rng): IdleRolls {
   const procs: Record<string, number> = {};
   const amounts = new Map<CurrencyId, number>();
-  let gearPieces = 0;
-  if (input.tier <= 0) return { currencies: [], gearPieces, procs };
+  if (input.tier <= 0) return { currencies: [], procs };
 
   const wholeHours = Math.floor(input.hours);
   for (let hour = 0; hour < wholeHours; hour += 1) {
@@ -211,16 +194,12 @@ export function idleRolls(input: IdleHaulInput, rng: Rng): IdleRolls {
       const hit = rng.chance(chance);
       if (!hit || fired >= def.perFill) continue;
       procs[def.id] = fired + 1;
-      if (def.gear) gearPieces += 1;
-      else if (def.currency && def.amount)
-        amounts.set(def.currency, (amounts.get(def.currency) ?? 0) + def.amount);
+      // A brew is whichever element the chest farms; everything else names its own currency.
+      const currency = def.brew ? input.brewElement && BREW_OF[input.brewElement] : def.currency;
+      if (currency && def.amount) amounts.set(currency, (amounts.get(currency) ?? 0) + def.amount);
     }
   }
-  return {
-    currencies: [...amounts].map(([currency, amount]) => ({ currency, amount })),
-    gearPieces,
-    procs,
-  };
+  return { currencies: [...amounts].map(([currency, amount]) => ({ currency, amount })), procs };
 }
 
 export interface IdleHaul extends IdleGuaranteed, IdleRolls {}
@@ -235,7 +214,6 @@ export function idleHaul(input: IdleHaulInput, rng: Rng): IdleHaul {
   return {
     currencies: [...merged].map(([currency, amount]) => ({ currency, amount })),
     playerXp: guaranteed.playerXp,
-    gearPieces: rolls.gearPieces,
     procs: rolls.procs,
   };
 }

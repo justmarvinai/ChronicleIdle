@@ -82,9 +82,9 @@ describe('the chest fill', () => {
     expect(fill.hours).toBe(1);
     expect(fill.full).toBe(false);
     expect(fill.msToFull).toBe(5 * MS_PER_HOUR);
-    const haul = idleGuaranteed({ tier: 10, hours: fill.hours, brewElements: ['justice'] });
+    const haul = idleGuaranteed({ tier: 10, hours: fill.hours, brewElement: 'justice' });
     expect(haul.currencies.find((c) => c.currency === 'gold')?.amount).toBe(Math.floor(idleGoldPerHour(10)));
-    expect(haul.playerXp).toBe(200);
+    expect(haul.playerXp).toBe(50);
   });
 
   it('caps at capacity and stays there', () => {
@@ -96,8 +96,8 @@ describe('the chest fill', () => {
     expect(overflowing.full).toBe(true);
     expect(overflowing.msToFull).toBe(0);
     // Everything past capacity is lost: a day and a night pay the same as six hours.
-    expect(idleGuaranteed({ tier: 12, hours: overflowing.hours, brewElements: ['valor'] })).toEqual(
-      idleGuaranteed({ tier: 12, hours: 6, brewElements: ['valor'] }),
+    expect(idleGuaranteed({ tier: 12, hours: overflowing.hours, brewElement: 'valor' })).toEqual(
+      idleGuaranteed({ tier: 12, hours: 6, brewElement: 'valor' }),
     );
   });
 
@@ -145,45 +145,53 @@ describe('the farm tier', () => {
 
 describe('what the chest owes', () => {
   it('pays nothing before the first boss falls', () => {
-    expect(idleGuaranteed({ tier: 0, hours: 24, brewElements: [] })).toEqual({
+    expect(idleGuaranteed({ tier: 0, hours: 24, brewElement: null })).toEqual({
       currencies: [],
       playerXp: 0,
     });
-    expect(idleRolls({ tier: 0, hours: 24, brewElements: [] }, createRng('x')).gearPieces).toBe(0);
+    expect(idleRolls({ tier: 0, hours: 24, brewElement: null }, createRng('x'))).toEqual({
+      currencies: [],
+      procs: {},
+    });
   });
 
   it('follows the hourly table', () => {
-    const haul = idleGuaranteed({ tier: 1, hours: 3, brewElements: ['faith'] });
+    const haul = idleGuaranteed({ tier: 1, hours: 3, brewElement: 'faith' });
     const gold = haul.currencies.find((c) => c.currency === 'gold');
     expect(gold?.amount).toBe(Math.floor(IDLE_GOLD_BASE * 3));
-    expect(Math.round(idleGoldPerHour(12))).toBe(5584);
-    expect(Math.round(idleGoldPerHour(36))).toBe(22045);
-    // 0.68 brews/hour at tier 1: two whole potions in three hours.
-    expect(haul.currencies.find((c) => c.currency === 'brew_faith')?.amount).toBe(2);
-    // 1.2 dust/hour → 3; 1.5 iron/hour → 4; 20 XP/hour/tier → 60.
-    expect(haul.currencies.find((c) => c.currency === 'mat_arcane_dust')?.amount).toBe(3);
-    expect(haul.currencies.find((c) => c.currency === 'mat_scrap_iron')?.amount).toBe(4);
-    expect(haul.playerXp).toBe(60);
+    // An idle hour is worth about one run at the tier it farms (ADR-035).
+    expect(idleGoldPerHour(12)).toBe(1_440);
+    expect(idleGoldPerHour(36)).toBe(4_320);
+    // 1 iron/hour → 3; 5 XP/hour/tier → 15.
+    expect(haul.currencies.find((c) => c.currency === 'mat_scrap_iron')?.amount).toBe(3);
+    expect(haul.playerXp).toBe(15);
+  });
+
+  it('owes no brews and no dust: one is luck, the other is a campaign drop', () => {
+    const haul = idleGuaranteed({ tier: 24, hours: 24, brewElement: 'eclipse' });
+    const owed = haul.currencies.map((c) => c.currency);
+    expect(owed.filter((id) => id.startsWith('brew_'))).toEqual([]);
+    expect(owed).not.toContain('mat_arcane_dust');
+    expect(owed).toEqual(['gold', 'mat_ember_alloy', 'energy']);
   });
 
   it('pays the band material and no other', () => {
-    const intro = idleGuaranteed({ tier: 6, hours: 6, brewElements: ['valor'] });
-    expect(intro.currencies.map((c) => c.currency)).toContain('mat_scrap_iron');
-    expect(intro.currencies.map((c) => c.currency)).not.toContain('mat_ember_alloy');
-    const hard = idleGuaranteed({ tier: 30, hours: 6, brewElements: ['valor'] });
-    expect(hard.currencies.map((c) => c.currency)).toContain('mat_starsteel');
-  });
-
-  it('spreads brews over the settlements most recently farmed', () => {
-    const haul = idleGuaranteed({ tier: 24, hours: 12, brewElements: ['eclipse', 'faith', 'valor'] });
-    const brews = haul.currencies.filter((c) => c.currency.startsWith('brew_'));
-    expect(brews.length).toBeGreaterThan(1);
-    expect(brews.map((c) => c.currency)).toContain('brew_eclipse');
-    expect(brews.reduce((sum, c) => sum + c.amount, 0)).toBe(Math.floor((0.6 + 0.08 * 24) * 12));
+    const intro = idleGuaranteed({ tier: 6, hours: 6, brewElement: 'valor' }).currencies.map(
+      (c) => c.currency,
+    );
+    expect(intro).toContain('mat_scrap_iron');
+    expect(intro).not.toContain('mat_ember_alloy');
+    // The hard band pays starsteel *instead of* the bands below it, not as well as.
+    const hard = idleGuaranteed({ tier: 30, hours: 6, brewElement: 'valor' }).currencies.map(
+      (c) => c.currency,
+    );
+    expect(hard).toContain('mat_starsteel');
+    expect(hard).not.toContain('mat_scrap_iron');
+    expect(hard).not.toContain('mat_ember_alloy');
   });
 
   it('caps the energy a single fill may hold', () => {
-    const haul = idleGuaranteed({ tier: 20, hours: 24, brewElements: ['justice'] });
+    const haul = idleGuaranteed({ tier: 20, hours: 24, brewElement: 'justice' });
     expect(haul.currencies.find((c) => c.currency === 'energy')?.amount).toBe(IDLE_ENERGY_PER_FILL);
   });
 });
@@ -192,14 +200,16 @@ describe('the chest luck', () => {
   it('rolls once an hour and caps each reward per fill', () => {
     // A generous seed sweep: no fill may ever exceed the per-fill caps.
     for (let seed = 0; seed < 200; seed += 1) {
-      const rolls = idleRolls({ tier: 30, hours: 24, brewElements: ['valor'] }, createRng(`idle:${seed}`));
+      const rolls = idleRolls({ tier: 30, hours: 24, brewElement: 'valor' }, createRng(`idle:${seed}`));
       for (const def of IDLE_CHANCES) expect(rolls.procs[def.id] ?? 0).toBeLessThanOrEqual(def.perFill);
-      expect(rolls.gearPieces).toBeLessThanOrEqual(2);
+      // However lucky the chest is, a fill is never more than two brews.
+      const brews = rolls.currencies.filter((c) => c.currency.startsWith('brew_'));
+      expect(brews.reduce((sum, c) => sum + c.amount, 0)).toBeLessThanOrEqual(2);
     }
   });
 
   it('is the same chest however often it is read', () => {
-    const input = { tier: 18, hours: 9, brewElements: ['faith'] as const };
+    const input = { tier: 18, hours: 9, brewElement: 'faith' as const };
     const first = idleRolls(input, createRng('idle:fixture:1234'));
     const second = idleRolls(input, createRng('idle:fixture:1234'));
     expect(second).toEqual(first);
@@ -210,16 +220,16 @@ describe('the chest luck', () => {
     let hours = 0;
     for (let seed = 0; seed < 400; seed += 1) {
       // Two hours per fill keeps the per-fill caps out of the way of the rate.
-      const rolls = idleRolls({ tier: 10, hours: 2, brewElements: ['valor'] }, createRng(`r${seed}`));
+      const rolls = idleRolls({ tier: 10, hours: 2, brewElement: 'valor' }, createRng(`r${seed}`));
       gemProcs += rolls.procs['gems'] ?? 0;
       hours += 2;
     }
-    expect(gemProcs / hours).toBeGreaterThan(0.06);
-    expect(gemProcs / hours).toBeLessThan(0.14);
+    expect(gemProcs / hours).toBeGreaterThan(0.05);
+    expect(gemProcs / hours).toBeLessThan(0.12);
   });
 
   it('merges the rolls into the guaranteed haul', () => {
-    const input = { tier: 30, hours: 24, brewElements: ['valor'] as const };
+    const input = { tier: 30, hours: 24, brewElement: 'valor' as const };
     const rng = createRng('idle:merge');
     const haul = idleHaul(input, rng);
     const guaranteed = idleGuaranteed(input);

@@ -4,8 +4,11 @@
  * yield when it is opened. Everything past capacity is lost — that is the "come back in time"
  * tension the brief asks for, and the reason the capacity bands matter.
  *
- * Changing a number here changes the game's idle income, which the 30-day economy simulation
- * (Phase 15) checks against the gold and gem budgets in `ECONOMY.md` §7–§8.
+ * The chest is a **small bonus, never a substitute for playing** (owner's steer, ADR-035). Every
+ * number here is set against what the same hour of campaign play pays: an idle hour is worth about
+ * one run's gold, and everything else is a fraction of what a run drops. Changing a number here
+ * changes the game's idle income, which the 30-day economy simulation (Phase 15) checks against
+ * the gold and gem budgets in `ECONOMY.md` §7–§8.
  */
 import type { CurrencyId } from '@content/currencies/types';
 
@@ -31,20 +34,17 @@ export const FARM_TIER_MAX = 36;
 /** Tier bands, one per difficulty, used by the material table below. */
 export const FARM_TIER_BAND = 12;
 
-/** Gold per hour: `IDLE_GOLD_BASE × tier^IDLE_GOLD_POWER` (tier 1: 250; 12: 5.6k; 36: 22k). */
-export const IDLE_GOLD_BASE = 250;
-export const IDLE_GOLD_POWER = 1.25;
-
-/** Elemental brews per hour (fractional; the remainder carries in the chest's own arithmetic). */
-export const IDLE_BREW_BASE = 0.6;
-export const IDLE_BREW_PER_TIER = 0.08;
-
-/** Arcane Dust per hour. */
-export const IDLE_DUST_BASE = 1;
-export const IDLE_DUST_PER_TIER = 0.2;
+/**
+ * Gold per hour: `IDLE_GOLD_BASE × tier^IDLE_GOLD_POWER` (tier 1: 120; 12: 1.4k; 36: 4.3k). The
+ * curve is linear because the campaign's own gold is linear in stage index (`GOLD_STAGE_GROWTH`):
+ * one idle hour is worth roughly one run at the tier the chest farms, so a full chest is a dozen
+ * to two dozen runs' gold against the ~180 runs an active day spends.
+ */
+export const IDLE_GOLD_BASE = 120;
+export const IDLE_GOLD_POWER = 1;
 
 /** Chronicle XP per hour, per farm tier. It never carries a chronicle past its unlocks alone. */
-export const IDLE_PLAYER_XP_PER_TIER = 20;
+export const IDLE_PLAYER_XP_PER_TIER = 5;
 
 /** Energy per hour, and the most a single fill may hold. */
 export const IDLE_ENERGY_PER_HOUR = 4;
@@ -56,9 +56,9 @@ export const IDLE_ENERGY_PER_FILL = 60;
  * material, which is what keeps the three Forge tiers on different farms.
  */
 export const IDLE_MATERIALS: readonly { currency: CurrencyId; perHour: number; minTier: number }[] = [
-  { currency: 'mat_scrap_iron', perHour: 1.5, minTier: 1 },
-  { currency: 'mat_ember_alloy', perHour: 0.6, minTier: FARM_TIER_BAND + 1 },
-  { currency: 'mat_starsteel', perHour: 0.25, minTier: FARM_TIER_BAND * 2 + 1 },
+  { currency: 'mat_scrap_iron', perHour: 1, minTier: 1 },
+  { currency: 'mat_ember_alloy', perHour: 0.4, minTier: FARM_TIER_BAND + 1 },
+  { currency: 'mat_starsteel', perHour: 0.18, minTier: FARM_TIER_BAND * 2 + 1 },
 ];
 
 /**
@@ -74,15 +74,22 @@ export interface IdleChanceDef {
   betterFrom?: number;
   /** Most procs a single fill may pay. */
   perFill: number;
-  /** What one proc pays; gear pieces are rolled by the armoury instead (`gear: true`). */
+  /** What one proc pays. `brew: true` pays the farm settlement's own brew instead. */
   currency?: CurrencyId;
   amount?: number;
-  gear?: boolean;
+  brew?: boolean;
 }
 
+/**
+ * Brews are a stroke of luck rather than a line in the preview: one potion is 1,500 champion XP
+ * (`balance/xp.ts`), and a chest that paid them by the hour out-earned the campaign's own 12 %
+ * drop per run several times over. At 6 % an hour, capped twice, a full chest is one brew more
+ * often than not and never more than two — of the settlement's own element only.
+ */
 export const IDLE_CHANCES: readonly IdleChanceDef[] = [
-  { id: 'gems', chance: 0.1, perFill: 3, currency: 'gems', amount: 5 },
-  { id: 'shard_faded', chance: 0.06, perFill: 2, currency: 'shard_faded', amount: 1 },
+  { id: 'gems', chance: 0.08, perFill: 2, currency: 'gems', amount: 5 },
+  { id: 'brew', chance: 0.06, perFill: 2, brew: true, amount: 1 },
+  { id: 'shard_faded', chance: 0.05, perFill: 2, currency: 'shard_faded', amount: 1 },
   {
     id: 'shard_ancient',
     chance: 0.01,
@@ -92,7 +99,6 @@ export const IDLE_CHANCES: readonly IdleChanceDef[] = [
     currency: 'shard_ancient',
     amount: 1,
   },
-  { id: 'gear', chance: 0.08, perFill: 2, gear: true },
 ];
 
 /** The chest is claimable once this much has accrued; below it the button waits. */

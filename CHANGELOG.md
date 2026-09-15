@@ -6,7 +6,44 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 10 (Daily Boss) starts after the owner's Phase 9 check-in._
+_Phase 10 (Daily Boss) is next._
+
+## [0.0.9.1] — 2026-09-15 — Chest pass
+
+Owner's check-in after Phase 9: the chest was paying too much, in too many kinds — "this chest
+should be a nice little bonus only. Do not add too many rewards."
+
+### Changed
+
+- **The chest is priced against a single campaign run** at the tier it farms (ADR-035). Gold is
+  `120 × tier` an hour — one run's worth — where it was `250 × tier^1.25`: a twelve-hour chest at
+  tier 12 pays 17.3k instead of 67k, and a full day at tier 36 pays 104k instead of 529k. Chronicle
+  XP is a quarter of what it was (`5 × tier` an hour), and the band materials are trimmed to
+  1 / 0.4 / 0.18 an hour.
+- **Brews are luck, not an hourly line, and only ever the farm settlement's own element.** One
+  potion is 1,500 champion XP, so paying them by the hour made the chest out-earn the campaign's
+  own 12 %-per-run brew drop several times over — 18 brews across three elements in a single
+  twelve-hour fill. Now a 6 % chance an hour, at most two per fill: a chest has one brew more often
+  than not, and never a third.
+- **Two rewards are gone rather than reduced**: Arcane Dust (every campaign run drops some, and the
+  chest was paying thirteen runs' worth a fill) and the gear roll (armour comes from the campaign
+  and the Forge — and a piece the racks were too full to hold was a reward that vanished). Gems and
+  the Faded Shard are trimmed a little (8 % and 5 % an hour, gems capped twice per fill).
+- The preview is four lines now — gold, the band's material, energy and chronicle XP — with the
+  luck still unlisted, because finding it is the point of opening it.
+
+### Fixed
+
+- **The chest paid every band's material, not its band's.** `IDLE_MATERIALS` was read as a
+  cumulative list, so a tier-30 chest paid Scrap Iron *and* Ember Alloy *and* Starsteel — three
+  lines where the design says one, and the thing that was supposed to keep the three Forge tiers on
+  three different farms. A tier now pays its own band and nothing beneath it.
+
+### Answered
+
+- **Q40**: a chronicle that predates the chest is paid for the time it was away. The migration
+  starts the chest at the chronicle's last save, and the capacity cap means that is at most one
+  full chest — a welcome back rather than a windfall.
 
 ## [0.0.9] — 2026-09-15 — Phase 9: Idle Chest
 

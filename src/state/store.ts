@@ -1008,12 +1008,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               });
               if (!result.ok) return result;
               events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'idle' });
-              events.emit({
-                type: 'idle.claimed',
-                hours: result.value.hours,
-                tier: result.value.tier,
-                gear: result.value.gear.length,
-              });
+              events.emit({ type: 'idle.claimed', hours: result.value.hours, tier: result.value.tier });
               // The chest can carry a chronicle over a level; the celebration is the shared one.
               noteLevelUp(result.value.levelUp, 'idle');
               return result;

@@ -23,15 +23,10 @@ import {
 } from '@engine/economy/idle';
 import { grant, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
-import type { GearInstance } from '@engine/gear/instance';
 import type { Rng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
 import { progressOf } from './campaign';
-import { applyGearDrop } from './gear';
 import { applyPlayerXp, NO_LEVEL_UP, type LevelUpResult } from './progression';
-
-/** How many settlements back the chest's brews remember (ECONOMY.md §6 "recent settlements"). */
-const BREW_MEMORY = 3;
 
 export interface IdleView {
   fill: IdleFill;
@@ -55,20 +50,15 @@ export function idleView(save: SaveGame, now: number): IdleView {
     nextCapacity: idleNextCapacity(save.profile.level),
     tier,
     settlementIndex: farmSettlement(tier),
-    guaranteed: idleGuaranteed({ tier, hours: fill.hours, brewElements: brewElements(tier) }),
+    guaranteed: idleGuaranteed({ tier, hours: fill.hours, brewElement: brewElement(tier) }),
   };
 }
 
-/** Dominant elements of the settlements the chest has been farming, nearest first. */
-function brewElements(tier: number): Element[] {
+/** The dominant element of the settlement the chest farms — the only brew it can turn up. */
+function brewElement(tier: number): Element | null {
   const settlement = farmSettlement(tier);
-  if (settlement <= 0) return [];
-  const elements: Element[] = [];
-  for (let index = settlement; index > settlement - BREW_MEMORY && index >= 1; index -= 1) {
-    const def = content.settlementByIndex(index);
-    if (def) elements.push(def.element);
-  }
-  return elements;
+  if (settlement <= 0) return null;
+  return content.settlementByIndex(settlement)?.element ?? null;
 }
 
 export interface IdleClaimSummary {
@@ -80,9 +70,6 @@ export interface IdleClaimSummary {
   changes: CurrencyChange[];
   playerXp: number;
   levelUp: LevelUpResult;
-  /** Pieces the chest's luck minted, and how many the racks were too full to hold. */
-  gear: GearInstance[];
-  gearLost: number;
   /** Which chance rolls fired, for the dialog's lucky lines. */
   procs: Record<string, number>;
   /** True when the chest was opened full — the "you left it too long" line. */
@@ -95,14 +82,14 @@ export interface IdleClaimInput {
   rng: Rng;
 }
 
-/** Opens the chest: the wallet, the energy pool, the racks and the chronicle all take their share. */
+/** Opens the chest: the wallet, the energy pool and the chronicle each take their share. */
 export function applyIdleClaim(save: SaveGame, input: IdleClaimInput): Result<IdleClaimSummary> {
   const view = idleView(save, input.now);
   if (view.tier <= 0) return fail('invalid_argument', 'No settlement boss has fallen yet');
   if (!view.fill.claimable) return fail('invalid_argument', 'The chest is still empty');
 
   const haul = idleHaul(
-    { tier: view.tier, hours: view.fill.hours, brewElements: brewElements(view.tier) },
+    { tier: view.tier, hours: view.fill.hours, brewElement: brewElement(view.tier) },
     input.rng,
   );
   const energy = haul.currencies.find((entry) => entry.currency === 'energy')?.amount ?? 0;
@@ -122,21 +109,6 @@ export function applyIdleClaim(save: SaveGame, input: IdleClaimInput): Result<Id
     changes.push({ currency: 'energy', delta: energy, total: save.energy.value });
   }
 
-  // A piece rolls from the settlement the chest farms, exactly as a run there would drop it.
-  const gear: GearInstance[] = [];
-  let gearLost = 0;
-  for (let i = 0; i < haul.gearPieces; i += 1) {
-    const piece = applyGearDrop(save, {
-      settlementIndex: Math.max(1, view.settlementIndex),
-      fromSetPool: true,
-      source: 'campaign_drop',
-      now: input.now,
-      rng: input.rng,
-    });
-    if (piece) gear.push(piece);
-    else gearLost += 1;
-  }
-
   // Chronicle XP last, so a level-up's energy refill lands on the new cap.
   const levelUp = haul.playerXp > 0 ? applyPlayerXp(save, haul.playerXp, input.now) : NO_LEVEL_UP;
   changes.push(...levelUp.changes);
@@ -144,7 +116,6 @@ export function applyIdleClaim(save: SaveGame, input: IdleClaimInput): Result<Id
   save.idle.lastClaimAt = input.now;
   bump(save, 'idle.claims', 1);
   bump(save, 'idle.hours', Math.floor(view.fill.hours));
-  if (gear.length) bump(save, 'idle.gear', gear.length);
 
   return ok({
     hours: view.fill.hours,
@@ -153,8 +124,6 @@ export function applyIdleClaim(save: SaveGame, input: IdleClaimInput): Result<Id
     changes,
     playerXp: haul.playerXp,
     levelUp,
-    gear,
-    gearLost,
     procs: haul.procs,
     wasFull: view.fill.full,
   });

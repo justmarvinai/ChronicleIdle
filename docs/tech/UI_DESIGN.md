@@ -158,10 +158,9 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   under it, the band line: what the chest holds now and what the next chronicle level band holds
   ("Holds 12h 00m · 16h 00m from chronicle level 30"), which is where the game teaches that
   levelling widens the chest.
-- Body: **Waiting inside** lists the guaranteed contents; the luck is unlisted ("gems, shards and
-  gear turn up on their own"). Opening it swaps the list for **The chest gives up**, adds *A
-  stroke of luck* for each chance that fired, names the pieces it minted, warns when the armoury
-  was too full to keep one, and says when the hours past capacity were lost.
+- Body: **Waiting inside** lists the four owed rewards; the luck is unlisted ("gems, brews and
+  shards turn up on their own"). Opening it swaps the list for **The chest gives up**, adds *A
+  stroke of luck* for each chance that fired, and says when the hours past capacity were lost.
 - The button is *Open the chest* / *Still filling* (disabled while nothing has accrued), then
   *Continue*. Sound: `chest.open` on the claim, the reward toast with the hours it paid.
 

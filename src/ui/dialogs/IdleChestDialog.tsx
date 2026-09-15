@@ -17,7 +17,6 @@ import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import { useNow } from '@ui/hooks/useNow';
-import { pieceName } from '@ui/gear/gear-view';
 import styles from './IdleChestDialog.module.css';
 
 /** Hours as the chest talks about them: "4h 20m", minutes under an hour, and "0m" for nothing. */
@@ -174,22 +173,6 @@ export function IdleChestDialog({ onClose }: { onClose: () => void }) {
           </section>
         ) : null}
 
-        {haul && haul.gear.length > 0 ? (
-          <section className={styles.section} data-testid="idle-gear">
-            <ul className={styles.lucky}>
-              {haul.gear.map((piece) => (
-                <li key={piece.instanceId}>
-                  <Glyph glyph="glyph.spiked_cleaver" size={24} color="var(--gold-3)" />
-                  <span>{pieceName(piece)}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {haul && haul.gearLost > 0 ? (
-          <p className={styles.warn}>{translate('idle.gearLost', { count: haul.gearLost })}</p>
-        ) : null}
         {haul?.wasFull ? (
           <p className={styles.hint} data-testid="idle-overflow">
             {translate('idle.overflow', { hours: hoursLabel(view.capacityHours) })}

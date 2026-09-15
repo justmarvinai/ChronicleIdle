@@ -56,13 +56,19 @@ describe('the Idle Chest — what it holds', () => {
     expect(later.guaranteed.currencies.find((c) => c.currency === 'gold')?.amount).toBeGreaterThan(0);
   });
 
-  it('previews the brews of the settlements it farms', () => {
-    const { store } = chronicle();
+  it('previews no brews at all: a brew is luck, of the settlement it farms', () => {
+    const { store, actions, clock } = chronicle({ level: 30 });
     clearBoss(store, 5);
     const view = idleView(save(store), T0 + 6 * MS_PER_HOUR);
-    const brews = view.guaranteed.currencies.filter((c) => c.currency.startsWith('brew_'));
-    const elements = [5, 4, 3].map((index) => content.settlementByIndex(index)?.element);
-    for (const brew of brews) expect(elements.map((element) => `brew_${element}`)).toContain(brew.currency);
+    expect(view.guaranteed.currencies.filter((c) => c.currency.startsWith('brew_'))).toEqual([]);
+
+    // Opened over a long fill the luck does turn up, and only ever as the farm's own brew.
+    clock.set(T0 + 16 * MS_PER_HOUR);
+    const result = actions.claimIdleChest();
+    if (!result.ok) throw new Error(result.error.message);
+    const element = content.settlementByIndex(5)?.element;
+    for (const entry of result.value.rewards.filter((c) => c.currency.startsWith('brew_')))
+      expect(entry.currency).toBe(`brew_${element}`);
   });
 });
 
@@ -122,7 +128,6 @@ describe('the Idle Chest — opening it', () => {
     if (!a.ok || !b.ok) throw new Error('claim failed');
     expect(b.value.rewards).toEqual(a.value.rewards);
     expect(b.value.procs).toEqual(a.value.procs);
-    expect(b.value.gear.length).toBe(a.value.gear.length);
   });
 
   it('pays energy into the pool, not the purse', () => {

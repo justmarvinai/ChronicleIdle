@@ -164,31 +164,41 @@ the reward for levelling is visible before it arrives.
 `farmTier` = the highest settlement whose boss has fallen, counted across the three difficulties
 end to end (Intro 1–12, Normal 13–24, Hard 25–36) and taking the **best** of the three, so a
 chronicle that has just unlocked a harder difficulty keeps the tier it earned on the easier one
-(ADR-034). Tier 0 — no boss down yet — pays nothing and the chest says so. Hourly yield:
+(ADR-034). Tier 0 — no boss down yet — pays nothing and the chest says so.
 
-| Reward | Per hour | Notes |
+The chest is **a small bonus, never a substitute for playing** (owner's steer, ADR-035). Every
+number below is set against what the same hour of campaign play pays: one idle hour is worth about
+one run's gold, and the rest is a fraction of what a run drops. Four things are owed outright:
+
+| Owed | Per hour | Notes |
 | --- | --- | --- |
-| Gold | `250 × farmTier^1.25` | tier 1: 250; tier 12: 5.6k; tier 36: 22k |
-| Elemental Brews | `0.6 + 0.08 × farmTier` (fractional accrues) | element weighted to recent settlements |
-| Arcane Dust | `1 + 0.2 × farmTier` | |
-| Scrap Iron / Ember Alloy / Starsteel | 1.5 / 0.6 / 0.25 per hour | a tier pays only its own band's material (1–12 / 13–24 / 25–36), which keeps the three Forge tiers on different farms |
-| Player XP | `20 × farmTier` | never levels you past unlocks alone |
-| Gems | 10 % chance/hour of 5 gems (max 3 procs per fill) | |
-| Faded Shard | 6 % chance/hour (max 2 per fill) | |
-| Ancient Shard | 1 % chance/hour (max 1 per fill; 2 % at tier ≥ 25) | |
-| Gear piece | 8 % chance/hour of a piece at current campaign rarity table (max 2 per fill) | |
-| Energy | 4 per hour (max 60 per fill) | |
+| Gold | `120 × farmTier` | tier 1: 120; tier 12: 1.4k; tier 36: 4.3k — about one run at that tier |
+| Scrap Iron / Ember Alloy / Starsteel | 1 / 0.4 / 0.18 | the tier's **own** band only (1–12 / 13–24 / 25–36), never the bands beneath it, which keeps the three Forge tiers on three farms |
+| Chronicle XP | `5 × farmTier` | ~12 % of a day's levelling against an active day's play |
+| Energy | 4 per hour (max 60 per fill) | lands in the pool, overflowing its cap like a level-up (§5) |
 
-Rolls are seeded from `lastClaimAt` so reloading cannot reroll, and one roll is taken per chance
-per **whole** hour held, capped per fill by the table above. A gear piece rolls from the settlement
-the chest farms, exactly as a run there would drop it; brews arrive as whole potions spread over
-the three settlements most recently farmed, nearest first. Energy lands in the pool (with its cap
-and overflow rules, §5), never in the purse.
+And four are luck — one roll per chance per **whole** hour held, each capped per fill:
 
-The chest shows fill %, time to full, the settlement and tier it farms, and a preview of the
-**guaranteed** contents — the luck is deliberately unlisted, because finding it is the point of
-opening it. Offline gains beyond capacity are lost — the "come back in time" tension the brief
-asks for — and the chest says as much when it is opened full.
+| Luck | Chance per hour | Cap per fill |
+| --- | --- | --- |
+| Gems (5) | 8 % | 2 |
+| A brew of the farm settlement's own element | 6 % | 2 |
+| Faded Shard | 5 % | 2 |
+| Ancient Shard | 1 % (2 % at tier ≥ 25) | 1 |
+
+Rolls are seeded from `lastClaimAt` so reloading cannot reroll. The chest pays **no Arcane Dust**
+(every campaign run drops some) and **no gear** (the campaign and the Forge are where armour comes
+from, and a piece the racks were too full to hold is a reward that vanishes).
+
+Brews are luck rather than an hourly line because one potion is 1,500 champion XP (§3.1): paid by
+the hour the chest out-earned the campaign's own 12 %-per-run drop several times over, which is
+exactly the kind of "too much and too strong" the chest must not be. A full chest is one brew more
+often than not and never more than two.
+
+The chest shows fill %, time to full, the settlement and tier it farms, the band line, and a
+preview of the **guaranteed** contents — the luck is deliberately unlisted, because finding it is
+the point of opening it. Offline gains beyond capacity are lost — the "come back in time" tension
+the brief asks for — and the chest says as much when it is opened full.
 
 ## 7. Gem budget (sanity)
 
