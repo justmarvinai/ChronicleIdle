@@ -355,9 +355,33 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   the period's pool after it, a personal-best line, the chests the damage has just earned, and
   *Back to the gate* as the primary press.
 
-### 5.14 Quests
-- Tabs Daily / Weekly; points track with five chest nodes; quest rows with progress and *Claim*;
-  reset timer; "Claim all".
+### 5.14 Quests — The Chronicler's Ledger (`QUESTS_MISSIONS.md` §2–§3)
+- Reference: the RSL missions/quests layout (`progress_missions_screen.png` for the track).
+  Backdrop `bg.bg3` (the runed gate, where the chronicler stands with their ledger) with the
+  interior ambience and two candle glows.
+- Header: **Daily** / **Weekly** tabs, each wearing a badge with what that board owes (quests
+  finished plus chests earned); on the right, the period's countdown (*Resets in 10h 31m*) and the
+  primary **Claim all (N)**, which reads *Nothing to claim yet* and is disabled when the board owes
+  nothing.
+- **Points track** (`PointsTrack`): one `ember-wide` panel with *40 / 100 points* and a gold rail
+  from zero to the board's hundred, a chest standing at every threshold (20 / 40 / 60 / 80 / 100
+  daily, 25 / 50 / 75 / 100 weekly). A chest is dim while the points are short, wears the gold
+  pulse when it can be taken (no pulse under `prefers-reduced-motion`), and swaps its scroll for a
+  trophy and the word *Taken* once it has been. Hovering one prints its contents; the daily hundred
+  also prints its cadence (*Every 3 claims this pays Ancient Shard ×1 instead.*).
+- **Quest rows** (`QuestRow`, a `thin` panel each, in a `ScrollArea`): the quest's glyph, its line
+  (*Clear 5 campaign stages*), a gold progress bar carrying `progress / target`, the points it
+  pays, its reward as a `RewardList` strip, and **Claim**. A finished row wears a gold glow and a
+  gold name until it is claimed; a claimed one steps back to *Claimed* with a trophy and mutes its
+  bar. Nothing on the board is ever a dead row: a quest whose feature is still locked is not shown
+  at all, and the period's replacement quest carries its points.
+- A board the chronicle cannot open yet (the weekly one before level 12) replaces the track and the
+  list with one panel: a broken shackle and *The ledger opens at chronicle level 12.*
+- Motion and sound: `reward.small` on one claim, `reward.medium` on a Claim all, `reward.large` on a
+  chest, `ui.tab` on the tabs, `ui.error` on a press the board refuses; every claim raises a reward
+  toast naming the points and the currencies, and the top bar ticks up.
+- The hub's bottom-bar **Quests** button opens the ledger and carries the same badge; the Welcome
+  Back panel says when a new day's or week's quests are waiting.
 
 ### 5.15 The Chronicler's Path
 - Reference: `progress_missions_screen.png`. Chapter tabs; mission card carousel with arrows;

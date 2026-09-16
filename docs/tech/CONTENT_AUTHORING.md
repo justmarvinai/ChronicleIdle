@@ -314,6 +314,51 @@ moment it ships. Add a new condition kind to the union and the evaluator togethe
 See the "Content shape" sections of `docs/design/BOSSES.md`, `SUMMONING.md`,
 `QUESTS_MISSIONS.md`, `TUTORIAL.md`. All use the same `define*` helpers and validation.
 
+### Quests (`src/content/quests/`)
+
+One file per board (`daily.ts`, `weekly.ts`), each a `board()` of `quest()`s and a chest ladder:
+
+```ts
+export default board({
+  period: 'daily',
+  feature: 'quests_daily',
+  // Stands in for every quest the chronicle cannot do yet, worth exactly their points together.
+  replacement: quest({ slug: 'win_battles', icon: 'glyph.crossed_swords',
+    goal: { type: 'win_battles', count: 3 }, points: 10,
+    rewards: [{ currency: 'gold', amount: 2_000 }], feature: null }),
+  quests: [
+    quest({ slug: 'login', icon: 'glyph.hourglass', goal: { type: 'login' }, points: 10,
+      rewards: [{ currency: 'shard_faded', amount: 1 }], feature: null }),
+    quest({ slug: 'forge', icon: 'glyph.spiked_cleaver', points: 10, feature: 'forge',
+      // The closest of several ways finishes it.
+      goal: { type: 'any', goals: [{ type: 'craft', count: 1 }, { type: 'dismantle', count: 1 }] },
+      rewards: [{ currency: 'mat_scrap_iron', amount: 10 }] }),
+    …
+  ],
+  chests: [
+    { points: 20, currencies: [{ currency: 'gold', amount: 3_000 }] },
+    …
+    { points: 100, currencies: [{ currency: 'gems', amount: 30 }, { currency: 'tome_rare', amount: 2 }],
+      // Every third claim of *this chest* pays the alternate instead (counted for the chronicle's life).
+      cycle: { every: 3, instead: [{ currency: 'shard_ancient', amount: 1 }] } },
+  ],
+});
+```
+
+- The id and the i18n key derive from the slug (`quest.daily.login`, `quest.login.name`, in
+  `src/i18n/en/quests.ts`); `period` comes from the board, so a quest cannot disagree with the
+  board it sits on.
+- A quest that needs a feature names it. While that feature is locked the quest is hidden and the
+  replacement carries its points, and the validator checks that the board still totals 100 at
+  **every** feature-unlock level — a quest whose points do not add up is a build error.
+- `goal` is the DSL of `QUESTS_MISSIONS.md` §1. A counter goal is measured from the period's
+  baseline, so it needs a counter somebody writes: the validator checks every goal against
+  `COUNTER_KEYS` (`engine/progression/counters.ts`). A new kind of goal is a new evaluator with a
+  test, never an `if (quest.id === …)`. Adding a counter means adding its name there *and* bumping
+  it from the reducer that owns that play.
+- Chest thresholds climb and the last one is the full board. Rewards are currencies only; a chest
+  that should hand over gear is a new field with tests, like the boss chests' `gear`.
+
 ### Banners and the featured rotation (`src/content/banners/`)
 
 One file per banner (`standard.ts`, `featured.ts`), collected in `index.ts`:

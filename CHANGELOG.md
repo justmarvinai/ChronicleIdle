@@ -6,7 +6,58 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 12 (Daily & Weekly Quests) is next._
+_Phase 13 (The Chronicler's Path) is next._
+
+## [0.0.12] — 2026-09-16 — Phase 12: Daily & Weekly Quests
+
+The Chronicler's Ledger: ten quests a day and eight a week, a points track with a chest at every
+threshold, and a board that is derived from the play rather than driven by it.
+
+### Added
+
+- **The goal DSL** (`engine/quests/goals.ts`, `content/quests/types.ts`): seventeen goal types in
+  two families. A *counter* goal (`clear_stages`, `summon`, `boss_fights`, …) is measured as a
+  delta against the counter's value when the period began, so yesterday's play never finishes
+  today's quest. A *state predicate* (`gear_reach_level`) is read live off the save, because it
+  asks what the chronicle *is* — levelling a piece to +12 and then to +16 counts once. `any`
+  finishes on the closest of several ways ("craft or dismantle"). One test per goal type.
+- **One owner for the lifetime counters** (`engine/progression/counters.ts`): every counter the
+  game writes is named in `COUNTER_KEYS`, `bumpCounter` refuses anything else, and the content
+  validator checks each goal against the list — a quest can no longer name a counter nobody
+  writes and sit at zero for ever. Suffixed families (`boss.fights.<bossId>`,
+  `summon.pulls.<shardId>`) are declared as prefixes. `battles.won.manual` is new, for the quest
+  that asks for a victory the player steered.
+- **The boards** (`content/quests/{daily,weekly}.ts`): ten dailies of ten points with chests at
+  20 / 40 / 60 / 80 / 100, the hundred paying an Ancient Shard instead of its gems on every third
+  full board; eight weeklies worth a hundred between them (20 / 15 / 15 / 15 / 10 / 10 / 10 / 5)
+  with chests at 25 / 50 / 75 / 100. A quest whose feature is still locked is hidden and the
+  period's replacement quest — *Win 3 battles*, *Win 20 battles* — carries exactly its points, so
+  a hundred is reachable the day a board opens and at every unlock state after it (a test walks
+  every feature-unlock level).
+- **The Chronicler's Ledger** (`quests` route, `UI_DESIGN.md` §5.14): Daily and Weekly behind
+  their own tabs, each with its reset countdown, a points track with a chest at every threshold
+  (each naming its contents on hover, the daily hundred naming its cadence), a row per quest with
+  glyph, line, progress, points and reward, *Claim* per row and *Claim all* for the lot. The hub's
+  Quests button opens it and wears a badge counting what both boards owe; the Welcome Back panel
+  says when a board turned over while the game was closed.
+- **Save v10**: a record per period holding the period's key, the counters it began with, what has
+  been claimed and whether its day has been counted. The migration from v9 baselines both boards
+  against the counters already earned, so a hundred hours of play does not hand over a finished
+  board (`tests/fixtures/saves/v9.json`).
+- `tests/e2e/quests.spec.ts`: the ledger in a production build — the day's ten rows, a claim that
+  pays and cannot pay twice, the Idle Chest opened at the docks finishing the quest that asks for
+  it, the 20-point chest taken, and all of it still there after a reload.
+
+### Changed
+
+- Claiming is the only thing that writes. The board itself — which quests are shown, how far along
+  each is, the points, the chests — is derived on every read from the save and the clock, the same
+  discipline the period bosses use (ADR-033, applied to quests in ADR-040): a record whose stored
+  key is older than now *is* a fresh board, so there is no midnight job, nothing to run twice, and
+  a rollover that happened while the game was closed lands exactly once.
+- A reward list that names energy pays into the pool rather than into the wallet, in one place
+  (`state/payout.ts`), and a "Claim all" that takes five quests pays one pile of gold rather than
+  five.
 
 ## [0.0.11] — 2026-09-16 — Phase 11: Weekly Boss
 

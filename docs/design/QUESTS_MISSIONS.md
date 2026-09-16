@@ -7,6 +7,13 @@ predicates, so adding a quest is a data change.
 
 ## 1. Goal DSL
 
+Shipped in 0.0.12 (the quests' own types, `src/content/quests/types.ts`): `login`, `any`,
+`clear_stages`, `win_battles`, `win_manual`, `spend_energy`, `level_champion_times`,
+`rank_up_times`, `skill_upgrades`, `gear_levels`, `gear_reach_level`, `craft`, `dismantle`,
+`summon`, `claim_idle`, `boss_fights`, `complete_daily_quests_days`. The rest of the union below is
+the planned shape the missions need (Phase 13) and arrives with them — a new goal type is a new
+evaluator with a test, and for a counter goal a name in `COUNTER_KEYS` (ADR-040).
+
 ```ts
 type Goal =
   | { type: 'clear_stages'; count: number; difficulty?: Difficulty; settlement?: number; onAuto?: boolean }
@@ -32,10 +39,16 @@ type Goal =
   | { type: 'unlock_speed'; speed: 3|4 } | { type: 'team_power'; power: number };
 ```
 
-Progress for `count`-style goals is measured from the moment the quest/mission became active
-(delta of the lifetime counter), so old progress never auto-completes new content unless the goal
-is a state predicate (`champion_reach_level`, `player_level`, `equip_full_set`…), which is checked
-live.
+Progress for `count`-style goals is the **delta** of a lifetime counter against the moment the
+board or the mission became active — for a quest, the period's own start — so old progress never
+auto-completes new content. A state predicate (`gear_reach_level`, `champion_reach_level`,
+`player_level`, `equip_full_set`…) is read live off the save instead, because it asks what the
+chronicle *is*: bringing one piece from +12 to +16 counts once, not twice. `any` finishes on the
+closest of several ways and is how "craft **or** dismantle" is expressed.
+
+Nothing listens to events: the counters are written by the reducers that own the play, and the
+board is a function of them, the save and the clock (ADR-040). A goal can therefore only name a
+counter the game actually keeps, and `pnpm content:validate` enforces exactly that.
 
 ## 2. Daily quests (reset 00:00 local)
 
@@ -55,9 +68,15 @@ Ten quests; each completes for points and a small reward; points unlock five che
 | 10 | Craft or dismantle 1 gear piece | `craft 1` or `dismantle 1` (either) | 10 | 10 Scrap Iron |
 
 Chests: 20 pts → 3,000 Gold; 40 → 10 Gems + 2 Brews; 60 → 1 Faded Shard + 5 Ember Alloy;
-80 → 20 Gems; 100 → 1 Ancient Shard (every 3rd day) or 30 Gems + 2 Rare Tomes. Quests that
-reference locked features are hidden until unlocked (their points come from a replacement quest
-"Win 3 battles" until then), so 100 points are always reachable.
+80 → 20 Gems; 100 → 30 Gems + 2 Rare Tomes, and **1 Ancient Shard instead on every third claim of
+it** (counted per chest for the life of the chronicle, so it is the third full board rather than
+the third day of play). Quests that reference locked features are hidden until unlocked (their
+points come from a replacement quest "Win 3 battles" until then), so 100 points are always
+reachable — at every level a feature opens at, which is a test.
+
+The board is read against the chronicle's level *now*, so a feature unlocked at four in the
+afternoon is worth a row the same day and the stand-in shrinks by its points. The day a board is
+finished is still counted once for the weekly quest that counts days (Q42).
 
 ## 3. Weekly quests (reset Monday 00:00 local)
 

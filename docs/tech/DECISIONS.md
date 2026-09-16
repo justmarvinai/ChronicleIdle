@@ -405,3 +405,24 @@ owner to overrule.
 validator rejects a `minPhase` past the last phase or an escort holding more than a tenth of the
 pool. The design doc carries the measured numbers rather than the drafted ones, which is the rule
 in CLAUDE.md §1 applied to a balance table.
+
+## ADR-040 — A quest board is derived from the play, not driven by it
+**Context.** Quests count what a player does: stages cleared, keys spent, pieces levelled. The
+obvious implementation is a tracker that listens to the event bus and writes progress into the save
+as it happens. That makes every quest a second copy of the truth: an event missed while a screen is
+unmounted, a battle whose result arrives after a reload, or a listener that throws leaves a quest
+stuck at 4/5 with nothing to recover from, and a `gear_reach_level` goal double-counts a piece
+levelled twice.
+**Decision.** The save keeps three things per period — the period's key, the lifetime counters as
+they stood when it began, and what has been claimed — and everything else is a function of them and
+the clock. A counter goal is `counter(now) - baseline`; a state predicate is read off the save
+itself. Claiming is the only write. `COUNTER_KEYS` names every counter the game writes, so a goal
+cannot ask for one nobody keeps, and the content validator checks it.
+**Consequences.** A missed event cannot exist, because nothing is listening: the counters are
+written by the reducers that already own the play. A period whose stored key is older than now *is*
+a fresh board, so a rollover across a closed game lands exactly once, on the read that notices it —
+the same discipline the period bosses use (ADR-033) and no midnight job in either. Two things
+follow that are worth naming: a quest added in a later version starts from the current period's
+baseline rather than from a player's whole history, and the one piece of memory a derived board
+cannot do without — whether a finished daily board has already counted its day — is a boolean in
+the period's record (Q42), not a second tracker.

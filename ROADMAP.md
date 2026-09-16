@@ -21,7 +21,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 9 | Idle Chest | 0.0.9 | ✅ shipped in 0.0.9 (rebalanced in 0.0.9.1) |
 | 10 | Daily Boss | 0.0.10 | ✅ shipped in 0.0.10 |
 | 11 | Weekly Boss | 0.0.11 | ✅ shipped in 0.0.11 |
-| 12 | Daily & Weekly Quests | 0.0.12 | ⬜ |
+| 12 | Daily & Weekly Quests | 0.0.12 | ✅ shipped in 0.0.12 |
 | 13 | The Chronicler's Path (missions) | 0.0.13 | ⬜ |
 | 14 | Tutorial & Onboarding | 0.0.14 | ⬜ |
 | 15 | Balance, Polish, Performance → **EA-0.1** | **0.1.0** | ⬜ |
@@ -294,6 +294,11 @@ chests, phase-driven kit, weekly reset.
 Protection split verified; weekly reset Monday 00:00 local; six chests per tier.
 
 ## Phase 12 — Daily & Weekly Quests (`0.0.12`)
+
+**Status.** ✅ shipped in 0.0.12 (2026-09-16). See `CHANGELOG.md` for what landed. The board is
+derived from the save and the clock rather than driven by events (ADR-040), which is what makes a
+rollover across a closed game land exactly once; a quest revealed by a mid-period level-up shows up
+at once, and the day it completes still counts once (Q42).
 
 **Goal.** Goal DSL evaluator, lifetime counters, ten daily and eight weekly quests, points and
 chests, Quests screen, hidden-until-unlocked substitution, reset handling.

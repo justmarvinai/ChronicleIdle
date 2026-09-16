@@ -36,9 +36,11 @@ Related: `CLAUDE.md` §3–5 (stack, layout, rules), `DECISIONS.md` (why), `CONT
    cross-reference checks (`ContentError` halts boot with a readable panel).
 4. `platform/storage` opens IndexedDB `chronicleidle` (stores: `saves`, `backups`, `settings`).
 5. `state/persistence.load()` → migrate (`saveVersion` → latest) → `applyOfflineElapsed(now)`:
-   energy regen, period resets (daily/weekly) and the boss rollover — a spent period's unclaimed
-   chests are paid as tribute on the way in (BOSSES.md §1) and the keys come back with it, while
-   idle-chest accrual is computed lazily on claim from `lastClaimAt`.
+   energy regen, period resets (daily/weekly), the boss rollover — a spent period's unclaimed
+   chests are paid as tribute on the way in (BOSSES.md §1) and the keys come back with it — and the
+   quest rollover, which writes each board's new baseline once for a period that turned over while
+   the game was closed (ADR-040). Idle-chest accrual is computed lazily on claim from
+   `lastClaimAt`.
 6. Store hydrated → router shows **Title** (no save) or **Hub** (save exists, "Continue").
 7. Non-critical atlas groups (`battle`, `summon`, champion models) preload in the background with
    priority hints; screens await their group on entry with a short in-universe transition.
@@ -52,10 +54,11 @@ Related: `CLAUDE.md` §3–5 (stack, layout, rules), `DECISIONS.md` (why), `CONT
   All game actions (level up, equip, claim chest, summon, start battle result application) are
   reducers. They never throw for user-facing rule violations; they return `Result` with a typed
   `GameError` (`insufficient_currency`, `locked`, `invalid_target`, …) that the UI renders.
-- **Domain events**: `champion.leveled`, `gear.upgraded`, `currency.changed`, `stage.cleared`,
-  `summon.revealed`, `boss.damage_recorded`, `quest.progressed`, … Consumed by: quest/mission
-  tracker (inside the same reducer pipeline via `applyProgressEvents`), UI toasts, audio cues,
-  tutorial triggers.
+- **Domain events**: `champion.levelled`, `gear.levelled`, `currency.changed`, `campaign.runFinished`,
+  `summon.revealed`, `boss.fightFinished`, `quests.claimed`, … Consumed by UI toasts, audio cues
+  and (from Phase 14) tutorial triggers. Quests deliberately do **not** listen: they read the
+  lifetime counters the reducers write (`engine/progression/counters.ts`), so a missed event cannot
+  leave a quest stuck (ADR-040).
 - **Immutability**: reducers use Immer's `produce` internally; the state layer applies the
   returned object. No class instances in state; plain JSON.
 
@@ -202,9 +205,10 @@ v2 (Phase 1: `roster`, `counters`, `profile.avatarChampionId`; migration 1→2 d
 `settings.battleSpeed` / `settings.autoBattle`), v4 (Phase 3: `campaign` — stars, best turns, the
 selected pointer and the auto-repeat count), v5 (Phase 4: `profile.titles` becomes
 `profile.title`, the one title the chronicle *wears*; which titles are **earned** is derived from
-the play by `@engine/progression/titles`, never stored) and v6 (Phase 6: `inventory` with every
-piece of gear the chronicle owns, and `counters.gear`). Fields below that no phase has shipped
-yet are the planned shape and are added by their phase with a migration and a fixture in
+the play by `@engine/progression/titles`, never stored), v6 (Phase 6: `inventory` with every
+piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), v8 (Phase 9:
+`idle`), v9 (Phase 10: `bosses`) and v10 (Phase 12: `quests`). Fields below that no phase has
+shipped yet are the planned shape and are added by their phase with a migration and a fixture in
 `tests/fixtures/saves/`.
 
 ```ts
@@ -229,7 +233,11 @@ interface SaveGame {
   // the campaign's stars, so the ledger cannot disagree with the play).
   summon: { pity: Record<ShardId, Partial<Record<Rarity, number>>>; history: SummonRecord[];
             unseen: string[]; choices: Record<string, { championId: ChampionId; instanceId: string; at: number }> };
-  quests: { daily: PeriodProgress; weekly: PeriodProgress };
+  // Shipped in save v10. A board is derived, never stored (ADR-040): what a period keeps is its
+  // own key, the lifetime counters as they stood when it began — a counter goal is the delta
+  // against them — what has been claimed, and whether a finished daily board has counted its day.
+  // A record whose key is older than now reads as a fresh board.
+  quests: { daily: QuestPeriodSave; weekly: QuestPeriodSave };   // { periodKey, baseline, claimed, chests, dayCounted }
   missions: { chapter: number; completed: string[]; claimed: string[]; progress: Record<string, number> };
   // Shipped in save v8. The chest's whole state: when it was last emptied (ADR-033).
   idle: { lastClaimAt: number };

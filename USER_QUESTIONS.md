@@ -5,6 +5,23 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q42 — A quest that opens in the middle of the day
+
+**Why it matters.** Six of the ten daily quests need a feature the chronicle may not have yet, and
+a hidden one is stood in for by *Win 3 battles* carrying its points (`QUESTS_MISSIONS.md` §2). A
+chronicle that crosses a feature gate at, say, four in the afternoon therefore changes boards
+mid-period: the Forge quest appears and the stand-in shrinks by its ten points. The alternative is
+to freeze each board's composition for the whole period, which would mean a feature you unlock
+today gives you nothing to do with it until tomorrow.
+
+**The default in use.** **The new quest appears at once.** The board is always read against the
+chronicle's level now, so unlocking something is immediately worth a row. Two consequences are
+handled rather than left ragged: the day a board is finished is counted **once**, even when a new
+quest lands on a board that was already clear (the period's record carries `dayCounted`), and a
+chest already taken is never taken back — only the points needed for one that is still waiting can
+move. Say the word and the composition freezes with the period's baseline instead (one call in
+`state/quests.ts`).
+
 ### Q41 — Nyxara's phase thresholds, and how far out of reach her tiers start
 
 **Why it matters.** `BOSSES.md` §3 first printed her phases at 70 % and 35 % of her HP. Measured
