@@ -5,6 +5,20 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q43 — Mission 2.5 asks for a rank-up, not for "a champion at 3★"
+
+**Why it matters.** `QUESTS_MISSIONS.md` §4 prints mission 2.5 as *Rank up a champion to 3★*. A
+Rare starts at **3★** (`RARITY_STARS`, `balance/stats.ts`) and every starter is a Rare, so the
+mission would be complete before it opened — a row that pays a reward for nothing, at the exact
+point in the Path where the Tavern's rank track is meant to be taught.
+
+**The default in use.** 2.5 is **"Rank up a champion"** — `rank_up_times: 1`, the first rank-up
+actually performed, whatever rank it lands on. The Path still teaches the bench, and chapter 4.3
+keeps the design's *to 4★* as the first rank a Rare has to climb to. Say the word and it becomes a
+`champion_reach_stars` row again (one line in `src/content/missions/chapter_02.ts`); if the intent
+was instead that champions start below their rarity's base rank, that is a `balance/stats.ts`
+change and a bigger conversation.
+
 ### Q42 — A quest that opens in the middle of the day
 
 **Why it matters.** Six of the ten daily quests need a feature the chronicle may not have yet, and

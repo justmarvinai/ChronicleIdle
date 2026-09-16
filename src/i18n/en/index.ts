@@ -1,5 +1,6 @@
 import { battle } from './battle';
 import { bosses } from './bosses';
+import { missions } from './missions';
 import { quests } from './quests';
 import { campaign } from './campaign';
 import { champions } from './champions';
@@ -30,4 +31,5 @@ export const en = {
   ...battle,
   ...bosses,
   ...quests,
+  ...missions,
 } as const;

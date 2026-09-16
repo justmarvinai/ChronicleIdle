@@ -27,6 +27,8 @@ import { BOSSES, BOSS_BY_ID, bossTier } from '@content/bosses/index';
 import type { BossDef, BossTierDef } from '@content/bosses/types';
 import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
 import type { GearSetDef } from '@content/sets/types';
+import { MISSIONS, MISSION_BY_ID, MISSION_CHAPTERS } from '@content/missions/index';
+import type { MissionChapterDef, MissionDef } from '@content/missions/types';
 import { QUESTS, QUEST_BOARDS, QUEST_BOARD_BY_PERIOD, QUEST_BY_ID } from '@content/quests/index';
 import type { QuestBoardDef, QuestDef, QuestPeriod } from '@content/quests/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
@@ -73,6 +75,10 @@ export interface ContentRegistry {
   /** The quest boards (QUESTS_MISSIONS.md §2–§3): one a day, one a week. */
   questBoards: readonly QuestBoardDef[];
   questBoard(period: QuestPeriod): QuestBoardDef;
+  /** The Chronicler's Path, in the order it is walked (`QUESTS_MISSIONS.md` §4). */
+  missionChapters: readonly MissionChapterDef[];
+  missions: readonly MissionDef[];
+  missionById(id: string): MissionDef | undefined;
   /** Every quest either board can show, the replacements included. */
   quests: readonly QuestDef[];
   questById(id: string): QuestDef | undefined;
@@ -144,6 +150,9 @@ export function buildContentRegistry(): ContentRegistry {
     bossById: (id) => BOSS_BY_ID[id],
     questBoards: QUEST_BOARDS,
     questBoard: (period) => QUEST_BOARD_BY_PERIOD[period],
+    missionChapters: MISSION_CHAPTERS,
+    missions: MISSIONS,
+    missionById: (id) => MISSION_BY_ID[id],
     quests: QUESTS,
     questById: (id) => QUEST_BY_ID[id],
     bossTier: tierOf,

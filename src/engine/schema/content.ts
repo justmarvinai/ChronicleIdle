@@ -9,10 +9,11 @@ import type { FactionDef } from '@content/enemies/faction';
 import type { SettlementDef } from '@content/stages/types';
 import type { GearSetDef } from '@content/sets/types';
 import type { TitleDef } from '@content/titles/types';
-import { SETTLEMENT_COUNT } from '@content/balance/campaign';
+import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
+import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
 import { SHARD_RATES } from '@content/balance/summon';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
-import { statDeviation } from '@engine/champions/stats';
+import { levelCap, statDeviation } from '@engine/champions/stats';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
@@ -20,9 +21,10 @@ import { enemySchema } from './enemy';
 import { settlementSchema, stageShapeIssues } from './stage';
 import { bannerSchema } from './banner';
 import { bossSchema } from './boss';
+import { missionChapterSchema } from './mission';
 import { FEATURE_IDS } from '@content/balance/unlocks';
 import type { Goal, QuestBoardDef } from '@content/quests/types';
-import { GOAL_COUNTERS } from '@engine/quests/goals';
+import { GOAL_COUNTERS, goalCounterKeys } from '@engine/quests/goals';
 import { visibleQuests } from '@engine/quests/board';
 import { isCounterKey } from '@engine/progression/counters';
 import { gearSetSchema } from './gear-set';
@@ -86,6 +88,7 @@ export function validateContentRegistry(
     banners: readonly unknown[];
     bosses: readonly unknown[];
     questBoards: readonly unknown[];
+    missionChapters: readonly unknown[];
     summonPool: readonly { id: string; rarity: string }[];
   },
   refs: ContentRefs,
@@ -106,6 +109,7 @@ export function validateContentRegistry(
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
     ...validateQuestBoards(registry.questBoards, registry.bosses, refs),
+    ...validateMissionChapters(registry.missionChapters, registry.bosses, registry.champions, refs),
   ];
 }
 
@@ -188,6 +192,153 @@ function validateQuestBoards(
 function flattenGoals(goal: Goal): Goal[] {
   return goal.type === 'any' ? [goal, ...goal.goals.flatMap(flattenGoals)] : [goal];
 }
+
+/**
+ * A goal's references, whatever family it belongs to: the boss it names, the settlement and stand
+ * it asks for, the counter it measures. A mission that names a stand nobody can fight, or counts
+ * something nothing writes, would sit unfinishable at the head of the line — so it is a build
+ * error, not a surprise on somebody's save.
+ */
+function goalIssues(goal: Goal, tiersByBoss: ReadonlyMap<string, readonly string[]>): string[] {
+  const problems: string[] = [];
+  const bossTiers = (id: string): readonly string[] => tiersByBoss.get(id) ?? [];
+  const known = (id: string): boolean => tiersByBoss.has(id);
+  switch (goal.type) {
+    case 'boss_fights':
+      if (!known(goal.boss)) problems.push(`names an unknown boss ${goal.boss}`);
+      else if (goal.tier && !bossTiers(goal.boss).includes(goal.tier))
+        problems.push(`names ${goal.boss} tier ${goal.tier}, which does not exist`);
+      break;
+    case 'boss_damage':
+    case 'boss_percent':
+      if (!known(goal.boss)) problems.push(`names an unknown boss ${goal.boss}`);
+      else if (!bossTiers(goal.boss).includes(goal.tier))
+        problems.push(`names ${goal.boss} tier ${goal.tier}, which does not exist`);
+      break;
+    case 'clear_stage':
+      if (goal.settlement > SETTLEMENT_COUNT) problems.push(`settlement ${goal.settlement} does not exist`);
+      break;
+    case 'settlement_stars':
+      if (goal.settlement > SETTLEMENT_COUNT) problems.push(`settlement ${goal.settlement} does not exist`);
+      if (goal.stars > STARS_PER_SETTLEMENT)
+        problems.push(`asks for ${goal.stars} stars; a settlement holds ${STARS_PER_SETTLEMENT}`);
+      break;
+    case 'difficulty_stars': {
+      const most = SETTLEMENT_COUNT * STARS_PER_SETTLEMENT;
+      if (goal.stars > most) problems.push(`asks for ${goal.stars} stars; a difficulty holds ${most}`);
+      break;
+    }
+    case 'champion_reach_level':
+      if (goal.level > levelCap(goal.stars ?? 6))
+        problems.push(`asks for level ${goal.level}, past the cap at ${goal.stars ?? 6}★`);
+      break;
+    default:
+      break;
+  }
+  for (const key of goalCounterKeys([goal]))
+    if (!isCounterKey(key)) problems.push(`counts ${key}, which nothing writes`);
+  return problems;
+}
+
+/** Tier ids per boss, read straight off the boss content the registry hands over. */
+function tiersByBoss(bosses: readonly unknown[]): Map<string, readonly string[]> {
+  const map = new Map<string, readonly string[]>();
+  for (const raw of bosses) {
+    const boss = raw as { id?: unknown; tiers?: readonly { id?: unknown }[] };
+    if (typeof boss.id !== 'string') continue;
+    map.set(
+      boss.id,
+      (boss.tiers ?? []).map((tier) => tier.id).filter((id): id is string => typeof id === 'string'),
+    );
+  }
+  return map;
+}
+
+/**
+ * The Chronicler's Path (QUESTS_MISSIONS.md §4). The line is the spine of a chronicle's first
+ * weeks, so the shape is checked hard: ten chapters of twelve, walked in order, every goal
+ * reachable, every reward real, and the last page the one that hands Eldric over.
+ */
+function validateMissionChapters(
+  chapters: readonly unknown[],
+  bosses: readonly unknown[],
+  champions: readonly unknown[],
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const tiers = tiersByBoss(bosses);
+  // Which champions the Path may hand over: the ones whose own definition says so.
+  const fromMissions = new Set(
+    champions
+      .map((raw) => raw as { id?: unknown; obtain?: readonly unknown[] })
+      .filter((champion) => (champion.obtain ?? []).includes('mission'))
+      .map((champion) => champion.id)
+      .filter((id): id is string => typeof id === 'string'),
+  );
+  const championIds = new Set(
+    champions.map((raw) => (raw as { id?: unknown }).id).filter((id): id is string => typeof id === 'string'),
+  );
+  if (chapters.length !== MISSION_CHAPTER_COUNT)
+    error('missions', `${chapters.length} chapters; the Path has ${MISSION_CHAPTER_COUNT}`);
+
+  const seenIndices = new Set<number>();
+  const seenIds = new Set<string>();
+  chapters.forEach((raw, position) => {
+    const result = missionChapterSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`missions[${position}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const chapter = result.data;
+    const path = `missions.${chapter.id}`;
+    if (chapter.index !== position + 1)
+      error(path, `is chapter ${chapter.index} but sits at position ${position + 1}`);
+    if (seenIndices.has(chapter.index)) error(path, 'duplicate chapter index');
+    seenIndices.add(chapter.index);
+    if (!refs.i18nKeys.has(chapter.name)) error(path, `missing i18n key ${chapter.name}`);
+    if (!refs.i18nKeys.has(chapter.eldric)) error(path, `missing i18n key ${chapter.eldric}`);
+
+    chapter.missions.forEach((mission, order) => {
+      const missionPath = `${path}.${mission.id}`;
+      if (seenIds.has(mission.id)) error(missionPath, 'duplicate mission id');
+      seenIds.add(mission.id);
+      if (mission.chapter !== chapter.index) error(missionPath, `belongs to chapter ${mission.chapter}`);
+      if (mission.index !== order + 1) error(missionPath, `is ${mission.index} but sits at ${order + 1}`);
+      if (mission.id !== `mission.${pad2(chapter.index)}.${pad2(order + 1)}`)
+        error(missionPath, 'id does not match where it sits');
+      if (!refs.i18nKeys.has(mission.name)) error(missionPath, `missing i18n key ${mission.name}`);
+      if (!refs.assetKeys.has(mission.icon)) error(missionPath, `missing icon ${mission.icon}`);
+      for (const goal of flattenGoals(mission.goal as Goal))
+        for (const problem of goalIssues(goal, tiers)) error(missionPath, `goal ${problem}`);
+      // The Path is walked in order, so only its last page may ask for everything before it.
+      const last = chapter.index === MISSION_CHAPTER_COUNT && mission.index === chapter.missions.length;
+      if ((mission.goal as Goal).type === 'all_previous' && !last)
+        error(missionPath, 'only the last mission may ask for every mission before it');
+      if (last && (mission.goal as Goal).type !== 'all_previous')
+        error(missionPath, 'the last mission is the one that asks for every mission before it');
+    });
+
+    // Eldric is the Path's own reward, and he arrives exactly once, in the last chapter's chest.
+    const chest = chapter.chest;
+    const finale = chapter.index === MISSION_CHAPTER_COUNT;
+    if (chest.champion !== undefined) {
+      if (!finale) error(path, 'only the last chapter hands over a champion');
+      if (!championIds.has(chest.champion)) error(path, `chest names an unknown champion ${chest.champion}`);
+      else if (!fromMissions.has(chest.champion))
+        error(path, `${chest.champion} is not obtainable from the Path (obtain: ['mission'])`);
+    } else if (finale) {
+      error(path, 'the last chapter hands over Eldric');
+    }
+    if (chest.gearChoice && !finale) error(path, 'only the last chapter hands over a gear choice');
+    if (chest.currencies.length === 0 && !finale) error(path, 'a chapter chest pays something');
+  });
+  return issues;
+}
+
+const pad2 = (n: number): string => `${n}`.padStart(2, '0');
 
 /**
  * Gear sets are passives a champion wears (GEAR.md §5). Every set must be reachable: some
