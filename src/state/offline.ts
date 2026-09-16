@@ -1,18 +1,20 @@
 /**
  * Applies everything that should have happened while the game was closed (docs/tech/ARCHITECTURE.md
- * §2 step 5): energy regeneration, period-key bookkeeping and the tribute a spent boss period
- * still owed. Idempotent — running it twice for the same `now` changes nothing. Later phases add
- * quest periods here.
+ * §2 step 5): energy regeneration, period-key bookkeeping, the tribute a spent boss period still
+ * owed and the quest boards a new day or week has turned over. Idempotent — running it twice for
+ * the same `now` changes nothing.
  *
  * The Idle Chest deliberately does *not* appear: it stores when it was last emptied and derives
  * what it holds from that instant and the clock (`ECONOMY.md` §6), so there is nothing to apply
  * on load and nothing that can be applied twice.
  */
 import { DAILY_RESET_HOUR, WEEKLY_RESET_WEEKDAY } from '@content/balance/economy';
+import type { QuestPeriod } from '@content/quests/types';
 import { regenerateEnergy } from '@engine/economy/energy';
 import type { SaveGame } from '@engine/schema/save';
 import { dailyKey, weeklyKey } from '@engine/time/clock';
 import { applyBossRollover, type BossTribute } from './bosses';
+import { applyQuestRollover } from './quests';
 
 export interface OfflineReport {
   elapsedMs: number;
@@ -21,6 +23,8 @@ export interface OfflineReport {
   newWeek: boolean;
   /** Boss chests a spent period still owed, paid on this load (BOSSES.md §1). */
   bossTributes: BossTribute[];
+  /** Quest boards this load found in a new period, so the panel can say the ledger is fresh. */
+  questsRolled: QuestPeriod[];
 }
 
 export function applyOfflineElapsed(save: SaveGame, now: number): { save: SaveGame; report: OfflineReport } {
@@ -40,12 +44,16 @@ export function applyOfflineElapsed(save: SaveGame, now: number): { save: SaveGa
   };
   // A boss period that has turned over still owes every chest its damage earned and nobody took.
   const bossTributes = applyBossRollover(next, now);
+  // The quest boards only need their new baseline written; a claim would have written it anyway on
+  // the first press, so doing it here is what makes a rollover across a closed game land once.
+  const questsRolled = applyQuestRollover(next, now);
   const report: OfflineReport = {
     elapsedMs: Math.max(0, now - save.updatedAt),
     energyGained: energy.value - save.energy.value,
     newDay: daily !== save.periods.lastDailyKey,
     newWeek: weekly !== save.periods.lastWeeklyKey,
     bossTributes,
+    questsRolled,
   };
   return { save: next, report };
 }

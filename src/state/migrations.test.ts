@@ -209,6 +209,37 @@ describe('migrateSave', () => {
     expect(result.save.idle.lastClaimAt).toBe(result.save.updatedAt);
   });
 
+  it('upgrades a Phase 10/11 (version 9) chronicle to two fresh quest boards', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v9.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(9);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // What Phases 10 and 11 wrote survives: the keys spent, the damage, the chests taken, the
+    // records of both gates.
+    expect(result.save.bosses['boss.gravemaw']?.keysUsed).toBe(2);
+    expect(result.save.bosses['boss.gravemaw']?.claimed).toEqual([
+      'tier.gravemaw.1|15',
+      'tier.gravemaw.1|30',
+    ]);
+    expect(result.save.bosses['boss.nyxara']?.damage['tier.nyxara.1']).toBe(1_250_000);
+    expect(result.save.bosses['boss.nyxara']?.records['tier.nyxara.1']?.damage).toBe(1_250_000);
+    // …and both boards open on the period the save was last in, baselined against the counters it
+    // has already earned — so a hundred hours of play does not hand over a finished board.
+    expect(result.save.quests.daily.periodKey).toBe('2026-09-13');
+    expect(result.save.quests.weekly.periodKey).toBe('2026-09-07');
+    expect(result.save.quests.daily.baseline['campaign.cleared']).toBe(57);
+    expect(result.save.quests.weekly.baseline['boss.fights.boss.nyxara']).toBe(1);
+    expect(result.save.quests.daily.baseline).toEqual(result.save.stats);
+    for (const period of ['daily', 'weekly'] as const) {
+      expect(result.save.quests[period].claimed).toEqual([]);
+      expect(result.save.quests[period].chests).toEqual([]);
+    }
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [

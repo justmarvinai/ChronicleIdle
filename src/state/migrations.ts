@@ -117,6 +117,33 @@ export const MIGRATIONS: readonly MigrationStep[] = [
     // the first fight writes the period it belongs to (BOSSES.md §1).
     migrate: (raw) => ({ ...raw, saveVersion: 9, bosses: {} }),
   },
+  {
+    from: 9,
+    to: 10,
+    /*
+     * Phase 12: the quest boards. A chronicle that predates them starts both periods *now*, with
+     * the counters it has already earned as the baseline — so the first board is a fresh day's
+     * work rather than a handful of quests that complete themselves on the strength of a hundred
+     * hours of play. The period keys come from the save's own clock reading (`periods`), which the
+     * offline pass has always kept up to date.
+     */
+    migrate: (raw) => {
+      const periods = (raw['periods'] ?? {}) as { lastDailyKey?: unknown; lastWeeklyKey?: unknown };
+      const stats = (raw['stats'] ?? {}) as Record<string, number>;
+      const period = (key: unknown) => ({
+        periodKey: typeof key === 'string' ? key : '',
+        baseline: { ...stats },
+        claimed: [],
+        chests: [],
+        dayCounted: false,
+      });
+      return {
+        ...raw,
+        saveVersion: 10,
+        quests: { daily: period(periods.lastDailyKey), weekly: period(periods.lastWeeklyKey) },
+      };
+    },
+  },
 ];
 
 export interface MigrationResult {

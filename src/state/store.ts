@@ -10,6 +10,7 @@ import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import type { Difficulty } from '@content/balance/battle';
 import { CHAMPION_IDS, type ChampionId, type GearSlot, type ObtainSource } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
+import type { QuestPeriod } from '@content/quests/types';
 import { content } from '@content/registry';
 import { DEFAULT_ROSTER_VIEW, type RosterView } from '@engine/champions/query';
 import { DEFAULT_GEAR_VIEW, type GearView } from '@engine/gear/query';
@@ -79,6 +80,7 @@ import {
   type ExchangeSummary,
   type SummonSummary,
 } from './summon';
+import { applyQuestChestClaim, applyQuestClaim, type QuestChestClaim, type QuestClaim } from './quests';
 import type { GearInstance } from '@engine/gear/instance';
 import { bumpCounter, bumpCounterId, type CounterKey } from '@engine/progression/counters';
 import {
@@ -237,6 +239,13 @@ export interface GameActions {
   }): Result<BossFightSummary>;
   /** Takes one earned boss chest; each threshold pays once per period. */
   claimBossChest(bossId: string, tierId: string, pct: number): Result<BossChestSummary>;
+  /**
+   * Takes one finished quest, or every finished one when `questId` is omitted — "Claim all"
+   * (`QUESTS_MISSIONS.md` §2). Each quest pays once per period, whatever the UI does.
+   */
+  claimQuest(period: QuestPeriod, questId?: string): Result<QuestClaim>;
+  /** Takes one chest off the points track; each threshold pays once per period. */
+  claimQuestChest(period: QuestPeriod, points: number): Result<QuestChestClaim>;
   /** Dev/debug: a seeded piece straight into the armoury. */
   debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
@@ -1090,6 +1099,49 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               });
               if (!result.ok) return result;
               events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'boss' });
+              return result;
+            },
+
+            claimQuest(period, questId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<QuestClaim> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyQuestClaim(state.save, period, now, questId);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const claim = result.value;
+              if (claim.changes.length)
+                events.emit({ type: 'currency.changed', changes: claim.changes, reason: 'quest' });
+              events.emit({
+                type: 'quests.claimed',
+                period,
+                questIds: claim.questIds,
+                points: claim.points,
+                boardCompleted: claim.boardCompleted,
+              });
+              return result;
+            },
+
+            claimQuestChest(period, points) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<QuestChestClaim> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyQuestChestClaim(state.save, period, points, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'quest' });
+              events.emit({
+                type: 'quests.chestClaimed',
+                period,
+                points,
+                cycled: result.value.cycled,
+              });
               return result;
             },
 

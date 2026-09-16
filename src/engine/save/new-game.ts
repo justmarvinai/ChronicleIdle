@@ -45,5 +45,22 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
       lastDailyKey: dailyKey(now, DAILY_RESET_HOUR),
       lastWeeklyKey: weeklyKey(now, DAILY_RESET_HOUR, WEEKLY_RESET_WEEKDAY),
     },
+    // Both boards start with this instant and an empty baseline: nothing has been counted yet.
+    quests: {
+      daily: {
+        periodKey: dailyKey(now, DAILY_RESET_HOUR),
+        baseline: {},
+        claimed: [],
+        chests: [],
+        dayCounted: false,
+      },
+      weekly: {
+        periodKey: weeklyKey(now, DAILY_RESET_HOUR, WEEKLY_RESET_WEEKDAY),
+        baseline: {},
+        claimed: [],
+        chests: [],
+        dayCounted: false,
+      },
+    },
   };
 }

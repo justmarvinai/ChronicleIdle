@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 9 as const;
+export const SAVE_VERSION = 10 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -178,8 +178,34 @@ const bossSaveSchema = z.object({
   records: z.record(z.string(), bossRecordSchema),
 });
 
-export const saveSchemaV9 = z.object({
-  saveVersion: z.literal(9),
+/**
+ * One period's quest board as the save keeps it (QUESTS_MISSIONS.md §2). Everything else about a
+ * board — which quests are shown, how far along they are, the points, the chests — is derived from
+ * these fields and the lifetime counters (`@engine/quests/board`).
+ */
+const questPeriodSchema = z.object({
+  /** The period these claims belong to; an older one reads as a fresh board. */
+  periodKey: z.string(),
+  /**
+   * The counters as they stood when the period began. A `count`-style goal measures the delta, so
+   * yesterday's play cannot finish today's quest.
+   */
+  baseline: z.record(z.string(), z.number()),
+  /** Quest ids claimed this period. */
+  claimed: z.array(z.string()),
+  /** Chest thresholds taken this period. */
+  chests: z.array(z.number().int().min(1).max(100)),
+  /**
+   * Whether finishing this board has already been counted for the weekly quest that counts days
+   * (`quests.daily.days`). A chronicle that levels past a feature gate mid-period sees a new
+   * quest appear on a board it had already finished; this is what keeps that one day one day.
+   * Written on the daily board only — the weekly board has nothing that counts weeks.
+   */
+  dayCounted: z.boolean(),
+});
+
+export const saveSchemaV10 = z.object({
+  saveVersion: z.literal(10),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -222,10 +248,13 @@ export const saveSchemaV9 = z.object({
   /** Lifetime counters used by quests, missions and the profile screen. */
   stats: z.record(z.string(), z.number()),
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
+  /** The quest boards, by period (QUESTS_MISSIONS.md §2–§3). Shipped in save v10. */
+  quests: z.object({ daily: questPeriodSchema, weekly: questPeriodSchema }),
 });
 
-export type SaveGameV9 = z.infer<typeof saveSchemaV9>;
-export type SaveGame = SaveGameV9;
+export type SaveGameV10 = z.infer<typeof saveSchemaV10>;
+export type SaveGame = SaveGameV10;
+export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
@@ -233,7 +262,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV9;
+export const saveSchema = saveSchemaV10;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

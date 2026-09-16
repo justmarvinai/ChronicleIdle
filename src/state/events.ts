@@ -5,6 +5,7 @@
 import type { Difficulty } from '@content/balance/battle';
 import type { ShardId } from '@content/balance/summon';
 import type { ChampionId, Rarity } from '@content/champions/types';
+import type { QuestPeriod } from '@content/quests/types';
 import type { CurrencyChange } from '@engine/economy/wallet';
 
 export type DomainEvent =
@@ -45,6 +46,15 @@ export type DomainEvent =
       total: number;
       killed: boolean;
     }
+  | {
+      type: 'quests.claimed';
+      period: QuestPeriod;
+      questIds: readonly string[];
+      points: number;
+      /** True when that claim was the one that finished the board. */
+      boardCompleted: boolean;
+    }
+  | { type: 'quests.chestClaimed'; period: QuestPeriod; points: number; cycled: boolean }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

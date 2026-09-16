@@ -1,0 +1,426 @@
+{
+  "saveVersion": 9,
+  "createdAt": 1789290000000,
+  "updatedAt": 1789480000000,
+  "seedRoot": "fixture.v7",
+  "profile": {
+    "name": "Marvin",
+    "level": 16,
+    "xp": 3480,
+    "avatarChampionId": "champ.reva_ashblade",
+    "title": "title.champion_of_emberhold"
+  },
+  "wallet": {
+    "gold": 42000,
+    "gems": 210,
+    "energy": 0,
+    "key_daily": 0,
+    "key_weekly": 0,
+    "shard_faded": 12,
+    "shard_ancient": 9,
+    "shard_sacred": 1,
+    "shard_primordial": 0,
+    "brew_justice": 6,
+    "brew_valor": 0,
+    "brew_faith": 0,
+    "brew_eclipse": 0,
+    "brew_universal": 0,
+    "tome_rare": 3,
+    "tome_epic": 0,
+    "tome_legendary": 0,
+    "tome_mythic": 0,
+    "mat_scrap_iron": 46,
+    "mat_ember_alloy": 12,
+    "mat_starsteel": 0,
+    "mat_arcane_dust": 0,
+    "mat_refining_core": 0,
+    "mat_glyph_sigil": 0
+  },
+  "energy": {
+    "value": 74,
+    "lastTickAt": 1789389960000
+  },
+  "provisionsClaimed": [],
+  "roster": {
+    "reva_ashblade-1": {
+      "instanceId": "reva_ashblade-1",
+      "defId": "champ.reva_ashblade",
+      "level": 23,
+      "xp": 900,
+      "stars": 4,
+      "skillUpgrades": {
+        "ab.reva_ashblade.sunder": 2
+      },
+      "gear": {
+        "weapon": "gear-1",
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": true,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "bran_militia-2": {
+      "instanceId": "bran_militia-2",
+      "defId": "champ.bran_militia",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "wenna_novice-3": {
+      "instanceId": "wenna_novice-3",
+      "defId": "champ.wenna_novice",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "gil_scrapper-4": {
+      "instanceId": "gil_scrapper-4",
+      "defId": "champ.gil_scrapper",
+      "level": 1,
+      "xp": 0,
+      "stars": 1,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789290000000,
+      "source": "starter"
+    },
+    "anuria-5": {
+      "instanceId": "anuria-5",
+      "defId": "champ.anuria",
+      "level": 1,
+      "xp": 0,
+      "stars": 4,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": true,
+      "favourite": false,
+      "acquiredAt": 1789290001000,
+      "source": "summon"
+    },
+    "khazgor-6": {
+      "instanceId": "khazgor-6",
+      "defId": "champ.khazgor",
+      "level": 1,
+      "xp": 0,
+      "stars": 4,
+      "skillUpgrades": {},
+      "gear": {
+        "weapon": null,
+        "helmet": null,
+        "shield": null,
+        "gauntlets": null,
+        "chestplate": null,
+        "boots": null
+      },
+      "locked": false,
+      "favourite": false,
+      "acquiredAt": 1789479880000,
+      "source": "campaign_drop"
+    }
+  },
+  "counters": {
+    "instances": 6,
+    "gear": 3
+  },
+  "teams": {
+    "campaign": {
+      "presets": [["reva_ashblade-1", "wenna_novice-3", "gil_scrapper-4"], [], []],
+      "lastUsed": ["reva_ashblade-1", "wenna_novice-3", "gil_scrapper-4"]
+    },
+    "boss": {
+      "presets": [[], [], []],
+      "lastUsed": []
+    }
+  },
+  "campaign": {
+    "stars": {
+      "stage.01.01|intro": 3,
+      "stage.01.02|intro": 3,
+      "stage.01.03|intro": 2,
+      "stage.01.04|intro": 3,
+      "stage.01.05|intro": 3,
+      "stage.01.06|intro": 2,
+      "stage.01.07|intro": 3,
+      "stage.01.08|intro": 3,
+      "stage.01.09|intro": 2,
+      "stage.01.10|intro": 3,
+      "stage.02.01|intro": 3,
+      "stage.02.02|intro": 1,
+      "stage.02.03|intro": 3,
+      "stage.02.04|intro": 3
+    },
+    "bestTurns": {
+      "stage.01.01|intro": 15,
+      "stage.01.02|intro": 16,
+      "stage.01.03|intro": 17,
+      "stage.01.04|intro": 18,
+      "stage.01.05|intro": 19,
+      "stage.01.06|intro": 20,
+      "stage.01.07|intro": 21,
+      "stage.01.08|intro": 22,
+      "stage.01.09|intro": 23,
+      "stage.01.10|intro": 24,
+      "stage.02.01|intro": 19,
+      "stage.02.02|intro": 20,
+      "stage.02.03|intro": 21,
+      "stage.02.04|intro": 22
+    },
+    "selected": {
+      "settlement": 2,
+      "stage": 5,
+      "difficulty": "intro"
+    },
+    "autoRepeat": 5
+  },
+  "settings": {
+    "musicVolume": 0.7,
+    "ambienceVolume": 0.6,
+    "sfxVolume": 0.8,
+    "masterVolume": 1,
+    "muted": false,
+    "launchFullscreen": true,
+    "reducedMotion": false,
+    "battleSpeed": 2,
+    "autoBattle": true,
+    "language": "en"
+  },
+  "stats": {
+    "playtime_ms": 9000000,
+    "hub_visits": 17,
+    "battles.fought": 48,
+    "battles.victory": 41,
+    "battles.defeat": 6,
+    "battles.allyTurns": 612,
+    "campaign.runs": 63,
+    "campaign.cleared": 57,
+    "campaign.stars": 121,
+    "energy.spent": 812,
+    "tavern.levelUps": 34,
+    "tavern.rankUps": 4,
+    "tavern.foodEaten": 5,
+    "gear.equipped": 1,
+    "battles.retreat": 1,
+    "campaign.gearDrops": 22,
+    "tavern.skillUpgrades": 6,
+    "gear.drops": 22,
+    "gear.levels": 51,
+    "forge.crafts": 3,
+    "forge.dismantles": 14,
+    "summon.pulls": 21,
+    "idle.claims": 9,
+    "idle.hours": 62,
+    "boss.fights": 3,
+    "boss.damage": 1890000,
+    "boss.chests": 2,
+    "boss.fights.boss.gravemaw": 2,
+    "boss.fights.boss.nyxara": 1
+  },
+  "periods": {
+    "lastDailyKey": "2026-09-13",
+    "lastWeeklyKey": "2026-09-07"
+  },
+  "inventory": {
+    "gear-1": {
+      "instanceId": "gear-1",
+      "slot": "weapon",
+      "setId": "gear_set.warcry",
+      "rarity": "epic",
+      "stars": 4,
+      "level": 0,
+      "mainStat": "atk",
+      "subs": [
+        {
+          "stat": "hpPct",
+          "value": 6,
+          "rolls": 1
+        },
+        {
+          "stat": "res",
+          "value": 6,
+          "rolls": 1
+        },
+        {
+          "stat": "spd",
+          "value": 3,
+          "rolls": 1
+        }
+      ],
+      "equippedTo": "reva_ashblade-1",
+      "locked": false,
+      "acquiredAt": 1789480000000,
+      "source": "campaign_drop"
+    },
+    "gear-2": {
+      "instanceId": "gear-2",
+      "slot": "helmet",
+      "setId": "gear_set.ironhide",
+      "rarity": "rare",
+      "stars": 3,
+      "level": 0,
+      "mainStat": "hp",
+      "subs": [
+        {
+          "stat": "spd",
+          "value": 3,
+          "rolls": 1
+        },
+        {
+          "stat": "defPct",
+          "value": 6,
+          "rolls": 1
+        }
+      ],
+      "equippedTo": null,
+      "locked": false,
+      "acquiredAt": 1789480000001,
+      "source": "campaign_drop"
+    },
+    "gear-3": {
+      "instanceId": "gear-3",
+      "slot": "boots",
+      "setId": "gear_set.swiftfoot",
+      "rarity": "uncommon",
+      "stars": 2,
+      "level": 0,
+      "mainStat": "spd",
+      "subs": [
+        {
+          "stat": "defPct",
+          "value": 2,
+          "rolls": 1
+        }
+      ],
+      "equippedTo": null,
+      "locked": false,
+      "acquiredAt": 1789480000002,
+      "source": "campaign_drop"
+    }
+  },
+  "summon": {
+    "pity": {
+      "faded": {},
+      "ancient": {
+        "epic": 7,
+        "legendary": 41
+      },
+      "sacred": {
+        "legendary": 3
+      },
+      "primordial": {}
+    },
+    "history": [
+      {
+        "at": 1789479940000,
+        "shard": "ancient",
+        "bannerId": "banner.standard",
+        "championId": "champ.reva_ashblade",
+        "rarity": "rare",
+        "instanceId": "reva_ashblade-1",
+        "duplicate": true,
+        "mercy": false,
+        "featured": false
+      },
+      {
+        "at": 1789479880000,
+        "shard": "sacred",
+        "bannerId": "banner.featured",
+        "championId": "champ.khazgor",
+        "rarity": "epic",
+        "instanceId": "khazgor-6",
+        "duplicate": false,
+        "mercy": false,
+        "featured": true
+      }
+    ],
+    "unseen": ["khazgor-6"],
+    "choices": {
+      "choice.milestone.intro": {
+        "championId": "champ.khazgor",
+        "instanceId": "khazgor-6",
+        "at": 1789479880000
+      }
+    }
+  },
+  "idle": {
+    "lastClaimAt": 1789480000000
+  },
+  "bosses": {
+    "boss.gravemaw": {
+      "periodKey": "2026-09-13",
+      "keysUsed": 2,
+      "damage": {
+        "tier.gravemaw.1": 640000
+      },
+      "claimed": ["tier.gravemaw.1|15", "tier.gravemaw.1|30"],
+      "records": {
+        "tier.gravemaw.1": {
+          "damage": 420000,
+          "at": 1789390000000,
+          "team": ["reva_ashblade-1", "anuria-5", "khazgor-6"]
+        }
+      }
+    },
+    "boss.nyxara": {
+      "periodKey": "2026-09-07",
+      "keysUsed": 1,
+      "damage": {
+        "tier.nyxara.1": 1250000
+      },
+      "claimed": [],
+      "records": {
+        "tier.nyxara.1": {
+          "damage": 1250000,
+          "at": 1789391000000,
+          "team": ["reva_ashblade-1", "anuria-5", "khazgor-6", "bran_militia-2"]
+        }
+      }
+    }
+  }
+}
