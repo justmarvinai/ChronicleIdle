@@ -143,8 +143,12 @@ export type TutorialCondition =
   | { type: 'counter'; key: string; count: number }
   /** Some champion wears a piece in this slot. */
   | { type: 'gear_worn'; slot: GearSlot }
-  /** An ally's turn is open in the live fight; `wave` is 1-based. */
-  | { type: 'battle_turn'; wave?: number }
+  /**
+   * An ally's turn is open in the live fight; `wave` is 1-based. `slot` narrows it to a turn that
+   * offers that ability — the lesson about cooldowns has to land on a champion who has a second
+   * one, not on the novice healer whose turn happened to come first.
+   */
+  | { type: 'battle_turn'; wave?: number; slot?: AbilitySlot }
   | { type: 'ability_used'; slot: AbilitySlot }
   | { type: 'auto_battle' }
   | { type: 'acknowledged' }

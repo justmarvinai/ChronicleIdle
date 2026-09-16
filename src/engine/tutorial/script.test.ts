@@ -94,17 +94,23 @@ describe('the tutorial script', () => {
     // 1.6 waits for an ally's turn; 1.7 for one in the second wave.
     const onTurn = ctx({
       screen: 'battle',
-      battle: { allyTurn: true, wave: 1, used: [], auto: false },
+      battle: { allyTurn: true, wave: 1, used: [], ready: ['a1', 'a2'], auto: false },
     });
     expect(activeStep(CHAPTERS, upTo('tut.1.6'), onTurn)?.id).toBe('tut.1.6');
     expect(activeStep(CHAPTERS, upTo('tut.1.7'), onTurn)).toBeNull();
     const waveTwo = ctx({
       screen: 'battle',
-      battle: { allyTurn: true, wave: 2, used: ['a1'], auto: false },
+      battle: { allyTurn: true, wave: 2, used: ['a1'], ready: ['a2'], auto: false },
     });
     expect(activeStep(CHAPTERS, upTo('tut.1.7'), waveTwo)?.id).toBe('tut.1.7');
     expect(stepSatisfied(chapter(1).steps[5]!, waveTwo)).toBe(true);
     expect(stepSatisfied(chapter(1).steps[6]!, waveTwo)).toBe(false);
+    // A second-wave turn on a champion with no second ability is not the cooldown lesson's moment.
+    const novice = ctx({
+      screen: 'battle',
+      battle: { allyTurn: true, wave: 2, used: ['a1'], ready: ['a1'], auto: false },
+    });
+    expect(activeStep(CHAPTERS, upTo('tut.1.7'), novice)).toBeNull();
   });
 
   it('finishes 1.10 on the third stand, whatever difficulty it fell on', () => {
@@ -224,7 +230,7 @@ describe('the tutorial script', () => {
     expect(
       conditionHolds(
         { type: 'auto_battle' },
-        ctx({ battle: { allyTurn: false, wave: 1, used: [], auto: true } }),
+        ctx({ battle: { allyTurn: false, wave: 1, used: [], ready: [], auto: true } }),
       ),
     ).toBe(true);
     // The overlay's own two answers are never satisfied by the world.

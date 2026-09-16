@@ -45,14 +45,15 @@ export default chapter({
     }),
     // 1.6 — the first turn: an ability, then a target.
     step({
-      when: { type: 'battle_turn' },
+      when: { type: 'battle_turn', slot: 'a1' },
       spotlight: ['battle.ability1'],
       allow: ['battle.ability1', 'battle.units'],
       complete: { type: 'ability_used', slot: 'a1' },
     }),
-    // 1.7 — the second wave, and the cooldown that came with the first.
+    // 1.7 — the second wave, and the cooldown that came with the first. The turn has to be one
+    // that *has* a second ability: the novice healer only ever has the one.
     step({
-      when: { type: 'battle_turn', wave: 2 },
+      when: { type: 'battle_turn', wave: 2, slot: 'a2' },
       spotlight: ['battle.ability2'],
       allow: ['battle.ability2', 'battle.units'],
       complete: { type: 'ability_used', slot: 'a2' },

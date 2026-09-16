@@ -30,6 +30,12 @@ export interface SummonInput {
   pool: readonly ChampionDef[];
   /** Featured ids get `FEATURED_WEIGHT` inside their own rarity bucket. */
   featured?: readonly ChampionId[];
+  /**
+   * A rarity the pull may not fall below, whatever the dice say — the scripted first summon of the
+   * tutorial (`TUTORIAL.md` 3.2), which teaches what a colour means and so cannot be left to them.
+   * The roll is still taken, so the stream advances exactly as it would without the floor.
+   */
+  floor?: Rarity;
 }
 
 export interface Pull {
@@ -93,7 +99,9 @@ export function summonOne(input: SummonInput, rng: Rng): Result<SummonResult> {
   // A guarantee replaces the roll, but the roll is still taken: the stream must advance the same
   // way whether mercy fired or not, or a replay of the same seed would diverge.
   const rolled = rng.weighted(weights);
-  const rarity = forced ?? rolled;
+  const guaranteed = forced ?? rolled;
+  const floored = input.floor && rarityRank(input.floor) > rarityRank(guaranteed) ? input.floor : guaranteed;
+  const rarity = floored;
 
   const candidates = championWeights(input.pool, rarity, input.featured);
   if (candidates.length === 0) return fail('content_invalid', `No summonable champion of rarity ${rarity}`);

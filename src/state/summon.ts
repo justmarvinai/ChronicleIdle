@@ -17,7 +17,7 @@ import {
   type ShardId,
 } from '@content/balance/summon';
 import type { BannerDef } from '@content/banners/types';
-import type { ChampionDef, ChampionId } from '@content/champions/types';
+import type { ChampionDef, ChampionId, Rarity } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import { content } from '@content/registry';
 import {
@@ -44,6 +44,8 @@ export interface SummonInput {
   count: number;
   now: number;
   rng: Rng;
+  /** A rarity this press may not fall below — the tutorial's own shard (`TUTORIAL.md` 3.2). */
+  floor?: Rarity;
 }
 
 export interface SummonedChampion {
@@ -84,6 +86,7 @@ export function applySummon(save: SaveGame, input: SummonInput): Result<SummonSu
       counters: save.summon.pity[input.shard],
       pool: content.summonPool,
       ...(rotation ? { featured: rotation.featured } : {}),
+      ...(input.floor ? { floor: input.floor } : {}),
     },
     input.count,
     input.rng,

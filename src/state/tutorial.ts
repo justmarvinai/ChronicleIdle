@@ -100,6 +100,7 @@ export function battleSignal(session: BattleSessionState | null): TutorialBattle
     allyTurn: session.request !== null,
     wave: session.view.wave,
     used: [...used],
+    ready: (session.request?.abilities ?? []).filter((one) => one.ready).map((one) => one.slot),
     auto: session.usedAuto,
   };
 }
@@ -113,6 +114,23 @@ export interface TutorialWorld {
   route: Route;
   dialog: DialogRoute | null;
   battle: BattleSessionState | null;
+}
+
+/**
+ * The world as the store holds it: the screen on top of its stack, the dialog over that, and
+ * whatever fight is running. The store and the flows read it this way so nothing has to plumb a
+ * route through to ask the script a question.
+ */
+export function worldOf(
+  input: { save: SaveGame | null; stack: readonly Route[]; dialog: DialogRoute | null },
+  battle: BattleSessionState | null = null,
+): TutorialWorld {
+  return {
+    save: input.save,
+    route: input.stack[input.stack.length - 1] ?? { name: 'title' },
+    dialog: input.dialog,
+    battle,
+  };
 }
 
 export function tutorialContext(world: TutorialWorld): TutorialContext {

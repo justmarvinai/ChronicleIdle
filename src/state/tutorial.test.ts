@@ -4,6 +4,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
+import { STARTER_IDS, type ChampionId } from '@content/champions/types';
+import { TUTORIAL_BATTLE_SEED, TUTORIAL_SUMMON_RARITY } from '@content/balance/tutorial';
 import { createInstance, type Roster } from '@engine/champions/instance';
 import { stepSatisfied } from '@engine/tutorial/index';
 import { FixedClock } from '@engine/time/clock';
@@ -196,4 +198,102 @@ describe('the tutorial in the save', () => {
     expect(battleSignal(controller.store.getState())?.wave).toBe(2);
     controller.end();
   });
+  it("always turns up an Epic on the tutorial's own shard, and rolls freely afterwards", () => {
+    const { store } = started();
+    const { actions } = store.getState();
+    actions.newGame('Marvin');
+    actions.chooseStarter('champ.reva_ashblade');
+    // Walk to the Binding's second lesson: the Portal open, the shard Eldric kept back in hand.
+    for (const chapter of content.tutorialChapters.slice(0, 2))
+      for (const step of chapter.steps) actions.completeTutorialStep(step.id);
+    store.setState((state) => {
+      if (state.save) state.save.profile.level = 4;
+      return state;
+    });
+    actions.resetStack({ name: 'hub' });
+    actions.completeTutorialStep('tut.3.1');
+    actions.resetStack({ name: 'portal' });
+    expect(tutorialStep(world(store))?.step.id).toBe('tut.3.2');
+    expect(
+      actions.claimGrant('tutorial.gift.ancient_shard', [{ currency: 'shard_ancient', amount: 1 }]),
+    ).toBe(true);
+
+    const pressed = actions.summonChampions('banner.standard', 'ancient', 1);
+    expect(pressed.ok).toBe(true);
+    if (!pressed.ok) return;
+    expect(pressed.value.best.record.rarity).toBe(TUTORIAL_SUMMON_RARITY);
+    // Mercy did not fire — the floor is the script's, not the shard's.
+    expect(pressed.value.best.record.mercy).toBe(false);
+    // The lesson's own completion is now in the world (a pull has happened); once the overlay has
+    // recorded it, the Portal is the Portal's own business again.
+    expect(tutorialScript(world(store), 'summon')).toBe(true);
+    actions.completeTutorialStep('tut.3.2');
+    expect(tutorialScript(world(store), 'summon')).toBe(false);
+  });
+
+  it('fights the scripted first stand the same way every time, whichever starter leads', async () => {
+    for (const starter of STARTER_IDS) {
+      const { store } = started();
+      const { actions } = store.getState();
+      actions.newGame('Marvin');
+      actions.chooseStarter(starter as ChampionId);
+      const roster = store.getState().save?.roster ?? {};
+      // The team of TUTORIAL.md 1.5: the starter leads, Bran holds the line, Wenna heals.
+      const team = Object.values(roster)
+        .filter((instance) => instance.defId !== 'champ.gil_scrapper')
+        .map((instance) => instance.instanceId);
+      expect(team).toHaveLength(3);
+
+      const controller = createBattleController();
+      controller.start({
+        encounterId: 'encounter.stage.01.01.intro',
+        instanceIds: team,
+        roster,
+        control: 'manual',
+        speed: 4,
+        seed: TUTORIAL_BATTLE_SEED,
+      });
+      // 1.6 — a turn of the player's own, in the first wave, with the first ability ready.
+      await settle(() => controller.store.getState().request !== null);
+      const first = controller.store.getState().request;
+      expect(controller.store.getState().view?.wave, starter).toBe(1);
+      expect(
+        first?.abilities.some((ability) => ability.slot === 'a1' && ability.ready),
+        starter,
+      ).toBe(true);
+
+      // 1.7 — a turn in the second wave that *offers* a second ability. Not every champion has
+      // one at level 1, which is why the lesson names the slot it teaches.
+      let waveTwo = null as typeof first;
+      for (let turn = 0; turn < 60 && waveTwo === null; turn += 1) {
+        await settle(
+          () =>
+            controller.store.getState().request !== null || controller.store.getState().status === 'ended',
+        );
+        const session = controller.store.getState();
+        if (session.status === 'ended') break;
+        const request = session.request;
+        if (!request) break;
+        const a2 = request.abilities.find((ability) => ability.slot === 'a2' && ability.ready);
+        if (session.view?.wave === 2 && a2) {
+          waveTwo = request;
+          break;
+        }
+        const choice = request.abilities.find((ability) => ability.ready);
+        if (!choice) break;
+        controller.decide({
+          unitId: request.unitId,
+          abilityId: choice.abilityId,
+          targetId: choice.targeting === 'none' ? null : choice.autoTarget,
+        });
+      }
+      expect(waveTwo, starter).not.toBeNull();
+
+      // 1.8 — and handing it over finishes the stand.
+      controller.setControl('auto');
+      await settle(() => controller.store.getState().status === 'ended', 600);
+      expect(controller.store.getState().outcome?.kind, starter).toBe('victory');
+      controller.end();
+    }
+  }, 30_000);
 });

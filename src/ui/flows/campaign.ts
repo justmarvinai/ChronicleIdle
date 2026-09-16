@@ -21,6 +21,8 @@ import {
 } from '@state/campaign-session';
 import { pointerCost, progressOf, stageRefOf } from '@state/campaign';
 import { useGameStore } from '@state/store';
+import { tutorialScript, worldOf } from '@state/tutorial';
+import { TUTORIAL_BATTLE_SEED } from '@content/balance/tutorial';
 
 export interface CampaignLaunchInput {
   pointer: StagePointer;
@@ -36,8 +38,11 @@ function startRunBattle(
   instanceIds: readonly string[],
   control: 'manual' | 'auto',
 ): Result<void> {
-  const { save, actions } = useGameStore.getState();
+  const { save, actions, ui } = useGameStore.getState();
   if (!save) return fail('invalid_argument', 'No chronicle loaded');
+  // The tutorial's first stand is fought on a fixed seed, so the moments its lessons wait for — a
+  // turn to spend, a second wave to spend a cooldown in — always happen (`TUTORIAL.md` §Data shape).
+  const scripted = tutorialScript(worldOf({ save, stack: ui.stack, dialog: ui.dialog }), 'battle');
   const charged = actions.startCampaignRun(pointer);
   if (!charged.ok) return charged;
   noteRunStarted(charged.value.cost, charged.value.runIndex);
@@ -48,7 +53,7 @@ function startRunBattle(
     roster: save.roster,
     control,
     speed,
-    seed: `${save.seedRoot}:${save.stats['battles.fought'] ?? 0}`,
+    seed: scripted ? TUTORIAL_BATTLE_SEED : `${save.seedRoot}:${save.stats['battles.fought'] ?? 0}`,
     awaitPresenter: true,
   });
   if (!started.ok) return started;

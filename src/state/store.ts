@@ -7,6 +7,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { PLAYER_NAME_MAX_LENGTH, PLAYER_NAME_MIN_LENGTH } from '@content/balance/economy';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
+import { TUTORIAL_SUMMON_RARITY } from '@content/balance/tutorial';
 import type { Difficulty } from '@content/balance/battle';
 import { CHAMPION_IDS, type ChampionId, type GearSlot, type ObtainSource } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
@@ -89,7 +90,7 @@ import {
 } from './missions';
 import { applyQuestChestClaim, applyQuestClaim, type QuestChestClaim, type QuestClaim } from './quests';
 import { payCurrencies } from './payout';
-import { applyTutorialSkip, applyTutorialStep } from './tutorial';
+import { applyTutorialSkip, applyTutorialStep, tutorialScript, worldOf } from './tutorial';
 import type { GearInstance } from '@engine/gear/instance';
 import { bumpCounter, bumpCounterId, type CounterKey } from '@engine/progression/counters';
 import {
@@ -1019,10 +1020,23 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               // a saved chronicle replays its summons exactly, and never repeats a press.
               const pressed = current.stats['summon.pulls'] ?? 0;
               const rng = createRng(`summon:${current.seedRoot}:${shard}:${pressed}`);
+              // The lesson that teaches what a colour means cannot be left to the dice, so the
+              // tutorial's own shard turns up an Epic (`TUTORIAL.md` 3.2).
+              const scripted = tutorialScript(
+                worldOf({ save: current, stack: get().ui.stack, dialog: get().ui.dialog }),
+                'summon',
+              );
               let result: Result<SummonSummary> = fail('invalid_argument', 'No chronicle loaded');
               set((state) => {
                 if (!state.save) return;
-                result = applySummon(state.save, { bannerId, shard, count, now, rng });
+                result = applySummon(state.save, {
+                  bannerId,
+                  shard,
+                  count,
+                  now,
+                  rng,
+                  ...(scripted ? { floor: TUTORIAL_SUMMON_RARITY } : {}),
+                });
                 if (result.ok) state.save.updatedAt = now;
               });
               if (!result.ok) return result;

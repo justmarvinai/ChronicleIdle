@@ -12,6 +12,7 @@ import {
 import { BANNER_BY_ID } from '@content/banners/index';
 import type { Rarity } from '@content/champions/types';
 import { content } from '@content/registry';
+import { TUTORIAL_SUMMON_RARITY } from '@content/balance/tutorial';
 import { createRng } from '@engine/rng/rng';
 import { afterPull, emptyPity, forcedRarity, mercyView, softBonusPp } from './pity';
 import { isPrimordialRotation, msUntilRotation, pityRules, rotationAt, rotationIndex } from './rotation';
@@ -215,6 +216,58 @@ describe('a ten-pull', () => {
     ] as const;
     expect(bestPull(pulls)?.championId).toBe('champ.khazgor');
     expect(bestPull([])).toBeNull();
+  });
+});
+
+describe('a rarity floor', () => {
+  it('lifts a pull that fell short and leaves a better one alone (TUTORIAL.md 3.2)', () => {
+    // A hundred Faded shards: the floor is the only reason any of them is an Epic.
+    for (let seed = 0; seed < 100; seed += 1) {
+      const floored = summonOne(
+        {
+          shard: 'faded',
+          rules: SHARD_PITY.faded,
+          counters: emptyPity(),
+          pool: POOL,
+          floor: TUTORIAL_SUMMON_RARITY,
+        },
+        createRng(`floor-${seed}`),
+      );
+      if (!floored.ok) throw new Error(floored.error.message);
+      expect(rarityRank(floored.value.pull.rarity)).toBeGreaterThanOrEqual(
+        rarityRank(TUTORIAL_SUMMON_RARITY),
+      );
+      // The champion is one of that rarity, and the floor is not dressed up as mercy.
+      const def = POOL.find((one) => one.id === floored.value.pull.championId);
+      expect(def?.rarity).toBe(floored.value.pull.rarity);
+      if (floored.value.pull.rarity === TUTORIAL_SUMMON_RARITY) expect(floored.value.pull.mercy).toBe(false);
+    }
+  });
+
+  it('takes the same roll either way, so the stream is unchanged', () => {
+    // The floor replaces the rarity *after* the roll, so what the next pull sees is identical.
+    const withFloor = summonMany(
+      {
+        shard: 'ancient',
+        rules: SHARD_PITY.ancient,
+        counters: emptyPity(),
+        pool: POOL,
+        floor: TUTORIAL_SUMMON_RARITY,
+      },
+      2,
+      createRng('stream'),
+    );
+    const without = summonMany(
+      { shard: 'ancient', rules: SHARD_PITY.ancient, counters: emptyPity(), pool: POOL },
+      2,
+      createRng('stream'),
+    );
+    if (!withFloor.ok || !without.ok) throw new Error('rolls failed');
+    // Pull 2 is rolled from the same point in the stream in both runs…
+    const floorRanks = withFloor.value.pulls.map((one) => rarityRank(one.rarity));
+    const plainRanks = without.value.pulls.map((one) => rarityRank(one.rarity));
+    expect(floorRanks.every((rank, index) => rank >= (plainRanks[index] ?? 0))).toBe(true);
+    expect(withFloor.value.pulls).toHaveLength(without.value.pulls.length);
   });
 });
 

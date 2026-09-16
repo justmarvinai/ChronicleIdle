@@ -27,7 +27,11 @@ export const tutorialConditionSchema: z.ZodType<Loosen<TutorialCondition>> = z.l
     }),
     z.object({ type: z.literal('counter'), key: z.string().min(1), count: z.number().int().positive() }),
     z.object({ type: z.literal('gear_worn'), slot: z.enum(GEAR_SLOTS) }),
-    z.object({ type: z.literal('battle_turn'), wave: z.number().int().positive().optional() }),
+    z.object({
+      type: z.literal('battle_turn'),
+      wave: z.number().int().positive().optional(),
+      slot: z.enum(ABILITY_SLOTS).optional(),
+    }),
     z.object({ type: z.literal('ability_used'), slot: z.enum(ABILITY_SLOTS) }),
     z.object({ type: z.literal('auto_battle') }),
     z.object({ type: z.literal('acknowledged') }),

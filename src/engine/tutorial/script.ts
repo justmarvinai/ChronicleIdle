@@ -44,6 +44,8 @@ export interface TutorialBattleSignal {
   wave: number;
   /** Ability slots the party has cast in this fight. */
   used: readonly AbilitySlot[];
+  /** Ability slots the open turn offers, ready to use. */
+  ready: readonly AbilitySlot[];
   /** The AI has had the wheel at some point in this fight. */
   auto: boolean;
 }
@@ -235,9 +237,12 @@ export function conditionHolds(condition: TutorialCondition, ctx: TutorialContex
       if (!save) return false;
       return Object.values(save.roster).some((instance) => instance.gear[condition.slot] !== null);
     }
-    case 'battle_turn':
-      if (!ctx.battle || !ctx.battle.allyTurn) return false;
-      return condition.wave === undefined || ctx.battle.wave >= condition.wave;
+    case 'battle_turn': {
+      const battle = ctx.battle;
+      if (!battle || !battle.allyTurn) return false;
+      if (condition.wave !== undefined && battle.wave < condition.wave) return false;
+      return condition.slot === undefined || battle.ready.includes(condition.slot);
+    }
     case 'ability_used':
       return ctx.battle !== null && ctx.battle.used.includes(condition.slot);
     case 'auto_battle':
