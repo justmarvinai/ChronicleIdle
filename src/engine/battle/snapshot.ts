@@ -18,6 +18,14 @@ export interface BossUnitView {
   turnsTaken: number;
   /** Ids of counting passives that have broken this fight (Gravemaw's hide). */
   brokenPassives: string[];
+  /** The phase the fight is in and how many there are (BOSSES.md §3); 1 of 1 for most bosses. */
+  phase: number;
+  phaseCount: number;
+  /**
+   * The escort that takes a share of hits meant for this boss (BOSSES.md §3), and that share.
+   * Which of them still stands is read from their own `alive` in the same view.
+   */
+  adds: { ids: readonly string[]; percent: number } | null;
 }
 
 export interface UnitView {
@@ -112,6 +120,9 @@ export function unitView(u: BattleUnit): UnitView {
           enrageSteps: u.flags.enrageSteps,
           turnsTaken: u.flags.turnsTaken,
           brokenPassives: brokenPassives(u),
+          phase: u.phase,
+          phaseCount: u.phaseThresholds.length + 1,
+          adds: u.adds ? { ids: [...u.adds.ids], percent: u.addsSpec?.guardPercent ?? 0 } : null,
         }
       : null,
   };

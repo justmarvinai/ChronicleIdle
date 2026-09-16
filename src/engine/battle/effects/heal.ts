@@ -2,10 +2,10 @@
 import type { Effect } from '@engine/battle/imports';
 import type { ActionContext } from '@engine/battle/context';
 import { healUnit } from '@engine/battle/combat';
-import { isDebuff } from '@engine/battle/conditions';
+import { evaluateCondition, isDebuff } from '@engine/battle/conditions';
 import { healing } from '@engine/battle/formulas';
-import { effectiveStat } from '@engine/battle/stats';
-import type { BattleUnit } from '@engine/battle/types';
+import { effectiveStat, enemiesOf } from '@engine/battle/stats';
+import type { BattleState, BattleUnit } from '@engine/battle/types';
 
 type HealEffect = Extract<Effect, { kind: 'heal' }>;
 
@@ -26,10 +26,25 @@ function healStat(
   }
 }
 
-/** Heal Reduction on the target as a fraction (0.5 / 1). */
-export function healReduction(target: BattleUnit): number {
+/**
+ * Heal Reduction on the target as a fraction (0.5 / 1): the debuff it carries, and any enemy
+ * passive that dims healing while its condition holds — Nyxara's Un-light in her last phase
+ * (BOSSES.md §3). The strongest source wins rather than stacking, as elsewhere in §5.
+ */
+export function healReduction(state: BattleState, target: BattleUnit): number {
   let total = 0;
   for (const s of target.statuses) if (s.id === 'heal_reduction') total = Math.max(total, s.value / 100);
+  for (const enemy of enemiesOf(state, target)) {
+    if (!enemy.alive) continue;
+    for (const passive of enemy.passives) {
+      if (passive.trigger !== 'static') continue;
+      for (const effect of passive.effects) {
+        if (effect.kind !== 'enemy_heal_reduction') continue;
+        if (effect.if && !evaluateCondition(state, effect.if, { self: enemy, target })) continue;
+        total = Math.max(total, effect.value / 100);
+      }
+    }
+  }
   return Math.min(1, total);
 }
 
@@ -53,7 +68,12 @@ export function resolveHeal(
   if (mult <= 0) return;
   for (const target of targets) {
     if (!target.alive) continue;
-    const amount = healing(mult, healStat(ctx, source, target, effect.stat), 0, healReduction(target));
+    const amount = healing(
+      mult,
+      healStat(ctx, source, target, effect.stat),
+      0,
+      healReduction(ctx.state, target),
+    );
     healUnit(ctx, source, target, amount, 'ability');
   }
 }

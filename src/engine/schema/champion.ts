@@ -44,6 +44,7 @@ export const conditionSchema: z.ZodType<Loosen<Condition>> = z.union([
   z.object({ targetHas: z.enum(STATUS_IDS) }),
   z.object({ targetHasAnyDebuff: z.literal(true) }),
   z.object({ selfDistinctDebuffsBelow: z.number().int().min(1).max(14) }),
+  z.object({ selfPhaseAtLeast: z.number().int().min(1).max(5) }),
   z.object({ targetHpBelow: percent }),
   z.object({ killedThisAction: z.literal(true) }),
   z.object({ selfHpBelow: percent }),
@@ -103,6 +104,11 @@ export const effectSchema: z.ZodType<Loosen<Effect>> = z.lazy(() =>
       chance: percent.optional(),
     }),
     z.object({ kind: z.literal('revive'), target: targetSchema, hpPercent: z.number().min(1).max(100) }),
+    z.object({
+      kind: z.literal('steal_buff'),
+      target: targetSchema,
+      count: z.number().int().min(1).max(4),
+    }),
     z.object({ kind: z.literal('extra_turn'), target: z.literal('self'), if: conditionSchema.optional() }),
     z.object({
       kind: z.literal('detonate'),
@@ -127,6 +133,11 @@ export const passiveEffectSchema: z.ZodType<Loosen<PassiveEffect>> = z.lazy(() =
       stat: z.enum(STAT_IDS),
       percent: z.number().optional(),
       flat: z.number().optional(),
+      if: conditionSchema.optional(),
+    }),
+    z.object({
+      kind: z.literal('enemy_heal_reduction'),
+      value: percent,
       if: conditionSchema.optional(),
     }),
     z.object({
@@ -206,6 +217,7 @@ export const abilitySchema = z.object({
   icon: assetKey,
   cooldown: z.number().int().min(0).max(8),
   startsOnCooldown: z.boolean().optional(),
+  minPhase: z.number().int().min(1).max(5).optional(),
   effects: z.array(effectSchema).min(1),
   upgrades: z.array(z.object({ type: z.enum(UPGRADE_TYPES), value: z.number().positive() })).max(4),
   ai: z.object({

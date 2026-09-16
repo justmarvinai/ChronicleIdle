@@ -15,6 +15,7 @@ import { resolveHeal } from './heal';
 import { resolveLeech } from './leech';
 import { resolveRemoveStatus } from './remove-status';
 import { resolveRevive } from './revive';
+import { resolveStealBuff } from './steal-buff';
 import { resolveTm } from './tm';
 
 export interface EffectRun {
@@ -60,6 +61,9 @@ function resolveEffect(run: EffectRun, input: ResolveInput, effect: Effect): voi
       return;
     case 'revive':
       resolveRevive(ctx, resolveTargets(input, effect.target, true), effect);
+      return;
+    case 'steal_buff':
+      resolveStealBuff(ctx, source, resolveTargets(input, effect.target), effect);
       return;
     case 'extra_turn':
       resolveExtraTurn(ctx, source, effect);

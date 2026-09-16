@@ -34,7 +34,7 @@ let counter = 0;
 export function ability(
   slot: AbilityDef['slot'],
   effects: Effect[],
-  extra: Partial<Pick<AbilityDef, 'cooldown' | 'startsOnCooldown' | 'ai' | 'upgrades'>> = {},
+  extra: Partial<Pick<AbilityDef, 'cooldown' | 'startsOnCooldown' | 'minPhase' | 'ai' | 'upgrades'>> = {},
 ): AbilityDef {
   const id = `ab.test.${slot}.${++counter}`;
   return {
@@ -45,6 +45,7 @@ export function ability(
     icon: 'spell.fire_flame_burst',
     cooldown: extra.cooldown ?? (slot === 'a1' ? 0 : 3),
     ...(extra.startsOnCooldown ? { startsOnCooldown: true } : {}),
+    ...(extra.minPhase === undefined ? {} : { minPhase: extra.minPhase }),
     effects,
     upgrades: extra.upgrades ?? [],
     ai: extra.ai ?? { priority: slot === 'a1' ? 1 : 2 },

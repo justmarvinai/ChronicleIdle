@@ -6,7 +6,7 @@
 import { unitView } from './snapshot';
 import { BOSS_ENRAGE_STEP, COUNTER_DMG_MULT, FEAR_SKIP_CHANCE, TM_PER_SPD, type Effect } from './imports';
 import { autoDecide, pickTarget } from './ai';
-import { applyHit, healUnit, registerCounterattack } from './combat';
+import { applyHit, healUnit, registerCounterattack, reviveUnit } from './combat';
 import { tmSnapshot, type ActionContext, type TriggerExtra } from './context';
 import { strike } from './effects/damage';
 import { runEffectList } from './effects/index';
@@ -120,6 +120,34 @@ function buildRequest(state: BattleState, unit: BattleUnit): DecisionRequest {
   };
 }
 
+/**
+ * The phase a boss's HP puts it in (BOSSES.md §3), read at its own turn: a threshold crossed by a
+ * hit lands on the turn after, which is the beat the fight is choreographed on — the adds come
+ * back with it and the abilities it gates open.
+ */
+function advancePhase(ctx: ActionContext, unit: BattleUnit): void {
+  if (!unit.phaseThresholds.length || unit.maxHp <= 0) return;
+  const fraction = unit.hp / unit.maxHp;
+  const phase = 1 + unit.phaseThresholds.filter((threshold) => fraction < threshold).length;
+  if (phase <= unit.phase) return;
+  unit.phase = phase;
+  ctx.events.push({ type: 'phase.changed', unitId: unit.id, phase });
+  // A new phase is a new chorus: whatever fell comes back with it.
+  if (unit.adds) unit.flags.addsRevivedTurn = unit.flags.turnsTaken - unit.adds.every;
+}
+
+/** Brings the boss's fallen adds back on their schedule (BOSSES.md §3). */
+function reviveAdds(ctx: ActionContext, unit: BattleUnit): void {
+  const adds = unit.adds;
+  if (!adds) return;
+  if (unit.flags.turnsTaken - unit.flags.addsRevivedTurn < adds.every) return;
+  const fallen = adds.ids
+    .map((id) => ctx.state.units[id])
+    .filter((add): add is BattleUnit => !!add && !add.alive);
+  unit.flags.addsRevivedTurn = unit.flags.turnsTaken;
+  for (const add of fallen) reviveUnit(ctx, add, adds.hpPercent);
+}
+
 /** Turn start (BATTLE.md §3.1). Returns false when the unit cannot act this turn. */
 function startTurn(state: BattleState, unit: BattleUnit, events: BattleEvent[]): boolean {
   state.turn += 1;
@@ -167,6 +195,8 @@ function startTurn(state: BattleState, unit: BattleUnit, events: BattleEvent[]):
       events.push({ type: 'enraged', unitId: unit.id, steps: unit.flags.enrageSteps });
     }
   }
+  advancePhase(ctx, unit);
+  reviveAdds(ctx, unit);
   ctx.trigger('onTurnStart', unit);
   if (!unit.alive) return false;
   const skip = unit.statuses.find((s) => s.id === 'stun' || s.id === 'freeze' || s.id === 'sleep');

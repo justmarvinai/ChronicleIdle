@@ -55,6 +55,7 @@ function freshFlags(): UnitFlags {
     turnsTaken: 0,
     healNextTurn: 0,
     enrageSteps: 0,
+    addsRevivedTurn: 0,
     lastActionSeq: 0,
     actionDamage: 0,
     firedOnce: [],
@@ -113,6 +114,11 @@ export function allyUnit(
     rotationIndex: 0,
     enrageAfterTurn: null,
     enrageEvery: BOSS_ENRAGE_EVERY,
+    phaseThresholds: [],
+    phase: 1,
+    guards: null,
+    adds: null,
+    addsSpec: null,
     flags: freshFlags(),
     art: { model: def.art.model, tint: def.art.tint, facing: def.art.facing, scale: 1, desaturate: false },
   };
@@ -185,6 +191,11 @@ export function enemyUnit(
     rotationIndex: 0,
     enrageAfterTurn: def.boss?.enrageAfterTurn ?? null,
     enrageEvery: def.boss?.enrageEvery ?? BOSS_ENRAGE_EVERY,
+    phaseThresholds: [...(def.boss?.phases ?? [])],
+    phase: 1,
+    guards: null,
+    adds: null,
+    addsSpec: def.boss?.adds ?? null,
     flags: freshFlags(),
     art: {
       model: def.art.model,
@@ -260,5 +271,26 @@ export function spawnWave(state: BattleState, wave: WaveSpec): void {
   for (const { unit } of wave.enemies) {
     unit.maxHp = entryMaxHp(state, unit);
     unit.hp = unit.maxHp;
+  }
+  linkAdds(wave.enemies.map((spawn) => spawn.unit));
+}
+
+/**
+ * Ties a boss to the adds standing with it (BOSSES.md §3): each add learns whose hits it takes a
+ * share of, and the boss learns whom to bring back. Both only ever look at their own wave, so a
+ * second boss in a later wave keeps its own escort.
+ */
+function linkAdds(units: readonly BattleUnit[]): void {
+  for (const boss of units) {
+    const spec = boss.addsSpec;
+    if (!spec) continue;
+    const escort = units.filter((unit) => unit.defId === spec.enemyId);
+    if (!escort.length) continue;
+    for (const add of escort) add.guards = { unitId: boss.id, percent: spec.guardPercent };
+    boss.adds = {
+      ids: escort.map((add) => add.id),
+      every: spec.reviveEvery,
+      hpPercent: spec.revivedHpPercent,
+    };
   }
 }

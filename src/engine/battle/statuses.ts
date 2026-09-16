@@ -171,6 +171,29 @@ export function removeStatuses(
   return removed;
 }
 
+/**
+ * Takes buffs off `from` and wears them (BOSSES.md §3, Nyxara's Dirge): newest first, same turns
+ * and same value, so a steal is a strip the thief profits from. A shield stays where it is — its
+ * value is the HP it still absorbs, which cannot move to another unit's pool.
+ */
+export function stealBuffs(ctx: ActionContext, from: BattleUnit, to: BattleUnit, count: number): StatusId[] {
+  const taken: StatusInstance[] = [];
+  for (let i = from.statuses.length - 1; i >= 0 && taken.length < count; i--) {
+    const status = from.statuses[i];
+    if (!status || isDebuff(status.id) || status.id === 'shield') continue;
+    from.statuses.splice(i, 1);
+    taken.push(status);
+    ctx.events.push({ type: 'status.removed', targetId: from.id, status: status.id, reason: 'stripped' });
+  }
+  for (const status of taken)
+    applyStatus(ctx, to, to, status.id, status.turns, {
+      chance: 100,
+      value: status.value,
+      guaranteed: true,
+    });
+  return taken.map((status) => status.id);
+}
+
 export function removeStatusById(
   ctx: ActionContext,
   target: BattleUnit,

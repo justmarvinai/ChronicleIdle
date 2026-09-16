@@ -11,6 +11,23 @@ export const enemyBossSchema = z.object({
   enrageEvery: z.number().int().min(1).max(20).optional(),
   damageTakenMult: z.number().positive().max(1),
   fixedStats: z.boolean().optional(),
+  /** Descending HP fractions; each one starts a phase (BOSSES.md §3). */
+  phases: z
+    .array(z.number().gt(0).lt(1))
+    .max(4)
+    .refine((all) => all.every((value, i) => i === 0 || value < (all[i - 1] ?? 1)), {
+      message: 'phase thresholds descend',
+    })
+    .optional(),
+  adds: z
+    .object({
+      enemyId: z.string().regex(/^enemy\.[a-z0-9_]+$/),
+      count: z.number().int().min(1).max(4),
+      guardPercent: z.number().int().min(1).max(90),
+      reviveEvery: z.number().int().min(1).max(50),
+      revivedHpPercent: z.number().int().min(1).max(100),
+    })
+    .optional(),
 });
 
 export const enemySchema = z.object({

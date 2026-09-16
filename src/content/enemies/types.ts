@@ -21,6 +21,23 @@ export type FactionArchetype = (typeof FACTION_ARCHETYPES)[number];
 export const ENEMY_ARCHETYPES = [...FACTION_ARCHETYPES, 'boss'] as const;
 export type EnemyArchetype = (typeof ENEMY_ARCHETYPES)[number];
 
+/**
+ * The adds a boss fields (docs/design/BOSSES.md §3). They stand in the same wave as their master,
+ * a share of what the master is dealt lands on whichever of them still lives, and they come back
+ * at every phase change and on their own turn schedule.
+ */
+export interface EnemyAddsConfig {
+  /** The add's own enemy definition; `count` copies stand with the boss. */
+  enemyId: string;
+  count: number;
+  /** Percentage of a hit on the master that a living add takes instead (Ally Protection). */
+  guardPercent: number;
+  /** Own turns of the boss between revivals. */
+  reviveEvery: number;
+  /** Percentage of max HP an add returns with. */
+  revivedHpPercent: number;
+}
+
 export interface EnemyBossConfig {
   /** Fixed ability order, repeated (BOSSES.md §2); abilities on cooldown are skipped to the next entry. */
   rotation: AbilitySlot[];
@@ -37,6 +54,13 @@ export interface EnemyBossConfig {
    * difficulty multiplier, no stage curve and no stage-boss promotion on top.
    */
   fixedStats?: boolean;
+  /**
+   * HP fractions, descending, at which the fight changes gear: `[0.7, 0.35]` is three phases.
+   * The phase is read at the boss's own turn, so a threshold crossed by a hit lands on its next
+   * turn — abilities gated by `minPhase` open, and the adds come back with it.
+   */
+  phases?: number[];
+  adds?: EnemyAddsConfig;
 }
 
 export interface EnemyDef {

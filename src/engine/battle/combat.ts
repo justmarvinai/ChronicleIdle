@@ -22,6 +22,29 @@ export interface HitMeta {
 }
 
 /**
+ * Who takes a share of this hit instead (BATTLE.md §5 Ally Protection): the buff's caster, or an
+ * add still standing between the party and its master (BOSSES.md §3, Nyxara's Choristers). The
+ * buff wins when both apply, because a champion's play should not be undone by the fight's own
+ * furniture.
+ */
+function protectorOf(
+  ctx: ActionContext,
+  target: BattleUnit,
+): { protector: BattleUnit; percent: number } | null {
+  const protection = target.statuses.find((status) => status.id === 'ally_protection');
+  const caster = protection ? ctx.state.units[protection.sourceId] : undefined;
+  if (protection && caster?.alive && caster.id !== target.id)
+    return { protector: caster, percent: protection.value };
+  // `order` rather than the unit map, so the escort is searched in spawn order on every replay.
+  for (const id of ctx.state.order) {
+    const add = ctx.state.units[id];
+    if (!add?.alive || add.guards?.unitId !== target.id) continue;
+    return { protector: add, percent: add.guards.percent };
+  }
+  return null;
+}
+
+/**
  * Σ `damage_reduction` passive values that apply to `target` against `attacker` right now. A
  * reduction scoped to crits (Gravemaw's hide) only counts when the incoming hit is one.
  */
@@ -96,13 +119,16 @@ export function applyHit(
   if (!target.alive) return 0;
   let remaining = amount;
   if (meta.triggers && !meta.redirectedFrom) {
-    const protection = target.statuses.find((s) => s.id === 'ally_protection');
-    const protector = protection ? ctx.state.units[protection.sourceId] : undefined;
-    if (protection && protector && protector.alive && protector.id !== target.id) {
-      const share = Math.floor(amount * (protection.value / 100));
+    const split = protectorOf(ctx, target);
+    if (split) {
+      const share = Math.floor(amount * (split.percent / 100));
       if (share > 0) {
         remaining -= share;
-        applyHit(ctx, source, protector, share, { ...meta, redirectedFrom: target.id, triggers: false });
+        applyHit(ctx, source, split.protector, share, {
+          ...meta,
+          redirectedFrom: target.id,
+          triggers: false,
+        });
       }
     }
   }

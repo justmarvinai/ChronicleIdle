@@ -13,6 +13,7 @@ import type {
   ChampionStats,
   Element,
   EncounterKind,
+  EnemyAddsConfig,
   PassiveDef,
   Rarity,
   Role,
@@ -54,6 +55,8 @@ export interface UnitFlags {
   healNextTurn: number;
   /** Enrage steps applied to a boss. */
   enrageSteps: number;
+  /** The boss's own turn at which its adds were last revived (BOSSES.md §3). */
+  addsRevivedTurn: number;
   /** `state.actionSeq` of the unit's latest own action (self-placed statuses skip their first tick). */
   lastActionSeq: number;
   /** Damage dealt by this unit's current action (Leech), reset per action. */
@@ -102,6 +105,19 @@ export interface BattleUnit {
   enrageAfterTurn: number | null;
   /** Own turns between enrage steps (the boss block's cadence, BOSSES.md §1). */
   enrageEvery: number;
+  /** Descending HP fractions that start each phase; empty for a fight of one gear. */
+  phaseThresholds: number[];
+  /** The phase the fight is in, from 1. Read at the unit's own turn. */
+  phase: number;
+  /**
+   * An add that shields its master: this share of a hit on `unitId` lands here instead, for as
+   * long as this unit lives (BOSSES.md §3).
+   */
+  guards: { unitId: string; percent: number } | null;
+  /** The adds this boss fields, once the wave has placed them. */
+  adds: { ids: string[]; every: number; hpPercent: number } | null;
+  /** What the adds block was authored as, before the wave resolved its ids. */
+  addsSpec: EnemyAddsConfig | null;
   flags: UnitFlags;
   /** Presentation hints carried so the renderer never looks content up mid-battle. */
   art: {
@@ -252,6 +268,8 @@ export type BattleEvent =
   | { type: 'extra_turn'; unitId: string }
   | { type: 'passive.triggered'; unitId: string; passiveId: string }
   | { type: 'enraged'; unitId: string; steps: number }
+  /** A boss crossed an HP threshold: what it turns on is in the content (BOSSES.md §3). */
+  | { type: 'phase.changed'; unitId: string; phase: number }
   | { type: 'turn.ended'; unitId: string; tm: Record<string, number> }
   | { type: 'wave.cleared'; wave: number; waveCount: number }
   | { type: 'battle.ended'; outcome: BattleOutcome };

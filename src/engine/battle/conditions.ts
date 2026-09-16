@@ -40,6 +40,7 @@ export function evaluateCondition(state: BattleState, condition: Condition, ctx:
   if ('targetHasAnyDebuff' in condition) return !!target && target.statuses.some((s) => isDebuff(s.id));
   if ('selfDistinctDebuffsBelow' in condition)
     return self.flags.debuffKindsTaken.length < condition.selfDistinctDebuffsBelow;
+  if ('selfPhaseAtLeast' in condition) return self.phase >= condition.selfPhaseAtLeast;
   if ('targetHpBelow' in condition)
     return !!target && target.maxHp > 0 && (target.hp / target.maxHp) * 100 < condition.targetHpBelow;
   if ('killedThisAction' in condition) return ctx.killedThisAction === true;

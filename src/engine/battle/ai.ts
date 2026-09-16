@@ -192,11 +192,14 @@ export function pickTarget(state: BattleState, unit: BattleUnit, ability: UnitAb
 
 /** Picks the ability and target for `unit`'s turn. */
 export function autoDecide(state: BattleState, unit: BattleUnit): Decision {
-  const a1 = unit.abilities.find((a) => a.slot === 'a1') ?? unit.abilities[0];
-  if (!a1) throw new Error(`Unit ${unit.id} has no abilities`);
+  // A phase-gated ability is as unavailable as one on cooldown until the fight gets there, and
+  // that holds for the last-resort basic too: a boss in phase 1 never opens with a phase-3 hymn.
+  const open = unit.abilities.filter((a) => (a.def.minPhase ?? 1) <= unit.phase);
+  const basic = open.find((a) => a.slot === 'a1') ?? open[0] ?? unit.abilities[0];
+  if (!basic) throw new Error(`Unit ${unit.id} has no abilities`);
   const forced = provoker(state, unit);
-  if (forced) return { unitId: unit.id, abilityId: a1.id, targetId: forced.id };
-  const ready = unit.abilities.filter((a) => a.cooldown === 0);
+  if (forced) return { unitId: unit.id, abilityId: basic.id, targetId: forced.id };
+  const ready = open.filter((a) => a.cooldown === 0);
   if (unit.rotation && unit.rotation.length) {
     // Bosses: the next rotation entry whose ability is ready; the pointer advances past skips.
     for (let i = 0; i < unit.rotation.length; i++) {
@@ -212,7 +215,7 @@ export function autoDecide(state: BattleState, unit: BattleUnit): Decision {
         };
       }
     }
-    return { unitId: unit.id, abilityId: a1.id, targetId: pickTarget(state, unit, a1)?.id ?? null };
+    return { unitId: unit.id, abilityId: basic.id, targetId: pickTarget(state, unit, basic)?.id ?? null };
   }
   let best: { ability: UnitAbility; target: BattleUnit | null; score: number } | null = null;
   for (const ability of ready) {
@@ -225,8 +228,8 @@ export function autoDecide(state: BattleState, unit: BattleUnit): Decision {
       best = { ability, target, score };
   }
   if (!best) {
-    const target = pickTarget(state, unit, a1);
-    return { unitId: unit.id, abilityId: a1.id, targetId: target?.id ?? null };
+    const target = pickTarget(state, unit, basic);
+    return { unitId: unit.id, abilityId: basic.id, targetId: target?.id ?? null };
   }
   return { unitId: unit.id, abilityId: best.ability.id, targetId: best.target?.id ?? null };
 }

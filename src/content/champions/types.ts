@@ -90,6 +90,8 @@ export type Condition =
   | { alliesBelowTm: { percent: number; count: number } }
   | { enemiesAlive: { gte?: number; lte?: number } }
   | { waveStart: true }
+  /** The caster's boss phase has reached `n` (BOSSES.md §3: Nyxara's Un-light in phase III). */
+  | { selfPhaseAtLeast: number }
   | { attackerElement: Element };
 
 export type DamageStat = 'ATK' | 'DEF' | 'HP' | 'TARGET_MAX_HP';
@@ -133,6 +135,11 @@ export type Effect =
   | { kind: 'remove_status'; target: Target; which: 'debuffs' | 'buffs'; count: number | 'all' }
   | { kind: 'tm'; target: Target; delta: number; chance?: number }
   | { kind: 'revive'; target: Target; hpPercent: number }
+  /**
+   * Takes buffs off the target and wears them: same status, same turns, same value. Nyxara's
+   * Dirge takes one from every champion (BOSSES.md §3).
+   */
+  | { kind: 'steal_buff'; target: Target; count: number }
   | { kind: 'extra_turn'; target: 'self'; if?: Condition }
   | { kind: 'detonate'; target: Target; status: 'poison' | 'burn' | 'bleed'; percentOfRemaining: number }
   | { kind: 'leech'; percentOfDamage: number }
@@ -161,6 +168,8 @@ export type PassiveEffect =
   | { kind: 'shield_ally_below'; hpPercent: number; shield: number; turns: number; oncePerAllyPerWave: true }
   | { kind: 'on_heal_grant'; status: StatusId; value?: number; turns: number }
   | { kind: 'on_stun_gain_tm'; delta: number }
+  /** Healing on this unit's *enemies* is reduced while the condition holds (Nyxara's Un-light). */
+  | { kind: 'enemy_heal_reduction'; value: number; if?: Condition }
   | Effect;
 
 export const PASSIVE_TRIGGERS = [
@@ -208,6 +217,8 @@ export interface AbilityDef {
   /** Turns between uses; A1 is always 0. */
   cooldown: number;
   startsOnCooldown?: boolean;
+  /** Boss phase this ability waits for (BOSSES.md §3); 1 or absent means from the first. */
+  minPhase?: number;
   effects: Effect[];
   upgrades: AbilityUpgrade[];
   ai: AbilityAi;

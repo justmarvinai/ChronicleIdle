@@ -90,6 +90,10 @@ export function applyEventToView(view: BattleView, event: BattleEvent): BattleVi
       return updateUnit(view, event.unitId, (u) =>
         u.boss ? { ...u, boss: { ...u.boss, enrageSteps: event.steps } } : u,
       );
+    case 'phase.changed':
+      return updateUnit(view, event.unitId, (u) =>
+        u.boss ? { ...u, boss: { ...u.boss, phase: event.phase } } : u,
+      );
     case 'passive.broken':
       return updateUnit(view, event.unitId, (u) =>
         u.boss && !u.boss.brokenPassives.includes(event.passiveId)

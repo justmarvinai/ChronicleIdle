@@ -289,6 +289,10 @@ describe('what the boss HUD reads off the view', () => {
       enrageSteps: 0,
       turnsTaken: 0,
       brokenPassives: [],
+      // A daily boss is one long phase and fights alone (BOSSES.md §2).
+      phase: 1,
+      phaseCount: 1,
+      adds: null,
     });
 
     for (const id of ['poison', 'weaken', 'def_down', 'atk_down'] as const)

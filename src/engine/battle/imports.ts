@@ -44,5 +44,5 @@ export type {
   Target,
   TargetPreference,
 } from '@content/champions/types';
-export type { EnemyDef, EnemyBossConfig } from '@content/enemies/types';
+export type { EnemyAddsConfig, EnemyDef, EnemyBossConfig } from '@content/enemies/types';
 export type { EncounterDef, EncounterKind, EncounterWave } from '@content/encounters/types';
