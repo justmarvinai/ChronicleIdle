@@ -22,11 +22,21 @@ test.use({ video: 'on' });
 
 const CHRONICLE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'path.chronicle');
 
-/** Back to the hub from wherever we are, through the screen's own way out. */
+/**
+ * Back to the hub from wherever we are, through the screens' own way out — pressing Back until it
+ * arrives rather than once, because the stack is genuinely deeper in places (the Forge is reached
+ * from the Armoury, so leaving it lands on the Armoury, not on Emberhold).
+ */
 async function toHub(page: Page): Promise<void> {
-  const back = page.getByRole('button', { name: 'Back' });
-  if ((await back.count()) > 0) await back.first().click();
-  await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
+  const hub = page.getByTestId('screen-hub');
+  for (let step = 0; step < 4; step += 1) {
+    if ((await hub.count()) > 0) break;
+    const back = page.getByRole('button', { name: 'Back' });
+    if ((await back.count()) === 0) break;
+    await back.first().click();
+    await settle(page);
+  }
+  await expect(hub).toBeVisible({ timeout: 20_000 });
   await settle(page);
 }
 
