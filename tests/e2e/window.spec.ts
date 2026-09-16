@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { bindStarter, gotoTitle, openSettingsTab } from './helpers';
+import { bindStarter, eldricContinue, gotoTitle, openSettingsTab } from './helpers';
 
 const isFullscreen = (page: Page): Promise<boolean> =>
   page.evaluate(() => document.fullscreenElement !== null);
@@ -26,6 +26,8 @@ test.describe('game window', () => {
 
     // The choice is stored with the chronicle and survives a reload.
     await page.getByTestId('btn-new-chronicle').click();
+    // 1.1 — Eldric holds the dialog while he asks for the name (`TUTORIAL.md` §1).
+    await eldricContinue(page, 'tut.1.1');
     await page.getByTestId('name-input').fill('Marvin');
     await page.getByTestId('begin-chronicle').click();
     await bindStarter(page);
