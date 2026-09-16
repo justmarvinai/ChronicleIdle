@@ -46,7 +46,8 @@ is proven to still open, and the economy is measured rather than estimated.
   deep chronicle and then opens and *uses* every system — the campaign fought to a victory, a
   champion's kit and lore read, the armoury and forge worked, a champion summoned, both boss gates
   entered, both boards claimed, the Path read, the chest taken, the chronicle exported. Video is on
-  for this spec, so CI leaves behind something to watch instead of nineteen spec files to read.
+  for this spec, so CI leaves behind something to watch instead of nineteen spec files to read. It
+  runs in 3.1 minutes.
 - **A `robots.txt`**, whose absence was the only thing between the audit and a perfect SEO score.
 
 ### Changed
@@ -81,6 +82,14 @@ is proven to still open, and the economy is measured rather than estimated.
 - **The frame bench had not run since Phase 14.** It creates a throwaway chronicle, and from Phase
   14 Eldric's panel holds the dialog while it speaks, so the click on Begin landed on the overlay.
   It now reads each lesson first. The same fault was in `window.spec.ts`, fixed in `0.0.14`.
+- **A fixture that could not do what its chronicle had done.** `path.chronicle` claimed 24 crafts
+  and six chapters of the Path in its counters while its purse held gold, gems and three Glyph
+  Sigils — no materials, no brews, no tomes — so the Forge could not strike. It now carries what a
+  chronicle that deep would. No goal type reads the wallet, so the missions spec that shares it is
+  unmoved, and the two are run together to prove it.
+- **Playwright had no action timeout**, which is its default: a click on a control that never
+  becomes enabled waits until the test's whole budget is gone and then reports a bare timeout. The
+  disabled Strike button above cost fifteen minutes and said nothing about why. Capped at 15 s.
 
 ### Balance
 
