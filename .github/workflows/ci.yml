@@ -32,6 +32,8 @@ jobs:
       - run: pnpm test
       - name: Campaign difficulty bands hold
         run: pnpm sim:balance --strict --runs 8
+      - name: Economy bands hold
+        run: pnpm sim:economy --strict
       - run: pnpm build
 
   e2e:

@@ -202,15 +202,53 @@ the brief asks for — and the chest says as much when it is opened full.
 
 ## 7. Gem budget (sanity)
 
-Target weekly income for an active player mid-game: ≈ 800 gems (first clears while progressing
-250, daily quest chests 7 × 40 = 280, weekly chest 120, bosses 100, missions ~50). Spend: 2 Ancient
-Shards (600) + 2 refills (100). Early game front-loads first-clear gems so the Portal is used in
-the first hour.
+Measured, not estimated: the figures below are what `pnpm sim:economy` reports, and the tool derives
+every line from the content and the balance tables through the same functions the game uses. Rerun
+it after any tuning change — `tools/sim/economy-script.ts` holds the bands CI checks.
+
+The *active* player of these figures sits down twice a day and spends a bar of energy each time,
+farming Normal in the back half of the map at level 30. `sim:economy` also plays a casual player
+(one sitting) and a dedicated one (four), which is the spectrum a tuning pass should look at.
+
+| Gems per week | Active | Where it comes from |
+| --- | --- | --- |
+| First clears while progressing | ~273 | three new stands a day, first-clear bundles |
+| The daily hundred | ~350 | the 100-point chest, with its every-third-day Ancient Shard |
+| The weekly board and its chest | ~112 | claimed once a week |
+| Gravemaw (daily) | ~420 | the Normal tier's 60-gem chest at 60 %, every day (`BOSSES.md` §2) |
+| Nyxara (weekly) | ~182 | the Normal tier's chests once a week (`BOSSES.md` §3) |
+| The Chronicler's Path | ~42 | eight missions a week plus a chapter chest |
+| **Income** | **~1,430** | |
+| Spend: 2 Ancient Shards + 2 refills | ~700 | `SHARD_EXCHANGE`, `ENERGY_REFILL_GEMS` |
+| **Net** | **~730** | about two further Ancient Shards saved a week |
+
+A casual player earns ~850 a week, which still clears an Ancient Shard; a dedicated one ~1,760,
+because the boss and chest lines do not scale with how often you sit down — only the campaign does.
+
+> **Superseded.** This section used to print ≈ 800 gems a week with "bosses 100", written while the
+> bosses were still a plan. `BOSSES.md`'s tier tables (Phase 10) then gave Gravemaw's Normal tier 60
+> gems a day, so the boss line alone is worth ~600 and the old total was stale by exactly that much.
+> Every other line came in where this section said it would. Whether ~1,430 a week is the intended
+> generosity is `USER_QUESTIONS.md` Q45; the bands hold the shape either way.
 
 ## 8. Gold budget (sanity)
 
-Mid-game day: income ≈ 250k (campaign 120k, idle 60k, quests/bosses 70k); spend: gear levels
-100k, tavern 60k, crafting 50k, Faded Shards 40k. Gold should feel tight but never blocking.
+| Gold per day | Active | Where it comes from |
+| --- | --- | --- |
+| Campaign farming | ~155k | ~100 runs of a Normal stand in settlement 9 |
+| Gravemaw's chests | ~80k | once a day at 60 % of the Normal tier |
+| The idle chest | ~58k | two claims a day at farm tier 20 (§6) |
+| The boards, the bosses' weekly, the Path | ~29k | |
+| **Income** | **~322k** | |
+| Spend: gear levels | ~90k | 24 levels a day on 5★ pieces around +9 |
+| Spend: the Tavern | ~68k | 40 champion levels a day around level 34 |
+| Spend: Faded Shards | ~40k | eight a day at 5k each |
+| Spend: crafting | ~12k | an Ember craft a day, with its Glyph Sigil |
+| **Net** | **~112k** | |
+
+Gold should feel tight but never blocking, and no script of any activity level ends a day in the red
+— that invariant is a band, not a hope. A casual player earns ~218k a day (the boss and the chest do
+not care how long you play) and spends ~53k of it.
 
 ## 9. Daily / weekly reset
 

@@ -5,6 +5,36 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q45 — The economy is about 1.8× as generous as §7–§8 estimated
+
+**Why it matters.** `pnpm sim:economy` (new in Phase 15) plays a scripted month and derives every
+income and spend line from the content and the balance tables. An active mid-game player earns
+**~1,430 gems a week** against §7's old estimate of ≈ 800, and **~322k gold a day** against §8's
+≈ 250k. Almost all of the gap is one line: `BOSSES.md` §2, written in Phase 10, gives Gravemaw's
+Normal tier a 60-gem chest that can be taken every day — ~420 a week, where §7 had guessed 100 for
+both bosses together. Every other line landed within a tenth of the estimate.
+
+So the content matches the per-system design docs; it is the one-line sanity total in `ECONOMY.md`
+that was stale, and §7–§8 now print the measured figures instead.
+
+What is left is a game-feel judgement rather than a bug. A week of play buys about **four** Ancient
+Shards where §7 planned for two, and a day ends **+112k gold** on 322k of income — comfortable
+rather than the "tight but never blocking" §8 asks for. Erring generous is the safer failure mode
+for an idle game (nothing is ever locked behind a wall, and there is no monetisation to protect),
+but it does mean the Portal is less of a decision than the design imagined.
+
+**The default in use.** Nothing is nerfed for EA-0.1. Each system's numbers were signed off in its
+own phase against its own design document, and re-cutting them all is exactly the "finetuning"
+pass that follows this release. `tools/sim/economy-script.ts` holds bands that now guard the
+*intent* — no script of any activity level may end a day in the red, a casual week must still reach
+an Ancient Shard, and the ceiling may not run away — so a future tuning pass can move the levels
+freely and CI will catch anything that breaks the shape.
+
+Three levers, in the order they would bite: Gravemaw's 60 %-chest gems (`bosses/gravemaw.ts`),
+`GOLD_BASE`/`GOLD_STAGE_GROWTH` (`balance/campaign.ts`), and the gold sinks — `LEVEL_COST_BASE`
+(gear) and `levelUpGold` (Tavern), which is where a "tight" day would come from without touching
+income at all.
+
 ### Q44 — Where the auto-repeat lesson sits, and how hard a lesson holds the screen
 
 **Why it matters.** `TUTORIAL.md` §6 lists the standalone lessons of Steel and Bone with the levels
