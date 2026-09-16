@@ -5,6 +5,8 @@ import { BOSS_STAGE_NUMBER, SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@con
 import { CHAMPION_IDS, STARTER_IDS } from '@content/champions/types';
 import { FACTION_ARCHETYPES } from '@content/enemies/types';
 import { STATUSES } from '@content/statuses/index';
+import { ENERGY_PROVISIONS } from '@content/balance/energy';
+import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import { validateContentRegistry } from '@engine/schema/content';
 import { I18N_KEYS, textOf, translate } from '@i18n/index';
@@ -145,5 +147,50 @@ describe('content registry', () => {
       expect(translate(status.name)).not.toMatch(/^status\./);
       expect(translate(status.description, { value: 1 })).not.toMatch(/\{\w+\}/);
     }
+  });
+  it('ships the six tutorial chapters with their provisions and scripted moments (TUTORIAL.md)', () => {
+    expect(content.tutorialChapters).toHaveLength(TUTORIAL_CHAPTER_COUNT);
+    // Chapter 1 is the six-minute one, and the one the player cannot walk away from.
+    const first = content.tutorialChapters[0];
+    expect(first?.trigger).toEqual({ type: 'new_game' });
+    expect(first?.skippable).toBe(false);
+    expect(first?.steps).toHaveLength(11);
+    // Every other chapter opens with the feature it teaches, in unlock order, and can be skipped.
+    expect(content.tutorialChapters.slice(1).map((chapter) => chapter.trigger)).toEqual([
+      { type: 'feature', feature: 'tavern_level' },
+      { type: 'feature', feature: 'summoning' },
+      { type: 'feature', feature: 'quests_daily' },
+      { type: 'feature', feature: 'missions' },
+      { type: 'feature', feature: 'tavern_rank' },
+    ]);
+    for (const chapter of content.tutorialChapters.slice(1)) expect(chapter.skippable, chapter.id).toBe(true);
+    // Steel and Bone's lessons stand alone; every other chapter is walked in order.
+    expect(content.tutorialChapters.filter((chapter) => !chapter.sequential).map((c) => c.id)).toEqual([
+      'tut.steel_and_bone',
+    ]);
+    // The Chronicler's Provisions: 500 then 250 four times, one per chapter (ECONOMY.md §5.1).
+    const granted = content.tutorialSteps.flatMap((step) => (step.grant ? [step.grant] : []));
+    expect(granted.filter((grant) => grant.id in ENERGY_PROVISIONS).map((grant) => grant.id)).toEqual(
+      Object.keys(ENERGY_PROVISIONS),
+    );
+    expect(
+      granted.reduce(
+        (sum, grant) =>
+          sum + grant.currencies.reduce((n, e) => n + (e.currency === 'energy' ? e.amount : 0), 0),
+        0,
+      ),
+    ).toBe(1_500);
+    // And the shard Eldric kept back for the Binding.
+    expect(granted.filter((grant) => grant.id.startsWith('tutorial.gift.'))).toEqual([
+      { id: 'tutorial.gift.ancient_shard', currencies: [{ currency: 'shard_ancient', amount: 1 }] },
+    ]);
+    // Exactly one scripted fight and one scripted pull.
+    expect(content.tutorialSteps.filter((step) => step.script === 'battle').map((s) => s.id)).toEqual([
+      'tut.1.5',
+    ]);
+    expect(content.tutorialSteps.filter((step) => step.script === 'summon').map((s) => s.id)).toEqual([
+      'tut.3.2',
+    ]);
+    expect(content.tutorialStepById('tut.1.6')?.complete).toEqual({ type: 'ability_used', slot: 'a1' });
   });
 });

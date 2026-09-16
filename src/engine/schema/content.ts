@@ -11,6 +11,9 @@ import type { GearSetDef } from '@content/sets/types';
 import type { TitleDef } from '@content/titles/types';
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
+import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
+import { ENERGY_PROVISIONS } from '@content/balance/energy';
+import type { TutorialCondition } from '@content/tutorial/types';
 import { SHARD_RATES } from '@content/balance/summon';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { levelCap, statDeviation } from '@engine/champions/stats';
@@ -22,6 +25,7 @@ import { settlementSchema, stageShapeIssues } from './stage';
 import { bannerSchema } from './banner';
 import { bossSchema } from './boss';
 import { missionChapterSchema } from './mission';
+import { tutorialChapterSchema } from './tutorial';
 import { FEATURE_IDS } from '@content/balance/unlocks';
 import type { Goal, QuestBoardDef } from '@content/quests/types';
 import { GOAL_COUNTERS, goalCounterKeys } from '@engine/quests/goals';
@@ -89,6 +93,7 @@ export function validateContentRegistry(
     bosses: readonly unknown[];
     questBoards: readonly unknown[];
     missionChapters: readonly unknown[];
+    tutorialChapters: readonly unknown[];
     summonPool: readonly { id: string; rarity: string }[];
   },
   refs: ContentRefs,
@@ -110,6 +115,7 @@ export function validateContentRegistry(
     ...validateBosses(registry.bosses, refs),
     ...validateQuestBoards(registry.questBoards, registry.bosses, refs),
     ...validateMissionChapters(registry.missionChapters, registry.bosses, registry.champions, refs),
+    ...validateTutorialChapters(registry.tutorialChapters, refs),
   ];
 }
 
@@ -336,6 +342,137 @@ function validateMissionChapters(
     if (chest.currencies.length === 0 && !finale) error(path, 'a chapter chest pays something');
   });
   return issues;
+}
+
+/**
+ * The tutorial script (TUTORIAL.md). The script is the one system that can lock a chronicle out of
+ * its own game: a step waiting on something that cannot happen would leave the overlay up for ever.
+ * So the shape is checked hard here —
+ *
+ * - **a step can be finished.** Its completion names a screen or dialog that exists (the schema),
+ *   a counter something writes, a stand that exists, or one of the two answers the overlay itself
+ *   reports; and `acknowledged`/`clicked` are answers, never gates, so a `when` may not use them.
+ * - **a step can be acted on.** Everything the pointer rests on is also something the player is
+ *   allowed to touch.
+ * - **the chapters open in the order they are written**, by unlock level, with the new game first.
+ * - **the Provisions in `balance/energy.ts` and the script agree**: every grant in the table is
+ *   handed over by the chapter it is named for, and no step pays energy the table does not know.
+ */
+function validateTutorialChapters(chapters: readonly unknown[], refs: ContentRefs): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  if (chapters.length !== TUTORIAL_CHAPTER_COUNT)
+    error('tutorial', `${chapters.length} chapters; the script has ${TUTORIAL_CHAPTER_COUNT}`);
+
+  const seenIds = new Set<string>();
+  const scripted = new Map<string, string>();
+  /** Provision id → the step that hands it over, for the cross-check against the balance table. */
+  const provisions = new Map<string, string>();
+  let previousLevel = 0;
+
+  chapters.forEach((raw, position) => {
+    const result = tutorialChapterSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`tutorial[${position}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const chapter = result.data;
+    const path = `tutorial.${chapter.id}`;
+    const first = position === 0;
+    if (chapter.index !== position + 1)
+      error(path, `is chapter ${chapter.index} but sits at position ${position + 1}`);
+    if (!refs.i18nKeys.has(chapter.name)) error(path, `missing i18n key ${chapter.name}`);
+    // The first chapter is the new game; every other one waits for the feature it teaches, and
+    // they are written in the order those features open.
+    if (chapter.trigger.type === 'new_game') {
+      if (!first) error(path, 'only the first chapter is triggered by a new game');
+    } else {
+      if (first) error(path, 'the first chapter is triggered by a new game');
+      const level = unlockLevel(chapter.trigger.feature);
+      if (level < previousLevel)
+        error(path, `opens at level ${level}, before chapter ${chapter.index - 1} at ${previousLevel}`);
+      previousLevel = level;
+    }
+    // Chapter 1 is the one that has to be walked (owner's answer Q4).
+    if (first && chapter.skippable) error(path, 'the first chapter cannot be skippable');
+    if (!first && !chapter.skippable) error(path, 'every chapter after the first is skippable');
+
+    chapter.steps.forEach((step, order) => {
+      const stepPath = `${path}.${step.id}`;
+      if (seenIds.has(step.id)) error(stepPath, 'duplicate step id');
+      seenIds.add(step.id);
+      if (step.chapter !== chapter.index) error(stepPath, `belongs to chapter ${step.chapter}`);
+      if (step.index !== order + 1) error(stepPath, `is ${step.index} but sits at ${order + 1}`);
+      if (step.id !== `tut.${chapter.index}.${order + 1}`) error(stepPath, 'id does not match where it sits');
+      if (!refs.i18nKeys.has(step.dialogue)) error(stepPath, `missing i18n key ${step.dialogue}`);
+
+      // What the pointer rests on is what the player may press.
+      if (step.allow !== 'all')
+        for (const target of step.spotlight)
+          if (!step.allow.includes(target))
+            error(stepPath, `points at ${target}, which the step does not allow`);
+
+      for (const condition of flattenConditions(step.complete as TutorialCondition))
+        for (const problem of conditionIssues(condition)) error(stepPath, `completion ${problem}`);
+      if (step.when)
+        for (const condition of flattenConditions(step.when as TutorialCondition)) {
+          for (const problem of conditionIssues(condition)) error(stepPath, `trigger ${problem}`);
+          if (condition.type === 'acknowledged' || condition.type === 'clicked')
+            error(stepPath, `is triggered by ${condition.type}, which only finishes a step`);
+        }
+
+      if (step.script) {
+        const already = scripted.get(step.script);
+        if (already) error(stepPath, `a second scripted ${step.script} (${already} is the first)`);
+        else scripted.set(step.script, step.id);
+      }
+
+      const grant = step.grant;
+      if (!grant) return;
+      if (grant.id in ENERGY_PROVISIONS) {
+        const owed = ENERGY_PROVISIONS[grant.id as keyof typeof ENERGY_PROVISIONS];
+        const paid = grant.currencies.reduce(
+          (sum, entry) => sum + (entry.currency === 'energy' ? entry.amount : 0),
+          0,
+        );
+        if (paid !== owed) error(stepPath, `pays ${paid} energy for ${grant.id}, which is ${owed}`);
+        if (grant.currencies.length !== 1) error(stepPath, `${grant.id} is a provision and pays energy only`);
+        if (grant.id !== `tutorial.${chapter.id.slice('tut.'.length)}`)
+          error(stepPath, `hands over ${grant.id}, which belongs to another chapter`);
+        if (provisions.has(grant.id)) error(stepPath, `${grant.id} is handed over twice`);
+        provisions.set(grant.id, step.id);
+      } else if (!grant.id.startsWith('tutorial.gift.')) {
+        error(stepPath, `grant id ${grant.id} is neither a provision nor a tutorial.gift.*`);
+      } else if (grant.currencies.some((entry) => entry.currency === 'energy')) {
+        error(stepPath, `${grant.id} pays energy outside ENERGY_PROVISIONS`);
+      }
+    });
+  });
+
+  // Nothing in the balance table may be orphaned: a provision no step hands over is energy the
+  // design promised and the game never pays.
+  for (const id of Object.keys(ENERGY_PROVISIONS))
+    if (!provisions.has(id)) error('tutorial', `${id} is in ENERGY_PROVISIONS but no step grants it`);
+  return issues;
+}
+
+/** A condition and, for `all`/`any`, everything inside it. */
+function flattenConditions(condition: TutorialCondition): TutorialCondition[] {
+  return condition.type === 'all' || condition.type === 'any'
+    ? [condition, ...condition.of.flatMap(flattenConditions)]
+    : [condition];
+}
+
+/** What a single condition references, where that is something content can get wrong. */
+function conditionIssues(condition: TutorialCondition): string[] {
+  const problems: string[] = [];
+  if (condition.type === 'counter' && !isCounterKey(condition.key))
+    problems.push(`counts ${condition.key}, which nothing writes`);
+  if (condition.type === 'feature' && unlockLevel(condition.feature) > PLAYER_MAX_LEVEL)
+    problems.push(`waits for ${condition.feature}, which never unlocks`);
+  return problems;
 }
 
 const pad2 = (n: number): string => `${n}`.padStart(2, '0');

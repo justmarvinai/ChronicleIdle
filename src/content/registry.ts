@@ -33,6 +33,8 @@ import { QUESTS, QUEST_BOARDS, QUEST_BOARD_BY_PERIOD, QUEST_BY_ID } from '@conte
 import type { QuestBoardDef, QuestDef, QuestPeriod } from '@content/quests/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
 import type { TitleDef } from '@content/titles/types';
+import { TUTORIAL_CHAPTERS, TUTORIAL_STEPS, TUTORIAL_STEP_BY_ID } from '@content/tutorial/index';
+import type { TutorialChapterDef, TutorialStepDef } from '@content/tutorial/types';
 import type { Difficulty } from '@content/balance/battle';
 import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounter';
 import { bossEncounter, parseBossEncounterId } from '@engine/bosses/encounter';
@@ -85,6 +87,10 @@ export interface ContentRegistry {
   bossTier(bossId: string, tierId: string): BossTierDef | undefined;
   /** The encounter a key buys on a boss tier (BOSSES.md §1). */
   bossEncounter(bossId: string, tierId: string): EncounterDef | undefined;
+  /** The tutorial script, in the order it is taught (`TUTORIAL.md`). */
+  tutorialChapters: readonly TutorialChapterDef[];
+  tutorialSteps: readonly TutorialStepDef[];
+  tutorialStepById(id: string): TutorialStepDef | undefined;
   /** Champions a shard may pull: every definition whose `obtain` lists `summon`. */
   summonPool: readonly ChampionDef[];
 }
@@ -157,6 +163,9 @@ export function buildContentRegistry(): ContentRegistry {
     questById: (id) => QUEST_BY_ID[id],
     bossTier: tierOf,
     bossEncounter: bossEncounterOf,
+    tutorialChapters: TUTORIAL_CHAPTERS,
+    tutorialSteps: TUTORIAL_STEPS,
+    tutorialStepById: (id) => TUTORIAL_STEP_BY_ID[id],
     summonPool: SUMMON_POOL,
   };
 }

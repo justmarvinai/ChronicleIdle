@@ -37,7 +37,8 @@ async function main(): Promise<void> {
       `${content.gearSets.length} gear sets, ${content.banners.length} banners, ` +
       `${content.bosses.length} boss(es) over ${content.bosses.reduce((n, b) => n + b.tiers.length, 0)} tiers, ` +
       `${content.questBoards.length} quest boards (${content.quests.length} quests), ` +
-      `${content.missionChapters.length} chapters (${content.missions.length} missions) and ` +
+      `${content.missionChapters.length} chapters (${content.missions.length} missions), ` +
+      `${content.tutorialChapters.length} tutorial chapters (${content.tutorialSteps.length} steps) and ` +
       `${content.summonPool.length} summonable champions validated against ${assetKeys.size} assets and ` +
       `${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );

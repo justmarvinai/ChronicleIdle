@@ -17,10 +17,13 @@ export const ENERGY_REFILL_AMOUNT = 100;
  * Chronicler's Provisions and other fixed early grants (docs/design/ECONOMY.md §5.1). Each grant
  * is claimed at most once per chronicle; the id is stored in the save.
  */
-export const ENERGY_PROVISIONS: Readonly<Record<string, number>> = {
+export const ENERGY_PROVISIONS = {
   'tutorial.awakening': 500,
   'tutorial.the_hold': 250,
   'tutorial.the_binding': 250,
   'tutorial.routine': 250,
   'tutorial.the_path': 250,
-};
+} as const satisfies Readonly<Record<string, number>>;
+
+/** The grants above, by id — the tutorial's chapters name one each (`TUTORIAL.md` §Provisions). */
+export type ProvisionId = keyof typeof ENERGY_PROVISIONS;
