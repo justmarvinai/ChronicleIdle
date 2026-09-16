@@ -22,6 +22,7 @@ import { addChampionXp } from '@engine/champions/xp';
 import { addEnergy } from '@engine/economy/energy';
 import { grant, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
+import { bumpCounter, counter } from '@engine/progression/counters';
 import { createRng } from '@engine/rng/rng';
 import type { GearInstance } from '@engine/gear/instance';
 import { applyGearDrop } from './gear';
@@ -58,7 +59,7 @@ export interface RunStarted {
   runIndex: number;
 }
 
-const RUN_COUNTER = 'campaign.runs';
+const RUN_COUNTER = 'campaign.runs' as const;
 
 /**
  * Charges a run and points the save at it. Energy is spent *before* the battle, so a crash or a
@@ -74,10 +75,12 @@ export function applyRunStart(save: SaveGame, pointer: StagePointer, now: number
     now,
   });
   if (!begun.ok) return begun;
-  const runIndex = (save.stats[RUN_COUNTER] ?? 0) + 1;
+  const runIndex = counter(save, RUN_COUNTER) + 1;
   save.energy = begun.value.energy;
   save.campaign.selected = pointer;
   save.stats[RUN_COUNTER] = runIndex;
+  // What the run cost, for the daily quest that asks for energy spent (QUESTS_MISSIONS.md §2).
+  bumpCounter(save, 'energy.spent', begun.value.cost);
   return ok({
     encounterId: stageEncounterId(ref.stage.id, pointer.difficulty),
     cost: begun.value.cost,
@@ -191,13 +194,10 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   summary.levelUp = levelUp;
   summary.changes.push(...levelUp.changes);
 
-  // Lifetime counters the profile and later the quest tracker read.
-  const bump = (key: string, by = 1): void => {
-    save.stats[key] = (save.stats[key] ?? 0) + by;
-  };
-  bump('campaign.cleared');
-  bump('campaign.stars', settled.record.starsAfter - settled.record.starsBefore);
-  if (rewards.gear.length) bump('campaign.gearDrops', rewards.gear.length);
+  // Lifetime counters the profile and the quest tracker read (`@engine/progression/counters`).
+  bumpCounter(save, 'campaign.cleared');
+  bumpCounter(save, 'campaign.stars', settled.record.starsAfter - settled.record.starsBefore);
+  bumpCounter(save, 'campaign.gearDrops', rewards.gear.length);
   return ok(summary);
 }
 

@@ -35,6 +35,7 @@ import { bestPull, summonMany, type Pull } from '@engine/summon/summon';
 import type { Rng } from '@engine/rng/rng';
 import type { SaveGame, SummonRecord } from '@engine/schema/save';
 import { progressOf } from './campaign';
+import { bumpCounter, bumpCounterId } from '@engine/progression/counters';
 
 export interface SummonInput {
   bannerId: string;
@@ -139,9 +140,9 @@ export function applySummon(save: SaveGame, input: SummonInput): Result<SummonSu
   const best = rarest ? pulls[rolled.value.pulls.indexOf(rarest)] : undefined;
   if (!best) return fail('invalid_argument', 'A press pulls at least once');
 
-  bump(save, 'summon.pulls', pulls.length);
-  bump(save, `summon.pulls.${input.shard}`, pulls.length);
-  for (const pull of pulls) bump(save, `summon.${pull.record.rarity}`, 1);
+  bumpCounter(save, 'summon.pulls', pulls.length);
+  bumpCounterId(save, 'summon.pulls.', input.shard, pulls.length);
+  for (const pull of pulls) bumpCounterId(save, 'summon.rarity.', pull.record.rarity);
 
   return ok({
     shard: input.shard,
@@ -176,7 +177,7 @@ export function applyExchange(
   if (!paid.ok) return paid;
   const granted = grant(paid.value.wallet, [{ currency: SHARD_CURRENCY[input.shard], amount: input.count }]);
   save.wallet = granted.wallet;
-  bump(save, 'summon.exchanged', input.count);
+  bumpCounter(save, 'summon.exchanged', input.count);
   return ok({
     shard: input.shard,
     count: input.count,
@@ -222,7 +223,7 @@ export function applyChampionChoice(
     instanceId: instance.instanceId,
     at: input.now,
   };
-  bump(save, 'summon.choices', 1);
+  bumpCounter(save, 'summon.choices');
   return ok({ choice, instance, copiesBefore });
 }
 
@@ -277,9 +278,4 @@ function recordOf(
     mercy: pull.mercy,
     featured: pull.featured,
   };
-}
-
-function bump(save: SaveGame, key: string, by: number): void {
-  if (by <= 0) return;
-  save.stats[key] = (save.stats[key] ?? 0) + by;
 }

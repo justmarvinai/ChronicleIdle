@@ -41,6 +41,7 @@ import { createRng, type Rng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
 import { inventoryRoom } from './gear';
 import { applyPlayerXp, NO_LEVEL_UP, type LevelUpResult } from './progression';
+import { bumpCounter, bumpCounterId } from '@engine/progression/counters';
 
 /** The stored record for a boss, read against the period it is in now. */
 export function bossStateOf(save: SaveGame, boss: BossDef, now: number): BossSave {
@@ -182,9 +183,10 @@ export function applyBossFightFinish(
   const unlocked = claimableChests(tier, state).filter((pct) => !earnedBefore.has(pct));
   const levelUp = tier.playerXp > 0 ? applyPlayerXp(save, tier.playerXp, input.now) : NO_LEVEL_UP;
 
-  bump(save, 'boss.fights', 1);
-  bump(save, 'boss.damage', Math.round(damage));
-  if (input.outcome.kind === 'victory') bump(save, 'boss.kills', 1);
+  bumpCounter(save, 'boss.fights');
+  bumpCounterId(save, 'boss.fights.', boss.id);
+  bumpCounter(save, 'boss.damage', Math.round(damage));
+  if (input.outcome.kind === 'victory') bumpCounter(save, 'boss.kills');
 
   return ok({
     bossId: boss.id,
@@ -232,7 +234,7 @@ export function applyBossChestClaim(
 
   const paid = payChest(save, chest, input);
   save.bosses[boss.id] = withChestClaimed(state, tier.id, chest.pct);
-  bump(save, 'boss.chests', 1);
+  bumpCounter(save, 'boss.chests');
   return ok({ bossId: boss.id, tierId: tier.id, pct: chest.pct, ...paid });
 }
 
@@ -307,14 +309,9 @@ export function applyBossRollover(save: SaveGame, now: number): BossTribute[] {
         gear: paid.gear,
         gearLost: paid.gearLost,
       });
-      bump(save, 'boss.chests', 1);
+      bumpCounter(save, 'boss.chests');
     }
     save.bosses[boss.id] = freshPeriod(key, stored.records);
   }
   return tributes;
-}
-
-function bump(save: SaveGame, key: string, by: number): void {
-  if (by <= 0) return;
-  save.stats[key] = (save.stats[key] ?? 0) + by;
 }

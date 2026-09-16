@@ -56,6 +56,7 @@ export default function BattleScreen({ route }: ScreenProps) {
   const view = useBattleSession((s) => s.view);
   const seed = useBattleSession((s) => s.seed);
   const request = useBattleSession((s) => s.request);
+  const usedAuto = useBattleSession((s) => s.usedAuto);
   const control = useBattleSession((s) => s.control);
   const speed = useBattleSession((s) => s.speed);
   const paused = useBattleSession((s) => s.paused);
@@ -126,12 +127,14 @@ export default function BattleScreen({ route }: ScreenProps) {
     }
     if (recorded.current) return;
     recorded.current = true;
-    actions.recordBattle(outcome, encounter.id);
+    // A victory the player steered every turn of counts for the daily quest; one the AI touched
+    // does not (QUESTS_MISSIONS.md §2).
+    actions.recordBattle(outcome, encounter.id, !usedAuto);
     // A boss fight banks its damage here; a campaign run pays out and may start the next of a batch.
     if (!settleBossFight(outcome) && settleCampaignRun(outcome).repeated) return;
     const id = window.setTimeout(() => actions.replace({ name: 'battle-result' }), RESULT_DELAY_MS);
     return () => window.clearTimeout(id);
-  }, [status, outcome, encounter, actions, bench]);
+  }, [status, outcome, encounter, actions, bench, usedAuto]);
 
   // A fresh fight (the next run of an auto-repeat batch) may be recorded again.
   useEffect(() => {

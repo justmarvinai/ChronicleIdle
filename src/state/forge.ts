@@ -18,6 +18,7 @@ import { clonePiece, type GearInstance } from '@engine/gear/instance';
 import type { Rng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
 import { inventoryRoom, levelGoldSpent } from './gear';
+import { bumpCounter } from '@engine/progression/counters';
 
 export interface CraftInput {
   tier: CraftTier;
@@ -60,7 +61,7 @@ export function applyCraft(save: SaveGame, input: CraftInput): Result<CraftSumma
   save.wallet = paid.value.wallet;
   save.counters.gear = serial;
   save.inventory[struck.value.instanceId] = struck.value;
-  bump(save, 'forge.crafts', 1);
+  bumpCounter(save, 'forge.crafts');
   return ok({
     piece: clonePiece(struck.value),
     tier: input.tier,
@@ -95,7 +96,7 @@ export function applyDismantle(
   save.wallet = paid.wallet;
   const broken = pieces.map((piece) => clonePiece(piece));
   for (const piece of broken) delete save.inventory[piece.instanceId];
-  bump(save, 'forge.dismantles', broken.length);
+  bumpCounter(save, 'forge.dismantles', broken.length);
   return ok({
     pieces: broken,
     yield: plan.value.yield,
@@ -138,7 +139,7 @@ export function applyRefine(
   save.wallet = paid.value.wallet;
   piece.stars = plan.value.result.stars;
   delete save.inventory[spent.instanceId];
-  bump(save, 'forge.refines', 1);
+  bumpCounter(save, 'forge.refines');
   return ok({
     piece: clonePiece(piece),
     sacrifice: spent,
@@ -164,9 +165,4 @@ export function craftSets(tier: CraftTier): readonly { id: string; name: string 
 /** The level a tier opens at; the Forge itself is gated by the `forge` feature. */
 export function craftTierLevel(tier: CraftTier): number {
   return CRAFT_TIER[tier].level;
-}
-
-function bump(save: SaveGame, key: string, by: number): void {
-  if (by <= 0) return;
-  save.stats[key] = (save.stats[key] ?? 0) + by;
 }

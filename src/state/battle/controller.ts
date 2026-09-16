@@ -52,6 +52,12 @@ export interface BattleSessionState {
   seed: string;
   /** Set by the battle screen when a bench fight ends, read by the perf screen. */
   frameStats: FrameStats | null;
+  /**
+   * Whether the AI has steered any part of this fight — true from the first moment auto is on.
+   * "Win a battle in Manual mode" (QUESTS_MISSIONS.md §2) means the player answered every turn
+   * themselves, so a fight that was handed over once does not count, however it started.
+   */
+  usedAuto: boolean;
 }
 
 export interface StartBattleInput {
@@ -83,6 +89,7 @@ const initial: BattleSessionState = {
   outcome: null,
   seed: '',
   frameStats: null,
+  usedAuto: false,
 };
 
 export interface BattleController {
@@ -204,6 +211,7 @@ export function createBattleController(): BattleController {
         control: input.control,
         speed: input.speed,
         seed,
+        usedAuto: input.control === 'auto',
       });
       presenter.mount?.(view);
       void pump();
@@ -235,7 +243,9 @@ export function createBattleController(): BattleController {
       }
     },
     setControl(control) {
-      publish({ control });
+      // Once the AI has had the wheel the fight is no longer a manual win, even if it is handed
+      // back (QUESTS_MISSIONS.md §2).
+      publish(control === 'auto' ? { control, usedAuto: true } : { control });
       if (!state) return;
       setBattleControl(state, control);
       // Switching to auto while a request is open answers it with the policy.

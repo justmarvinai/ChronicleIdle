@@ -80,6 +80,7 @@ import {
   type SummonSummary,
 } from './summon';
 import type { GearInstance } from '@engine/gear/instance';
+import { bumpCounter, bumpCounterId, type CounterKey } from '@engine/progression/counters';
 import {
   applyTavernFeed,
   applyTavernRankUp,
@@ -255,7 +256,11 @@ export interface GameActions {
   /** Remembers the team that just went into battle. */
   setLastUsedTeam(mode: TeamMode, instanceIds: readonly string[]): void;
   /** Lifetime battle counters for the profile and later quests. */
-  recordBattle(outcome: BattleOutcome, encounterId: string): void;
+  /**
+   * Banks a finished fight's lifetime counters. `manual` says the player answered every turn
+   * themselves, which the daily quest asks for (QUESTS_MISSIONS.md §2).
+   */
+  recordBattle(outcome: BattleOutcome, encounterId: string, manual?: boolean): void;
   /** Points the map, stage list and battle setup at a stage; it reopens there. */
   selectStage(pointer: StagePointer): Result<void>;
   /** Runs the auto-repeat selector is set to (1 = a single run). */
@@ -1253,16 +1258,16 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               });
             },
 
-            recordBattle(outcome, encounterId) {
+            recordBattle(outcome, encounterId, manual = false) {
               withSave((save) => {
-                const bump = (key: string, by = 1): void => {
-                  save.stats[key] = (save.stats[key] ?? 0) + by;
-                };
-                bump('battles.fought');
-                bump(`battles.${outcome.kind}`);
-                bump('battles.allyTurns', outcome.allyTurns);
-                bump(`battles.fought.${encounterId}`);
-                if (outcome.kind === 'victory') bump(`battles.won.${encounterId}`);
+                bumpCounter(save, 'battles.fought');
+                bumpCounter(save, `battles.${outcome.kind}` as CounterKey);
+                bumpCounter(save, 'battles.allyTurns', outcome.allyTurns);
+                bumpCounterId(save, 'battles.fought.', encounterId);
+                if (outcome.kind === 'victory') {
+                  bumpCounterId(save, 'battles.won.', encounterId);
+                  if (manual) bumpCounter(save, 'battles.won.manual');
+                }
               });
               events.emit({ type: 'battle.ended', outcome: outcome.kind, encounterId });
             },

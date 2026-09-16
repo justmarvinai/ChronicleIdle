@@ -26,6 +26,7 @@ import { planEquip, planUnequip } from '@engine/gear/equip';
 import { clonePiece, type GearInstance } from '@engine/gear/instance';
 import type { SaveGame } from '@engine/schema/save';
 import type { Rng } from '@engine/rng/rng';
+import { bumpCounter } from '@engine/progression/counters';
 
 /** Gold for one level of a piece: `LEVEL_COST_BASE[star] × (1 + 0.35 × level)` (GEAR.md §3). */
 export function levelCost(stars: number, level: number): number {
@@ -141,7 +142,7 @@ export function applyGearLevel(
   if (!result.ok) return result;
   save.wallet = paid.value.wallet;
   save.inventory[input.pieceId] = result.value.piece;
-  bump(save, 'gear.levels', result.value.piece.level - piece.level);
+  bumpCounter(save, 'gear.levels', result.value.piece.level - piece.level);
   return ok({
     // `result.value.piece` is handed to the draft on the line above; the summary keeps its own.
     piece: clonePiece(result.value.piece),
@@ -204,11 +205,6 @@ export function applyGearDrop(save: SaveGame, input: DropInput): GearInstance | 
   );
   save.counters.gear = serial;
   save.inventory[piece.instanceId] = piece;
-  bump(save, 'gear.drops', 1);
+  bumpCounter(save, 'gear.drops');
   return clonePiece(piece);
-}
-
-function bump(save: SaveGame, key: string, by: number): void {
-  if (by <= 0) return;
-  save.stats[key] = (save.stats[key] ?? 0) + by;
 }

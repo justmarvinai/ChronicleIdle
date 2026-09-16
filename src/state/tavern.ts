@@ -28,6 +28,7 @@ import {
   planSkillUpgrade,
 } from '@engine/progression/tavern-skills';
 import type { SaveGame } from '@engine/schema/save';
+import { bumpCounter } from '@engine/progression/counters';
 
 /** The roster and the champion catalogue, as the Tavern engine wants them. */
 export function tavernLookupOf(save: SaveGame): TavernLookup {
@@ -82,8 +83,8 @@ export function applyTavernFeed(
   save.roster[input.instanceId] = fed;
   const eaten = preview.value.food.map((food) => food.instanceId);
   eatChampions(save, preview.value.food);
-  bump(save, 'tavern.levelUps', preview.value.levelsGained);
-  bump(save, 'tavern.foodEaten', eaten.length);
+  bumpCounter(save, 'tavern.levelUps', preview.value.levelsGained);
+  bumpCounter(save, 'tavern.foodEaten', eaten.length);
   return ok({
     instanceId: input.instanceId,
     level: fed.level,
@@ -121,8 +122,8 @@ export function applyTavernRankUp(
   save.roster[input.instanceId] = ranked;
   const eaten = plan.value.food.map((food) => food.instanceId);
   eatChampions(save, plan.value.food);
-  bump(save, 'tavern.rankUps', 1);
-  bump(save, 'tavern.foodEaten', eaten.length);
+  bumpCounter(save, 'tavern.rankUps');
+  bumpCounter(save, 'tavern.foodEaten', eaten.length);
   return ok({ instanceId: input.instanceId, stars: ranked.stars, eaten, changes: paid.value.changes });
 }
 
@@ -151,7 +152,7 @@ export function applyTavernSkillUpgrade(
 
   save.wallet = paid.value.wallet;
   save.roster[input.instanceId] = upgradeChampionSkill(target, plan.value);
-  bump(save, 'tavern.skillUpgrades', 1);
+  bumpCounter(save, 'tavern.skillUpgrades');
   return ok({
     instanceId: input.instanceId,
     abilityId: plan.value.abilityId,
@@ -175,9 +176,4 @@ function eatChampions(save: SaveGame, food: readonly ChampionInstance[]): void {
     team.presets = team.presets.map((preset) => preset.filter((id) => !gone.has(id)));
     team.lastUsed = team.lastUsed.filter((id) => !gone.has(id));
   }
-}
-
-function bump(save: SaveGame, key: string, by: number): void {
-  if (by <= 0) return;
-  save.stats[key] = (save.stats[key] ?? 0) + by;
 }

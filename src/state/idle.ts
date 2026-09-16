@@ -27,6 +27,7 @@ import type { Rng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
 import { progressOf } from './campaign';
 import { applyPlayerXp, NO_LEVEL_UP, type LevelUpResult } from './progression';
+import { bumpCounter } from '@engine/progression/counters';
 
 export interface IdleView {
   fill: IdleFill;
@@ -114,8 +115,8 @@ export function applyIdleClaim(save: SaveGame, input: IdleClaimInput): Result<Id
   changes.push(...levelUp.changes);
 
   save.idle.lastClaimAt = input.now;
-  bump(save, 'idle.claims', 1);
-  bump(save, 'idle.hours', Math.floor(view.fill.hours));
+  bumpCounter(save, 'idle.claims');
+  bumpCounter(save, 'idle.hours', Math.floor(view.fill.hours));
 
   return ok({
     hours: view.fill.hours,
@@ -127,9 +128,4 @@ export function applyIdleClaim(save: SaveGame, input: IdleClaimInput): Result<Id
     procs: haul.procs,
     wasFull: view.fill.full,
   });
-}
-
-function bump(save: SaveGame, key: string, by: number): void {
-  if (by <= 0) return;
-  save.stats[key] = (save.stats[key] ?? 0) + by;
 }
