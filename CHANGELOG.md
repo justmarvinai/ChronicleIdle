@@ -59,6 +59,26 @@ Choristers standing in the way of every hit meant for her.
 - `damageToBoss` already counted only the boss's own definition id, so an escort's health never
   feeds the week's pool — now with a boss that has one, and a test to say so.
 
+### Performance
+
+- The bench fights the heaviest stage the game draws now: `pnpm perf:battle --weekly` runs Nyxara's
+  Normal race — a ×2.4 washed sprite, its escort beside it, seven units and the phase beats —
+  beside the stress fight and the daily boss's.
+- `pnpm perf:battle --software` in this GPU-less build environment (SwiftShader, 1920 × 1080, ×4,
+  auto, four maxed legendaries and no gear — which is why the weekly race ends in a defeat):
+
+  | scenario | p50 | p95 | max | frames | fight |
+  | --- | --- | --- | --- | --- | --- |
+  | Stress Bench, 4 v 4 × 2 waves | 383.4 ms | 416.7 ms | 416.7 ms | 59 | 31.4 s, victory |
+  | Gravemaw Easy, 4 v 1 race | 366.7 ms | 416.7 ms | 433.3 ms | 55 | 30.5 s, victory |
+  | Nyxara Normal, 4 v 3 race | 400.0 ms | 433.4 ms | 450.0 ms | 70 | 37.6 s, defeat |
+
+  Software WebGL renders the stage at two or three frames a second, so these runs only prove the
+  bench pipeline and that the weekly fight costs about 4 % more than the stress fight it is
+  measured against — three more sprites and a phase burst, no new render path. The 16 ms p95 budget
+  is still signed off on the owner's iGPU laptop (`USER_QUESTIONS.md` Q30). No console problems in
+  any of the three fights.
+
 ## [0.0.10] — 2026-09-15 — Phase 10: Daily Boss
 
 Gravemaw, the Bone Tyrant: a damage race in four tiers, two keys a day, and damage that adds up
