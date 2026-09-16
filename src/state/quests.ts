@@ -21,7 +21,11 @@ import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import { boardComplete, boardView, type BoardView } from '@engine/quests/board';
 import type { QuestPeriodSave, SaveGame } from '@engine/schema/save';
 import { dailyKey, msUntilDailyReset, msUntilWeeklyReset, weeklyKey } from '@engine/time/clock';
+import { GOAL_LOOKUPS } from './goal-lookups';
 import { mergeAmounts, payCurrencies } from './payout';
+
+/** Quests claimed in a day that the mission line counts as a day's work (`QUESTS_MISSIONS.md` §4). */
+const DAILY_FIVE = 5;
 
 /** The key of the period a board is in right now. */
 export function questPeriodKey(period: QuestPeriod, now: number): string {
@@ -68,6 +72,8 @@ export function questBoardState(save: SaveGame, period: QuestPeriod, now: number
   const view = boardView(board, {
     save,
     baseline: record.baseline,
+    now,
+    lookups: GOAL_LOOKUPS,
     playerLevel: save.profile.level,
     claimedQuests: record.claimed,
     claimedChests: record.chests,
@@ -128,6 +134,7 @@ export function applyQuestClaim(
   }
 
   const record = writeableRecord(save, period, now);
+  const claimedBefore = record.claimed.length;
   let points = 0;
   const rewards: CurrencyAmount[] = [];
   for (const view of claimable) {
@@ -136,6 +143,12 @@ export function applyQuestClaim(
     rewards.push(...view.quest.rewards);
     bumpCounter(save, 'quests.claimed');
   }
+  /*
+   * Half a day's board is a day the mission line counts ("5 daily quests on 5 different days").
+   * A period's claims only ever grow, so the fifth is crossed exactly once in it.
+   */
+  if (period === 'daily' && claimedBefore < DAILY_FIVE && record.claimed.length >= DAILY_FIVE)
+    bumpCounter(save, 'quests.daily.days5');
   // Paid in one go, so five quests that each hand over gold read as one pile of it.
   const currencies = mergeAmounts(rewards);
   const changes = payCurrencies(save, currencies, now);

@@ -18,7 +18,7 @@ import { clonePiece, type GearInstance } from '@engine/gear/instance';
 import type { Rng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
 import { inventoryRoom, levelGoldSpent } from './gear';
-import { bumpCounter } from '@engine/progression/counters';
+import { bumpCounter, bumpCounterId } from '@engine/progression/counters';
 
 export interface CraftInput {
   tier: CraftTier;
@@ -62,6 +62,8 @@ export function applyCraft(save: SaveGame, input: CraftInput): Result<CraftSumma
   save.counters.gear = serial;
   save.inventory[struck.value.instanceId] = struck.value;
   bumpCounter(save, 'forge.crafts');
+  // Per bench too: the mission line asks for a Tier II and a Tier III piece by name.
+  bumpCounterId(save, 'forge.crafts.', input.tier);
   return ok({
     piece: clonePiece(struck.value),
     tier: input.tier,

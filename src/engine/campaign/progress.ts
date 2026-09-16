@@ -5,7 +5,7 @@
  * stage, settlement, difficulty and battle speed are open is *derived* from those (CLAUDE.md
  * §5.5), so a save can never disagree with its own progress.
  */
-import type { Difficulty } from '@content/balance/battle';
+import { DIFFICULTIES, type Difficulty } from '@content/balance/battle';
 import {
   BOSS_STAGE_NUMBER,
   SETTLEMENT_COUNT,
@@ -25,7 +25,8 @@ export interface CampaignProgress {
   bestTurns: Record<ProgressKey, number>;
 }
 
-export const DIFFICULTY_ORDER: readonly Difficulty[] = ['intro', 'normal', 'hard'];
+/** Intro → Normal → Hard: the order they unlock in, and the order every list shows them in. */
+export const DIFFICULTY_ORDER: readonly Difficulty[] = DIFFICULTIES;
 
 export function emptyCampaignProgress(): CampaignProgress {
   return { stars: {}, bestTurns: {} };

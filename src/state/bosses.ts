@@ -185,6 +185,8 @@ export function applyBossFightFinish(
 
   bumpCounter(save, 'boss.fights');
   bumpCounterId(save, 'boss.fights.', boss.id);
+  // Per tier as well, for the missions that ask for a key spent on one of them.
+  bumpCounterId(save, 'boss.fights.', `${boss.id}.${tier.id}`);
   bumpCounter(save, 'boss.damage', Math.round(damage));
   if (input.outcome.kind === 'victory') bumpCounter(save, 'boss.kills');
 

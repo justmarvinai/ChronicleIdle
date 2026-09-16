@@ -1,6 +1,11 @@
 /** Zod schema for quest content (docs/design/QUESTS_MISSIONS.md §1–3). */
 import { z } from 'zod';
+import { DIFFICULTIES } from '@content/balance/battle';
+import { CRAFT_TIERS } from '@content/balance/forge';
+import { SHARD_IDS } from '@content/balance/summon';
 import { CURRENCY_IDS } from '@content/currencies/types';
+import { RARITIES } from '@content/champions/types';
+import { SET_SIZES } from '@content/sets/types';
 import { FEATURE_IDS } from '@content/balance/unlocks';
 import { QUEST_PERIODS, type Goal } from '@content/quests/types';
 import type { Loosen } from './loosen';
@@ -10,11 +15,16 @@ const currencies = z
   .min(1);
 
 const count = z.number().int().positive();
+const bossId = z.string().regex(/^boss\.[a-z0-9_]+$/);
+const gearLevel = z.number().int().min(1).max(16);
+const settlement = z.number().int().min(1).max(12);
+const difficulty = z.enum(DIFFICULTIES);
 
 export const goalSchema: z.ZodType<Loosen<Goal>> = z.lazy(() =>
   z.discriminatedUnion('type', [
     z.object({ type: z.literal('login') }),
     z.object({ type: z.literal('any'), goals: z.array(goalSchema).min(2) }),
+    // What the play adds, counted from the period or the mission's activation.
     z.object({ type: z.literal('clear_stages'), count }),
     z.object({ type: z.literal('win_battles'), count }),
     z.object({ type: z.literal('win_manual'), count }),
@@ -23,13 +33,57 @@ export const goalSchema: z.ZodType<Loosen<Goal>> = z.lazy(() =>
     z.object({ type: z.literal('rank_up_times'), count }),
     z.object({ type: z.literal('skill_upgrades'), count }),
     z.object({ type: z.literal('gear_levels'), count }),
-    z.object({ type: z.literal('gear_reach_level'), level: z.number().int().min(1).max(16), count }),
-    z.object({ type: z.literal('craft'), count }),
+    z.object({ type: z.literal('craft'), count, tier: z.enum(CRAFT_TIERS).optional() }),
     z.object({ type: z.literal('dismantle'), count }),
-    z.object({ type: z.literal('summon'), count }),
+    z.object({ type: z.literal('gear_refine_times'), count }),
+    z.object({ type: z.literal('summon'), count, shard: z.enum(SHARD_IDS).optional() }),
     z.object({ type: z.literal('claim_idle'), count }),
-    z.object({ type: z.literal('boss_fights'), boss: z.string().regex(/^boss\.[a-z0-9_]+$/), count }),
-    z.object({ type: z.literal('complete_daily_quests_days'), count }),
+    z.object({ type: z.literal('boss_fights'), boss: bossId, count, tier: z.string().min(1).optional() }),
+    z.object({
+      type: z.literal('complete_daily_quests_days'),
+      count,
+      quests: z.literal(5).optional(),
+    }),
+    // What the chronicle is, read live off the save.
+    z.object({
+      type: z.literal('clear_stage'),
+      settlement,
+      stage: z.number().int().min(1).max(10),
+      difficulty,
+    }),
+    z.object({ type: z.literal('settlement_stars'), settlement, difficulty, stars: count }),
+    z.object({ type: z.literal('difficulty_stars'), difficulty, stars: count }),
+    z.object({ type: z.literal('own_champions'), count, rarity: z.enum(RARITIES).optional() }),
+    z.object({
+      type: z.literal('champion_reach_level'),
+      level: z.number().int().min(1).max(60),
+      count,
+      stars: z.number().int().min(1).max(6).optional(),
+    }),
+    z.object({ type: z.literal('champion_reach_stars'), stars: z.number().int().min(1).max(6), count }),
+    z.object({ type: z.literal('all_skills_maxed'), rarity: z.enum(RARITIES).optional() }),
+    z.object({ type: z.literal('player_level'), level: z.number().int().min(1).max(100) }),
+    z.object({ type: z.literal('team_power'), power: count }),
+    z.object({
+      type: z.literal('equip_pieces'),
+      count: z.number().int().min(1).max(6),
+      minStars: z.number().int().min(1).max(6).optional(),
+    }),
+    z.object({ type: z.literal('equip_full_set'), pieces: z.literal(SET_SIZES) }),
+    z.object({
+      type: z.literal('gear_reach_level'),
+      level: gearLevel,
+      count,
+      onOneChampion: z.boolean().optional(),
+    }),
+    z.object({ type: z.literal('boss_damage'), boss: bossId, tier: z.string().min(1), amount: count }),
+    z.object({
+      type: z.literal('boss_percent'),
+      boss: bossId,
+      tier: z.string().min(1),
+      pct: z.number().int().min(1).max(100),
+    }),
+    z.object({ type: z.literal('all_previous') }),
   ]),
 );
 

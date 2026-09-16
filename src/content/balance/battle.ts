@@ -51,8 +51,12 @@ export const BOSS_TURN_LIMIT_WEEKLY = 100;
  * Enemy scaling (BATTLE.md §4.5): `base × DIFFICULTY_MULT[difficulty] × stageScale(globalIndex)`.
  * The difficulty step is what the same stage costs on Normal and Hard.
  */
-export const DIFFICULTY_MULT = { intro: 1.0, normal: 2.5, hard: 6.0 } as const;
-export type Difficulty = keyof typeof DIFFICULTY_MULT;
+export const DIFFICULTIES = ['intro', 'normal', 'hard'] as const;
+export type Difficulty = (typeof DIFFICULTIES)[number];
+export const DIFFICULTY_MULT = { intro: 1.0, normal: 2.5, hard: 6.0 } as const satisfies Record<
+  Difficulty,
+  number
+>;
 
 /**
  * The stage term: the last stage's enemies are `STAGE_GROWTH_TOP` times the first's, and the rise

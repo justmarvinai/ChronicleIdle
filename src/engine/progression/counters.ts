@@ -62,8 +62,13 @@ export const COUNTER_KEYS = [
   // Quests
   /** Days whose daily quests were all completed, for the weekly quest that counts them. */
   'quests.daily.days',
+  /** Days on which at least five daily quests were claimed — the mission line's own ask. */
+  'quests.daily.days5',
   'quests.claimed',
   'quests.chests',
+  // The Chronicler's Path
+  'missions.claimed',
+  'missions.chests',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */
@@ -79,7 +84,10 @@ export type CounterKey = (typeof COUNTER_KEYS)[number];
 export const COUNTER_PREFIXES = [
   'battles.fought.',
   'battles.won.',
+  /** `boss.fights.<bossId>` and `boss.fights.<bossId>.<tierId>`, for the missions that name a tier. */
   'boss.fights.',
+  /** `forge.crafts.<tier>`, for the missions that name a bench. */
+  'forge.crafts.',
   'summon.pulls.',
   'summon.rarity.',
   QUEST_CHEST_COUNTER,

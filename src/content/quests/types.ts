@@ -12,6 +12,11 @@
  * `@engine/quests/goals` evaluates both and says which family a goal belongs to.
  */
 import type { GlyphKey } from '@assets/manifest.generated';
+import type { Difficulty } from '@content/balance/battle';
+import type { CraftTier } from '@content/balance/forge';
+import type { ShardId } from '@content/balance/summon';
+import type { Rarity } from '@content/champions/types';
+import type { SetSize } from '@content/sets/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { FeatureId } from '@content/balance/unlocks';
 
@@ -19,14 +24,16 @@ export const QUEST_PERIODS = ['daily', 'weekly'] as const;
 export type QuestPeriod = (typeof QUEST_PERIODS)[number];
 
 /**
- * What a quest asks for. The types here are the ones the daily and weekly quests use; the
- * Chronicler's Path (Phase 13) adds the rest of the DSL the design prints.
+ * What a quest or a mission asks for — one DSL for both (`QUESTS_MISSIONS.md` §1). The boards use
+ * the counter goals; the Chronicler's Path leans on the state predicates, which is why they are
+ * read live rather than counted.
  */
 export type Goal =
   /** Opening the game on the day. Its own trigger: reading the period completes it. */
   | { type: 'login' }
   /** Any one of several goals; progress is the closest of them. */
   | { type: 'any'; goals: Goal[] }
+  // ── The play, counted from the period or the mission's activation ─────────────────────────
   | { type: 'clear_stages'; count: number }
   | { type: 'win_battles'; count: number }
   | { type: 'win_manual'; count: number }
@@ -35,14 +42,46 @@ export type Goal =
   | { type: 'rank_up_times'; count: number }
   | { type: 'skill_upgrades'; count: number }
   | { type: 'gear_levels'; count: number }
-  /** A piece in the racks at `level` or better — a state, checked live. */
-  | { type: 'gear_reach_level'; level: number; count: number }
-  | { type: 'craft'; count: number }
+  /** `tier` counts that bench only (`forge.crafts.<tier>`). */
+  | { type: 'craft'; count: number; tier?: CraftTier }
   | { type: 'dismantle'; count: number }
-  | { type: 'summon'; count: number }
+  | { type: 'gear_refine_times'; count: number }
+  /** `shard` counts pulls on that shard only (`summon.pulls.<shard>`). */
+  | { type: 'summon'; count: number; shard?: ShardId }
   | { type: 'claim_idle'; count: number }
-  | { type: 'boss_fights'; boss: string; count: number }
-  | { type: 'complete_daily_quests_days'; count: number };
+  /** `tier` counts keys spent on that tier only (`boss.fights.<boss>.<tier>`). */
+  | { type: 'boss_fights'; boss: string; count: number; tier?: string }
+  /**
+   * Days whose daily quests were completed. `quests: 5` counts the days five were claimed — the
+   * mission line's "5 daily quests on 5 different days"; without it, the whole board.
+   */
+  | { type: 'complete_daily_quests_days'; count: number; quests?: 5 }
+  // ── What the chronicle *is*, read live off the save ───────────────────────────────────────
+  /** One stand, on one difficulty. Stage 10 is a settlement's boss (`CAMPAIGN.md` §2). */
+  | { type: 'clear_stage'; settlement: number; stage: number; difficulty: Difficulty }
+  | { type: 'settlement_stars'; settlement: number; difficulty: Difficulty; stars: number }
+  | { type: 'difficulty_stars'; difficulty: Difficulty; stars: number }
+  | { type: 'own_champions'; count: number; rarity?: Rarity }
+  /** Champions at `level` or better; `stars` narrows it to that rank or better. */
+  | { type: 'champion_reach_level'; level: number; count: number; stars?: number }
+  | { type: 'champion_reach_stars'; stars: number; count: number }
+  /** A champion of that rarity with every ability at its last step. */
+  | { type: 'all_skills_maxed'; rarity?: Rarity }
+  | { type: 'player_level'; level: number }
+  /** The strongest party the chronicle could field (`PARTY_SIZE_BOSS` champions). */
+  | { type: 'team_power'; power: number }
+  /** Pieces worn by one champion; `minStars` asks for that rank or better. */
+  | { type: 'equip_pieces'; count: number; minStars?: number }
+  /** A complete set group of that size on one champion (`GEAR.md` §5). */
+  | { type: 'equip_full_set'; pieces: SetSize }
+  /** Pieces at `level` or better — the racks, or one champion's six slots. */
+  | { type: 'gear_reach_level'; level: number; count: number; onOneChampion?: boolean }
+  /** Damage this period's keys have put into one tier's pool (`BOSSES.md` §1). */
+  | { type: 'boss_damage'; boss: string; tier: string; amount: number }
+  /** The best a tier has ever taken, as a share of its pool — a record, so it outlives resets. */
+  | { type: 'boss_percent'; boss: string; tier: string; pct: number }
+  /** Every mission before this one — the last page of the Path. */
+  | { type: 'all_previous' };
 
 export type GoalType = Goal['type'];
 

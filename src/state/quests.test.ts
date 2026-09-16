@@ -68,7 +68,9 @@ function playTheWholeBoard(c: Chronicle): void {
       });
       continue;
     }
-    played(c, counterKeyOf(goal.type), 'amount' in goal ? goal.amount : goal.count);
+    // Every remaining daily goal asks for a count of something, or an amount of energy.
+    const asked = 'amount' in goal ? goal.amount : 'count' in goal ? goal.count : 1;
+    played(c, counterKeyOf(goal.type), asked);
   }
 }
 
