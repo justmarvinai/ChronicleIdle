@@ -4,8 +4,10 @@
  * stage measured over the ×4 Stress Bench fight (4 v 4, two waves, four maxed legendaries).
  *
  *   pnpm perf:battle              report only
- *   pnpm perf:battle --boss       the boss race instead of the stress fight (a washed 2× sprite,
- *                                 the boss HUD, and a race that runs to the turn limit)
+ *   pnpm perf:battle --boss       the daily boss's race instead of the stress fight (a washed 2×
+ *                                 sprite, the boss HUD, and a race that runs to the turn limit)
+ *   pnpm perf:battle --weekly     the weekly boss's race (a ×2.4 sprite, two adds beside it, the
+ *                                 phase beats) — the heaviest stage the game draws
  *   pnpm perf:battle --strict     exit 1 when p95 exceeds the 16 ms budget
  *   pnpm perf:battle --software   force SwiftShader (CI runners without a GPU; numbers are not
  *                                 comparable with the iGPU budget, only with earlier runs)
@@ -21,6 +23,7 @@ const PRESET_CHROMIUM = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const strict = process.argv.includes('--strict');
 const software = process.argv.includes('--software');
 const boss = process.argv.includes('--boss');
+const weekly = process.argv.includes('--weekly');
 
 const executablePath =
   process.env['PW_CHROMIUM_PATH'] ?? (existsSync(PRESET_CHROMIUM) ? PRESET_CHROMIUM : undefined);
@@ -57,7 +60,7 @@ try {
   await page.getByTestId('screen-perf').waitFor({ timeout: 60_000 });
   await page.waitForTimeout(500);
   const started = Date.now();
-  await page.getByTestId(boss ? 'perf-run-boss' : 'perf-run').click();
+  await page.getByTestId(weekly ? 'perf-run-weekly' : boss ? 'perf-run-boss' : 'perf-run').click();
   await page.getByTestId('screen-battle').waitFor({ timeout: 60_000 });
   const report = page.getByTestId('perf-report');
   await report.waitFor({ timeout: 600_000 });
@@ -73,9 +76,11 @@ try {
 
   console.log('');
   console.log(
-    boss
-      ? 'Battle perf bench — Gravemaw Easy, 4 v 1 boss race, ×4, auto'
-      : 'Battle perf bench — Stress Bench, 4 v 4 × 2 waves, ×4, auto',
+    weekly
+      ? 'Battle perf bench — Nyxara Normal, 4 v 3 weekly race, ×4, auto'
+      : boss
+        ? 'Battle perf bench — Gravemaw Easy, 4 v 1 boss race, ×4, auto'
+        : 'Battle perf bench — Stress Bench, 4 v 4 × 2 waves, ×4, auto',
   );
   console.log(`renderer: ${renderer}   fight: ${seconds} s, outcome ${outcome}`);
   console.log('| p50 | p95 | max | frames | budget (p95) |');

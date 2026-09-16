@@ -1,9 +1,10 @@
 /**
  * Battle perf bench (CLAUDE.md §5.6, AGENTS.md DoD "Performance"): `/?screen=perf` in every build,
- * never linked from the game. It fights one of two scenarios at ×4 with four maxed legendaries on
+ * never linked from the game. It fights one of three scenarios at ×4 with four maxed legendaries on
  * the real battle screen and shows the frame statistics the stage measured: the Stress Bench
- * (4 v 4, two waves, every cast and hit colour) and a boss race (one huge washed sprite, its own
- * HUD, a fight that runs to the turn limit). `tools/perf/battle-bench.ts` drives both headlessly.
+ * (4 v 4, two waves, every cast and hit colour), the daily boss's race (one huge washed sprite, its
+ * own HUD, a fight that runs to the turn limit) and the weekly boss's (a ×2.4 sprite, its escort
+ * beside it and a fight that changes gear). `tools/perf/battle-bench.ts` drives all three.
  */
 import { useMemo } from 'react';
 import { useStore } from 'zustand';
@@ -22,7 +23,7 @@ import { TopBar } from '@ui/components/TopBar/TopBar';
 import type { ScreenProps } from '@ui/router/screens';
 import styles from './PerfScreen.module.css';
 
-/** The two fights the bench can run; `perf-run` stays the stress one. */
+/** The fights the bench can run; `perf-run` stays the stress one. */
 const SCENARIOS = [
   { id: 'stress', encounterId: 'encounter.bench.stress', testId: 'perf-run', label: 'perf.run' },
   {
@@ -30,6 +31,13 @@ const SCENARIOS = [
     encounterId: bossEncounterId('boss.gravemaw', 'easy'),
     testId: 'perf-run-boss',
     label: 'perf.runBoss',
+  },
+  {
+    // The heaviest fight the game has: a ×2.4 washed sprite, its escort, and the phase beats.
+    id: 'weekly',
+    encounterId: bossEncounterId('boss.nyxara', 'normal'),
+    testId: 'perf-run-weekly',
+    label: 'perf.runWeekly',
   },
 ] as const;
 /** Four maxed legendaries of four elements: every cast, projectile and hit colour fires. */

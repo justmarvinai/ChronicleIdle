@@ -9,10 +9,11 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 **Why it matters.** `BOSSES.md` §3 first printed her phases at 70 % and 35 % of her HP. Measured
 against the roster the fight is written for — four 6★ champions in full Legendary gear,
-`tests/fixtures/saves/weekly-boss.chronicle` — one key takes **12.6 %** of the Normal pool: the
-Choristers take half of every hit meant for her, and clearing them costs the turns that would have
-gone into the pool. At 70/35 nobody would ever see her second gear, let alone her third. A boss
-ability that never fires is not shipped.
+`tests/fixtures/saves/weekly-boss.chronicle` — a key spent at those thresholds took **12.6 %** of
+the Normal pool and her health never fell far enough for anything to happen: the Choristers take
+half of every hit meant for her, and clearing them costs the turns that would have gone into the
+pool. Nobody would ever have seen her second gear, let alone her third. A boss ability that never
+fires is not shipped.
 
 **The default in use.** The thresholds are now **90 % / 75 %**: phase II lands inside an ordinary
 key, phase III on a good one, and a roster that can finish her in a week meets every gear she has.
@@ -20,9 +21,11 @@ Everything else the table prints — pools, stats, chests, XP — is untouched. 
 deeper 70/35 comes back (one line in `src/content/bosses/nyxara.ts`).
 
 The same measurement sets the chorus: a Chorister holds 2 % of the pool. At a tenth of that the
-party deletes both on the turn they appear and the split never happens at all (19.5 % a key, the
-same as fighting her alone); at 2 % the choice the design asks for is real, and it costs a third of
-the key's damage to duck it.
+party deletes both on the turn they appear and the split barely happens — six split hits in a whole
+race, and a key worth the same as fighting her with no chorus at all. At 2 % it is forty, and the
+choice the design asks for is real: clear them and lose the turns, or leave them and give up half
+of every hit. (At the shipped numbers the same key banks about a fifth of the pool, because phase
+III's self-heal keeps her standing longer and the damage that heals away still counts.)
 
 The same measurement shows her lowest tier is a long way out at level 15: a mid-Epic roster loses
 in three turns and banks a couple of thousand damage against a 100,000 first chest. That reads as

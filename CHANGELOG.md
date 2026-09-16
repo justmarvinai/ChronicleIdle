@@ -49,10 +49,11 @@ Choristers standing in the way of every hit meant for her.
 
 - **Nyxara's phases are 90 % / 75 %, not the 70 % / 35 % the design first printed**, and each
   Chorister holds 2 % of the pool. Both numbers come from measuring the fight rather than drafting
-  it: a finished roster takes an eighth of the pool in one key with the chorus taxing half of every
-  hit, so the deeper thresholds would have meant her last two gears never fired at all, and a
-  chorus a tenth of this size dies on the turn it appears and the split never happens.
-  `USER_QUESTIONS.md` Q41 records the measurements and the switch back, ADR-039 the rule.
+  it. A key spent by the roster she is written for — four 6★ champions in full Legendary gear —
+  took an eighth of the pool at the drafted thresholds, with the chorus taking half of every hit
+  meant for her: her last two gears would never have fired. A chorus a tenth of this size dies on
+  the turn it appears (six split hits in a whole race, against forty at 2 %), which is no choice at
+  all. `USER_QUESTIONS.md` Q41 records the measurements and the switch back, ADR-039 the rule.
 - The auto policy's last-resort ability now respects `minPhase` as well as cooldowns, so a boss in
   phase 1 can never open with a phase-3 ability when everything else is spent.
 - `damageToBoss` already counted only the boss's own definition id, so an escort's health never
