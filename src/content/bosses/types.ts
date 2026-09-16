@@ -24,6 +24,23 @@ export interface BossChestDef {
   gear?: { rarity: Rarity; stars: number };
 }
 
+/**
+ * The escort a phased boss fields (BOSSES.md §3). One definition per tier carries the numbers;
+ * this is the part that is the same on every tier: how many stand with it, the share of a hit they
+ * take while one lives, and how they come back.
+ */
+export interface BossAddsDef {
+  /** i18n key for the add's name, for the mechanics sheet. */
+  name: string;
+  count: number;
+  /** Percentage of a hit on the boss a living add takes instead (Ally Protection). */
+  guardPercent: number;
+  /** Own turns of the boss between revivals; they also return at every phase change. */
+  reviveEvery: number;
+  revivedHpPercent: number;
+  art: { model: ModelKey; tint: string; scale: number; desaturate: boolean };
+}
+
 export interface BossTierDef {
   /** `easy` | `normal` | `hard` | `brutal` — the boss's own ladder. */
   id: string;
@@ -43,6 +60,8 @@ export interface BossTierDef {
   chests: BossChestDef[];
   /** The derived enemy this tier fields (built by `defineBoss`). */
   enemy: EnemyDef;
+  /** The escort's definition at this tier's numbers, or `null` when the boss fights alone. */
+  adds: EnemyDef | null;
 }
 
 export interface BossDef {
@@ -68,6 +87,13 @@ export interface BossDef {
   immunities: StatusId[];
   /** Own turns between the +10 % ATK enrage steps (BOSSES.md §1). */
   enrageEvery: number;
+  /**
+   * Descending HP fractions where the fight changes gear (BOSSES.md §3): `[0.7, 0.35]` is three
+   * phases. Empty for a boss that fights the same way from start to finish.
+   */
+  phases: number[];
+  /** The escort every tier fields, or `null` when the boss fights alone. */
+  adds: BossAddsDef | null;
   tiers: BossTierDef[];
   version: number;
 }

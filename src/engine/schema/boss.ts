@@ -33,6 +33,8 @@ export const bossTierSchema = z.object({
       message: 'the last chest is the kill (100 %)',
     }),
   enemy: enemySchema,
+  /** The escort at this tier's numbers (BOSSES.md §3), or `null` for a boss that fights alone. */
+  adds: enemySchema.nullable(),
 });
 
 export const bossSchema = z.object({
@@ -57,6 +59,28 @@ export const bossSchema = z.object({
   surface: z.enum(['dirt', 'stone', 'water', 'wood']),
   immunities: z.array(z.enum(STATUS_IDS)),
   enrageEvery: z.number().int().min(1).max(20),
+  /** Descending HP fractions; each one starts a phase (BOSSES.md §3). */
+  phases: z
+    .array(z.number().gt(0).lt(1))
+    .max(4)
+    .refine((all) => all.every((value, i) => i === 0 || value < (all[i - 1] ?? 1)), {
+      message: 'phase thresholds descend',
+    }),
+  adds: z
+    .object({
+      name: z.string().min(1),
+      count: z.number().int().min(1).max(4),
+      guardPercent: z.number().int().min(1).max(90),
+      reviveEvery: z.number().int().min(1).max(50),
+      revivedHpPercent: z.number().int().min(1).max(100),
+      art: z.object({
+        model: z.string().min(1),
+        tint: z.string().regex(/^#[0-9a-f]{6}$/i),
+        scale: z.number().positive().max(3),
+        desaturate: z.boolean(),
+      }),
+    })
+    .nullable(),
   tiers: z.array(bossTierSchema).min(1).max(6),
   version: z.number().int().positive(),
 });

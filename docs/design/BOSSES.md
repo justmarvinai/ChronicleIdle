@@ -71,15 +71,19 @@ Enrage: from her 24th own turn, +10 % ATK every 3 own turns (`enrageEvery: 3`).
 | Hard | 40,000,000 | 3,600 | 1,900 | 114 | 140 | 140 | 100 | 24 |
 | Nightmare | 250,000,000 | 5,500 | 2,600 | 120 | 180 | 180 | 100 | 24 |
 
-Phases (by boss HP): **I ≥ 70 %**, **II 70–35 %**, **III < 35 %**. Choristers revive at the start of
-each phase and every 12 boss turns; while a Chorister lives, Nyxara has Ally Protection 50 % from
-them (kill the adds first or accept the split).
+Phases (by boss HP): **I ≥ 85 %**, **II 85–60 %**, **III < 60 %**. The thresholds are shallow
+because this is a damage race and not a kill fight: a key that takes a third of the pool has to
+meet every gear she has. Choristers revive at the start of each phase and every 12 of her own
+turns, at 50 % HP; while a Chorister lives, Nyxara has Ally Protection 50 % from them (kill the
+adds first or accept the split). A Chorister holds 0.4 % of the tier's pool — 20,000 / 160,000 /
+1,000,000 HP — with ATK/DEF a little under hers and 8 SPD less.
 
-- A1 *Shadow Verse* — `3.6 × ATK` on two random allies, 40 % Weaken 25 % (2).
+- A1 *Shadow Verse* — `3.6 × ATK` on two random allies, 40 % Weaken 25 % (2) on two of them
+  (each effect rolls its own pair, as everywhere in the effect DSL).
 - A2 *Dirge* (CD 3) — `2.6 × ATK` all allies; steals one buff from each.
 - A3 *Eclipse Hymn* (CD 5, phase II+) — Fear (2) on all allies (50 % skip), Decrease TM 30 %.
-- A4 *Mother's Embrace* (CD 6, phase III) — heals 5 % max HP, Block Debuffs (2) self; Choristers
-  gain Counterattack (3).
+- A4 *Mother's Embrace* (CD 6, phase III) — heals 5 % max HP, Block Debuffs (2) self; she and her
+  chorus gain Counterattack (3).
 - Choristers: A1 `2.8 × ATK` single; A2 (CD 4) heal Nyxara 2 % max HP.
 - Passive *Un-light* — allies' healing is reduced by 30 % during phase III.
 
@@ -92,6 +96,10 @@ Reward chests (per tier per week; thresholds as % of tier HP): 2 / 5 / 12 / 25 /
 | Nightmare | 200k Gold, 12 Universal Brews | 250 Gems, 2 Legendary Tomes | 1 Sacred Shard, 25 Refining Cores | 400 Gems, 3 Glyph Sigils | 2 Sacred Shards, 50 Starsteel | 1 Primordial Shard, 1 Mythic Tome, Mythic gear 6★ |
 
 Player XP per key: 800 / 1,600 / 3,200.
+
+Her tiers start at Normal on purpose: the weekly boss is a long-term target, not a farm. A roster
+that has just unlocked her at level 15 will lose the fight early and bank a few thousand damage —
+that still counts towards the week's pool, and the daily boss is where a mid-game roster earns.
 
 ## 4. Screen (clones `daily_weekly_boss_screen.png`)
 

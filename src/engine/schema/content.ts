@@ -177,6 +177,16 @@ function validateBosses(bosses: readonly unknown[], refs: ContentRefs): Validati
     if (!refs.assetKeys.has(def.art.model)) error(path, `missing model ${def.art.model}`);
     if (def.unlockLevel > unlockLevel(def.feature))
       error(path, `unlocks at ${def.unlockLevel} but its feature opens at ${unlockLevel(def.feature)}`);
+    if (def.adds) {
+      if (!refs.i18nKeys.has(def.adds.name)) error(path, `missing i18n key ${def.adds.name}`);
+      if (!refs.assetKeys.has(def.adds.art.model)) error(path, `missing model ${def.adds.art.model}`);
+      // An escort with nothing to guard, or a phase gate with no phases, is authored by mistake.
+      if (!def.phases.length) error(path, 'adds come back at every phase change, so declare phases');
+    }
+    const gated = def.tiers[0]?.enemy.abilities.filter((a) => (a.minPhase ?? 1) > 1) ?? [];
+    for (const ability of gated)
+      if ((ability.minPhase ?? 1) > def.phases.length + 1)
+        error(path, `${ability.id} opens in phase ${ability.minPhase}, past the last one`);
     def.tiers.forEach((tier, t) => {
       const tierPath = `${path}.${tier.id}`;
       if (!refs.i18nKeys.has(tier.name)) error(tierPath, `missing i18n key ${tier.name}`);
@@ -188,6 +198,17 @@ function validateBosses(bosses: readonly unknown[], refs: ContentRefs): Validati
         error(tierPath, 'a period boss fights at its printed stats (`fixedStats`)');
       if (tier.enemy.boss?.enrageEvery !== def.enrageEvery)
         error(tierPath, 'the tier enemy does not carry the boss enrage cadence');
+      if ((tier.enemy.boss?.phases ?? []).join() !== def.phases.join())
+        error(tierPath, 'the tier enemy does not carry the boss phases');
+      if (def.adds) {
+        if (!tier.adds) error(tierPath, 'the boss fields an escort but this tier has none');
+        else if (tier.enemy.boss?.adds?.enemyId !== tier.adds.id)
+          error(tierPath, `the boss block points at ${tier.enemy.boss?.adds?.enemyId}, not ${tier.adds.id}`);
+        // The escort is a speed bump, not a second boss: a pool it could hide behind for the whole
+        // race would make the fight about the adds (BOSSES.md §3).
+        if (tier.adds && tier.adds.stats.hp * def.adds.count > tier.stats.hp / 10)
+          error(tierPath, 'the escort holds more than a tenth of the pool between them');
+      } else if (tier.adds) error(tierPath, 'a tier fields an escort the boss does not declare');
       // A boss takes roughly half the ally-turn limit in own turns (measured in tools/sim), so a
       // first step later than that is a mechanic that never fires.
       if (tier.enrageTurn + def.enrageEvery > tier.turnLimit / 2)
@@ -420,7 +441,11 @@ function validateEnemyReach(
   for (const raw of bosses) {
     const parsed = bossSchema.safeParse(raw);
     if (!parsed.success) continue;
-    for (const tier of parsed.data.tiers) reachable.add(tier.enemy.id);
+    for (const tier of parsed.data.tiers) {
+      reachable.add(tier.enemy.id);
+      // The escort stands in that same wave (BOSSES.md §3).
+      if (tier.adds) reachable.add(tier.adds.id);
+    }
   }
   return [...enemyIds]
     .filter((id) => !reachable.has(id))

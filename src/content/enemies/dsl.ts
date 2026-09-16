@@ -21,6 +21,8 @@ interface EnemyAbilityInput {
   icon: SpellKey;
   cooldown?: number;
   startsOnCooldown?: boolean;
+  /** The phase this ability opens in (BOSSES.md §3); the rotation passes it over until then. */
+  minPhase?: number;
   effects: Effect[];
   ai?: AbilityAi;
 }
@@ -64,6 +66,7 @@ export function defineEnemy(input: EnemyInput): EnemyDef {
     icon: a.icon,
     cooldown: a.cooldown ?? 0,
     ...(a.startsOnCooldown ? { startsOnCooldown: true } : {}),
+    ...(a.minPhase === undefined ? {} : { minPhase: a.minPhase }),
     effects: a.effects,
     upgrades: [],
     // Campaign enemies prefer their strongest ready ability (CAMPAIGN.md §5, BATTLE.md §7).

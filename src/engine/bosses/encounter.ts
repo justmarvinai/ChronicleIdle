@@ -26,8 +26,10 @@ export function parseBossEncounterId(id: string): { bossId: string; tierId: stri
 }
 
 /**
- * The fight a key buys. One wave, one boss, four champions, and a turn limit that ends the race
- * without calling it a defeat — the damage counts either way (BOSSES.md §1).
+ * The fight a key buys. One wave, four champions, and a turn limit that ends the race without
+ * calling it a defeat — the damage counts either way (BOSSES.md §1). A phased boss stands with its
+ * escort in that same wave (BOSSES.md §3): the boss first, so it is the wave's leader on the
+ * stage, and the engine links the two at spawn.
  */
 export function bossEncounter(boss: BossDef, tier: BossTierDef): EncounterDef {
   return {
@@ -39,7 +41,16 @@ export function bossEncounter(boss: BossDef, tier: BossTierDef): EncounterDef {
     difficulty: 'intro',
     stageIndex: 0,
     enemyLevel: tier.enemyLevel,
-    waves: [{ enemies: [{ enemyId: tier.enemy.id }] }],
+    waves: [
+      {
+        enemies: [
+          { enemyId: tier.enemy.id },
+          ...Array.from({ length: boss.adds && tier.adds ? boss.adds.count : 0 }, () => ({
+            enemyId: tier.adds?.id ?? '',
+          })),
+        ],
+      },
+    ],
     turnLimit: tier.turnLimit,
     turnLimitMode: 'all',
     timeUpIsDefeat: false,
