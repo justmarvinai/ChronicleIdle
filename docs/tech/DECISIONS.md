@@ -469,3 +469,9 @@ Tavern" is triggered on the hub and finished off it) is completed by the overlay
 holding it; the machine only ever decides which step to *open*. And a lesson whose target is
 nowhere on screen dims nothing and blocks nothing, so a spotlight that does not exist can never
 trap anybody.
+
+Two rules fell out of building it, and both are checked rather than remembered. A lesson names
+*where* it is taught — a step whose trigger mentions no screen, dialog or turn is a content error,
+because one that could open anywhere opened on the title screen. And a lesson never opens over a
+dialog it does not name: the Welcome Back report and a level-up are the game asking the player a
+question, and two things holding the screen at once is a player with nothing to press.

@@ -138,6 +138,8 @@ export function tutorialContext(world: TutorialWorld): TutorialContext {
     save: world.save,
     screen: screenOf(world.route),
     dialog: dialogOf(world.dialog),
+    // Any dialog at all, named or not: Eldric waits while the game is asking a question.
+    dialogOpen: world.dialog !== null,
     playerLevel: world.save?.profile.level ?? 1,
     battle: battleSignal(world.battle),
   };

@@ -18,16 +18,19 @@ export default chapter({
     }),
     // 2.2 — who is being raised.
     step({
+      when: { type: 'screen', screen: 'tavern' },
       spotlight: ['tavern.roster'],
       complete: { type: 'clicked' },
     }),
     // 2.3 — the brews, and why the element matters.
     step({
+      when: { type: 'screen', screen: 'tavern' },
       spotlight: ['tavern.brews'],
       complete: { type: 'clicked' },
     }),
     // 2.4 — the press.
     step({
+      when: { type: 'screen', screen: 'tavern' },
       spotlight: ['tavern.upgrade'],
       complete: { type: 'counter', key: 'tavern.levelUps', count: 1 },
     }),
@@ -46,16 +49,25 @@ export default chapter({
     }),
     // 2.6 — the six slots, beginning with the weapon.
     step({
+      when: { type: 'screen', screen: 'champions' },
       spotlight: ['champions.gearTab', 'champions.weaponSlot'],
       complete: { type: 'dialog', dialog: 'gear-picker' },
     }),
     // 2.7 — the piece that fell at Thornwood.
     step({
+      when: { type: 'dialog', dialog: 'gear-picker' },
       spotlight: ['gear.picker', 'gear.equip'],
       complete: { type: 'gear_worn', slot: 'weapon' },
     }),
     // 2.8 — gold into steel, at the racks. The pointer follows the player there.
     step({
+      when: {
+        type: 'any',
+        of: [
+          { type: 'screen', screen: 'champions' },
+          { type: 'screen', screen: 'armoury' },
+        ],
+      },
       spotlight: ['champions.armoury', 'armoury.racks', 'armoury.upgrade'],
       allow: 'all',
       complete: { type: 'counter', key: 'gear.levels', count: 1 },

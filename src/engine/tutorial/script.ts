@@ -55,7 +55,14 @@ export interface TutorialContext {
   /** Null before the chronicle exists: step 1.1 is taught over the new-game dialog. */
   save: SaveGame | null;
   screen: TutorialScreen | null;
+  /** The dialog on top, when it is one the script knows by name. */
   dialog: TutorialDialog | null;
+  /**
+   * Whether *any* dialog is open, named or not. Eldric waits his turn: a lesson that does not
+   * itself name the dialog on screen does not open over it, because a dialog is the game asking
+   * the player a question and a lesson holds the screen while it speaks.
+   */
+  dialogOpen: boolean;
   playerLevel: number;
   battle: TutorialBattleSignal | null;
 }
@@ -118,6 +125,26 @@ export function currentChapter(
   return null;
 }
 
+/**
+ * Whether a step may open where the player is standing: its own trigger holds, and nothing else is
+ * asking them a question — a dialog the step does not name keeps Eldric quiet until it is answered
+ * (the Welcome Back report, a level-up).
+ */
+function openable(step: TutorialStepDef, ctx: TutorialContext): boolean {
+  if (step.when && !conditionHolds(step.when, ctx)) return false;
+  if (!ctx.dialogOpen) return true;
+  return step.when
+    ? flatten(step.when).some((one) => one.type === 'dialog' && one.dialog === ctx.dialog)
+    : false;
+}
+
+/** A condition and, for `all`/`any`, everything inside it. */
+function flatten(condition: TutorialCondition): TutorialCondition[] {
+  return condition.type === 'all' || condition.type === 'any'
+    ? [condition, ...condition.of.flatMap(flatten)]
+    : [condition];
+}
+
 /** The step the overlay is showing, or null when Eldric has nothing to say right now. */
 export function activeStep(
   chapters: readonly TutorialChapterDef[],
@@ -130,10 +157,9 @@ export function activeStep(
   const waiting = chapter.steps.filter((step) => !done.has(step.id));
   if (chapter.sequential) {
     const next = waiting[0];
-    if (!next) return null;
-    return !next.when || conditionHolds(next.when, ctx) ? next : null;
+    return next && openable(next, ctx) ? next : null;
   }
-  return waiting.find((step) => !step.when || conditionHolds(step.when, ctx)) ?? null;
+  return waiting.find((step) => openable(step, ctx)) ?? null;
 }
 
 /** `activeStep` with the chrome the overlay needs around it. */

@@ -109,3 +109,6 @@ Two rules the script holds to, both visible in the data:
   cage are the ones inside a panel or a fight, where a wrong press is what confuses a new player.
 - **A turn lesson names the ability it teaches.** Turn order is not always the starter's, and a
   Common companion has one ability at level 1, so 1.7 waits for a turn that actually offers A2.
+- **Eldric waits his turn.** Every step names where it is taught, and none opens over a dialog it
+  does not name: the Welcome Back report and a level-up are answered first, because a lesson holds
+  the screen while it speaks.

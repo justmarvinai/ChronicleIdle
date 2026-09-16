@@ -64,11 +64,11 @@ describe('the tutorial in the save', () => {
     const first = tutorialStep(world(store));
     expect(first?.step.id).toBe('tut.1.1');
     expect(first?.skippable).toBe(false);
-    // Naming the chronicle creates the save and opens the starter screen. The gate has closed
-    // behind the step, so the machine has nothing left to *open* — but the step the overlay is
-    // holding is finished, which is what it records (ADR-042).
+    // Naming the chronicle creates the save and opens the starter screen, where the same lesson is
+    // both still open — a chronicle begun over another one hears it here — and already satisfied,
+    // which is what the overlay records (ADR-042).
     store.getState().actions.newGame('Marvin');
-    expect(tutorialStep(world(store))).toBeNull();
+    expect(tutorialStep(world(store))?.step.id).toBe('tut.1.1');
     const held = first?.step;
     expect(held && stepSatisfied(held, tutorialContext(world(store)))).toBe(true);
     store.getState().actions.completeTutorialStep('tut.1.1');

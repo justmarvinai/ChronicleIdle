@@ -51,6 +51,7 @@ function ctx(patch: Partial<TutorialContext> = {}): TutorialContext {
     save: patch.save === undefined ? newSave() : patch.save,
     screen: patch.screen ?? null,
     dialog: patch.dialog ?? null,
+    dialogOpen: patch.dialogOpen ?? patch.dialog !== undefined,
     playerLevel: patch.playerLevel ?? 1,
     battle: patch.battle ?? null,
   };
@@ -236,6 +237,17 @@ describe('the tutorial script', () => {
     // The overlay's own two answers are never satisfied by the world.
     expect(conditionHolds({ type: 'acknowledged' }, ctx({ screen: 'hub' }))).toBe(false);
     expect(conditionHolds({ type: 'clicked' }, ctx({ screen: 'hub' }))).toBe(false);
+  });
+
+  it('waits while the game is asking its own question', () => {
+    // A dialog the lesson does not name — the Welcome Back report, a level-up — keeps Eldric
+    // quiet, because a lesson holds the screen while it speaks and the player could not answer it.
+    const hub = ctx({ screen: 'hub' });
+    expect(activeStep(CHAPTERS, upTo('tut.1.3'), hub)?.id).toBe('tut.1.3');
+    expect(activeStep(CHAPTERS, upTo('tut.1.3'), { ...hub, dialogOpen: true, dialog: null })).toBeNull();
+    // A lesson that names the dialog it is taught in is the exception.
+    const picker = ctx({ screen: 'champions', dialog: 'gear-picker' });
+    expect(activeStep(CHAPTERS, upTo('tut.2.7'), { ...picker, playerLevel: 3 })?.id).toBe('tut.2.7');
   });
 
   it('counts the lesson for the overlay’s label', () => {

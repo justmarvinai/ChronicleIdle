@@ -63,6 +63,13 @@ Provisions along the way.
 - A turn lesson names the ability it teaches, because turn order is not always the starter's and a
   Common companion has one ability at level 1: the cooldown lesson waits for a turn that actually
   offers a second one.
+- **Eldric waits his turn.** A lesson never opens over a dialog it does not name, so the Welcome
+  Back report and a level-up are answered first — a lesson holds the screen while it speaks, and
+  two things holding it at once is a player with nothing to press. Every lesson also names *where*
+  it is taught, which the validator now requires: one that did not would speak on the title screen.
+- A lesson is taught where its pointer can rest, and the name of a chronicle is taught on the
+  starter screen as well as at the name field — a chronicle begun over another one would otherwise
+  never be taught its first step.
 - The auto-repeat lesson waits for the second repeat tier at level 20 rather than the first at 5,
   where chapter 4 already teaches two things (`USER_QUESTIONS.md` Q44).
 - `ENERGY_PROVISIONS` ids are typed, and `provisionsClaimed` is the list of *one-time grants* paid

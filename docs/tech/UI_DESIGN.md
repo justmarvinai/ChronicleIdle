@@ -462,6 +462,8 @@ Rules the overlay holds to:
 - A step that only points (`allow: 'all'`) dims nothing: ring, caret, strip, and the screen stays
   the player's own. The navigation lessons all read this way; the in-panel ones cage.
 - A target that is nowhere on screen dims nothing and blocks nothing — Eldric still speaks.
+- A lesson waits while a dialog it does not name is open (the Welcome Back report, a level-up):
+  one thing holds the screen at a time.
 - Targets are measured in stage space on a frame loop and only re-rendered when something moved, so
   a lesson over the battle screen costs no commits per frame (CLAUDE.md §5.6).
 - Layer `--z-tutorial` (300): above the dialogs it dims, below the loading screen.

@@ -18,6 +18,7 @@ export default chapter({
     }),
     // 5.2 — the first page, already earned by the stand at Thornwood.
     step({
+      when: { type: 'screen', screen: 'missions' },
       spotlight: ['missions.card'],
       complete: { type: 'counter', key: 'missions.claimed', count: 1 },
       grant: provision('tutorial.the_path'),

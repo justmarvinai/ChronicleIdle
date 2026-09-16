@@ -416,12 +416,19 @@ function validateTutorialChapters(chapters: readonly unknown[], refs: ContentRef
 
       for (const condition of flattenConditions(step.complete as TutorialCondition))
         for (const problem of conditionIssues(condition)) error(stepPath, `completion ${problem}`);
-      if (step.when)
-        for (const condition of flattenConditions(step.when as TutorialCondition)) {
-          for (const problem of conditionIssues(condition)) error(stepPath, `trigger ${problem}`);
-          if (condition.type === 'acknowledged' || condition.type === 'clicked')
-            error(stepPath, `is triggered by ${condition.type}, which only finishes a step`);
-        }
+      // A lesson that does not say where it speaks will speak somewhere silly — over the title
+      // screen, or on a screen its pointer has nothing to rest on — and while Eldric speaks the
+      // screen is held. So every step names a screen, a dialog or a turn of the fight.
+      const trigger = step.when ? flattenConditions(step.when as TutorialCondition) : [];
+      if (
+        !trigger.some((one) => one.type === 'screen' || one.type === 'dialog' || one.type === 'battle_turn')
+      )
+        error(stepPath, 'does not say where it is taught (a screen, a dialog or a turn)');
+      for (const condition of trigger) {
+        for (const problem of conditionIssues(condition)) error(stepPath, `trigger ${problem}`);
+        if (condition.type === 'acknowledged' || condition.type === 'clicked')
+          error(stepPath, `is triggered by ${condition.type}, which only finishes a step`);
+      }
 
       if (step.script) {
         const already = scripted.get(step.script);

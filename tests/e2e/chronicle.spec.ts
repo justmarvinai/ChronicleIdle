@@ -1,14 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import {
-  bindStarter,
-  closeDialog,
-  eldricContinue,
-  gotoTitle,
-  openSettingsTab,
-  settle,
-  startChronicle,
-} from './helpers';
+import { bindStarter, closeDialog, gotoTitle, openSettingsTab, settle, startChronicle } from './helpers';
 
 test.describe('chronicle lifecycle', () => {
   test('a new chronicle lands in Emberhold with the starting purse', async ({ page }) => {
@@ -65,8 +57,8 @@ test.describe('chronicle lifecycle', () => {
     await page.getByTestId('btn-new-chronicle').click();
     await expect(page.getByTestId('dialog-new-game-confirm')).toBeVisible();
     await page.getByTestId('confirm-overwrite').click();
-    // A second chronicle is taught from the beginning, whatever the first one learned.
-    await eldricContinue(page, 'tut.1.1');
+    // The chronicle being replaced is still the one loaded, so its own lesson is the one waiting;
+    // the new chronicle hears its first line on the starter screen (`bindStarter` reads it).
     await page.getByTestId('name-input').fill('Other');
     await page.getByTestId('begin-chronicle').click();
     await bindStarter(page);

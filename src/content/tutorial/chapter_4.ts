@@ -18,12 +18,20 @@ export default chapter({
     }),
     // 4.2 — the one quest that is already done: logging in.
     step({
+      when: { type: 'screen', screen: 'quests' },
       spotlight: ['quests.login'],
       complete: { type: 'counter', key: 'quests.claimed', count: 1 },
     }),
-    // 4.3 — the chest at the docks, and the warning not to let it overflow.
+    // 4.3 — the chest at the docks, and the warning not to let it overflow. The chest is a dialog
+    // over the hub, and the lesson points inside it, so it names that dialog as well as the screen.
     step({
-      when: { type: 'screen', screen: 'hub' },
+      when: {
+        type: 'any',
+        of: [
+          { type: 'screen', screen: 'hub' },
+          { type: 'dialog', dialog: 'idle-chest' },
+        ],
+      },
       spotlight: ['hub.idle', 'idle.claim'],
       allow: 'all',
       complete: { type: 'counter', key: 'idle.claims', count: 1 },

@@ -200,6 +200,10 @@ test.describe('the tutorial', () => {
     await settle(page);
     await page.getByTestId('btn-continue').click();
     await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
+    // Coming back also brings the Welcome Back report, which is a dialog over the hub.
+    const welcome = page.getByTestId('dialog-welcome-back');
+    if (await welcome.isVisible()) await welcome.getByRole('button', { name: 'Continue' }).click();
+    await expect(welcome).toBeHidden();
     await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.5.1', {
       timeout: 30_000,
     });

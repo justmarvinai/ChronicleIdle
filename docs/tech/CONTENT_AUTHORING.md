@@ -447,6 +447,11 @@ step({
 - **Completions are observed.** Prefer a screen, a dialog, a stand cleared or a lifetime counter —
   things the save already says. `acknowledged` (the Continue press) is for a lesson that only asks
   to be read; `clicked` is for a press that changes nothing in the save (choosing whom to raise).
+- **Say where it is taught.** Every step's trigger must name a screen, a dialog or a turn of a
+  fight — the validator refuses one that does not, because a lesson that can open anywhere will
+  open somewhere silly, and while Eldric speaks the screen is held. A lesson that points *inside* a
+  dialog names that dialog too (the Idle Chest's does), because a lesson never opens over a dialog
+  it has not named.
 - **Chapters open by feature**, in unlock order, and are walked one at a time; only the last
   chapter's steps stand alone (`sequential: false`). The first chapter cannot be skipped and every
   other one can — the validator holds both.

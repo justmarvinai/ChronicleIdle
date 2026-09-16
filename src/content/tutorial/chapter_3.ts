@@ -19,12 +19,14 @@ export default chapter({
     }),
     // 3.2 — place it, and read the colour. The scripted pull (SUMMONING.md §4).
     step({
+      when: { type: 'screen', screen: 'portal' },
       spotlight: ['portal.shard', 'portal.summon'],
       complete: { type: 'counter', key: 'summon.pulls', count: 1 },
       script: 'summon',
     }),
     // 3.3 — the new name in the chronicle.
     step({
+      when: { type: 'screen', screen: 'portal' },
       spotlight: ['summon.card'],
       complete: { type: 'acknowledged' },
       grant: provision('tutorial.the_binding'),

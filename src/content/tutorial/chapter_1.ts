@@ -12,15 +12,24 @@ export default chapter({
   skippable: false,
   steps: [
     // 1.1 — the name. Eldric speaks before the chronicle exists, so this step runs off the empty
-    // tutorial state and is recorded the moment the starter screen opens.
+    // tutorial state and is recorded the moment the starter screen opens. The starter screen is a
+    // trigger as well as the finish: a chronicle begun *over* another one has the old one's lesson
+    // showing while the name is asked for, and would otherwise never be taught its first step.
     step({
-      when: { type: 'dialog', dialog: 'new-game' },
+      when: {
+        type: 'any',
+        of: [
+          { type: 'dialog', dialog: 'new-game' },
+          { type: 'screen', screen: 'starter' },
+        ],
+      },
       spotlight: ['name.input'],
       allow: ['name.input', 'name.begin'],
       complete: { type: 'screen', screen: 'starter' },
     }),
     // 1.2 — the binding.
     step({
+      when: { type: 'screen', screen: 'starter' },
       spotlight: ['starter.cards'],
       complete: { type: 'starter_bound' },
     }),
@@ -34,6 +43,13 @@ export default chapter({
     }),
     // 1.4 — Thornwood Crossing, and the first stand on its list.
     step({
+      when: {
+        type: 'any',
+        of: [
+          { type: 'screen', screen: 'campaign' },
+          { type: 'screen', screen: 'settlement' },
+        ],
+      },
       spotlight: ['campaign.settlement1', 'settlement.stage1'],
       allow: 'all',
       complete: { type: 'screen', screen: 'battle-setup' },
@@ -41,6 +57,7 @@ export default chapter({
     // 1.5 — the team is pre-placed; all that is left is to begin. This is the fight that runs on
     // the fixed seed, so 1.6–1.8 always have their moments.
     step({
+      when: { type: 'screen', screen: 'battle-setup' },
       spotlight: ['setup.team', 'setup.start'],
       allow: 'all',
       complete: { type: 'screen', screen: 'battle' },
