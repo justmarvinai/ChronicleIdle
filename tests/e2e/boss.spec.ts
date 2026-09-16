@@ -10,6 +10,14 @@ import { collectConsole, importChronicleFile, settle } from './helpers';
  * unit suite; this fixture is written at the current save version.)
  */
 const SAVE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'boss.chronicle');
+const EASY_POOL = 250_000;
+
+/** The pool's remaining HP on the arena's boss bar — the race's progress, mid-fight. */
+async function bossHpLeft(page: Page): Promise<number> {
+  const text = (await page.getByTestId('boss-bar').textContent()) ?? '';
+  const match = /([\d,]+)\s*\/\s*250000/.exec(text);
+  return match?.[1] ? Number(match[1].replaceAll(',', '')) : EASY_POOL;
+}
 
 /** The banked damage the tier card prints, as a number. */
 async function bankedDamage(page: Page): Promise<number> {
@@ -33,6 +41,34 @@ async function runItself(page: Page): Promise<void> {
   const speed = page.getByTestId('battle-speed');
   if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
   await expect(speed).toContainText('2');
+}
+
+/**
+ * One key, spent: the race runs itself until the pool has taken `damage`, then the party retreats
+ * and the damage banks all the same (BOSSES.md §1). A race to its own turn limit is a fifty-turn
+ * fight — minutes of software-rendered stage on a shared runner — and what this suite is here to
+ * prove is the wiring around it, not the engine's turn loop (`period.test.ts` holds that).
+ */
+async function spendKeyUntil(page: Page, damage: number): Promise<void> {
+  await page.getByTestId('bosses-fight').click();
+  await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+  await page.getByTestId('start-battle').click();
+  await runItself(page);
+
+  // The arena says what a boss is: a pool, what it shrugs off, and how close the enrage is.
+  await expect(page.getByTestId('boss-bar')).toContainText(String(EASY_POOL));
+  await expect(page.getByTestId('boss-unshakeable')).toBeVisible();
+  await expect(page.getByTestId('boss-enrage')).toContainText('Enrages in');
+
+  await expect
+    .poll(() => bossHpLeft(page), { timeout: 300_000, intervals: [2_000] })
+    .toBeLessThanOrEqual(EASY_POOL - damage);
+  await page.getByTestId('battle-pause').click();
+  await page.getByTestId('pause-retreat').click();
+  await page.getByTestId('pause-retreat-confirm').click();
+  await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 120_000 });
+  await settle(page);
 }
 
 test.describe('the daily boss', () => {
@@ -63,20 +99,8 @@ test.describe('the daily boss', () => {
     await page.keyboard.press('Escape');
     await settle(page);
 
-    // ── The first key: the race to its own end ────────────────────────────────
-    await page.getByTestId('bosses-fight').click();
-    await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
-    await page.getByTestId('start-battle').click();
-    await runItself(page);
-
-    // The arena says what a boss is: a pool, what it shrugs off, and how close the enrage is.
-    await expect(page.getByTestId('boss-bar')).toContainText('250000');
-    await expect(page.getByTestId('boss-unshakeable')).toBeVisible();
-    await expect(page.getByTestId('boss-enrage')).toContainText('Enrages in');
-
-    await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 420_000 });
-    await settle(page);
+    // ── The first key: enough damage for the first chest, then out ────────────
+    await spendKeyUntil(page, 13_000);
     await expect(page.getByTestId('result-boss-damage')).not.toHaveText('0');
     await expect(page.getByTestId('result-boss-total')).toContainText('The pool now holds');
     await expect(page.getByTestId('result-boss-record')).toBeVisible();
@@ -97,21 +121,8 @@ test.describe('the daily boss', () => {
     await expect(page.getByTestId('pill-gold')).toContainText('105K');
     await expect(chest).toBeDisabled();
 
-    // ── The second key: retreat early, and the damage still banks ─────────────
-    await page.getByTestId('bosses-fight').click();
-    await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
-    await page.getByTestId('start-battle').click();
-    await runItself(page);
-    // Retreat once the pool has actually taken a hit, so what banks is not zero on a slow runner.
-    await expect(page.getByTestId('boss-bar')).not.toContainText('250000 / 250000', {
-      timeout: 180_000,
-    });
-    await page.getByTestId('battle-pause').click();
-    await page.getByTestId('pause-retreat').click();
-    await page.getByTestId('pause-retreat-confirm').click();
-    await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 120_000 });
-    await settle(page);
+    // ── The second key: a single hit is enough, and it still banks ────────────
+    await spendKeyUntil(page, 1);
     await expect(page.getByTestId('result-boss')).toBeVisible();
 
     await page.getByTestId('result-gate').click();
