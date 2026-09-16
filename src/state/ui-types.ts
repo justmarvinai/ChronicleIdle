@@ -27,6 +27,8 @@ export type Route =
   | { name: 'bosses'; boss?: string; tier?: string }
   /** The Chronicler's Ledger; `period` opens on one of its boards (`QUESTS_MISSIONS.md` §2–§3). */
   | { name: 'quests'; period?: QuestPeriod }
+  /** The Chronicler's Path; `chapter` opens on one of its ten tabs (`QUESTS_MISSIONS.md` §4). */
+  | { name: 'missions'; chapter?: number }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }
@@ -52,6 +54,8 @@ export type DialogRoute =
   | { name: 'reset-confirm' }
   | { name: 'welcome-back' }
   | { name: 'avatar-picker' }
+  /** Names the slot and set of the 6★ Legendary piece the Path's last chest owes. */
+  | { name: 'mission-gift' }
   /** Seats a companion at the Tavern table (the food picker). */
   | { name: 'food-picker'; instanceId: string; mode: 'level' | 'rank'; seats: number }
   /** Last word before champions are eaten: `food` is what leaves the chronicle. */

@@ -7,7 +7,10 @@ export const missions = {
   'missions.title': 'The Chronicler’s Path',
   'missions.chapter': 'Chapter {index}',
   'missions.progress': '{claimed} / {total} missions',
+  'missions.progress.count': '{progress} / {target}',
   'missions.chapterProgress': '{claimed} / {total}',
+  'missions.earlier': 'Earlier missions',
+  'missions.later': 'Later missions',
   'missions.claim': 'Claim',
   'missions.claimed': 'Claimed',
   'missions.locked': 'Locked',
@@ -25,6 +28,7 @@ export const missions = {
   'missions.gearChoice.body':
     'A 6★ Legendary piece, made to your word: name the slot and the set and the Forge will strike it.',
   'missions.gearChoice.take': 'Strike it',
+  'missions.gearChoice.names': 'A {slot}, at six stars, in the set you name.',
 
   // Chapter 1 — First Steps
   'chapter.01.name': 'First Steps',

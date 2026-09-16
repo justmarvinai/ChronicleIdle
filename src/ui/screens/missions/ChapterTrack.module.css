@@ -1,0 +1,101 @@
+.panel {
+  flex: none;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) 210px;
+  align-items: center;
+  gap: 18px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 19px;
+  color: var(--gold-3);
+}
+
+.count {
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+.rail {
+  min-width: 0;
+}
+
+.chest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(141, 133, 119, 0.4);
+  background: linear-gradient(180deg, rgba(38, 33, 42, 0.92), rgba(20, 17, 24, 0.95));
+  color: var(--text-2);
+  font-size: 15px;
+  cursor: var(--cursor-pointer);
+  transition:
+    filter var(--t-base),
+    border-color var(--t-base),
+    transform var(--t-base) var(--ease-snap);
+}
+
+.chest:disabled {
+  cursor: default;
+}
+
+.chestLabel {
+  white-space: nowrap;
+}
+
+.locked {
+  opacity: 0.62;
+}
+
+.claimable {
+  border-color: var(--gold-2);
+  color: var(--gold-2);
+  animation: waiting 2.4s ease-in-out infinite;
+}
+
+.claimable:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+.claimed {
+  border-color: rgba(120, 180, 120, 0.55);
+  color: #9ec79b;
+}
+
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.tipTitle {
+  color: var(--gold-3);
+}
+
+@keyframes waiting {
+  0%,
+  100% {
+    box-shadow: 0 0 14px rgba(240, 213, 122, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(240, 213, 122, 0.48);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .claimable {
+    animation: none;
+  }
+}

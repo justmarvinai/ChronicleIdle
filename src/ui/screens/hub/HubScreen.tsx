@@ -3,6 +3,7 @@ import { unlockLevel } from '@engine/progression/unlocks';
 import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
+import { missionsClaimable } from '@state/missions';
 import { questsClaimable } from '@state/quests';
 import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
@@ -49,6 +50,8 @@ export default function HubScreen(_props: ScreenProps) {
   const weekly = save ? bossView(save, 'boss.nyxara', now) : null;
   // The ledger's own badge: quests finished and chests earned, across both boards.
   const ledger = save ? questsClaimable(save, now) : 0;
+  // The Path's: the mission it is on, if it is finished, and any chapter chest still waiting.
+  const path = save ? missionsClaimable(save, now) : 0;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
@@ -125,7 +128,14 @@ export default function HubScreen(_props: ScreenProps) {
               label={t('hub.missions')}
               glyph="glyph.spell_book"
               unlocked={missions}
-              onClick={() => actions.push({ name: 'locked', feature: 'missions', titleKey: 'hub.missions' })}
+              notify={path}
+              onClick={() =>
+                actions.push(
+                  missions
+                    ? { name: 'missions' }
+                    : { name: 'locked', feature: 'missions', titleKey: 'hub.missions' },
+                )
+              }
               testId="nav-missions"
             />
             <NavButton

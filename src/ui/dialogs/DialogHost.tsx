@@ -11,6 +11,7 @@ import { FoodPickerDialog } from './FoodPickerDialog';
 import { GearPickerDialog } from './GearPickerDialog';
 import { BossSheetDialog } from './BossSheetDialog';
 import { IdleChestDialog } from './IdleChestDialog';
+import { MissionGiftDialog } from './MissionGiftDialog';
 import { ImportConfirmDialog } from './ImportConfirmDialog';
 import { LevelUpDialog } from './LevelUpDialog';
 import { NewGameConfirmDialog } from './NewGameConfirmDialog';
@@ -85,6 +86,9 @@ export function DialogHost() {
         />
       ) : null}
       {dialog?.name === 'idle-chest' ? <IdleChestDialog key="idle-chest" onClose={closeDialog} /> : null}
+      {dialog?.name === 'mission-gift' ? (
+        <MissionGiftDialog key="mission-gift" onClose={closeDialog} />
+      ) : null}
       {dialog?.name === 'boss-sheet' ? (
         <BossSheetDialog key="boss-sheet" bossId={dialog.bossId} onClose={closeDialog} />
       ) : null}

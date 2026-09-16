@@ -1,0 +1,133 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.body {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  top: 96px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex: none;
+}
+
+.tabs {
+  flex: 1;
+  min-width: 0;
+}
+
+.total {
+  font-size: 18px;
+  color: var(--gold-2);
+  white-space: nowrap;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, rgba(24, 20, 26, 0.86), rgba(14, 12, 17, 0.9));
+  border: 1px solid rgba(141, 133, 119, 0.3);
+}
+
+/* The carousel: arrows either side of a rail that scrolls a card at a time. */
+.carousel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.arrow {
+  align-self: center;
+  flex: none;
+}
+
+/* The kit's arrow glyph is drawn pointing up-right; a quarter turn either way reads as the rail's
+   two directions. */
+.back {
+  transform: rotate(135deg);
+}
+
+.forward {
+  transform: rotate(-45deg);
+}
+
+.rail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  padding: 4px;
+}
+
+.rail > * {
+  scroll-snap-align: start;
+}
+
+.foot {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eldric {
+  flex: none;
+}
+
+.eldricRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.portrait {
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.7));
+}
+
+.speech {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.speaker {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 20px;
+  color: var(--gold-3);
+}
+
+.speakerName {
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+.line {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.35;
+  color: var(--text-2);
+}

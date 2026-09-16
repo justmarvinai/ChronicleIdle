@@ -1,0 +1,85 @@
+.card {
+  width: 320px;
+  /* Every card the same height, so the rail reads as a row of pages rather than a ragged edge. */
+  height: 336px;
+  flex: none;
+  transition:
+    transform var(--t-base) var(--ease-snap),
+    filter var(--t-base);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+
+.crest {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  /* The kit's round frame is where a round shape is allowed (CLAUDE.md §7.1). */
+  border: 1px solid rgba(141, 133, 119, 0.4);
+  background: radial-gradient(circle at 40% 35%, rgba(58, 48, 38, 0.95), rgba(16, 14, 18, 0.95));
+}
+
+.name {
+  font-size: 19px;
+  line-height: 1.2;
+  color: var(--text-1);
+  text-align: center;
+  min-height: 46px;
+}
+
+.progress {
+  margin-top: auto;
+}
+
+.rewards {
+  align-self: flex-start;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+}
+
+.claimable {
+  box-shadow: 0 0 22px rgba(240, 213, 122, 0.26);
+}
+
+.claimable .name,
+.open .name {
+  color: var(--gold-3);
+}
+
+.claimed {
+  opacity: 0.74;
+}
+
+.claimed .progress {
+  filter: grayscale(0.55) brightness(0.72);
+}
+
+.locked {
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+.card.locked {
+  opacity: 0.66;
+}
+
+.taken {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #9ec79b;
+}
