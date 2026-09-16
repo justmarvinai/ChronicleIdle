@@ -206,7 +206,7 @@ export default function TavernScreen({ route }: ScreenProps) {
       <AmbientLayer preset="interior" />
       <TopBar title={t('tavern.title')} onBack={() => actions.pop()} />
 
-      <section className={styles.rail} aria-label={t('champions.title')}>
+      <section className={styles.rail} aria-label={t('champions.title')} data-testid="tavern-rail">
         <FilterBar
           view={view}
           onChange={(patch) => actions.setRosterView(patch)}

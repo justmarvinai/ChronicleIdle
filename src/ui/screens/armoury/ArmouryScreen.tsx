@@ -77,7 +77,7 @@ export default function ArmouryScreen({ route }: ScreenProps) {
         </Button>
       </TopBar>
 
-      <section className={styles.racks} aria-label={t('armoury.title')}>
+      <section className={styles.racks} aria-label={t('armoury.title')} data-testid="armoury-racks">
         <GearFilterBar
           view={view}
           onChange={(patch) => actions.setGearView(patch)}

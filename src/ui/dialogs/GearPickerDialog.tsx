@@ -85,7 +85,7 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
               {t('gearPicker.empty', { slot: slotLabel(slot) })}
             </p>
           ) : (
-            <ScrollArea height={460} className={styles.scroll}>
+            <ScrollArea height={460} className={styles.scroll} data-testid="gear-picker-list">
               <div className={styles.grid}>
                 {candidates.map((entry) => {
                   const set = setOf(entry.piece);

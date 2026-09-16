@@ -54,7 +54,7 @@ export default function StarterScreen(_props: ScreenProps) {
         <h1 className={`display ${styles.title}`}>{t('starter.title')}</h1>
         <p className={styles.body}>{t('starter.body')}</p>
       </header>
-      <div className={styles.cards}>
+      <div className={styles.cards} data-testid="starter-cards">
         {STARTER_IDS.map((id, index) => {
           const def = content.championById(id);
           if (!def) return null;

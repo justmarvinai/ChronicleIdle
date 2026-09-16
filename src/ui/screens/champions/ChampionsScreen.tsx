@@ -82,7 +82,7 @@ export default function ChampionsScreen({ route }: ScreenProps) {
       <AmbientLayer preset="interior" />
       <TopBar title={t('champions.title')} onBack={() => actions.pop()} />
 
-      <section className={styles.rail} aria-label={t('champions.title')}>
+      <section className={styles.rail} aria-label={t('champions.title')} data-testid="roster-rail">
         <FilterBar
           view={view}
           onChange={(patch) => actions.setRosterView(patch)}

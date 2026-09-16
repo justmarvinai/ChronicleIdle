@@ -8,6 +8,7 @@ import { UpdateBanner } from '@ui/chrome/UpdateBanner';
 import { ToastHost } from '@ui/components/Toast/ToastHost';
 import { DialogHost } from '@ui/dialogs/DialogHost';
 import { ScreenHost } from '@ui/router/ScreenHost';
+import { TutorialOverlay } from '@ui/tutorial/TutorialOverlay';
 import { GameViewport } from '@ui/viewport/GameViewport';
 import { bootstrap } from './bootstrap';
 
@@ -46,6 +47,7 @@ export function App() {
             <>
               <ScreenHost />
               <DialogHost />
+              <TutorialOverlay />
               <ToastHost />
               <UpdateBanner />
             </>

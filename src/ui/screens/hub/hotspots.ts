@@ -92,6 +92,7 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     size: 130,
     glyph: 'glyph.spell_book',
     feature: 'missions',
+    route: { name: 'missions' },
     color: '#c9a24a',
     labelBelow: true,
   },

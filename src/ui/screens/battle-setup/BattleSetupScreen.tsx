@@ -145,7 +145,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
         onBack={() => actions.pop()}
       />
 
-      <section className={styles.team} aria-label={t('battleSetup.team')}>
+      <section className={styles.team} aria-label={t('battleSetup.team')} data-testid="setup-team">
         <h2 className={`display ${styles.heading}`}>{t('battleSetup.team')}</h2>
         <div className={styles.slots}>
           {Array.from({ length: partySize }, (_, i) => {
