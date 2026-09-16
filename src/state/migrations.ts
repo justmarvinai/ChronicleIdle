@@ -144,6 +144,27 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       };
     },
   },
+  {
+    from: 10,
+    to: 11,
+    /*
+     * Phase 13: the Chronicler's Path. Every chronicle starts at its first page with the counters
+     * it has already earned as the baseline — so the counter missions ask for play from here on,
+     * while the state missions ("clear 1-1", "reach level 15") read as already met and a deep
+     * chronicle walks them a claim at a time. That is the design's own rule for the two families
+     * (`QUESTS_MISSIONS.md` §1), not a special case for old saves.
+     */
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 11,
+      missions: {
+        claimed: [],
+        baseline: { ...((raw['stats'] ?? {}) as Record<string, number>) },
+        chests: [],
+        gearChoice: null,
+      },
+    }),
+  },
 ];
 
 export interface MigrationResult {

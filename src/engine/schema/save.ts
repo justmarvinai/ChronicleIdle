@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 10 as const;
+export const SAVE_VERSION = 11 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -204,8 +204,24 @@ const questPeriodSchema = z.object({
   dayCounted: z.boolean(),
 });
 
-export const saveSchemaV10 = z.object({
-  saveVersion: z.literal(10),
+/**
+ * The Chronicler's Path as the save keeps it (QUESTS_MISSIONS.md §4). The line is derived from
+ * `claimed` — the mission being walked is the first one not in it — so nothing here can disagree
+ * with the content (ADR-040's discipline, applied to the Path).
+ */
+const missionsSchema = z.object({
+  /** Mission ids claimed, in the order they were claimed. */
+  claimed: z.array(z.string()),
+  /** The counters when the open mission became open; its counter goals measure the delta. */
+  baseline: z.record(z.string(), z.number()),
+  /** Chapter indices whose chest has been taken. */
+  chests: z.array(z.number().int().min(1).max(10)),
+  /** The piece Eldric's parting gift was struck as, once the chronicle named it. */
+  gearChoice: z.string().nullable(),
+});
+
+export const saveSchemaV11 = z.object({
+  saveVersion: z.literal(11),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -250,11 +266,14 @@ export const saveSchemaV10 = z.object({
   periods: z.object({ lastDailyKey: z.string(), lastWeeklyKey: z.string() }),
   /** The quest boards, by period (QUESTS_MISSIONS.md §2–§3). Shipped in save v10. */
   quests: z.object({ daily: questPeriodSchema, weekly: questPeriodSchema }),
+  /** The Chronicler's Path (QUESTS_MISSIONS.md §4). Shipped in save v11. */
+  missions: missionsSchema,
 });
 
-export type SaveGameV10 = z.infer<typeof saveSchemaV10>;
-export type SaveGame = SaveGameV10;
+export type SaveGameV11 = z.infer<typeof saveSchemaV11>;
+export type SaveGame = SaveGameV11;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
+export type MissionsSave = z.infer<typeof missionsSchema>;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
@@ -262,7 +281,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV10;
+export const saveSchema = saveSchemaV11;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

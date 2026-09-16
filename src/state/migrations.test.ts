@@ -240,6 +240,33 @@ describe('migrateSave', () => {
     }
   });
 
+  it('upgrades a Phase 12 (version 10) chronicle to the first page of the Path', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v10.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(10);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // What Phase 12 wrote survives: the day's claims, the chest taken, both baselines.
+    expect(result.save.quests.daily.claimed).toEqual([
+      'quest.daily.login',
+      'quest.daily.claim_idle',
+      'quest.daily.clear_stages',
+    ]);
+    expect(result.save.quests.daily.chests).toEqual([20]);
+    expect(result.save.quests.weekly.baseline['summon.pulls']).toBe(15);
+    expect(result.save.stats['quests.daily.days5']).toBe(5);
+    // …and the Path starts at its first page, baselined against everything already played: the
+    // counter missions ask for play from here, the state ones read as met.
+    expect(result.save.missions.claimed).toEqual([]);
+    expect(result.save.missions.chests).toEqual([]);
+    expect(result.save.missions.gearChoice).toBeNull();
+    expect(result.save.missions.baseline).toEqual(result.save.stats);
+    expect(result.save.missions.baseline['campaign.cleared']).toBe(57);
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [

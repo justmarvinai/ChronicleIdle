@@ -62,5 +62,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
         dayCounted: false,
       },
     },
+    // The Path starts at its first page, with nothing behind it to measure against.
+    missions: { claimed: [], baseline: {}, chests: [], gearChoice: null },
   };
 }

@@ -55,6 +55,14 @@ export type DomainEvent =
       boardCompleted: boolean;
     }
   | { type: 'quests.chestClaimed'; period: QuestPeriod; points: number; cycled: boolean }
+  | {
+      type: 'mission.claimed';
+      missionId: string;
+      chapter: number;
+      /** True when that claim finished the chapter, so its chest is waiting. */
+      chapterComplete: boolean;
+    }
+  | { type: 'mission.chapterChest'; chapter: number }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

@@ -80,6 +80,13 @@ import {
   type ExchangeSummary,
   type SummonSummary,
 } from './summon';
+import {
+  applyChapterChestClaim,
+  applyMissionClaim,
+  applyMissionGearChoice,
+  type ChapterChestClaim,
+  type MissionClaim,
+} from './missions';
 import { applyQuestChestClaim, applyQuestClaim, type QuestChestClaim, type QuestClaim } from './quests';
 import type { GearInstance } from '@engine/gear/instance';
 import { bumpCounter, bumpCounterId, type CounterKey } from '@engine/progression/counters';
@@ -246,6 +253,15 @@ export interface GameActions {
   claimQuest(period: QuestPeriod, questId?: string): Result<QuestClaim>;
   /** Takes one chest off the points track; each threshold pays once per period. */
   claimQuestChest(period: QuestPeriod, points: number): Result<QuestChestClaim>;
+  /**
+   * Claims the mission the Chronicler's Path is on, which opens the next one
+   * (`QUESTS_MISSIONS.md` §4). The id is the one the card shows, so a stale press is refused.
+   */
+  claimMission(missionId: string): Result<MissionClaim>;
+  /** Takes a finished chapter's chest; the last one hands Eldric over. */
+  claimChapterChest(chapter: number): Result<ChapterChestClaim>;
+  /** Names the slot and set of the 6★ Legendary piece the Path's last chest owes. */
+  takeMissionGift(slot: GearSlot, setId: string): Result<GearInstance>;
   /** Dev/debug: a seeded piece straight into the armoury. */
   debugGrantGear(settlementIndex: number): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
@@ -1121,6 +1137,67 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 questIds: claim.questIds,
                 points: claim.points,
                 boardCompleted: claim.boardCompleted,
+              });
+              return result;
+            },
+
+            claimMission(missionId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<MissionClaim> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyMissionClaim(state.save, missionId, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const claim = result.value;
+              if (claim.changes.length)
+                events.emit({ type: 'currency.changed', changes: claim.changes, reason: 'mission' });
+              events.emit({
+                type: 'mission.claimed',
+                missionId: claim.mission.id,
+                chapter: claim.mission.chapter,
+                chapterComplete: claim.chapterComplete,
+              });
+              return result;
+            },
+
+            claimChapterChest(chapter) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<ChapterChestClaim> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyChapterChestClaim(state.save, chapter, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const claim = result.value;
+              if (claim.changes.length)
+                events.emit({ type: 'currency.changed', changes: claim.changes, reason: 'mission' });
+              if (claim.champion)
+                events.emit({
+                  type: 'champion.added',
+                  defId: claim.champion.defId,
+                  instanceId: claim.champion.instanceId,
+                  source: 'mission',
+                });
+              events.emit({ type: 'mission.chapterChest', chapter: claim.chapter });
+              return result;
+            },
+
+            takeMissionGift(slot, setId) {
+              const current = get().save;
+              if (!current) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              // Seeded by the choice itself, so the piece cannot be rerolled by reloading.
+              const rng = createRng(`mission-gift:${current.seedRoot}:${slot}:${setId}`);
+              let result: Result<GearInstance> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyMissionGearChoice(state.save, { slot, setId, now, rng });
+                if (result.ok) state.save.updatedAt = now;
               });
               return result;
             },
