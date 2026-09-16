@@ -104,14 +104,14 @@ export const champions = {
   'ab.anuria.heartseeker.name': 'Heartseeker',
   'ab.anuria.heartseeker.description':
     'Attacks one enemy for {dmg}% of ATK. Always a critical hit if the target has a debuff. Cooldown {cooldown} turns.',
-  'ab.anuria.rangers_focus.name': "Ranger's Focus",
+  'ab.anuria.rangers_focus.name': 'Ranger’s Focus',
   'ab.anuria.rangers_focus.description':
     'Critical hits deal 15% more damage against enemies with [DEF Down].',
 
   'champ.darius.name': 'Darius the Wayfarer',
   'champ.darius.lore':
     'Darius walked out of the Eclipse Gate carrying an hourglass that runs backwards. He will not say what he traded for it, only that the sand is not sand.',
-  'ab.darius.wayfarers_bolt.name': "Wayfarer's Bolt",
+  'ab.darius.wayfarers_bolt.name': 'Wayfarer’s Bolt',
   'ab.darius.wayfarers_bolt.description':
     "Attacks one enemy for {dmg}% of ATK with a {chance}% chance to decrease the target's turn meter by {tm}%.",
   'ab.darius.stitch_in_time.name': 'Stitch in Time',
@@ -217,7 +217,7 @@ export const champions = {
   'ab.aurelia_dawnwarden.judgement.name': 'Judgement',
   'ab.aurelia_dawnwarden.judgement.description':
     'Attacks all enemies for {dmg}% of DEF with a {chance}% chance to place [Block Buffs] for {turns} turns. Cooldown {cooldown} turns.',
-  'ab.aurelia_dawnwarden.wardens_oath.name': "Warden's Oath",
+  'ab.aurelia_dawnwarden.wardens_oath.name': 'Warden’s Oath',
   'ab.aurelia_dawnwarden.wardens_oath.description':
     'When an ally drops below 30% HP, Aurelia grants them a [Shield] of 20% of her max HP for 1 turn (once per ally per wave).',
   'ab.aurelia_dawnwarden.dawn_aura.name': 'Dawn Aura',

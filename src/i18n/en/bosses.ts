@@ -19,7 +19,7 @@ export const bosses = {
   'ab.gravemaw.devour.name': 'Devour',
   'ab.gravemaw.devour.description':
     'Attacks one enemy for {dmg}% of ATK, heals himself 3% of his own maximum HP for every debuff on them, and places [Heal Reduction] for {turns} turns. Cooldown {cooldown} turns.',
-  'ab.gravemaw.tyrants_hide.name': "Tyrant's Hide",
+  'ab.gravemaw.tyrants_hide.name': 'Tyrant’s Hide',
   'ab.gravemaw.tyrants_hide.description':
     'Takes 20% less damage from critical hits until five different debuffs have landed on him. The hide does not grow back.',
 
@@ -42,7 +42,7 @@ export const bosses = {
   'ab.nyxara.eclipse_hymn.name': 'Eclipse Hymn',
   'ab.nyxara.eclipse_hymn.description':
     'From phase II: places [Fear] on all enemies for {turns} turns and takes 30% of their turn meter. Cooldown {cooldown} turns.',
-  'ab.nyxara.mothers_embrace.name': "Mother's Embrace",
+  'ab.nyxara.mothers_embrace.name': 'Mother’s Embrace',
   'ab.nyxara.mothers_embrace.description':
     'From phase III: heals herself 5% of her maximum HP, places [Block Debuffs] on herself for {turns} turns, and her chorus gains [Counterattack] for 3 turns. Cooldown {cooldown} turns.',
   'ab.nyxara.unlight.name': 'Un-light',

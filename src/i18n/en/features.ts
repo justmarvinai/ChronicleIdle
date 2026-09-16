@@ -17,7 +17,7 @@ export const features = {
   'feature.quests_daily.hint': 'A short list every day, with a chest at the end of it.',
   'feature.idle_chest.name': 'Idle Chest',
   'feature.idle_chest.hint': 'The chronicle keeps earning while you are away.',
-  'feature.missions.name': "Chronicler's Path",
+  'feature.missions.name': 'Chronicler’s Path',
   'feature.missions.hint': 'The long mission line, chapter by chapter.',
   'feature.tavern_rank.name': 'Tavern: Ranking Up',
   'feature.tavern_rank.hint': 'Spend champions to light another star.',

@@ -59,7 +59,7 @@ export const campaign = {
   'ab.redcap_halvar.toll_of_blood.name': 'Toll of Blood',
   'ab.redcap_halvar.toll_of_blood.description':
     'Attacks one enemy for {dmg}% of ATK and heals himself for 30% of the damage dealt. Cooldown {cooldown} turns.',
-  'ab.redcap_halvar.kings_ransom.name': "King's Ransom",
+  'ab.redcap_halvar.kings_ransom.name': 'King’s Ransom',
   'ab.redcap_halvar.kings_ransom.description':
     'Attacks all enemies for {dmg}% of ATK with a {chance}% chance to place [Weaken] for {turns} turns. Cooldown {cooldown} turns.',
 
@@ -94,7 +94,7 @@ export const campaign = {
   'enemy.corsair_boatswain.name': 'Corsair Boatswain',
   'enemy.corsair_deck_warden.name': 'Deck Warden',
   'enemy.corsair_tide_hexer.name': 'Tide-Hexer',
-  'enemy.corsair_surgeon.name': "Ship's Surgeon",
+  'enemy.corsair_surgeon.name': 'Ship’s Surgeon',
   'enemy.captain_morwenna.name': 'Captain Morwenna Tide',
   'ab.captain_morwenna.cutlass_dance.name': 'Cutlass Dance',
   'ab.captain_morwenna.cutlass_dance.description': 'Attacks one enemy twice for {dmg}% of ATK each.',
@@ -139,7 +139,7 @@ export const campaign = {
   'enemy.camp_charlatan.name': 'Camp Charlatan',
   'enemy.field_chirurgeon.name': 'Field Chirurgeon',
   'enemy.ser_dagan.name': 'Ser Dagan the Oathbreaker',
-  'ab.ser_dagan.oathbreakers_edge.name': "Oathbreaker's Edge",
+  'ab.ser_dagan.oathbreakers_edge.name': 'Oathbreaker’s Edge',
   'ab.ser_dagan.oathbreakers_edge.description': 'Attacks one enemy for {dmg}% of DEF.',
   'ab.ser_dagan.broken_vow.name': 'Broken Vow',
   'ab.ser_dagan.broken_vow.description':
@@ -269,7 +269,7 @@ export const campaign = {
   'enemy.chapel_inquisitor.name': 'Chapel Inquisitor',
   'enemy.field_cleric.name': 'Field Cleric',
   'enemy.castellan_vaughn.name': 'Castellan Vaughn',
-  'ab.castellan_vaughn.castellans_hammer.name': "Castellan's Hammer",
+  'ab.castellan_vaughn.castellans_hammer.name': 'Castellan’s Hammer',
   'ab.castellan_vaughn.castellans_hammer.description':
     'Attacks one enemy for {dmg}% of DEF with a {chance}% chance to place [DEF Down] for {turns} turns.',
   'ab.castellan_vaughn.close_the_gate.name': 'Close the Gate',
