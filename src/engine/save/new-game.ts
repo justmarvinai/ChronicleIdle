@@ -64,5 +64,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     },
     // The Path starts at its first page, with nothing behind it to measure against.
     missions: { claimed: [], baseline: {}, chests: [], gearChoice: null },
+    // Nothing taught yet: chapter 1 opens over the new-game dialog itself (TUTORIAL.md 1.1).
+    tutorial: { completedSteps: [], skippedChapters: [] },
   };
 }

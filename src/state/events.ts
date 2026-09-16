@@ -63,6 +63,9 @@ export type DomainEvent =
       chapterComplete: boolean;
     }
   | { type: 'mission.chapterChest'; chapter: number }
+  /** A tutorial lesson was taught, or a chapter waved off (`TUTORIAL.md`). */
+  | { type: 'tutorial.step'; stepId: string; chapter: number }
+  | { type: 'tutorial.chapterSkipped'; chapterId: string }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

@@ -22,7 +22,7 @@ import {
   setLocked,
 } from '@engine/champions/roster';
 import { addEnergy, regenerateEnergy, spendEnergy } from '@engine/economy/energy';
-import { grant, spend } from '@engine/economy/wallet';
+import { grant, spend, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { createNewGame } from '@engine/save/new-game';
 import type { SaveGame, Settings, TeamMode } from '@engine/schema/save';
@@ -88,6 +88,8 @@ import {
   type MissionClaim,
 } from './missions';
 import { applyQuestChestClaim, applyQuestClaim, type QuestChestClaim, type QuestClaim } from './quests';
+import { payCurrencies } from './payout';
+import { applyTutorialSkip, applyTutorialStep } from './tutorial';
 import type { GearInstance } from '@engine/gear/instance';
 import { bumpCounter, bumpCounterId, type CounterKey } from '@engine/progression/counters';
 import {
@@ -167,6 +169,15 @@ export interface GameActions {
   addEnergy(amount: number, reason: string): void;
   spendEnergy(amount: number): Result<void>;
   claimProvision(id: string, amount: number): boolean;
+  /**
+   * Pays a one-time grant, keyed by id: the Chronicler's Provisions and anything else a tutorial
+   * step hands over once. Returns false when this chronicle has already been paid it.
+   */
+  claimGrant(id: string, currencies: readonly CurrencyAmount[]): boolean;
+  /** Records a tutorial step as taught (`TUTORIAL.md`); a repeat report changes nothing. */
+  completeTutorialStep(stepId: string): void;
+  /** "Skip this lesson": the chapter is over and the next one opens (owner's answer Q4). */
+  skipTutorialChapter(chapterId: string): Result<void>;
   updateSettings(patch: Partial<Settings>): void;
   touchStat(key: string, delta?: number): void;
   push(route: Route): void;
@@ -555,13 +566,50 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             },
 
             claimProvision(id, amount) {
+              return get().actions.claimGrant(id, [{ currency: 'energy', amount }]);
+            },
+
+            claimGrant(id, currencies) {
               const current = get().save;
               if (!current || current.provisionsClaimed.includes(id)) return false;
-              withSave((save) => {
-                save.provisionsClaimed.push(id);
+              const now = clock.now();
+              let changes: CurrencyChange[] = [];
+              set((state) => {
+                if (!state.save) return;
+                state.save.provisionsClaimed.push(id);
+                changes = payCurrencies(state.save, currencies, now);
+                state.save.updatedAt = now;
               });
-              get().actions.addEnergy(amount, `provision:${id}`);
+              if (changes.length) events.emit({ type: 'currency.changed', changes, reason: `grant:${id}` });
+              const energy = changes.find((change) => change.currency === 'energy');
+              if (energy) events.emit({ type: 'energy.changed', delta: energy.delta, total: energy.total });
               return true;
+            },
+
+            completeTutorialStep(stepId) {
+              const now = clock.now();
+              let taught = false;
+              set((state) => {
+                if (!state.save) return;
+                taught = applyTutorialStep(state.save, stepId);
+                if (taught) state.save.updatedAt = now;
+              });
+              if (!taught) return;
+              const step = content.tutorialStepById(stepId);
+              if (step) events.emit({ type: 'tutorial.step', stepId, chapter: step.chapter });
+            },
+
+            skipTutorialChapter(chapterId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<void> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTutorialSkip(state.save, chapterId);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok) events.emit({ type: 'tutorial.chapterSkipped', chapterId });
+              return result;
             },
 
             updateSettings(patch) {

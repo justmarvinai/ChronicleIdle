@@ -7,6 +7,7 @@ export {
   currentChapter,
   emptyTutorialState,
   owedGrants,
+  stepFeatureGates,
   stepSatisfied,
   tutorialFinished,
   tutorialView,

@@ -15,6 +15,7 @@
  * them and the state layer records them, which is also what stops a counter goal from finishing a
  * step before its line has been read.
  */
+import type { FeatureId } from '@content/balance/unlocks';
 import type { AbilitySlot } from '@content/champions/types';
 import type {
   TutorialChapterDef,
@@ -189,6 +190,20 @@ export function owedGrants(
     }
   }
   return grants;
+}
+
+/**
+ * The features a step's own gate waits for. A save older than the tutorial has no business being
+ * taught a lesson about a feature it has been using for weeks, so the v12 migration reads these to
+ * decide which of Steel and Bone's standalone lessons are already behind the chronicle.
+ */
+export function stepFeatureGates(step: TutorialStepDef): FeatureId[] {
+  return step.when ? conditionFeatures(step.when) : [];
+}
+
+function conditionFeatures(condition: TutorialCondition): FeatureId[] {
+  if (condition.type === 'all' || condition.type === 'any') return condition.of.flatMap(conditionFeatures);
+  return condition.type === 'feature' ? [condition.feature] : [];
 }
 
 /** Whether one condition holds right now. */

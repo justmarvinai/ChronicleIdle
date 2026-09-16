@@ -3,7 +3,10 @@
  * order until the current SAVE_VERSION is reached. Unknown newer versions are refused (never
  * downgraded destructively).
  */
+import { TUTORIAL_CHAPTERS } from '@content/tutorial/index';
 import { SaveError } from '@engine/errors';
+import { isFeatureUnlocked } from '@engine/progression/unlocks';
+import { stepFeatureGates } from '@engine/tutorial/index';
 import { SAVE_VERSION, saveSchema, type SaveGame } from '@engine/schema/save';
 
 export interface MigrationStep {
@@ -164,6 +167,47 @@ export const MIGRATIONS: readonly MigrationStep[] = [
         gearChoice: null,
       },
     }),
+  },
+  {
+    from: 11,
+    to: 12,
+    /*
+     * Phase 14: the tutorial. A chronicle that predates it is not sent back to school. Every
+     * chapter whose gate its level has already passed counts as waved off, and Steel and Bone —
+     * whose lessons stand alone — keeps the ones the chronicle has not reached yet, so a level-8
+     * save is still taught Refine when it gets to 18.
+     *
+     * The grants of the chapters marked off this way are recorded as already paid: a chronicle
+     * that played without the lessons is not owed the Provisions that went with them, and
+     * `owedGrants` stays honest about paying only for what was taught or genuinely skipped.
+     */
+    migrate: (raw) => {
+      const profile = (raw['profile'] ?? {}) as { level?: unknown };
+      const level = typeof profile.level === 'number' ? profile.level : 1;
+      const completedSteps: string[] = [];
+      const skippedChapters: string[] = [];
+      const claimed = new Set(
+        ((raw['provisionsClaimed'] ?? []) as unknown[]).filter((id): id is string => typeof id === 'string'),
+      );
+      for (const chapter of TUTORIAL_CHAPTERS) {
+        const open = chapter.trigger.type === 'new_game' || isFeatureUnlocked(chapter.trigger.feature, level);
+        if (!open) continue;
+        const behind = chapter.sequential
+          ? chapter.steps
+          : chapter.steps.filter((step) =>
+              stepFeatureGates(step).every((feature) => isFeatureUnlocked(feature, level)),
+            );
+        if (chapter.sequential) skippedChapters.push(chapter.id);
+        else for (const step of behind) completedSteps.push(step.id);
+        for (const step of behind) if (step.grant) claimed.add(step.grant.id);
+      }
+      return {
+        ...raw,
+        saveVersion: 12,
+        provisionsClaimed: [...claimed],
+        tutorial: { completedSteps, skippedChapters },
+      };
+    },
   },
 ];
 

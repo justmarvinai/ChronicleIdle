@@ -1,6 +1,6 @@
 /**
- * Save-game schema, version 8 (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the
- * current phase are present; later phases add fields together with a migration.
+ * Save-game schema (docs/tech/ARCHITECTURE.md §4.1). Only the slices that exist in the current
+ * phase are present; later phases add fields together with a migration.
  */
 import { z } from 'zod';
 import { DIFFICULTY_MULT, type Difficulty } from '@content/balance/battle';
@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 11 as const;
+export const SAVE_VERSION = 12 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -220,8 +220,20 @@ const missionsSchema = z.object({
   gearChoice: z.string().nullable(),
 });
 
-export const saveSchemaV11 = z.object({
-  saveVersion: z.literal(11),
+/**
+ * The tutorial (TUTORIAL.md). What is kept is what Eldric has already taught and which chapters
+ * the player waved off; *which* lesson is open follows from those, the chronicle and where the
+ * player is standing (`@engine/tutorial`), so a save can never disagree with the step it is on.
+ */
+const tutorialSchema = z.object({
+  /** Step ids finished, in the order they were taught. */
+  completedSteps: z.array(z.string()),
+  /** Chapter ids the player pressed "Skip this lesson" on — or that predate the tutorial. */
+  skippedChapters: z.array(z.string()),
+});
+
+export const saveSchemaV12 = z.object({
+  saveVersion: z.literal(12),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -241,7 +253,10 @@ export const saveSchemaV11 = z.object({
   }),
   wallet: walletSchema,
   energy: z.object({ value: z.number().min(0), lastTickAt: z.number().int().nonnegative() }),
-  /** Ids of one-time energy grants already claimed (balance/energy.ts ENERGY_PROVISIONS). */
+  /**
+   * Ids of one-time grants already paid: the Chronicler's Provisions of `balance/energy.ts` and
+   * anything else a tutorial step hands over once (`tutorial.gift.*`).
+   */
   provisionsClaimed: z.array(z.string()),
   /** Owned champions by instance id; empty until the starter is chosen. */
   roster: z.record(z.string(), championInstanceSchema),
@@ -268,12 +283,15 @@ export const saveSchemaV11 = z.object({
   quests: z.object({ daily: questPeriodSchema, weekly: questPeriodSchema }),
   /** The Chronicler's Path (QUESTS_MISSIONS.md §4). Shipped in save v11. */
   missions: missionsSchema,
+  /** The tutorial script's progress (TUTORIAL.md). Shipped in save v12. */
+  tutorial: tutorialSchema,
 });
 
-export type SaveGameV11 = z.infer<typeof saveSchemaV11>;
-export type SaveGame = SaveGameV11;
+export type SaveGameV12 = z.infer<typeof saveSchemaV12>;
+export type SaveGame = SaveGameV12;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type MissionsSave = z.infer<typeof missionsSchema>;
+export type TutorialSave = z.infer<typeof tutorialSchema>;
 export type TeamPresets = SaveGame['teams'];
 export type CampaignSave = SaveGame['campaign'];
 export type StagePointer = z.infer<typeof stagePointerSchema>;
@@ -281,7 +299,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV11;
+export const saveSchema = saveSchemaV12;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

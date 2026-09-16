@@ -267,6 +267,47 @@ describe('migrateSave', () => {
     expect(result.save.missions.baseline['campaign.cleared']).toBe(57);
   });
 
+  it('starts a Phase 13 (version 11) chronicle past the lessons its level has opened', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v11.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    const result = migrateSave(fixture);
+    expect(result.migrated).toBe(true);
+    expect(result.fromVersion).toBe(11);
+    expect(result.save.saveVersion).toBe(SAVE_VERSION);
+    // What Phase 13 wrote survives.
+    expect(result.save.missions.claimed).toEqual(['mission.01.01', 'mission.01.02', 'mission.01.03']);
+    // A level-16 chronicle is not sent back to school: the five taught chapters count as waved off…
+    expect(result.save.tutorial.skippedChapters).toEqual([
+      'tut.awakening',
+      'tut.the_hold',
+      'tut.the_binding',
+      'tut.routine',
+      'tut.the_path',
+    ]);
+    // …Steel and Bone's lessons up to level 16 count as read…
+    expect(result.save.tutorial.completedSteps).toEqual([
+      'tut.6.1',
+      'tut.6.2',
+      'tut.6.3',
+      'tut.6.4',
+      'tut.6.5',
+      'tut.6.6',
+    ]);
+    // …and Refine (18) and auto-repeat (20) are still ahead of it.
+    expect(result.save.tutorial.completedSteps).not.toContain('tut.6.7');
+    // The Provisions of the chapters it never walked are not back-paid.
+    expect(result.save.provisionsClaimed).toEqual([
+      'tutorial.awakening',
+      'tutorial.the_hold',
+      'tutorial.gift.ancient_shard',
+      'tutorial.the_binding',
+      'tutorial.routine',
+      'tutorial.the_path',
+    ]);
+  });
+
   it('runs migration steps in order', () => {
     const legacy = { ...structuredClone(save), saveVersion: 0, legacyName: 'Old' } as Record<string, unknown>;
     const result = migrateSave(legacy, [
