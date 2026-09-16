@@ -13,6 +13,7 @@ export default chapter({
     step({
       when: { type: 'screen', screen: 'hub' },
       spotlight: ['hub.tavern'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'tavern' },
     }),
     // 2.2 — who is being raised.
@@ -40,6 +41,7 @@ export default chapter({
         ],
       },
       spotlight: ['hub.champions', 'champions.roster'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'champions' },
     }),
     // 2.6 — the six slots, beginning with the weapon.
@@ -55,6 +57,7 @@ export default chapter({
     // 2.8 — gold into steel, at the racks. The pointer follows the player there.
     step({
       spotlight: ['champions.armoury', 'armoury.racks', 'armoury.upgrade'],
+      allow: 'all',
       complete: { type: 'counter', key: 'gear.levels', count: 1 },
       grant: provision('tutorial.the_hold'),
     }),

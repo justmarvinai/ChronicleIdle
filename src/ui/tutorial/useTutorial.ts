@@ -76,6 +76,16 @@ function unionRect(info: ViewportInfo, elements: readonly HTMLElement[]): Rect |
   return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
+/** One rectangle per element that is actually laid out — the cut-outs, which are never merged. */
+function elementRects(info: ViewportInfo, elements: readonly HTMLElement[]): Rect[] {
+  const rects: Rect[] = [];
+  for (const element of elements) {
+    const rect = unionRect(info, [element]);
+    if (rect) rects.push(rect);
+  }
+  return rects;
+}
+
 function sameRect(a: Rect | null, b: Rect | null): boolean {
   if (!a || !b) return a === b;
   return (
@@ -114,12 +124,11 @@ function useTargetRects(
         const rect = unionRect(info, targetElements(target));
         if (rect) next = rect;
       }
+      // A family target ("every unit plate") is many holes, not one rectangle spanning the lot.
       const openings =
         allowTargets === 'all'
           ? EMPTY
-          : allowTargets
-              .map((target) => unionRect(info, targetElements(target)))
-              .filter((rect): rect is Rect => rect !== null);
+          : allowTargets.flatMap((target) => elementRects(info, targetElements(target)));
       setSpotlight((current) => (sameRect(current, next) ? current : next));
       setHoles((current) => (sameRects(current, openings) ? current : openings));
       frame = requestAnimationFrame(measure);
@@ -146,8 +155,18 @@ export function useTutorial(): TutorialUi {
   );
   const open = useMemo(() => (over ? null : tutorialStep(world)), [over, world]);
 
-  /** The one thing the overlay remembers: the step whose line the player has read. */
-  const [ackedId, setAckedId] = useState<string | null>(null);
+  /**
+   * The one thing the overlay remembers: the step whose line the player has read, and the
+   * chronicle they read it in. A chronicle erased and begun again in the same session must hear
+   * Eldric's first line from the start, so the memory is scoped to the save it belongs to — and
+   * `null` is the chronicle that does not exist yet, which is who reads the very first line.
+   */
+  const [acknowledged, setAcknowledged] = useState<{ step: string; chronicle: number | null } | null>(null);
+  const chronicle = save?.createdAt ?? null;
+  const ackedId =
+    acknowledged && (acknowledged.chronicle === null || acknowledged.chronicle === chronicle)
+      ? acknowledged.step
+      : null;
   const taught = save?.tutorial.completedSteps ?? [];
   const acked = ackedId ? (content.tutorialStepById(ackedId) ?? null) : null;
   // A step that has been read out is held until the save records it — even after its gate closes.
@@ -224,14 +243,14 @@ export function useTutorial(): TutorialUi {
     playSfx('ui.confirm');
     // A line that only asks to be read is finished by reading it.
     if (held.complete.type === 'acknowledged') actions.completeTutorialStep(held.id);
-    else setAckedId(held.id);
-  }, [held, actions]);
+    else setAcknowledged({ step: held.id, chronicle });
+  }, [held, chronicle, actions]);
 
   const skip = useCallback((): void => {
     if (!view?.skippable) return;
     playSfx('ui.close');
     if (!actions.skipTutorialChapter(view.chapter.id).ok) return;
-    setAckedId(null);
+    setAcknowledged(null);
     actions.toast('info', 'tut.skipped');
   }, [view, actions]);
 

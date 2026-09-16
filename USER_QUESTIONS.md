@@ -5,6 +5,22 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q44 — Where the auto-repeat lesson sits, and how hard a lesson holds the screen
+
+**Why it matters.** `TUTORIAL.md` §6 lists the standalone lessons of Steel and Bone with the levels
+they belong to and writes auto-repeat as *(5/20/30)* — the three tiers' unlock levels rather than
+three lessons. Level 5 is already busy: it is where chapter 4 teaches both the daily board and the
+Idle Chest, and the first repeat tier is what the selector opens on anyway.
+
+**The default in use.** The auto-repeat lesson waits for the **second** tier (level 20, the first
+time the choice is a choice), and Steel and Bone's eight lessons run 7, 8, 9, 10, 12, 15, 18, 20.
+One line in `src/content/tutorial/chapter_6.ts` moves it back to 5.
+
+The same file settled a second thing worth confirming: **a lesson that sends the player somewhere
+only points at it** (ring, caret, Eldric's strip — the screen stays theirs), while a lesson inside
+a panel or a fight dims and blocks everything but what it asks for. The brief's "forced actions"
+reads either way; this is the gentler reading, and it is one `allow: 'all'` per step to change.
+
 ### Q43 — Mission 2.5 asks for a rank-up, not for "a champion at 3★"
 
 **Why it matters.** `QUESTS_MISSIONS.md` §4 prints mission 2.5 as *Rank up a champion to 3★*. A

@@ -13,6 +13,7 @@ export default chapter({
     step({
       when: { type: 'screen', screen: 'hub' },
       spotlight: ['hub.missions', 'hub.hall'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'missions' },
     }),
     // 5.2 — the first page, already earned by the stand at Thornwood.

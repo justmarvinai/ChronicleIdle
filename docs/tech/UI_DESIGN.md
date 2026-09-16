@@ -443,9 +443,28 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Motion and sound: spring-in numeral, burst flare, `stinger.levelup` on open.
 
 ### 5.18 Tutorial overlay
-- Dim layer with spotlight cut-out (mask), Eldric panel bottom-left (portrait in `panel-arch`,
-  name banner, text with typewriter effect, *Continue*), pointer hand sprite, input blocked
-  outside `allow`.
+Eldric's onboarding (`docs/design/TUTORIAL.md`, ADR-042). Two shapes, one per beat of a step:
+
+- **While he speaks.** One scrim dims the whole screen (nothing is clickable) and the ornate kit
+  panel sits above the bottom bar: his portrait at 188 px, his name, the chapter and lesson count,
+  the line typed out at ~16 ms a character with a blinking block, *Continue* (armed a beat late so
+  a press held over from the last lesson cannot answer this one) and, from chapter 2 on, *Skip this
+  lesson*. Clicking the panel reveals the rest of the line at once; `prefers-reduced-motion` starts
+  there. Continue takes focus, so the whole beat is one key.
+- **While the player acts.** The panel shrinks to a strip — his face at 56 px, the line, the skip —
+  above the bottom bar, so the lesson never sits on top of what it is teaching. The scrim gains one
+  cut-out per allowed target (`clip-path: path(evenodd, …)`, which decides what is drawn *and* what
+  is hit, so the dim and the block cannot disagree), a gold ring pulses on the spotlight with a
+  bobbing caret, and everything else eats the click.
+
+Rules the overlay holds to:
+
+- A step that only points (`allow: 'all'`) dims nothing: ring, caret, strip, and the screen stays
+  the player's own. The navigation lessons all read this way; the in-panel ones cage.
+- A target that is nowhere on screen dims nothing and blocks nothing — Eldric still speaks.
+- Targets are measured in stage space on a frame loop and only re-rendered when something moved, so
+  a lesson over the battle screen costs no commits per frame (CLAUDE.md §5.6).
+- Layer `--z-tutorial` (300): above the dialogs it dims, below the loading screen.
 
 ### 5.19 Game Modes
 - Reference: `different_content_battles_screen.png`. Horizontal cards: Campaign (current stage),

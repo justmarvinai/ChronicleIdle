@@ -79,6 +79,11 @@ one spotlighted action.
 
 ## Data shape
 
+**As shipped (0.0.14).** The script lives in `src/content/tutorial/chapter_1..6.ts` (35 steps) and
+is validated with everything else by `pnpm content:validate`; the overlay is
+`src/ui/tutorial/TutorialOverlay.tsx` and the step machine `src/engine/tutorial/script.ts`.
+
+
 ```ts
 defineTutorialChapter({
   id: 'tut.awakening', trigger: { type: 'new_game' },
@@ -90,5 +95,17 @@ defineTutorialChapter({
 });
 ```
 
-Tutorial state in save: `{ completedSteps: string[], activeStep: string | null, skippedChapters: string[] }`.
-The battle in 1.5–1.9 uses a fixed seed so the scripted moments always occur.
+Tutorial state in save: `{ completedSteps: string[], skippedChapters: string[] }`. The step that is
+*open* is derived from those, the chronicle and where the player is standing (ADR-042) — storing it
+as well would be a third fact that can disagree with the other two (CLAUDE.md §5.5).
+
+The battle in 1.5–1.9 uses a fixed seed so the scripted moments always occur, and 3.2 always turns
+up an Epic through a rarity floor on that one press (`SUMMONING.md` §1).
+
+Two rules the script holds to, both visible in the data:
+
+- **A lesson points; only some cage.** `allow: 'all'` leaves the screen the player's own with the
+  ring and the caret still on the target — every "go to the X" step reads that way. The steps that
+  cage are the ones inside a panel or a fight, where a wrong press is what confuses a new player.
+- **A turn lesson names the ability it teaches.** Turn order is not always the starter's, and a
+  Common companion has one ability at level 1, so 1.7 waits for a turn that actually offers A2.

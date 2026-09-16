@@ -23,7 +23,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 11 | Weekly Boss | 0.0.11 | ✅ shipped in 0.0.11 |
 | 12 | Daily & Weekly Quests | 0.0.12 | ✅ shipped in 0.0.12 |
 | 13 | The Chronicler's Path (missions) | 0.0.13 | ✅ shipped in 0.0.13 |
-| 14 | Tutorial & Onboarding | 0.0.14 | ⬜ |
+| 14 | Tutorial & Onboarding | 0.0.14 | ✅ shipped in 0.0.14 |
 | 15 | Balance, Polish, Performance → **EA-0.1** | **0.1.0** | ⬜ |
 
 Why this order: the engine (0–2) must exist before content that uses it; campaign (3) is the
@@ -322,6 +322,12 @@ predicates evaluated live; completing 10.12 grants Eldric exactly once; fixture 
 completed chapters 1–6 loads and continues.
 
 ## Phase 14 — Tutorial & Onboarding (`0.0.14`)
+
+**Status.** ✅ shipped in 0.0.14 (2026-09-16). See `CHANGELOG.md` for what landed. The overlay finds
+what it points at through the `data-testid` values the screens already carry and reads what the save
+and the router already say, so no screen knows the tutorial exists (ADR-042); a lesson that sends
+the player somewhere points rather than cages (Q44); and the first stand's seed and the first
+summon's rarity are fixed so the scripted moments always happen.
 
 **Goal.** The interactive scripted onboarding of `TUTORIAL.md` across six chapters, spotlight
 overlay, Eldric dialogue with typewriter, forced actions, deterministic first battle and first

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { collectConsole, settle, startChronicle } from './helpers';
+import { collectConsole, freshChronicle, settle } from './helpers';
 
 /** Hub → Battle → the campaign map → Thornwood Crossing → the setup screen of one stand. */
 async function openStageSetup(page: Page, stage: 1 | 2): Promise<void> {
@@ -47,7 +47,7 @@ test.describe('battle', () => {
     page,
   }) => {
     const problems = collectConsole(page);
-    await startChronicle(page);
+    await freshChronicle(page);
     await openStageSetup(page, 1);
     await expect(page.getByTestId('team-power')).not.toHaveText('0');
     await expect(page.getByTestId('wave-enemies')).toContainText('Thornwood Cutpurse');
@@ -106,7 +106,7 @@ test.describe('battle', () => {
   test('auto clears the first stand and the Next stand button opens the one it unlocked', async ({
     page,
   }) => {
-    await startChronicle(page);
+    await freshChronicle(page);
     await openStageSetup(page, 1);
     await setAuto(page, true);
     await startBattle(page);
@@ -132,7 +132,7 @@ test.describe('battle', () => {
   test('retreating from the pause menu ends the fight and the result leads back to the team', async ({
     page,
   }) => {
-    await startChronicle(page);
+    await freshChronicle(page);
     await openStageSetup(page, 1);
     await setAuto(page, false);
     await startBattle(page);
@@ -148,7 +148,7 @@ test.describe('battle', () => {
   });
 
   test('team presets save and load on the setup screen', async ({ page }) => {
-    await startChronicle(page);
+    await freshChronicle(page);
     await openStageSetup(page, 1);
     const power = page.getByTestId('team-power');
     const full = await power.textContent();

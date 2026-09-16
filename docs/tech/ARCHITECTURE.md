@@ -207,7 +207,8 @@ selected pointer and the auto-repeat count), v5 (Phase 4: `profile.titles` becom
 `profile.title`, the one title the chronicle *wears*; which titles are **earned** is derived from
 the play by `@engine/progression/titles`, never stored), v6 (Phase 6: `inventory` with every
 piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), v8 (Phase 9:
-`idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`) and v11 (Phase 13: `missions`). Fields
+`idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`), v11 (Phase 13: `missions`) and v12
+(Phase 14: `tutorial`). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -217,6 +218,7 @@ interface SaveGame {
   profile: { name: string; level: number; xp: number; avatarChampionId: ChampionId | null; title: string | null };
   wallet: Record<CurrencyId, number>;
   energy: { value: number; lastTickAt: number };
+  provisionsClaimed: string[];   // one-time grants already paid, by id (the Provisions, Eldric's shard)
   roster: Record<string, ChampionInstance>;   // instance ids are `<def>-<n>` from `counters.instances`
   counters: { instances: number; gear: number };   // monotonic serials so ids never collide after a release
   inventory: Record<string, GearInstance>;    // gear ids are `gear-<n>` from `counters.gear`
@@ -244,7 +246,11 @@ interface SaveGame {
   missions: { claimed: string[]; baseline: Record<string, number>; chests: number[]; gearChoice: string | null };
   // Shipped in save v8. The chest's whole state: when it was last emptied (ADR-033).
   idle: { lastClaimAt: number };
-  tutorial: { completedSteps: string[]; activeStep: string | null; skippedChapters: string[] };
+  // Shipped in save v12. Which lesson is open is derived from these and where the player is
+  // standing (ADR-042), so the save cannot disagree with the step it is on: what it keeps is what
+  // Eldric has taught and which chapters were waved off — the latter also carrying the chapters a
+  // pre-tutorial chronicle had already outgrown when it migrated.
+  tutorial: { completedSteps: string[]; skippedChapters: string[] };
   settings: { music: number; sfx: number; speed: 1|2|3|4; auto: boolean; reducedMotion: boolean; fullscreen: boolean; language: 'en' };
   stats: Record<string, number>;          // lifetime counters used by quests/missions
   periods: { lastDailyKey: string; lastWeeklyKey: string };

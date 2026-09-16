@@ -27,8 +27,8 @@ import { VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
 import { useTutorial, type Rect } from './useTutorial';
 import styles from './TutorialOverlay.module.css';
 
-/** Below this the panel would sit on the spotlight, so it moves to the top of the screen. */
-const PANEL_BAND_TOP = VIRTUAL_HEIGHT - 340;
+/** Above this the caret sits over the spotlight; below it, under (there is no room above). */
+const CARET_ABOVE_FROM = 140;
 
 const round = (value: number): number => Math.round(value * 10) / 10;
 
@@ -94,7 +94,6 @@ export function TutorialOverlay() {
   const clip = useMemo(() => (acting ? clipFor(holes) : undefined), [acting, holes]);
   // While the line is being read the screen is held; afterwards only what the lesson allows is.
   const free = acting && holes.length === 0;
-  const panelAtTop = spotlight !== null && spotlight.y + spotlight.height > PANEL_BAND_TOP;
 
   return (
     <AnimatePresence>
@@ -125,11 +124,11 @@ export function TutorialOverlay() {
                 aria-hidden="true"
               />
               <div
-                className={spotlight.y > 140 ? styles.caretAbove : styles.caretBelow}
+                className={spotlight.y > CARET_ABOVE_FROM ? styles.caretAbove : styles.caretBelow}
                 style={{
                   left: spotlight.x + spotlight.width / 2,
                   top:
-                    spotlight.y > 140
+                    spotlight.y > CARET_ABOVE_FROM
                       ? spotlight.y - TUTORIAL_SPOTLIGHT_PAD
                       : spotlight.y + spotlight.height + TUTORIAL_SPOTLIGHT_PAD,
                 }}
@@ -138,42 +137,65 @@ export function TutorialOverlay() {
             </>
           ) : null}
 
-          <motion.aside
-            className={[styles.panel, panelAtTop ? styles.panelTop : styles.panelBottom].join(' ')}
-            initial={{ opacity: 0, y: panelAtTop ? -24 : 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: panelAtTop ? -16 : 16 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            role="dialog"
-            aria-live="polite"
-            aria-label={t('tut.speaker')}
-            onClick={() => step && setRevealedFor(step.id)}
-          >
-            <Panel kind="ornate-wide" padding={10} contentClassName={styles.grid}>
+          {acting ? (
+            /*
+             * The line has been read: Eldric steps aside to a strip above the bottom bar, so the
+             * lesson can be done on a screen the player can actually see and use.
+             */
+            <motion.aside
+              className={styles.strip}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              aria-live="polite"
+              data-testid="tutorial-hint"
+            >
               <AssetImage
                 asset="avatar.tutorial_npc"
-                size={256}
-                className={styles.portrait}
+                size={128}
+                className={styles.stripFace}
                 alt={t('tut.speaker')}
               />
-              <div className={styles.body}>
-                <header className={styles.head}>
-                  <span className={`display ${styles.speaker}`}>{t('tut.speaker')}</span>
-                  <span className={`num ${styles.chapter}`} data-testid="tutorial-lesson">
-                    {t('tut.chapterLabel', {
-                      index: view.chapter.index,
-                      name: translate(view.chapter.name as I18nKey),
-                    })}{' '}
-                    · {t('tut.lesson', { index: view.number, total: view.count })}
-                  </span>
-                </header>
-                <EldricLine key={view.step.id} text={line} reveal={revealedFor === view.step.id} />
-                <footer className={styles.actions}>
-                  {acting ? (
-                    <p className={styles.hint} data-testid="tutorial-hint">
-                      {t('tut.hint')}
-                    </p>
-                  ) : (
+              <p className={styles.stripLine}>{line}</p>
+              {view.skippable ? (
+                <button type="button" className={styles.skip} onClick={skip} data-testid="tutorial-skip">
+                  {t('tut.skip')}
+                </button>
+              ) : null}
+            </motion.aside>
+          ) : (
+            <motion.aside
+              className={styles.panel}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              role="dialog"
+              aria-live="polite"
+              aria-label={t('tut.speaker')}
+              onClick={() => step && setRevealedFor(step.id)}
+            >
+              <Panel kind="ornate-wide" padding={10} contentClassName={styles.grid}>
+                <AssetImage
+                  asset="avatar.tutorial_npc"
+                  size={256}
+                  className={styles.portrait}
+                  alt={t('tut.speaker')}
+                />
+                <div className={styles.body}>
+                  <header className={styles.head}>
+                    <span className={`display ${styles.speaker}`}>{t('tut.speaker')}</span>
+                    <span className={`num ${styles.chapter}`} data-testid="tutorial-lesson">
+                      {t('tut.chapterLabel', {
+                        index: view.chapter.index,
+                        name: translate(view.chapter.name as I18nKey),
+                      })}{' '}
+                      · {t('tut.lesson', { index: view.number, total: view.count })}
+                    </span>
+                  </header>
+                  <EldricLine key={view.step.id} text={line} reveal={revealedFor === view.step.id} />
+                  <footer className={styles.actions}>
                     <Button
                       ref={continueRef}
                       variant="primary"
@@ -184,16 +206,21 @@ export function TutorialOverlay() {
                     >
                       {t('tut.continue')}
                     </Button>
-                  )}
-                  {view.skippable ? (
-                    <button type="button" className={styles.skip} onClick={skip} data-testid="tutorial-skip">
-                      {t('tut.skip')}
-                    </button>
-                  ) : null}
-                </footer>
-              </div>
-            </Panel>
-          </motion.aside>
+                    {view.skippable ? (
+                      <button
+                        type="button"
+                        className={styles.skip}
+                        onClick={skip}
+                        data-testid="tutorial-skip"
+                      >
+                        {t('tut.skip')}
+                      </button>
+                    ) : null}
+                  </footer>
+                </div>
+              </Panel>
+            </motion.aside>
+          )}
         </div>
       ) : null}
     </AnimatePresence>

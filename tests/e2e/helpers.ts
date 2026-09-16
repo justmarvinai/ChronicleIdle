@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { expect, type Page } from '@playwright/test';
 
 /**
@@ -42,7 +43,37 @@ export async function gotoTitle(page: Page): Promise<void> {
 /** Starter slugs offered on the binding screen (`STARTER_IDS` without the `champ.` prefix). */
 export type StarterSlug = 'sister_maelis' | 'ser_corvin' | 'reva_ashblade';
 
-/** Title → New Chronicle → name → bind a starter → Emberhold. */
+/**
+ * Eldric's panel is modal while he is speaking (`TUTORIAL.md`): read the line and press Continue.
+ * Every new chronicle walks the first chapter, so the helpers below press it where it appears.
+ *
+ * Naming the step matters. Lessons follow one another as the player acts, and pressing Continue at
+ * the moment one hands over to the next would answer the wrong line — so the wait is for *this*
+ * lesson to be the one speaking, and the press is only done when it has stopped.
+ */
+export async function eldricContinue(page: Page, step?: string): Promise<void> {
+  const overlay = page.getByTestId('tutorial-overlay');
+  if (step) await expect(overlay).toHaveAttribute('data-step', step, { timeout: 30_000 });
+  await expect(overlay).toHaveAttribute('data-phase', 'dialogue', { timeout: 30_000 });
+  const button = page.getByTestId('tutorial-continue');
+  await expect(button).toBeEnabled({ timeout: 20_000 });
+  await button.click();
+  await expect(overlay).toHaveAttribute('data-phase', 'action', { timeout: 10_000 });
+}
+
+/** A chronicle at the hub with the tutorial behind it, for the suites that are about other things. */
+export async function freshChronicle(page: Page): Promise<void> {
+  await importChronicleFile(page, join(import.meta.dirname, '..', 'fixtures', 'saves', 'fresh.chronicle'));
+}
+
+/** The lesson the overlay is showing, or null when Eldric has nothing to say. */
+export async function currentLesson(page: Page): Promise<string | null> {
+  const overlay = page.getByTestId('tutorial-overlay');
+  if ((await overlay.count()) === 0) return null;
+  return overlay.getAttribute('data-step');
+}
+
+/** Title → New Chronicle → name → bind a starter → Emberhold, through the tutorial's first beats. */
 export async function startChronicle(
   page: Page,
   name = 'Marvin',
@@ -50,18 +81,24 @@ export async function startChronicle(
 ): Promise<void> {
   await gotoTitle(page);
   await page.getByTestId('btn-new-chronicle').click();
+  // 1.1 — "Every chronicle begins with a name."
+  await eldricContinue(page, 'tut.1.1');
   await page.getByTestId('name-input').fill(name);
   await page.getByTestId('begin-chronicle').click();
   await bindStarter(page, starter);
 }
 
-/** On the starter screen: bind one of the three Rares and wait for the hub. */
+/** On the starter screen: read 1.2, bind one of the three Rares and wait for the hub. */
 export async function bindStarter(page: Page, starter: StarterSlug = 'ser_corvin'): Promise<void> {
   await expect(page.getByTestId('screen-starter')).toBeVisible({ timeout: 20_000 });
   await settle(page);
+  // 1.2 — "Choose the champion you bind first."
+  await eldricContinue(page, 'tut.1.2');
   await page.getByTestId(`bind-${starter}`).click();
   await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
   await settle(page);
+  // 1.3 — "To the crossing!" only points from here on, so the hub is the player's own again.
+  await eldricContinue(page, 'tut.1.3');
 }
 
 /** Title → Import → `.chronicle` file → confirm → the chronicle's entry screen. */

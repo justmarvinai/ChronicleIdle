@@ -106,12 +106,14 @@
   }
 }
 
-/* Eldric's panel: the ornate kit panel, positioned by this layer. */
+/* Eldric's panel while he speaks: the ornate kit panel, positioned by this layer. */
 .panel {
   position: absolute;
   left: 50%;
+  bottom: calc(var(--bottombar-h) + 16px);
   width: 1220px;
-  transform: translateX(-50%);
+  /* Centred by margin, not by transform: the panel animates in, and motion owns `transform`. */
+  margin-left: -610px;
   pointer-events: auto;
   filter: drop-shadow(0 8px 34px rgba(0, 0, 0, 0.8));
   cursor: var(--cursor-pointer);
@@ -123,11 +125,47 @@
   gap: 24px;
   min-height: 224px;
 }
-.panelBottom {
-  bottom: 34px;
+/*
+ * The strip the panel becomes once the line has been read: a face, the line and the skip, above
+ * the bottom bar. A lesson the player is *doing* must not sit on top of what they are doing it to.
+ */
+.strip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--bottombar-h) + 14px);
+  width: 1080px;
+  /* Centred by margin, not by transform: the panel animates in, and motion owns `transform`. */
+  margin-left: -540px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 22px;
+  pointer-events: auto;
+  background: linear-gradient(to right, rgba(11, 10, 13, 0.94), rgba(31, 28, 37, 0.94));
+  border: 1px solid rgba(201, 162, 74, 0.45);
+  box-shadow:
+    0 6px 26px rgba(0, 0, 0, 0.7),
+    inset 0 0 26px rgba(216, 85, 47, 0.1);
 }
-.panelTop {
-  top: 116px;
+
+.stripFace {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 1px solid var(--gold-1);
+  flex: none;
+}
+
+.stripLine {
+  flex: 1;
+  margin: 0;
+  color: var(--text-1);
+  font-size: 20px;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .portrait {

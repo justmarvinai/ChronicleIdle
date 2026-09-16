@@ -13,6 +13,7 @@ export default chapter({
     step({
       when: { type: 'screen', screen: 'hub' },
       spotlight: ['hub.portal'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'portal' },
       grant: gift('ancient_shard', { currency: 'shard_ancient', amount: 1 }),
     }),

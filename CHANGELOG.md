@@ -6,7 +6,74 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 14 (Tutorial & Onboarding) is next._
+_Phase 15 (Polish, balance and Early Access readiness) is next._
+
+## [0.0.14] — 2026-09-16 — Phase 14: Tutorial & Onboarding
+
+Eldric the Chronicler teaches the game. Six chapters, each waiting for the feature it explains,
+from the naming of a chronicle to the Refine bench at level 18 — and 1,500 energy in Chronicler's
+Provisions along the way.
+
+### Added
+
+- **The overlay** (`UI_DESIGN.md` §5.18): the screen dimmed to one cut-out, a gold ring and a
+  bobbing caret on what the lesson points at, and Eldric in an ornate panel typing his line out.
+  A step runs in two beats — while he speaks the screen is held and *Continue* takes focus; once
+  the line is read he shrinks to a strip above the bottom bar so the lesson never sits on top of
+  what it is teaching. From chapter 2 on, every lesson carries *Skip this lesson* (owner's Q4).
+- **The script as data** (`content/tutorial/chapter_1..6.ts`, 35 steps): the six chapters of
+  `TUTORIAL.md` exactly — each step's trigger, what it points at, Eldric's line, what stays
+  clickable and what finishes it. Chapter files are the script; ids and dialogue keys follow from
+  where a step sits.
+- **A tutorial that no screen knows about** (ADR-042): a step names a *target*, and one map turns
+  that into an existing `data-testid`; a step's trigger and completion are conditions over what the
+  save and the router already say. Six screens gained a `data-testid` on a container and nothing
+  else. The maps are exhaustive both ways, so a target the script names and the UI cannot find is a
+  compile error.
+- **The step machine** (`engine/tutorial/script.ts`): which lesson is open is arithmetic over the
+  steps already taught, the chronicle and where the player is standing. One thing at a time —
+  chapters are walked in order and an unfinished one holds the rest — except Steel and Bone, whose
+  eight standalone lessons each wait on their own feature from level 7 to 20.
+- **Save v12**: the steps Eldric has taught and the chapters the player waved off, and nothing else
+  about the tutorial's position. The migration from v11 does not send an old chronicle back to
+  school: chapters whose gate its level has passed count as waved off, Steel and Bone keeps the
+  lessons it has not reached, and the grants of the chapters marked off that way are recorded as
+  paid so nothing is back-paid.
+- **The Chronicler's Provisions**, paid as Eldric names them: 500 energy for the first chapter and
+  250 for each of the next four (`ECONOMY.md` §5.1), plus the Ancient Shard he keeps back for the
+  Portal. Every grant is once per chronicle, by id — and a chapter waved off still pays what it
+  carried, so skipping a lesson never costs energy. `claimGrant` in the store pays any one-time
+  grant through the energy pool.
+- **The scripted moments**: the first stand is fought on a fixed seed so the turns its lessons wait
+  for always happen, and the tutorial's one press on the Ancient Shard always turns up an Epic —
+  through a rarity floor in the summon engine that takes the roll anyway, so the stream advances
+  exactly as it would have and the pull after is the pull it would have been.
+- `tests/e2e/tutorial.spec.ts` and `tools/fixtures/tutorial-chronicle.ts`: the first chapter walked
+  end to end in a production build, from the naming to the Provisions, and a chapter waved off
+  mid-tutorial with the chronicle whole afterwards — the lesson resuming across a reload on the way.
+  Every other suite that starts a chronicle now reads Eldric's first lines through the helpers, and
+  the battle suite starts from `fresh.chronicle`: a level-1 chronicle with the onboarding behind it,
+  because that suite is about battles.
+
+### Changed
+
+- A lesson that sends the player somewhere only **points** at it — ring, caret and strip, with the
+  screen still theirs; the lessons that dim and block are the ones inside a panel or a fight, where
+  a wrong press is what confuses a new player (`USER_QUESTIONS.md` Q44).
+- A turn lesson names the ability it teaches, because turn order is not always the starter's and a
+  Common companion has one ability at level 1: the cooldown lesson waits for a turn that actually
+  offers a second one.
+- The auto-repeat lesson waits for the second repeat tier at level 20 rather than the first at 5,
+  where chapter 4 already teaches two things (`USER_QUESTIONS.md` Q44).
+- `ENERGY_PROVISIONS` ids are typed, and `provisionsClaimed` is the list of *one-time grants* paid
+  rather than energy grants only.
+
+### Fixed
+
+- The Chronicler's Hall has been a hotspot on the hub since Phase 0 and never had a screen to open:
+  clicking it explained that the Path was locked even when it was not. It opens the Path now, which
+  is what chapter 5 teaches.
+- The Game Modes cards' *Enter* buttons carry test ids, so the suite can reach them.
 
 ## [0.0.13] — 2026-09-16 — Phase 13: The Chronicler's Path
 

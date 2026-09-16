@@ -4,6 +4,7 @@ import {
   bindStarter,
   closeDialog,
   collectConsole,
+  eldricContinue,
   gotoTitle,
   importChronicleFile,
   openChampions,
@@ -19,6 +20,8 @@ test.describe('starter choice', () => {
     const problems = collectConsole(page);
     await gotoTitle(page);
     await page.getByTestId('btn-new-chronicle').click();
+    // 1.1 — Eldric asks for the name before the field is the player's to use.
+    await eldricContinue(page, 'tut.1.1');
     await page.getByTestId('name-input').fill('Marvin');
     await page.getByTestId('begin-chronicle').click();
     await expect(page.getByTestId('screen-starter')).toBeVisible({ timeout: 20_000 });

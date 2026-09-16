@@ -146,7 +146,7 @@ function ModeCard({
           </p>
         ) : null}
         {unlocked ? (
-          <Button variant="primary" size="md" onClick={() => onOpen(true)}>
+          <Button variant="primary" size="md" onClick={() => onOpen(true)} data-testid={`enter-${mode.id}`}>
             {t('gameModes.enter')}
           </Button>
         ) : (
@@ -155,6 +155,7 @@ function ModeCard({
             size="md"
             sound="ui.cancel"
             onClick={() => (playSfx('ui.error'), onOpen(false))}
+            data-testid={`enter-${mode.id}`}
           >
             {t('common.unlocksAtLevel', { level: unlockLevel(mode.feature) })}
           </Button>

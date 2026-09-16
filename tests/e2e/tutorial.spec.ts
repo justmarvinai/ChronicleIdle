@@ -1,0 +1,222 @@
+import { join } from 'node:path';
+import { expect, test, type Page } from '@playwright/test';
+import {
+  collectConsole,
+  currentLesson,
+  eldricContinue,
+  importChronicleFile,
+  settle,
+  startChronicle,
+} from './helpers';
+
+/**
+ * Eldric's onboarding (docs/design/TUTORIAL.md, ROADMAP Phase 14 acceptance):
+ *
+ * - the first chapter is walked end to end, from the naming to the Chronicler's Provisions, inside
+ *   the six minutes the design gives it;
+ * - a later chapter can be waved off, and the chronicle is whole afterwards.
+ *
+ * Both run against a production build, through the save the first one writes and the file the
+ * second one imports.
+ */
+const SKIP_SAVE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'tutorial.chronicle');
+
+/** Reads the lesson out and presses Continue, when the overlay is showing one. */
+async function readLesson(page: Page, step: string): Promise<void> {
+  await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', step, {
+    timeout: 30_000,
+  });
+  await eldricContinue(page);
+  await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-phase', 'action');
+}
+
+/** Off the victory panel: the result screen lands on the world map. */
+async function backToMap(page: Page): Promise<void> {
+  // Three stands is a level, and a level-up is a dialog over the panel.
+  const levelUp = page.getByTestId('level-up-continue');
+  if (await levelUp.count()) {
+    await levelUp.click();
+    await settle(page);
+  }
+  await page.getByTestId('result-campaign').click();
+  await expect(page.getByTestId('screen-campaign')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+}
+
+/** Thornwood Crossing's stand list. */
+async function enterSettlement(page: Page): Promise<void> {
+  await page.getByTestId('enter-1').click();
+  await expect(page.getByTestId('screen-settlement')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+}
+
+/** One stand, fought on auto from the stand list. */
+async function fightOnAuto(page: Page, stage: string): Promise<void> {
+  await page.getByTestId(stage).click();
+  await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+  const auto = page.getByTestId('setup-auto').getByRole('switch');
+  if ((await auto.getAttribute('aria-checked')) !== 'true') await auto.click();
+  await page.getByTestId('start-battle').click();
+  await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 120_000 });
+}
+
+/** An enemy the reticle will actually take — a fallen one is no longer a target. */
+function livingEnemy(page: Page) {
+  return page.locator('[data-testid^="plate-w"][data-targetable="true"]').first();
+}
+
+/**
+ * Answers the open turn with one ability and a target. A press can be refused for reasons the
+ * fight owns — the ability needs no target, the turn resolved as the click landed, a lesson opened
+ * over it — and none of those is what a tutorial test is asserting, so they are let go.
+ */
+async function spend(page: Page, ability: ReturnType<Page['getByTestId']>): Promise<void> {
+  await ability.click({ timeout: 5_000 }).catch(() => undefined);
+  const enemy = livingEnemy(page);
+  if (await enemy.count()) await enemy.click({ timeout: 5_000 }).catch(() => undefined);
+  await page.waitForTimeout(500);
+}
+
+/** Spends the acting champion's turn on the ability the lesson is about. */
+async function spendTurn(page: Page, slot: 'a1' | 'a2'): Promise<void> {
+  const ability = page.getByTestId(`ability-${slot}`);
+  await expect(ability).toBeVisible({ timeout: 30_000 });
+  await spend(page, ability);
+}
+
+/** Spends whatever the champion whose turn it is has ready. */
+async function spendAnyTurn(page: Page): Promise<void> {
+  for (const slot of ['a1', 'a2', 'a3', 'a4'] as const) {
+    const ability = page.getByTestId(`ability-${slot}`);
+    if ((await ability.count()) === 0 || (await ability.isDisabled())) continue;
+    await spend(page, ability);
+    return;
+  }
+  await page.waitForTimeout(500);
+}
+
+test.describe('the tutorial', () => {
+  test.setTimeout(360_000);
+
+  test('walks the first chapter from the naming to the Provisions', async ({ page }) => {
+    const problems = collectConsole(page);
+
+    // 1.1 and 1.2 — the name and the binding, both taught by the helper.
+    await startChronicle(page, 'Marvin', 'ser_corvin');
+
+    // 1.3 — Emberhold stays the player's own while the pointer rests on the gate.
+    expect(await currentLesson(page)).toBe('tut.1.3');
+    await expect(page.getByTestId('tutorial-spotlight')).toBeVisible();
+    await page.getByTestId('hotspot-campaign').click();
+    await settle(page);
+    await page.getByTestId('enter-campaign').click();
+    await expect(page.getByTestId('screen-campaign')).toBeVisible({ timeout: 20_000 });
+
+    // 1.4 — the settlement, then the stand.
+    await readLesson(page, 'tut.1.4');
+    await page.getByTestId('enter-1').click();
+    await expect(page.getByTestId('screen-settlement')).toBeVisible({ timeout: 20_000 });
+    await settle(page);
+    await page.getByTestId('battle-stage-01-01').click();
+    await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
+
+    // 1.5 — the team is placed; all that is left is to begin.
+    await readLesson(page, 'tut.1.5');
+    await page.getByTestId('start-battle').click();
+    await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 20_000 });
+
+    // 1.6 — the first turn of the player's own: an ability, then a target.
+    await readLesson(page, 'tut.1.6');
+    await expect(page.getByTestId('tutorial-spotlight')).toBeVisible();
+    await spendTurn(page, 'a1');
+
+    // 1.7 — the second wave, on a champion who has a second ability. Until that moment arrives
+    // Eldric says nothing and the fight is the player's own, which is what this loop plays out.
+    for (let turn = 0; turn < 24; turn += 1) {
+      if ((await currentLesson(page)) === 'tut.1.7') break;
+      await spendAnyTurn(page);
+    }
+    await readLesson(page, 'tut.1.7');
+    await spendTurn(page, 'a2');
+
+    // 1.8 — handing the fight over.
+    for (let turn = 0; turn < 24; turn += 1) {
+      if ((await currentLesson(page)) === 'tut.1.8') break;
+      await spendAnyTurn(page);
+    }
+    await readLesson(page, 'tut.1.8');
+    await page.getByTestId('battle-auto').click();
+
+    // 1.9 — the spoils, read on the victory panel.
+    await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId('result-title')).toContainText('Victory');
+    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.1.9', {
+      timeout: 30_000,
+    });
+    await eldricContinue(page);
+
+    // 1.10 — free play until the third stand falls: nothing is dimmed and nothing is blocked.
+    await backToMap(page);
+    await enterSettlement(page);
+    await readLesson(page, 'tut.1.10');
+    await expect(page.getByTestId('tutorial-hint')).toBeVisible();
+
+    // Two more stands, fought on auto — the lesson waits them out.
+    await fightOnAuto(page, 'battle-stage-01-02');
+    await backToMap(page);
+    await enterSettlement(page);
+    await fightOnAuto(page, 'battle-stage-01-03');
+    await backToMap(page);
+
+    // 1.11 — five hundred measures of energy, counted up on the pill while he names them.
+    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.1.11', {
+      timeout: 30_000,
+    });
+    const energy = await page.getByTestId('pill-energy').textContent();
+    expect(Number.parseInt((energy ?? '0').split('/')[0] ?? '0', 10)).toBeGreaterThan(400);
+    await eldricContinue(page);
+
+    // The chapter is over: whatever Eldric says next belongs to a later one.
+    await settle(page);
+    const next = await currentLesson(page);
+    expect(next === null || next.startsWith('tut.2.')).toBe(true);
+    expect(problems).toEqual([]);
+  });
+
+  test('waves a lesson off without leaving the chronicle stuck', async ({ page }) => {
+    const problems = collectConsole(page);
+    await importChronicleFile(page, SKIP_SAVE);
+
+    // The chronicle stands at the Hall with the Path's lesson open.
+    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.5.1', {
+      timeout: 30_000,
+    });
+    await expect(page.getByTestId('tutorial-lesson')).toContainText('Chapter 5');
+
+    // A reload resumes the lesson it was on, because the lesson is a fact about the save.
+    await page.reload();
+    await expect(page.getByTestId('screen-title')).toBeVisible({ timeout: 30_000 });
+    await settle(page);
+    await page.getByTestId('btn-continue').click();
+    await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.5.1', {
+      timeout: 30_000,
+    });
+    await page.getByTestId('tutorial-skip').click();
+
+    // Eldric goes quiet, the chapter's own Provision is still handed over, and the game is whole.
+    await expect(page.getByTestId('tutorial-overlay')).toHaveCount(0, { timeout: 20_000 });
+    // The fixture stands at its cap of 110; the Path's chapter carries 250 over it.
+    const energy = await page.getByTestId('pill-energy').textContent();
+    expect(Number.parseInt((energy ?? '0').split('/')[0] ?? '0', 10)).toBe(360);
+    await settle(page);
+    await page.getByTestId('nav-missions').click();
+    await expect(page.getByTestId('screen-missions')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('mission-card-mission.01.01')).toBeVisible();
+    await page.getByTestId('topbar-settings').click();
+    await expect(page.getByTestId('dialog-settings')).toBeVisible();
+    await page.keyboard.press('Escape');
+    expect(problems).toEqual([]);
+  });
+});

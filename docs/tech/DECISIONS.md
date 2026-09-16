@@ -445,3 +445,27 @@ things follow: a claimed mission always reads as finished, whatever the counters
 evaluated against the counters *as they stand*, so its counter goals read zero while its state
 predicates tell the truth — which is what lets the screen show a locked card the chronicle already
 satisfies.
+
+## ADR-042 — The tutorial points at test ids and watches the world
+**Context.** An onboarding overlay has to know two things the rest of the game would rather not
+tell it: *where* a control is on the screen, and *when* the player has used it. The obvious answers
+are the invasive ones — a ref registry every screen writes into, and a tutorial event every reducer
+fires — and both spread the tutorial through the codebase, where it rots the moment a screen moves
+a button or a phase adds a system.
+**Decision.** A step names a **target**, and one map in `@ui/tutorial/targets.ts` turns that into a
+`data-testid` selector the screens already carry for the e2e suite. A step's trigger and completion
+are **conditions** over what the save and the router already say: a screen is open, a dialog is up,
+a feature has unlocked, a stand has fallen, a lifetime counter has moved. Exactly two answers come
+from the overlay itself — the Continue press, and a click on the spotlit element — because nothing
+else can see them. Which step is open is derived from the ids already taught; the save keeps only
+those and the chapters waved off.
+**Consequences.** No screen imports anything tutorial-shaped, and moving a control moves its
+spotlight with it. The maps are exhaustive over the script's own unions, so a target or a screen
+the script names and the UI cannot find is a compile error rather than a spotlight that never
+appears. Three things follow that are worth naming. A step is taught in two beats — the line, then
+the action — and the world is only watched in the second, so a counter that was already satisfied
+cannot finish a lesson before it has been read. A step whose own gate closes behind it ("open the
+Tavern" is triggered on the hub and finished off it) is completed by the overlay that is still
+holding it; the machine only ever decides which step to *open*. And a lesson whose target is
+nowhere on screen dims nothing and blocks nothing, so a spotlight that does not exist can never
+trap anybody.

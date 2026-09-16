@@ -157,8 +157,12 @@ export function tutorialView(
 
 /** Nothing left to teach: every chapter is finished or waved off. */
 export function tutorialFinished(chapters: readonly TutorialChapterDef[], state: TutorialState): boolean {
+  // Asked on every render the overlay does, including one per battle event, so the set of taught
+  // ids is built once rather than once per chapter.
+  const taught = new Set(state.completedSteps);
   return chapters.every(
-    (chapter) => chapterComplete(chapter, state) || state.skippedChapters.includes(chapter.id),
+    (chapter) =>
+      state.skippedChapters.includes(chapter.id) || chapter.steps.every((step) => taught.has(step.id)),
   );
 }
 

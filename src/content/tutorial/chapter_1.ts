@@ -24,22 +24,25 @@ export default chapter({
       spotlight: ['starter.cards'],
       complete: { type: 'starter_bound' },
     }),
-    // 1.3 — out of Emberhold: the gate, then the campaign card behind it.
+    // 1.3 — out of Emberhold: the gate, then the campaign card behind it. Emberhold itself stays
+    // open: the pointer is a direction, not a cage (`TUTORIAL.md` design rules).
     step({
       when: { type: 'screen', screen: 'hub' },
       spotlight: ['hub.campaign', 'modes.campaign'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'campaign' },
     }),
     // 1.4 — Thornwood Crossing, and the first stand on its list.
     step({
       spotlight: ['campaign.settlement1', 'settlement.stage1'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'battle-setup' },
     }),
     // 1.5 — the team is pre-placed; all that is left is to begin. This is the fight that runs on
     // the fixed seed, so 1.6–1.8 always have their moments.
     step({
       spotlight: ['setup.team', 'setup.start'],
-      allow: ['setup.team', 'setup.start'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'battle' },
       script: 'battle',
     }),

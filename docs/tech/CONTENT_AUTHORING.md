@@ -422,6 +422,40 @@ export default chapter({
   for the rank it asks for, and a counter something actually writes. Adding a goal type means
   naming its counter in `COUNTER_KEYS` and bumping it from the reducer that owns that play.
 
+### Tutorial (`src/content/tutorial/chapter_<n>.ts`)
+
+A lesson is a `step()` in the chapter it belongs to. Position decides the id (`tut.2.3`) and the
+dialogue key (`tut.2.3.text`, in `src/i18n/en/tutorial.ts`), so a step is four decisions:
+
+```ts
+step({
+  // When it opens. Omitted means "as soon as the one before it is done".
+  when: { type: 'all', of: [{ type: 'feature', feature: 'gear' }, { type: 'screen', screen: 'hub' }] },
+  // What the pointer rests on, in the order the player walks it: the furthest one present wins.
+  spotlight: ['hub.champions', 'champions.roster'],
+  // What stays clickable. `'all'` points without caging; omitted means "the spotlight".
+  allow: 'all',
+  // What finishes it.
+  complete: { type: 'screen', screen: 'champions' },
+})
+```
+
+- **Targets are names, not selectors.** Add one to `TUTORIAL_TARGETS` (`content/tutorial/types.ts`)
+  and map it to an existing `data-testid` in `@ui/tutorial/targets.ts` — both maps are exhaustive,
+  so a target only one side knows is a compile error (ADR-042). If the element has no test id yet,
+  add one: that is the whole change a screen ever needs.
+- **Completions are observed.** Prefer a screen, a dialog, a stand cleared or a lifetime counter —
+  things the save already says. `acknowledged` (the Continue press) is for a lesson that only asks
+  to be read; `clicked` is for a press that changes nothing in the save (choosing whom to raise).
+- **Chapters open by feature**, in unlock order, and are walked one at a time; only the last
+  chapter's steps stand alone (`sequential: false`). The first chapter cannot be skipped and every
+  other one can — the validator holds both.
+- **Grants are ids.** `provision('tutorial.routine')` reads the energy from `ENERGY_PROVISIONS`, and
+  `gift('ancient_shard', …)` hands over anything else; a grant is paid once per chronicle, and a
+  chapter that is waved off still pays what it carried. The validator checks that every provision in
+  the balance table is handed over by the chapter it is named for, and that no step pays energy the
+  table does not know.
+
 ### Champion choices (`CHAMPION_CHOICES` in `balance/campaign.ts`)
 
 A reward that lets the player *name* a champion is a row here: the difficulty whose mastery owes

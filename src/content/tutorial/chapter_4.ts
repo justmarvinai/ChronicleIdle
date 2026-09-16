@@ -13,6 +13,7 @@ export default chapter({
     step({
       when: { type: 'screen', screen: 'hub' },
       spotlight: ['hub.quests'],
+      allow: 'all',
       complete: { type: 'screen', screen: 'quests' },
     }),
     // 4.2 — the one quest that is already done: logging in.
@@ -24,6 +25,7 @@ export default chapter({
     step({
       when: { type: 'screen', screen: 'hub' },
       spotlight: ['hub.idle', 'idle.claim'],
+      allow: 'all',
       complete: { type: 'counter', key: 'idle.claims', count: 1 },
       grant: provision('tutorial.routine'),
     }),
