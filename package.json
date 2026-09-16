@@ -22,7 +22,8 @@
     "assets:build": "tsx tools/assets/build.ts",
     "assets:check": "tsx tools/assets/build.ts --check",
     "perf:battle": "tsx tools/perf/battle-bench.ts",
-    "sim:balance": "tsx tools/sim/balance.ts"
+    "sim:balance": "tsx tools/sim/balance.ts",
+    "fixtures:version": "tsx tools/fixtures/version-save.ts"
   },
   "dependencies": {
     "@fontsource/alegreya-sans-sc": "^5.3.0",
