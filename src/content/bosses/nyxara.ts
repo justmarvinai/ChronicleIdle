@@ -39,13 +39,13 @@ export default defineBoss({
   // A weekly race runs long, so the steps come every third own turn from her 24th.
   enrageEvery: 3,
   /*
-   * Phase I above 85 %, II between 85 and 60 %, III below 60 % (BOSSES.md §3). The thresholds are
-   * shallow on purpose: this is a damage race, not a kill fight. A roster that takes a third of
-   * the pool in one key — which is what "you can finish her this week" looks like — has to meet
-   * every gear she has, and the deeper 70/35 the first draft printed left phase III unreachable
-   * for anyone who could not two-key her (measured, see USER_QUESTIONS.md Q41).
+   * Phase I above 90 %, II between 90 and 75 %, III below 75 % (BOSSES.md §3). The thresholds are
+   * shallow on purpose: this is a damage race, not a kill fight, and what matters is where a key
+   * actually lands. Measured against a finished roster (`tests/fixtures/saves/weekly-boss`), a key
+   * takes an eighth of the pool with the chorus taxing half of every hit — so the 70/35 the first
+   * draft printed meant nobody ever saw her last two gears at all (USER_QUESTIONS.md Q41).
    */
-  phases: [0.85, 0.6],
+  phases: [0.9, 0.75],
   adds: {
     slug: 'chorister',
     archetype: 'mender',
@@ -130,8 +130,13 @@ export default defineBoss({
     {
       id: 'normal',
       stats: [5_000_000, 2_200, 1_300, 108, 15, 50, 100, 100],
-      // A Chorister holds 0.4 % of the pool: a couple of turns to clear, and it always comes back.
-      addStats: [20_000, 1_300, 900, 100, 15, 50, 100, 100],
+      /*
+       * A Chorister holds 2 % of the pool. Measured: at a tenth of that the party deletes both on
+       * the turn they appear and the split never happens; at this size a mid-endgame roster has to
+       * choose — clear the chorus and lose the turns, or leave them and give up half of every hit
+       * — while a finished roster still kills them and barely notices (BOSSES.md §3).
+       */
+      addStats: [100_000, 1_300, 900, 100, 15, 50, 100, 100],
       turnLimit: 100,
       enrageTurn: 24,
       enemyLevel: 30,
@@ -163,7 +168,7 @@ export default defineBoss({
     {
       id: 'hard',
       stats: [40_000_000, 3_600, 1_900, 114, 15, 50, 140, 140],
-      addStats: [160_000, 2_200, 1_300, 106, 15, 50, 140, 140],
+      addStats: [800_000, 2_200, 1_300, 106, 15, 50, 140, 140],
       turnLimit: 100,
       enrageTurn: 24,
       enemyLevel: 50,
@@ -198,7 +203,7 @@ export default defineBoss({
     {
       id: 'nightmare',
       stats: [250_000_000, 5_500, 2_600, 120, 15, 50, 180, 180],
-      addStats: [1_000_000, 3_300, 1_800, 112, 15, 50, 180, 180],
+      addStats: [5_000_000, 3_300, 1_800, 112, 15, 50, 180, 180],
       turnLimit: 100,
       enrageTurn: 24,
       enemyLevel: 60,

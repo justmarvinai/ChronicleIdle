@@ -58,6 +58,7 @@ const MODES: readonly ModeDef[] = [
     bodyKey: 'gameModes.weeklyBoss.body',
     art: 'bg.bg9',
     glyph: 'glyph.cursed_eye',
+    route: { name: 'bosses', boss: 'boss.nyxara' },
   },
 ];
 

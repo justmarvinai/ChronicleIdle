@@ -26,6 +26,7 @@ const SOUND: Record<BattleSound, SoundKey> = {
   victory: 'battle.victory',
   defeat: 'battle.defeat',
   ultimate: 'battle.ultimate',
+  'boss.phase': 'battle.boss.phase',
 };
 
 export interface BattleStageMountProps {

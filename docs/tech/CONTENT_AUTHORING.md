@@ -192,12 +192,35 @@ export default defineBoss({
 });
 ```
 
+A boss that changes gear adds two fields, and nothing in the engine or the UI needs a line for it:
+
+```ts
+  phases: [0.9, 0.75],            // descending HP fractions: three phases (I ≥ 90 %, II, III < 75 %)
+  adds: {
+    slug: 'chorister', archetype: 'mender',     // its own kit under `ab.chorister.*`
+    element: 'eclipse', role: 'support',
+    art: { tint: '#6f5bb0', scale: 1.2, desaturate: true },
+    count: 2, guardPercent: 50,                 // half of every hit meant for the master
+    reviveEvery: 12, revivedHpPercent: 50,      // own turns of the master; also at every phase
+    abilities: [{ slot: 'a1', key: 'discord', icon: 'spell.blood_soul_ribbon', effects: [hit(2.8)] }, …],
+  },
+  abilities: […, { slot: 'a3', key: 'eclipse_hymn', icon: 'spell.rune_eclipse_mark', cooldown: 5, minPhase: 2, effects: […] }],
+```
+
+Each tier then carries an `addStats` row beside its own (same order), and `defineBoss` fields the
+escort at `enemy.<addSlug>_<tier>` in the wave the key buys (ADR-038). `minPhase` on an ability
+makes the rotation pass it over until the fight gets there, and a passive can read the phase with
+`if: { selfPhaseAtLeast: 3 }` — that is how Nyxara's Un-light dims the party's healing only at the
+end. Set both from measurement, not from intuition: the validator rejects a `minPhase` past the
+last phase and an escort holding more than a tenth of the tier's pool, and Q41/ADR-039 record how
+the shipped numbers were measured.
+
 Ids and strings derive from the slug (`ab.gravemaw.devour.name`, `boss.gravemaw.tier.easy`) and
 live in `src/i18n/en/bosses.ts`; register the file in `src/content/bosses/index.ts`. The validator
 holds the promises the design makes: chest thresholds climb and end at the kill, each tier is a
 bigger pool and pays more chronicle XP than the one below it, the tier enemy carries the tier's
-stats and the boss's enrage cadence, and the first enrage step must land inside half the ally-turn
-limit — the share of a race a boss actually gets to act in, so a mechanic that could never fire is
+stats, the boss's enrage cadence and its phases, the escort each tier fields is the one the boss
+block points at, and the first enrage step must land inside half the ally-turn limit — the share of a race a boss actually gets to act in, so a mechanic that could never fire is
 a build error (ADR-036).
 
 ## 4. Settlement and stands

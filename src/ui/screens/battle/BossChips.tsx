@@ -19,13 +19,44 @@ function enragePercent(steps: number): number {
 
 /**
  * What a boss fight needs on screen beyond the pool bar (docs/design/BOSSES.md §4): what it
- * shrugs off, how close its enrage is, and the moment a counting passive gives way.
+ * shrugs off, which gear the fight is in, how much of a hit its escort is taking, how close its
+ * enrage is, and the moment a counting passive gives way.
+ *
+ * `standing` is how many of its adds are still on their feet — the HUD reads that off the same
+ * view the plates do, so a Chorister falling changes the chip on the beat the sprite drops.
  */
-export function BossChips({ boss }: { boss: BossUnitView }) {
+export function BossChips({ boss, standing = 0 }: { boss: BossUnitView; standing?: number }) {
   const enraged = boss.enrageSteps > 0;
   const untilStep = Math.max(0, nextStepAt(boss) - boss.turnsTaken);
+  const guard = boss.adds && standing > 0 ? boss.adds.percent : 0;
   return (
     <div className={styles.chips} data-testid="boss-chips">
+      {boss.phaseCount > 1 ? (
+        <Tooltip content={t('battle.boss.phaseHint')}>
+          {/* The gear change is the fight's turning point, so the chip lands on it. */}
+          <motion.span
+            key={boss.phase}
+            className={[styles.chip, styles.phase].join(' ')}
+            initial={{ scale: 1.6, opacity: 0.2 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, ease: 'backOut' }}
+            data-testid="boss-phase"
+          >
+            <Glyph glyph="glyph.cursed_eye" size={18} color="var(--rarity-legendary)" />
+            <span className="num">{t('battle.boss.phase', { phase: boss.phase, of: boss.phaseCount })}</span>
+          </motion.span>
+        </Tooltip>
+      ) : null}
+
+      {guard > 0 ? (
+        <Tooltip content={t('battle.boss.guardedHint', { count: standing, percent: guard })}>
+          <span className={[styles.chip, styles.guarded].join(' ')} data-testid="boss-guarded">
+            <Glyph glyph="glyph.shield_block" size={18} color="var(--rarity-epic)" />
+            <span className="num">{t('battle.boss.guarded', { percent: guard })}</span>
+          </span>
+        </Tooltip>
+      ) : null}
+
       {boss.immunities.length ? (
         <Tooltip
           content={t('battle.boss.unshakeableHint', {

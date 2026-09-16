@@ -111,9 +111,10 @@ export class UnitSprite {
   private disposed = false;
 
   constructor(readonly view: UnitView) {
-    const anchor = slotFor(view.side, view.slot);
+    const escort = view.guarding !== null;
+    const anchor = slotFor(view.side, view.slot, escort);
     this.home = { x: anchor.x, y: anchor.y };
-    this.scale = unitScale(view.side, view.slot, view.art.scale);
+    this.scale = unitScale(view.side, view.slot, view.art.scale, escort);
     // Allies face right, enemies face left; the atlas says which way the art is drawn.
     const wants = view.side === 'ally' ? 'right' : 'left';
     this.facing = wants === view.art.facing ? 1 : -1;

@@ -22,6 +22,14 @@
   color: var(--ember-3);
   animation: pulse 1.6s ease-in-out infinite;
 }
+.phase {
+  border-color: rgba(199, 141, 255, 0.7);
+  color: var(--rarity-legendary);
+}
+.guarded {
+  border-color: rgba(150, 110, 220, 0.6);
+  color: var(--rarity-epic);
+}
 .broken {
   border-color: rgba(99, 201, 106, 0.7);
   color: var(--buff);

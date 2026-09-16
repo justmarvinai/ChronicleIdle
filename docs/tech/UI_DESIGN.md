@@ -332,16 +332,25 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   (locked / claimable / claimed, each with its contents on hover) and the personal best. Bottom
   bar: what a key opens (or why it cannot) and the primary **Battle**.
 - The mechanics sheet (*How it fights*) prints the kit in rotation order from the boss's own data,
-  what never lands on it, and the four tips — including the enrage's real numbers.
+  what never lands on it, and the four tips — including the enrage's real numbers. A phased boss
+  adds two sections of its own: **How the fight changes** (one line per phase band, read off
+  `boss.phases`, plus the note that the gear turns on its own next turn) and **What stands with
+  it** (the escort's count, the share of a hit it takes, and how it comes back).
 - Motion: the selected tier card lifts to the ember frame; a claimed chest swaps its glyph for a
   trophy; the reward toast names the chest.
 
 #### The boss HUD in the fight (`BOSSES.md` §4)
-- The pool bar keeps the boss's own name and statuses, and carries three chips under it:
-  **Unshakeable** (the immunity list on hover), the enrage — "Enrages in N of its turns" until the
-  first step, then "Enraged ×N · +X % ATK" with a pulsing ember frame — and one chip per counting
-  passive the party has broken, which enters with a flash. The stage shouts the same beats
-  ("ENRAGED", "ARMOUR BROKEN") and both land in the battle log.
+- The pool bar keeps the boss's own name and statuses, and carries a row of chips under it:
+  **Phase N/M** in legendary violet for a boss that changes gear (it re-enters with a pop on every
+  change), **Guarded X %** while any of its escort still stands, **Unshakeable** (the immunity list
+  on hover), the enrage — "Enrages in N of its turns" until the first step, then
+  "Enraged ×N · +X % ATK" with a pulsing ember frame — and one chip per counting passive the party
+  has broken, which enters with a flash. The stage shouts the same beats ("PHASE 2", "ENRAGED",
+  "ARMOUR BROKEN"), a midnight burst and a shake land on the gear change with the gate's own
+  closing note, and every one of them reaches the battle log.
+- A boss's escort stands on its own marks (`ENEMY_ESCORT_SLOTS`, `render/battle/layout.ts`):
+  downstage of its master, one to each side, so a ×2.4 sprite cannot swallow it and the sprites
+  sort in front of the thing they are shielding.
 - The result screen replaces stars and spoils with what the key bought: the damage this fight did,
   the period's pool after it, a personal-best line, the chests the damage has just earned, and
   *Back to the gate* as the primary press.

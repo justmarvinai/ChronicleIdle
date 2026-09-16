@@ -71,12 +71,15 @@ Enrage: from her 24th own turn, +10 % ATK every 3 own turns (`enrageEvery: 3`).
 | Hard | 40,000,000 | 3,600 | 1,900 | 114 | 140 | 140 | 100 | 24 |
 | Nightmare | 250,000,000 | 5,500 | 2,600 | 120 | 180 | 180 | 100 | 24 |
 
-Phases (by boss HP): **I ≥ 85 %**, **II 85–60 %**, **III < 60 %**. The thresholds are shallow
-because this is a damage race and not a kill fight: a key that takes a third of the pool has to
-meet every gear she has. Choristers revive at the start of each phase and every 12 of her own
+Phases (by boss HP): **I ≥ 90 %**, **II 90–75 %**, **III < 75 %**. The thresholds are shallow
+because this is a damage race and not a kill fight: measured against a finished roster, a key takes
+an eighth of the pool with the chorus taxing half of every hit, so these are the marks a real key
+passes — and the deeper ones the first draft printed meant her last two gears were never seen. Choristers revive at the start of each phase and every 12 of her own
 turns, at 50 % HP; while a Chorister lives, Nyxara has Ally Protection 50 % from them (kill the
-adds first or accept the split). A Chorister holds 0.4 % of the tier's pool — 20,000 / 160,000 /
-1,000,000 HP — with ATK/DEF a little under hers and 8 SPD less.
+adds first or accept the split). A Chorister holds 2 % of the tier's pool — 100,000 / 800,000 /
+5,000,000 HP — with ATK/DEF a little under hers and 8 SPD less. That is the size at which the
+choice is real: a mid-endgame roster that clears them spends a fifth of its turns doing it, and one
+that does not gives up half of every hit.
 
 - A1 *Shadow Verse* — `3.6 × ATK` on two random allies, 40 % Weaken 25 % (2) on two of them
   (each effect rolls its own pair, as everywhere in the effect DSL).

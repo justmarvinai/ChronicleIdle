@@ -45,6 +45,7 @@ export default function HubScreen(_props: ScreenProps) {
   const chest = save ? idleView(save, now) : null;
   // The gate's own cards: keys left this period, and a dot when a chest is waiting (BOSSES.md §4).
   const daily = save ? bossView(save, 'boss.gravemaw', now) : null;
+  const weekly = save ? bossView(save, 'boss.nyxara', now) : null;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
@@ -103,7 +104,13 @@ export default function HubScreen(_props: ScreenProps) {
           glyph="glyph.cursed_eye"
           unlocked={weeklyBoss}
           level={unlockLevel('weekly_boss')}
-          onClick={() => actions.push({ name: 'locked', feature: 'weekly_boss', titleKey: 'hub.weeklyBoss' })}
+          keys={weekly ? `${weekly.keysLeft}/${weekly.boss.keysPerPeriod}` : '0'}
+          notify={(weekly?.claimable ?? 0) > 0}
+          onClick={() =>
+            weeklyBoss
+              ? actions.push({ name: 'bosses', boss: 'boss.nyxara' })
+              : actions.push({ name: 'locked', feature: 'weekly_boss', titleKey: 'hub.weeklyBoss' })
+          }
           testId="boss-weekly"
         />
       </aside>

@@ -69,6 +69,8 @@ export const SOUNDS = {
   'battle.revive': s('sfx.spells.firebuff', 0.85, 0.02, 300),
   'battle.wave': s('sfx.doors.gate_open', 0.75, 0.02, 500),
   'battle.ultimate': s('sfx.spells.rock_meteor_swarm', 0.9, 0.02, 300),
+  // A weekly boss changing gear (BOSSES.md §3): the gate behind it closing a notch.
+  'battle.boss.phase': s('sfx.doors.gate_close', 0.9, 0.02, 600),
   'battle.victory': s('sfx.stinger.victory', 0.95, 0, 1000),
   'battle.defeat': s('sfx.stinger.defeat', 0.9, 0, 1000),
 } as const satisfies Record<string, SoundDef>;

@@ -358,6 +358,13 @@ export const ui = {
   'battle.boss.enragesIn': 'Enrages in {turns} of its turns',
   'battle.boss.enraged': 'Enraged ×{steps} · +{percent}% ATK',
   'battle.boss.enrageHint': 'Every {every} of its turns after turn {turn}, its attack grows by {step}%.',
+  'battle.boss.phase': 'Phase {phase}/{of}',
+  'battle.boss.phaseHint':
+    'It changes gear as its health falls, on its own next turn. Abilities it has held back open with each phase, and anything it brought with it comes back.',
+  'battle.boss.phaseChanged': 'Phase {phase}',
+  'battle.boss.guarded': 'Guarded {percent}%',
+  'battle.boss.guardedHint':
+    '{count} of its escort still stand, and each hit meant for it loses {percent}% to whichever of them is nearest. Clear them, or accept the split.',
   'battle.boss.broken': '{name} broken',
   'battle.boss.brokenHint': 'Enough different debuffs have landed: this passive no longer protects it.',
   'battle.shield': 'Shield {value}',
@@ -381,6 +388,7 @@ export const ui = {
   'battle.log.statusRemoved': '{target} loses {status}.',
   'battle.log.dot': '{target} takes {amount} from {status}.',
   'battle.log.died': '{name} falls.',
+  'battle.log.phase': '{name} changes: phase {phase}.',
   'battle.log.revived': '{name} rises again!',
   'battle.log.tm': '{target} turn meter {delta}.',
   'battle.log.extraTurn': '{name} gains an extra turn.',

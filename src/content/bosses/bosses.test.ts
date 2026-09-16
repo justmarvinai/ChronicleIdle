@@ -6,6 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
 import { createBattle } from '@engine/battle/create';
+import { snapshot } from '@engine/battle/snapshot';
 import { runAuto } from '@engine/battle/step';
 import { createInstance } from '@engine/champions/instance';
 import { levelCap } from '@engine/champions/stats';
@@ -133,8 +134,8 @@ describe('Nyxara, Mother of Shadows', () => {
   });
 
   it('fights in three phases, and every tier knows where they are', () => {
-    expect(nyxara?.phases).toEqual([0.85, 0.6]);
-    for (const tier of nyxara?.tiers ?? []) expect(tier.enemy.boss?.phases).toEqual([0.85, 0.6]);
+    expect(nyxara?.phases).toEqual([0.9, 0.75]);
+    for (const tier of nyxara?.tiers ?? []) expect(tier.enemy.boss?.phases).toEqual([0.9, 0.75]);
   });
 
   it('opens the Hymn in phase II and the Embrace in phase III', () => {
@@ -184,7 +185,9 @@ describe('Nyxara, Mother of Shadows', () => {
     ]);
     expect(encounter?.turnLimit).toBe(100);
     expect(encounter?.timeUpIsDefeat).toBe(false);
-    expect(content.enemyById('enemy.chorister_nightmare')?.stats.hp).toBe(1_000_000);
+    // Two per cent of the tier's pool, on every tier (BOSSES.md §3).
+    for (const tier of nyxara?.tiers ?? [])
+      expect(tier.adds?.stats.hp).toBe(Math.round(tier.stats.hp * 0.02));
   });
 
   it('is linked to its chorus the moment the wave spawns', () => {
@@ -200,7 +203,7 @@ describe('Nyxara, Mother of Shadows', () => {
     );
     const boss = state.units['w0e0'];
     expect(boss?.maxHp).toBe(5_000_000);
-    expect(boss?.phaseThresholds).toEqual([0.85, 0.6]);
+    expect(boss?.phaseThresholds).toEqual([0.9, 0.75]);
     expect(boss?.phase).toBe(1);
     expect(boss?.adds).toEqual({ ids: ['w0e1', 'w0e2'], every: 12, hpPercent: 50 });
     expect(state.units['w0e1']?.guards).toEqual({ unitId: 'w0e0', percent: 50 });
@@ -264,5 +267,28 @@ describe('Nyxara, Mother of Shadows', () => {
       expect(tier.chests.map((chest) => chest.pct)).toEqual([2, 5, 12, 25, 50, 100]);
     expect(nyxara?.tiers[2]?.chests[5]?.gear).toEqual({ rarity: 'mythic', stars: 6 });
     expect(nyxara?.tiers.map((tier) => tier.playerXp)).toEqual([800, 1_600, 3_200]);
+  });
+});
+
+describe('what the arena is handed for a phased boss', () => {
+  it('names the escort on the boss view and the master on each add', () => {
+    const encounter = content.bossEncounter('boss.nyxara', 'normal');
+    const champ = content.championById('champ.ser_corvin');
+    if (!encounter || !champ) throw new Error('missing content');
+    const party: PartyMember[] = [
+      { def: champ, instance: createInstance(champ, { instanceId: 'x', now: 0, source: 'starter' }) },
+    ];
+    const state = createBattle(
+      { encounter, party, enemyById: (id) => content.enemyById(id), control: 'auto' },
+      'nyxara-view',
+    );
+    const view = snapshot(state);
+    const boss = view.units.find((u) => u.isBoss);
+    const adds = view.units.filter((u) => u.guarding !== null);
+    expect(boss?.boss?.adds).toEqual({ ids: ['w0e1', 'w0e2'], percent: 50 });
+    expect(adds.map((u) => u.id)).toEqual(['w0e1', 'w0e2']);
+    for (const add of adds) expect(add.guarding).toBe('w0e0');
+    // Nothing else on the field claims to be guarding anyone.
+    expect(view.units.filter((u) => u.guarding !== null)).toHaveLength(2);
   });
 });

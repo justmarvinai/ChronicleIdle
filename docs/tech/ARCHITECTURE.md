@@ -70,7 +70,8 @@ autoDecide(state, unit) → Decision · snapshot(state) → BattleView · retrea
 ```
 
 - `BattleSetup`: party (`{ instance, def }` pairs; stats are computed at creation), encounter
-  (waves, scaling, turn limits, boss config through the enemy defs), control mode. The seed is
+  (waves, scaling, turn limits, boss config through the enemy defs — immunities, enrage, phases and
+  the escort a phased boss stands with, linked to their master at spawn), control mode. The seed is
   mixed with the encounter id and the party so two fights never share a stream.
 - `BattleState` is mutable and advanced in place: `step` resolves one turn, returns early with a
   `DecisionRequest` for a manual ally, and resumes with that decision. Only player decisions are

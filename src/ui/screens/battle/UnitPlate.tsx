@@ -25,7 +25,7 @@ export const UnitPlate = memo(function UnitPlate({
   onPick,
   onHover,
 }: UnitPlateProps) {
-  const anchor = plateAnchor(unit.side, unit.slot, unit.art.scale);
+  const anchor = plateAnchor(unit.side, unit.slot, unit.art.scale, unit.guarding !== null);
   const shieldPct = unit.maxHp > 0 ? Math.min(100, (unit.shield / unit.maxHp) * 100) : 0;
   const interactive = targetable && !!onPick;
   return (

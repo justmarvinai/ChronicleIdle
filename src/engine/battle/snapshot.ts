@@ -44,6 +44,11 @@ export interface UnitView {
   tm: number;
   alive: boolean;
   isBoss: boolean;
+  /**
+   * The boss this unit shields, if it is part of an escort (BOSSES.md §3). The stage gives such a
+   * unit its own mark, since its master's sprite is drawn over the ordinary ones.
+   */
+  guarding: string | null;
   statuses: { id: StatusId; turns: number; stacks: number; value: number }[];
   abilities: { id: string; slot: AbilitySlot; cooldown: number; ready: boolean }[];
   art: { model: string; tint: string | null; facing: 'left' | 'right'; scale: number; desaturate: boolean };
@@ -104,6 +109,7 @@ export function unitView(u: BattleUnit): UnitView {
     tm: u.tm,
     alive: u.alive,
     isBoss: u.isBoss,
+    guarding: u.guards?.unitId ?? null,
     statuses: u.statuses.map((s) => ({ id: s.id, turns: s.turns, stacks: s.stacks, value: s.value })),
     abilities: u.abilities.map((a) => ({
       id: a.id,

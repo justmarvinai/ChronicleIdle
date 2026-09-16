@@ -35,7 +35,8 @@ export type BattleSound =
   | 'wave'
   | 'victory'
   | 'defeat'
-  | 'ultimate';
+  | 'ultimate'
+  | 'boss.phase';
 
 export interface StageHooks {
   sound(key: BattleSound): void;
@@ -188,7 +189,7 @@ export async function createBattleStage(
   const centreOf = (id: string): { x: number; y: number } => {
     const v = viewUnit(id);
     if (!v) return { x: STAGE_W / 2, y: STAGE_H / 2 };
-    return bodyCentre(v.side, v.slot, v.art.scale);
+    return bodyCentre(v.side, v.slot, v.art.scale, v.guarding !== null);
   };
 
   const shake = (
@@ -534,6 +535,24 @@ export async function createBattleStage(
           });
           whiteFlash(tl, 0.12);
           shake(tl, 10, 0.25, '<');
+          break;
+        // The fight changes gear: the arena dims to violet for a beat and the boss rears
+        // (BOSSES.md §3). The same moment the HUD's phase chip flips to.
+        case 'phase.changed':
+          land(e);
+          tl.call(() => {
+            const c = centreOf(e.unitId);
+            numbers.show('crit', `PHASE ${e.phase}`, c.x, c.y - 90, speed);
+            void playFx(fxLayer, 'cast.eclipse', { x: c.x, y: c.y, speed, scale: 1.8, tint: 0x9a6bff });
+            options.hooks.sound('boss.phase');
+          });
+          shake(tl, 14, 0.3, '<');
+          tl.to(camera.scale, { x: 1.05, y: 1.05, duration: 0.2, ease: 'power2.out' }).to(camera.scale, {
+            x: 1,
+            y: 1,
+            duration: 0.3,
+            ease: 'power2.inOut',
+          });
           break;
         // The hide gives way: the same shout the HUD's chip echoes (BOSSES.md §2).
         case 'passive.broken':

@@ -281,6 +281,10 @@ export default function BattleScreen({ route }: ScreenProps) {
 
   if (!encounter || !view || !save) return null;
   const boss = view.units.find((u) => u.isBoss);
+  // How much of its escort is still on its feet, for the guard chip (BOSSES.md §3).
+  const standing = boss?.boss?.adds
+    ? view.units.filter((u) => u.alive && boss.boss?.adds?.ids.includes(u.id)).length
+    : 0;
   const turnLimit = view.turnLimit;
   const minutes = Math.floor(elapsed / 60_000);
   const seconds = Math.floor((elapsed % 60_000) / 1000);
@@ -387,7 +391,7 @@ export default function BattleScreen({ route }: ScreenProps) {
               );
             })}
           </div>
-          {boss.boss ? <BossChips boss={boss.boss} /> : null}
+          {boss.boss ? <BossChips boss={boss.boss} standing={standing} /> : null}
         </div>
       ) : null}
 

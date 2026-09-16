@@ -20,7 +20,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 8 | Summoning Portal | 0.0.8 | ✅ shipped in 0.0.8 |
 | 9 | Idle Chest | 0.0.9 | ✅ shipped in 0.0.9 (rebalanced in 0.0.9.1) |
 | 10 | Daily Boss | 0.0.10 | ✅ shipped in 0.0.10 |
-| 11 | Weekly Boss | 0.0.11 | ⬜ |
+| 11 | Weekly Boss | 0.0.11 | ✅ shipped in 0.0.11 |
 | 12 | Daily & Weekly Quests | 0.0.12 | ⬜ |
 | 13 | The Chronicler's Path (missions) | 0.0.13 | ⬜ |
 | 14 | Tutorial & Onboarding | 0.0.14 | ⬜ |
@@ -280,6 +280,12 @@ enrage, immunities, boss HUD and arena presentation.
 persists across two fights; chests claim once; records store team; boss rotation deterministic.
 
 ## Phase 11 — Weekly Boss (`0.0.11`)
+
+**Status.** ✅ shipped in 0.0.11 (2026-09-16). See `CHANGELOG.md` for what landed. The phase
+thresholds and the chorus's size were set by measurement rather than by the first draft's numbers
+(Q41): a key takes an eighth of the pool with the escort taxing half of every hit, so the 70/35 the
+design printed would have meant her last two gears never fired at all, and a chorus a tenth of its
+shipped size would have died on the turn it appeared.
 
 **Goal.** Nyxara with three tiers, phases, Choristers (adds with revive), weekly keys and
 chests, phase-driven kit, weekly reset.

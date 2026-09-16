@@ -369,3 +369,39 @@ zero until a Normal boss falls — a chronicle would be punished for progressing
 over all three difficulties.
 **Consequences.** The tier is monotone: it never falls, and mastering Intro is worth exactly the
 twelfth tier until the first Normal boss goes down. The doc now says so.
+
+## ADR-038 — A boss's escort is a unit in its own wave, not a spawn mechanic
+**Context.** `BOSSES.md` §3 gives the weekly boss two Choristers that take half of every hit meant
+for her, come back on a schedule and at every phase change, and never count towards the damage
+pool. The obvious reading is a summon mechanic: an ability that spawns units mid-fight, with a new
+spawn path, new ids, a wave whose size changes and a presenter that has to learn to add sprites
+after `wave.started`.
+**Decision.** The escort is authored as part of the boss's tier and stands in the boss's own wave
+from the first frame. `defineBoss` builds one escort kit and one definition per tier
+(`enemy.chorister_<tier>`), the derived encounter puts `count` copies in the wave behind the
+master, and `linkAdds` ties them together at spawn: each add learns whose hits it shares
+(`guards`), the master learns whom to bring back (`adds`). Reviving is `reviveUnit` on a unit that
+already exists, and the split is the redirect Ally Protection already had — the buff wins when both
+apply, so a champion's play is never undone by the fight's furniture.
+**Consequences.** No new spawn path, no ids invented mid-fight, and the presenter, the plates, the
+save and `damageToBoss` (which sums the boss's own definition id) all work unchanged. The stage
+needed one thing: its own marks for an escort (`ENEMY_ESCORT_SLOTS`), because a ×2.4 sprite covers
+the ordinary enemy slots. The cost is that a boss cannot grow its escort mid-fight; when a later
+boss needs that, it is a new effect type with tests, not a rewrite of this one.
+
+## ADR-039 — Phase thresholds are set by measurement, not by the design's first draft
+**Context.** The design printed Nyxara's phases at 70 % and 35 % of her HP — the shape a *kill*
+fight has. Hers is a damage race against a 5,000,000 pool that a finished roster takes an eighth of
+in one key, with her chorus taxing half of every hit. At 70/35 her second gear would have been rare
+and her third would never have fired at all: `minPhase` abilities, an aura and a revive schedule
+shipped but never seen.
+**Decision.** The thresholds are 90 % / 75 %, chosen against the roster the fight is written for
+(`tests/fixtures/saves/weekly-boss.chronicle`, four 6★ champions in full Legendary gear): phase II
+lands inside an ordinary key, phase III on a good one. The chorus is 2 % of the pool per Chorister
+for the same reason — at a tenth of that the party deletes both on the turn they appear and the
+split never happens. Both numbers, and the measurements behind them, are recorded as Q41 for the
+owner to overrule.
+**Consequences.** Every mechanic the phase ships can be seen in the running game, and the content
+validator rejects a `minPhase` past the last phase or an escort holding more than a tenth of the
+pool. The design doc carries the measured numbers rather than the drafted ones, which is the rule
+in CLAUDE.md §1 applied to a balance table.

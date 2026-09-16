@@ -84,6 +84,15 @@ export const bosses = {
   'bosses.sheet.passive': 'always',
   'bosses.sheet.unshakeable': 'Unshakeable',
   'bosses.sheet.immune': 'Nothing of this kind ever lands on it: {list}.',
+  'bosses.sheet.phases': 'How the fight changes',
+  'bosses.sheet.phase.first': 'Phase {roman} — above {low}% of its health.',
+  'bosses.sheet.phase.band': 'Phase {roman} — between {high}% and {low}% of its health.',
+  'bosses.sheet.phase.last': 'Phase {roman} — below {high}% of its health.',
+  'bosses.sheet.phase.note':
+    'It changes gear on its own next turn, and abilities it has held back open with the phase.',
+  'bosses.sheet.adds': 'What stands with it',
+  'bosses.sheet.adds.body':
+    '{count} × {name}. While one of them stands, every hit meant for the boss loses {percent}% to it. They come back at each phase and every {every} of its own turns, at {hp}% health.',
   'bosses.sheet.tips': 'The way in',
   'bosses.sheet.tip.dots': 'Poison, Bleed and Burn tick at full value — they are the reliable damage.',
   'bosses.sheet.tip.debuffs': 'DEF Down and Weaken are worth more here than any single big hit.',

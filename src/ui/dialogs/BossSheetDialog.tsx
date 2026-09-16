@@ -8,9 +8,12 @@ import { Dialog } from '@ui/components/Dialog/Dialog';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import styles from './BossSheetDialog.module.css';
 
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+
 /**
- * The mechanics sheet (docs/design/BOSSES.md §4): the kit in the order it comes, what never lands
- * on this boss, and the way in. A damage race is only fair if the player can read the wall.
+ * The mechanics sheet (docs/design/BOSSES.md §4): the kit in the order it comes, the gears the
+ * fight changes through, what it brings with it, what never lands on it, and the way in. A damage
+ * race is only fair if the player can read the wall.
  */
 export function BossSheetDialog({ bossId, onClose }: { bossId: string; onClose: () => void }) {
   const boss = content.bossById(bossId);
@@ -19,6 +22,12 @@ export function BossSheetDialog({ bossId, onClose }: { bossId: string; onClose: 
   const abilities = tier?.enemy.abilities ?? [];
   const passives = tier?.enemy.passives ?? [];
   const rotation = tier?.enemy.boss?.rotation ?? [];
+  // A phased boss reads as bands of its health: "I ≥ 85 %", "II 85–60 %", "III < 60 %".
+  const bands = [...boss.phases, 0].map((low, index) => ({
+    roman: ROMAN[index] ?? String(index + 1),
+    high: index === 0 ? 100 : Math.round((boss.phases[index - 1] ?? 1) * 100),
+    low: Math.round(low * 100),
+  }));
 
   return (
     <Dialog
@@ -69,6 +78,43 @@ export function BossSheetDialog({ bossId, onClose }: { bossId: string; onClose: 
             ))}
           </ul>
         </section>
+
+        {boss.phases.length ? (
+          <section className={styles.section}>
+            <h3 className={`display ${styles.title}`}>{t('bosses.sheet.phases')}</h3>
+            <ul className={styles.tips} data-testid="boss-sheet-phases">
+              {bands.map((band) => (
+                <li key={band.roman}>
+                  {band.low === 0
+                    ? translate('bosses.sheet.phase.last', { roman: band.roman, high: band.high })
+                    : band.high === 100
+                      ? translate('bosses.sheet.phase.first', { roman: band.roman, low: band.low })
+                      : translate('bosses.sheet.phase.band', {
+                          roman: band.roman,
+                          high: band.high,
+                          low: band.low,
+                        })}
+                </li>
+              ))}
+              <li>{t('bosses.sheet.phase.note')}</li>
+            </ul>
+          </section>
+        ) : null}
+
+        {boss.adds ? (
+          <section className={styles.section}>
+            <h3 className={`display ${styles.title}`}>{t('bosses.sheet.adds')}</h3>
+            <p className={styles.body} data-testid="boss-sheet-adds">
+              {translate('bosses.sheet.adds.body', {
+                count: boss.adds.count,
+                name: t(boss.adds.name as I18nKey),
+                percent: boss.adds.guardPercent,
+                every: boss.adds.reviveEvery,
+                hp: boss.adds.revivedHpPercent,
+              })}
+            </p>
+          </section>
+        ) : null}
 
         <section className={styles.section}>
           <h3 className={`display ${styles.title}`}>{t('bosses.sheet.unshakeable')}</h3>

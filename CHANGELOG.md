@@ -6,7 +6,57 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 11 (Weekly Boss) is next._
+_Phase 12 (Daily & Weekly Quests) is next._
+
+## [0.0.11] — 2026-09-16 — Phase 11: Weekly Boss
+
+Nyxara, Mother of Shadows: three keys a week against a fight that changes gear twice, with two
+Choristers standing in the way of every hit meant for her.
+
+### Added
+
+- **Nyxara and her chorus** (`content/bosses/nyxara.ts`): three tiers (5M / 40M / 250M pools,
+  levels 30 / 50 / 60), six chests each from a sliver of the pool to the kill, 800 / 1,600 / 3,200
+  chronicle XP a key, and a kit that opens as the fight goes on — Shadow Verse and Dirge (which
+  takes the party's buffs and wears them) from the start, the Eclipse Hymn in phase II, Mother's
+  Embrace in phase III, and the passive *Un-light* that dims every heal the party pays for once she
+  is in her last gear. Her two Choristers sing beside her: while one stands it takes half of every
+  hit meant for her, and they come back at every phase change and every twelve of her own turns.
+- **Five engine mechanics, all data-driven** (`engine/battle`, `boss-phases.test.ts`): `phases` —
+  descending HP fractions read at the boss's own turn, so a threshold a hit crosses lands on the
+  beat after it; `minPhase` on an ability, which the rotation passes over until the fight gets
+  there; `adds`, an escort that stands in the boss's own wave, takes its share through the same
+  redirect Ally Protection uses (the buff wins when both apply) and is revived where it stands;
+  `steal_buff`, which takes buffs newest first with their turns and value and leaves a shield where
+  it is; and an `enemy_heal_reduction` passive that can ask for a phase (`selfPhaseAtLeast`).
+- **The weekly gate**: the hub's Weekly Boss card carries the keys left and a dot when a chest is
+  waiting, Game Modes' Weekly card opens the gate, and the gate's Weekly tab is Nyxara's — three
+  tiers, six chests each, the week's countdown and her records.
+- **The fight, on screen**: the pool bar gains a violet **Phase N/M** chip that pops on every gear
+  change and a **Guarded X %** chip while any of her chorus still stands; the stage answers a phase
+  with a midnight burst, a shake and the gate's own closing note, and the log records it. The
+  escort stands on marks of its own (`ENEMY_ESCORT_SLOTS`) so a ×2.4 boss cannot swallow it.
+- **The mechanics sheet** now prints how a fight changes (one line per phase band) and what stands
+  with the boss — how many, the share they take, and how they come back.
+- `tests/e2e/weekly-boss.spec.ts` and `tools/fixtures/weekly-chronicle.ts`: a level-30 chronicle
+  with four 6★ champions in full Legendary gear — the roster the fight is written for — spends a
+  key, meets the chorus, banks the first chest's worth of damage and takes it, in a production
+  build. `period-weekly.test.ts` holds the Monday 00:00 boundary: one key all week, the stroke that
+  changes it, and a week whose numbers are all back to zero on the other side while the records
+  survive.
+
+### Changed
+
+- **Nyxara's phases are 90 % / 75 %, not the 70 % / 35 % the design first printed**, and each
+  Chorister holds 2 % of the pool. Both numbers come from measuring the fight rather than drafting
+  it: a finished roster takes an eighth of the pool in one key with the chorus taxing half of every
+  hit, so the deeper thresholds would have meant her last two gears never fired at all, and a
+  chorus a tenth of this size dies on the turn it appears and the split never happens.
+  `USER_QUESTIONS.md` Q41 records the measurements and the switch back, ADR-039 the rule.
+- The auto policy's last-resort ability now respects `minPhase` as well as cooldowns, so a boss in
+  phase 1 can never open with a phase-3 ability when everything else is spent.
+- `damageToBoss` already counted only the boss's own definition id, so an escort's health never
+  feeds the week's pool — now with a boss that has one, and a test to say so.
 
 ## [0.0.10] — 2026-09-15 — Phase 10: Daily Boss
 
