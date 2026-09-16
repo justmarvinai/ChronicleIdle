@@ -154,9 +154,32 @@ needs (~2–3 min).
 
 ## 4. Continuous integration (`.github/workflows/ci.yml`, Phase 0)
 
-On every push and pull request: `pnpm install --frozen-lockfile` → `pnpm content:validate` →
-`pnpm typecheck` → `pnpm lint` → `pnpm test` → `pnpm build` → `pnpm test:e2e` (Playwright with
-Chromium). Artifacts: Playwright report on failure. A red `main` blocks the VPS deploy job.
+On every push and pull request: `pnpm install --frozen-lockfile` → `pnpm assets:build` → the
+committed manifest is checked for drift → `pnpm content:validate` → `pnpm typecheck` → `pnpm lint`
+→ `pnpm test` → `pnpm sim:balance --strict` → `pnpm sim:economy --strict` → `pnpm build` →
+`pnpm perf:budget --strict`, then `pnpm test:e2e` in two shards, with `pnpm perf:lighthouse
+--strict` on the first. Artifacts: the Playwright report on failure, including the walkthrough
+video. A red `main` blocks the VPS deploy job.
+
+## 4.1 What was verified for `0.1.0`, and what could not be
+
+The release was prepared in a container with no nginx, no VPS and no Vercel account, so the parts
+of this guide that need a server were verified as far as a build can be:
+
+- **The build is servable by a dumb static file server.** `dist/` served through
+  `python3 -m http.server` — no rewrites, no fallback, no framework — returns 200 with the right
+  content type for `/`, `/index.html`, `/sw.js`, `/manifest.webmanifest` and `/robots.txt`. The
+  game needs nothing of its host but files.
+- **Both configurations match the build they serve.** Every path §2.2's nginx site and
+  `vercel.json` name exists in `dist/`, and their cache rules agree: hashed assets immutable for a
+  year, `index.html`, `sw.js` and the web manifest never cached, which is what gates updates.
+- **The SPA fallback is a safety net, not a requirement.** The router keeps its state in the store
+  and its only URL surface is a `?screen=` query parameter — nothing calls `pushState` — so no
+  deep path ever needs rewriting to `index.html`.
+- **Not verified from here:** `nginx -t` against a real server, the certbot step, the
+  `deploy.sh` release-and-symlink dance, and a Vercel production deployment. Each is a documented
+  command against infrastructure this environment does not have; they need one run on the owner's
+  VPS and one `vercel --prod` before the link is handed to anyone.
 
 ## 5. Updating and rollback
 

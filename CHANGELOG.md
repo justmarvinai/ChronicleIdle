@@ -6,7 +6,118 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 15 (Polish, balance and Early Access readiness) is next._
+_Early Access 0.1 is out. Next is the fine-tuning pass the owner asked for: `USER_QUESTIONS.md`
+Q45 (how generous the economy should be) and Q46 (what an audit can say about a game) are the two
+open questions it starts from._
+
+## [0.1.0] — 2026-09-16 — Early Access 0.1
+
+Every feature of the owner's brief is in the game and reachable by a player: twelve settlements
+over three difficulties, 23 champions, gear with sets and a forge, a summoning portal with pity, an
+idle chest, a daily boss and a weekly one, two quest boards, a ten-chapter mission line, and Eldric
+teaching all of it. No accounts, no server, no PvP, no monetisation — a chronicle lives in the
+browser it was begun in and leaves as a file when the player says so.
+
+This release adds no features. It is the pass that makes the fifteen phases behind it defensible:
+every budget in `CLAUDE.md` §5.6 is now checked by a command, every save the game has ever written
+is proven to still open, and the economy is measured rather than estimated.
+
+### Added
+
+- **The migration matrix** (`src/state/migration-matrix.test.ts`): one fixture for every save
+  version from 1 to 12, every hop covered by exactly one step that moves one version, and for each
+  fixture the chronicle's identity, purse, roster, armoury, stars and counters all intact on the far
+  side. Exhaustive by construction — a version bumped without its fixture fails here rather than
+  going quietly untested. `pnpm fixtures:version` writes the current version's fixture.
+- **`pnpm sim:economy`**: a scripted month, played three ways — one sitting a day, two (the "active"
+  player `ECONOMY.md` describes) and four — with every income and spend line derived from the
+  content and balance tables through the same functions the game uses. `--strict` holds the ledger
+  to bands that guard the design's intent: no activity level may end a day in the red, a casual week
+  must still reach an Ancient Shard, and the ceiling may not run away.
+- **`pnpm perf:budget`**: the static half of §5.6 against a build — the initial route's gzipped
+  JavaScript (277.7 kB of 350), that the screens are still code-split (50 lazy chunks), and every
+  texture's dimensions, classified by manifest group so an atlas is held to 2048 while a
+  full-screen backdrop, shown one at a time and wider than the viewport on purpose, gets its own
+  ceiling.
+- **`pnpm perf:lighthouse`**: the production build audited as the desktop page it is.
+  Accessibility 100, SEO 100, first contentful paint 0.6 s and largest 1.5 s against §5.6's four
+  seconds.
+- **The EA-0.1 walkthrough** (`tests/e2e/walkthrough.spec.ts`): one recorded run that imports a
+  deep chronicle and then opens and *uses* every system — the campaign fought to a victory, a
+  champion's kit and lore read, the armoury and forge worked, a champion summoned, both boss gates
+  entered, both boards claimed, the Path read, the chest taken, the chronicle exported. Video is on
+  for this spec, so CI leaves behind something to watch instead of nineteen spec files to read.
+- **A `robots.txt`**, whose absence was the only thing between the audit and a perfect SEO score.
+
+### Changed
+
+- **`ECONOMY.md` §7–§8 now print measured figures**, with a note saying what they used to claim.
+  The old totals were written before the bosses existed; see Balance.
+- **An `ErrorBoundary` per screen** (§5.7), keyed by route. There was one at the root, so a screen
+  that threw took the hub's chrome down with it; now a crash is contained and leaving and returning
+  gives the screen a fresh mount.
+- **One apostrophe, not two kinds.** The copy review over all 1,559 shipped strings found prose
+  using the typographic apostrophe and proper names using the straight one — "a champion’s level"
+  beside "Ranger's Focus". Thirteen names normalised; no key or id moved.
+- **CI gained four gates**: `sim:economy --strict`, `perf:budget --strict`, `perf:lighthouse
+  --strict`, and the manifest-drift check now guards a pipeline that can re-pack textures.
+- `docs/tech/DEPLOYMENT.md` §4.1 records exactly what of the deploy path was verified for this
+  release and what needs a real server (see Known limitations).
+
+### Fixed
+
+- **FX sheets up to 8544 px wide would silently not draw.** The GameFX export ships single-row
+  strips; WebGL2 only guarantees 2048, so on a GPU below that the upload fails and the effect is
+  simply absent. The asset pipeline now lays a long strip out in rows (8544 × 96 → 2016 × 480),
+  which the flipbook already knew how to read. The copy is a raw-buffer memcpy rather than a
+  composite, because compositing premultiplies and zeroes the colour of fully transparent pixels —
+  invisible under nearest filtering, a dark fringe under linear. Verified frame by frame against
+  the owner's originals: alpha and colour byte-for-byte identical. Largest atlas side: 2048 px,
+  from 8544.
+- **The tutorial overlay re-rendered on every battle event**, against §5.6's "0 React commits
+  during battle" — the very rule its own measurement loop was written around. It selected the whole
+  presented session, which is replaced per event; `battleSignal` is now referentially stable and a
+  test pins it.
+- **The frame bench had not run since Phase 14.** It creates a throwaway chronicle, and from Phase
+  14 Eldric's panel holds the dialog while it speaks, so the click on Begin landed on the overlay.
+  It now reads each lesson first. The same fault was in `window.spec.ts`, fixed in `0.0.14`.
+
+### Balance
+
+- **The campaign curve holds.** `pnpm sim:balance --strict --runs 40` — 40 runs per stage, 120
+  stages, three difficulties — passes all eight bands: a starting roster clears settlement 1 at
+  100 % and stalls at settlement 8 (0 %), a mid Epic roster takes Intro's end at 94 % and Hard's at
+  0 %, and an endgame roster clears Hard's end at 100 %. No tuning needed.
+- **The economy is about 1.8× as generous as `ECONOMY.md` §7–§8 estimated**, and almost all of the
+  gap is one line. An active player earns ~1,430 gems a week against the old ≈ 800, and ~322k gold a
+  day against ≈ 250k. `BOSSES.md` §2, written four phases after that estimate, gives Gravemaw's
+  Normal tier a 60-gem chest claimable every day — ~420 a week where §7 had guessed 100 for both
+  bosses together. Every other line landed within a tenth of its estimate, and the idle chest to
+  within 4 %. So the content matches the per-system design documents and it was the one-line sanity
+  total that had gone stale. Nothing is nerfed for this release: each system's numbers were signed
+  off against its own document in its own phase, and re-cutting them all is the fine-tuning pass
+  that follows. `USER_QUESTIONS.md` Q45 records the judgement and names the three levers.
+
+### Known limitations
+
+- **Frame time is not measured in this build environment**, which has no GPU. `pnpm perf:battle
+  --software` reports p50 400 ms / p95 583 ms on the stress fight through SwiftShader — the same
+  order as Phase 11's 383 / 417 measured the same way, and nothing the 16 ms budget can be judged
+  against. That budget stays signed off on the owner's iGPU laptop (Q30).
+- **Lighthouse's performance category is not gated**, and cannot meaningfully be. Its score is
+  three-quarters Total Blocking Time, which counts main-thread work *after* load — here, the
+  ambient canvas §7.1 requires. It measures the frame loop, not a stall. Accessibility, SEO and the
+  paint budgets are gated instead; Q46 records it.
+- **The deploy path needs one real run.** `nginx -t`, certbot, `deploy.sh` and `vercel --prod` are
+  documented commands against infrastructure this container does not have. What *was* verified:
+  `dist/` serves correctly from a plain `python3 -m http.server` with no rewrites or fallback, every
+  path the nginx site and `vercel.json` name exists in the build, their cache rules agree, and the
+  router never calls `pushState`, so the SPA fallback is a safety net rather than a requirement
+  (`DEPLOYMENT.md` §4.1).
+- **The audio mix was reviewed at the bus level only** — music 0.7 under sfx 0.8, ambience 0.6 under
+  both. Whether it *sounds* right is not something a container with no audio device can judge.
+- **Tags do not leave this environment.** The session's git proxy refuses tag pushes with HTTP 403,
+  so `0.0.0`–`0.1.0` exist only locally. They need pushing from a checkout with normal credentials.
 
 ## [0.0.14] — 2026-09-16 — Phase 14: Tutorial & Onboarding
 

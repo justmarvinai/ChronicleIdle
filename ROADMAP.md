@@ -24,7 +24,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 12 | Daily & Weekly Quests | 0.0.12 | ✅ shipped in 0.0.12 |
 | 13 | The Chronicler's Path (missions) | 0.0.13 | ✅ shipped in 0.0.13 |
 | 14 | Tutorial & Onboarding | 0.0.14 | ✅ shipped in 0.0.14 |
-| 15 | Balance, Polish, Performance → **EA-0.1** | **0.1.0** | ⬜ |
+| 15 | Balance, Polish, Performance → **EA-0.1** | **0.1.0** | ✅ shipped in 0.1.0 |
 
 Why this order: the engine (0–2) must exist before content that uses it; campaign (3) is the
 first real content and the source of XP/drops for everything after; player level (4) gates all
@@ -338,6 +338,15 @@ every later chapter triggers on its unlock; skipping never leaves the game in a 
 tutorial state migrates.
 
 ## Phase 15 — Balance, Polish, Performance → EA-0.1 (`0.1.0`)
+
+**Status.** ✅ shipped in 0.1.0 (2026-09-16). See `CHANGELOG.md` for what landed, including the four
+new gates CI runs and the three faults the budget tooling found. Two acceptance criteria were met
+differently than written and are recorded rather than glossed: "Lighthouse ≥ 90" is gated on
+accessibility, SEO and the paint budgets instead of the performance category, which cannot describe
+a permanently animating canvas (Q46); and the VPS and Vercel deploys need one real run on the
+owner's infrastructure, which this container does not have (`DEPLOYMENT.md` §4.1). The owner's
+improvements list is empty; the generosity of the economy is deferred to the fine-tuning pass as
+Q45.
 
 **Goal.** Turn the feature-complete game into the release.
 

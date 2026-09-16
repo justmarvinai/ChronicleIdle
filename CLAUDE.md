@@ -336,7 +336,11 @@ pnpm content:validate   validate all content and cross-references (ids, assets, 
 pnpm assets:build       generate atlases, WebP variants, audio and the typed manifest from /game
 pnpm assets:check       fail when the committed manifest no longer matches /game (CI)
 pnpm perf:battle        frame-time bench on a running preview (--strict fails over budget, --software = SwiftShader)
+pnpm perf:budget        the static §5.6 budgets against a build: initial-route JS, code-splitting, texture sizes (--strict)
+pnpm perf:lighthouse    audits the preview as a desktop page; gates accessibility, SEO and the paint budgets (--strict)
 pnpm sim:balance        headless campaign simulations: difficulty-curve report and win-rate bands (--strict fails on a broken band, --scan prints what each reference team can take)
+pnpm sim:economy        a scripted month for three activity levels: income and spend per currency against ECONOMY.md §7–§8 (--strict)
+pnpm fixtures:version   writes tests/fixtures/saves/v<SAVE_VERSION>.json — run it once per save-version bump
 ```
 
 The component gallery is at `/?screen=devkit` in every build (code-split, never linked from the
