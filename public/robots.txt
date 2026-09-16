@@ -1,0 +1,5 @@
+# ChronicleIdle is a single-player game served as static files; there is nothing to crawl but the
+# shell that boots it, and the generated assets are large. Indexing the entry page is welcome.
+User-agent: *
+Allow: /$
+Disallow: /assets/

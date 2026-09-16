@@ -22,6 +22,8 @@
     "assets:build": "tsx tools/assets/build.ts",
     "assets:check": "tsx tools/assets/build.ts --check",
     "perf:battle": "tsx tools/perf/battle-bench.ts",
+    "perf:budget": "tsx tools/perf/budget.ts",
+    "perf:lighthouse": "tsx tools/perf/lighthouse.ts",
     "sim:balance": "tsx tools/sim/balance.ts",
     "sim:economy": "tsx tools/sim/economy.ts",
     "fixtures:version": "tsx tools/fixtures/version-save.ts"

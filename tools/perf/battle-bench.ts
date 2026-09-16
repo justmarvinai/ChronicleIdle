@@ -15,9 +15,24 @@
  * Attach the printed table to the CHANGELOG entry whenever battle rendering changes (AGENTS.md §3).
  */
 import { existsSync } from 'node:fs';
-import { chromium } from '@playwright/test';
+import { chromium, type Page } from '@playwright/test';
 
 const BASE = process.env['BENCH_URL'] ?? 'http://localhost:4173';
+
+/**
+ * Presses Continue on whatever tutorial lesson is speaking, and on any that hands straight over to
+ * the next one. The check is a `count()` on a selector that carries the phase, which is a snapshot
+ * rather than a wait: a lesson ends the moment its action lands, so asking an element that may
+ * already be gone for an attribute would race its own removal.
+ */
+async function readLesson(page: Page, tries = 4): Promise<void> {
+  const speaking = page.locator('[data-testid="tutorial-overlay"][data-phase="dialogue"]');
+  for (let attempt = 0; attempt < tries; attempt += 1) {
+    if ((await speaking.count()) === 0) return;
+    await page.getByTestId('tutorial-continue').click({ timeout: 15_000 });
+    await page.waitForTimeout(300);
+  }
+}
 const BUDGET_MS = 16;
 const PRESET_CHROMIUM = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const strict = process.argv.includes('--strict');
@@ -45,15 +60,20 @@ try {
   });
 
   // The bench fights on the real battle screen, which needs a chronicle: create a throwaway one.
+  // Every new chronicle is taught chapter 1, and Eldric's panel holds the screen while it speaks
+  // (`TUTORIAL.md`), so each step of the walk reads his line first.
   await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('screen-title').waitFor({ timeout: 60_000 });
   await page.getByTestId('btn-new-chronicle').click();
+  await readLesson(page);
   await page.getByTestId('name-input').fill('Bench');
   await page.getByTestId('begin-chronicle').click();
   await page.getByTestId('screen-starter').waitFor({ timeout: 30_000 });
   await page.waitForTimeout(500);
+  await readLesson(page);
   await page.getByTestId('bind-ser_corvin').click();
   await page.getByTestId('screen-hub').waitFor({ timeout: 30_000 });
+  await readLesson(page);
   await page.waitForTimeout(2_500); // let the autosave land before the reload
 
   await page.goto(`${BASE}/?screen=perf`, { waitUntil: 'domcontentloaded' });

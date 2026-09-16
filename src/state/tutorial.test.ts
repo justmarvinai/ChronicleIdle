@@ -191,6 +191,11 @@ describe('the tutorial in the save', () => {
     });
     await settle(() => (battleSignal(controller.store.getState())?.used.length ?? 0) > 0);
     expect(battleSignal(controller.store.getState())?.used).toContain('a1');
+    // The overlay uses this as a Zustand selector, and the presented session is replaced on every
+    // battle event: asking twice for an unchanged fight must give back the *same object*, or the
+    // overlay re-renders per event and CLAUDE.md §5.6's "0 React commits during battle" is gone.
+    const twice = battleSignal(controller.store.getState());
+    expect(battleSignal(controller.store.getState())).toBe(twice);
     // Handing the fight over is what the Auto lesson waits for.
     controller.setControl('auto');
     expect(battleSignal(controller.store.getState())?.auto).toBe(true);

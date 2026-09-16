@@ -35,6 +35,8 @@ jobs:
       - name: Economy bands hold
         run: pnpm sim:economy --strict
       - run: pnpm build
+      - name: Static performance budgets hold
+        run: pnpm perf:budget --strict
 
   e2e:
     # Each spec drives a WebGL battle stage through swiftshader and runs one worker
@@ -66,6 +68,13 @@ jobs:
       - run: pnpm test:e2e --shard=${{ matrix.shard }}/2
         env:
           CI: 'true'
+      # One shard is enough for an audit of the document, and shard 1 already has the build and a
+      # Chromium installed. `pnpm preview` is backgrounded because Lighthouse needs it serving.
+      - name: Lighthouse (shard 1 only)
+        if: matrix.shard == 1
+        run: |
+          pnpm preview &
+          pnpm perf:lighthouse --strict
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

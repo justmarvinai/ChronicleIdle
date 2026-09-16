@@ -85,9 +85,23 @@ export function dialogOf(dialog: DialogRoute | null): TutorialDialog | null {
 }
 
 /**
+ * The last signal handed out, kept so the next identical one is the *same object*.
+ *
+ * `battleSignal` is used as a Zustand selector by the overlay, and the presented session is
+ * replaced on every battle event — a new object each time would re-render the overlay per event
+ * and re-walk the script, which is precisely the "0 React commits during battle" CLAUDE.md §5.6
+ * forbids. The signal is a value: two with the same fields are interchangeable, so returning the
+ * cached one when nothing it reports has changed is sound, and it is what makes the store's
+ * `Object.is` check hold. A cache of one is enough: there is only ever one fight.
+ */
+let lastSignal: { key: string; signal: TutorialBattleSignal } | null = null;
+
+/**
  * What the live fight tells the script. Read off the presented session, not the simulation: the
  * lesson waits for the moment the *player* sees — the turn the HUD is asking about, the wave the
  * stage is showing, the ability whose cast has already played.
+ *
+ * Referentially stable: the same object comes back until one of the five things it reports moves.
  */
 export function battleSignal(session: BattleSessionState | null): TutorialBattleSignal | null {
   if (!session || session.status === 'idle' || !session.view) return null;
@@ -95,14 +109,18 @@ export function battleSignal(session: BattleSessionState | null): TutorialBattle
   const used = new Set<AbilitySlot>();
   for (const event of session.log)
     if (event.type === 'ability.cast' && allies.has(event.unitId)) used.add(event.slot);
-  return {
+  const signal: TutorialBattleSignal = {
     // A request is only ever raised for a champion the player commands.
     allyTurn: session.request !== null,
     wave: session.view.wave,
-    used: [...used],
+    used: [...used].sort(),
     ready: (session.request?.abilities ?? []).filter((one) => one.ready).map((one) => one.slot),
     auto: session.usedAuto,
   };
+  const key = `${String(signal.allyTurn)}|${String(signal.wave)}|${signal.used.join('')}|${signal.ready.join('')}|${String(signal.auto)}`;
+  if (lastSignal?.key === key) return lastSignal.signal;
+  lastSignal = { key, signal };
+  return signal;
 }
 
 export function tutorialStateOf(save: SaveGame | null): TutorialState {
