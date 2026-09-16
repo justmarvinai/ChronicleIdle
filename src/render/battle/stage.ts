@@ -218,6 +218,13 @@ export async function createBattleStage(
     tl.to(flash, { alpha, duration: 0.03 }, at).to(flash, { alpha: 0, duration: 0.14 });
   };
 
+  /**
+   * Every batch still playing. The screen can go away mid-batch — a retreat, a route change — and
+   * a timeline that keeps tweening a camera and sprites the renderer has destroyed throws on every
+   * frame it has left, so `destroy` kills them before it tears anything down.
+   */
+  const playing = new Set<gsap.core.Timeline>();
+
   /** Builds and plays a timeline for one batch of events. */
   const play = (
     events: readonly BattleEvent[],
@@ -225,6 +232,7 @@ export async function createBattleStage(
     onEvent: (e: BattleEvent) => void,
   ): Promise<void> => {
     const tl = gsap.timeline({ paused: true });
+    playing.add(tl);
     const fast = speed >= 4;
     const land = (e: BattleEvent, at: string | number = '>'): void => {
       tl.call(
@@ -602,9 +610,14 @@ export async function createBattleStage(
     }
     tl.timeScale(speed);
     return new Promise((resolve) => {
-      tl.eventCallback('onComplete', () => resolve());
-      if (tl.duration() === 0) resolve();
-      else tl.play();
+      tl.eventCallback('onComplete', () => {
+        playing.delete(tl);
+        resolve();
+      });
+      if (tl.duration() === 0) {
+        playing.delete(tl);
+        resolve();
+      } else tl.play();
     });
   };
 
@@ -630,6 +643,10 @@ export async function createBattleStage(
     destroy() {
       gsap.globalTimeline.timeScale(1);
       gsap.globalTimeline.play();
+      // Whatever is still in the air goes first: nothing may tween a sprite that is about to be
+      // destroyed (a retreat mid-batch used to throw `Cannot set properties of null` per frame).
+      for (const tl of playing) tl.kill();
+      playing.clear();
       for (const u of units.values()) u.destroy();
       units.clear();
       numbers.destroy();

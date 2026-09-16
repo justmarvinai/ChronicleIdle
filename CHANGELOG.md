@@ -59,6 +59,15 @@ Choristers standing in the way of every hit meant for her.
 - `damageToBoss` already counted only the boss's own definition id, so an escort's health never
   feeds the week's pool — now with a boss that has one, and a test to say so.
 
+### Fixed
+
+- **A retreat mid-fight could throw once a frame until the numbers finished falling.** A damage
+  number lives about a second after the hit that made it, and the presenter's batch can be longer
+  than that — but a retreat tears the stage down at once. GSAP knew nothing about it and kept
+  writing `y` into a destroyed `Text`, which CI caught as twelve `Cannot set properties of null` on
+  the daily boss's race. Both layers now keep what they have in the air and kill it before anything
+  is destroyed: `NumberLayer` its number timelines, the stage its event batches.
+
 ### Performance
 
 - The bench fights the heaviest stage the game draws now: `pnpm perf:battle --weekly` runs Nyxara's
@@ -151,6 +160,15 @@ across them. Losing costs nothing but the key — whatever the party did to him 
   a boss race that takes 35 seconds alone ran past a seven-minute budget next to the Portal's
   rituals. Wall-clock is the cheaper thing to spend — and CI now spends it in two shards on two
   runners (`ci.yml`), because one serial job with a 50-turn boss race in it ran out its budget.
+
+### Fixed
+
+- **A retreat mid-fight could throw once a frame until the numbers finished falling.** A damage
+  number lives about a second after the hit that made it, and the presenter's batch can be longer
+  than that — but a retreat tears the stage down at once. GSAP knew nothing about it and kept
+  writing `y` into a destroyed `Text`, which CI caught as twelve `Cannot set properties of null` on
+  the daily boss's race. Both layers now keep what they have in the air and kill it before anything
+  is destroyed: `NumberLayer` its number timelines, the stage its event batches.
 
 ### Performance
 
@@ -783,6 +801,15 @@ should be a nice little bonus only. Do not add too many rewards."
 - `src/content/balance/battle.ts` gained the turn-meter, mitigation, variance, status value,
   DoT, counter, revive, freeze, fear, turn-limit, difficulty, stage-growth, boss and AI
   constants of `docs/design/BATTLE.md` §11.
+
+### Fixed
+
+- **A retreat mid-fight could throw once a frame until the numbers finished falling.** A damage
+  number lives about a second after the hit that made it, and the presenter's batch can be longer
+  than that — but a retreat tears the stage down at once. GSAP knew nothing about it and kept
+  writing `y` into a destroyed `Text`, which CI caught as twelve `Cannot set properties of null` on
+  the daily boss's race. Both layers now keep what they have in the air and kill it before anything
+  is destroyed: `NumberLayer` its number timelines, the stage its event batches.
 
 ### Performance
 - `pnpm perf:battle --software` in the GPU-less build environment (SwiftShader, 1920 × 1080,

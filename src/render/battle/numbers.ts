@@ -24,6 +24,13 @@ const STYLE: Record<NumberKind, { fill: number; size: number; stroke: number }> 
 export class NumberLayer {
   readonly container = new Container();
   private pool: Text[] = [];
+  /**
+   * Every timeline still in the air. A number lives for about a second after the hit that made it,
+   * which is longer than a battle screen sometimes does: retreat during a fight and the stage is
+   * torn down under it. GSAP does not know that, and a tween that keeps writing `y` into a
+   * destroyed `Text` throws on every frame it has left.
+   */
+  private live = new Set<gsap.core.Timeline>();
 
   private acquire(kind: NumberKind): Text {
     const text = this.pool.pop() ?? new Text({ text: '' });
@@ -56,7 +63,13 @@ export class NumberLayer {
     text.text = value;
     text.position.set(x + (jitter.next() - 0.5) * 40, y);
     const hold = kind === 'crit' ? 0.9 : 0.7;
-    const tl = gsap.timeline({ onComplete: () => this.release(text) });
+    const tl = gsap.timeline({
+      onComplete: () => {
+        this.live.delete(tl);
+        this.release(text);
+      },
+    });
+    this.live.add(tl);
     tl.fromTo(
       text.scale,
       { x: 0.4, y: 0.4 },
@@ -69,6 +82,9 @@ export class NumberLayer {
   }
 
   destroy(): void {
+    // Kill what is still rising before the text under it goes away.
+    for (const tl of this.live) tl.kill();
+    this.live.clear();
     this.container.destroy({ children: true });
     this.pool = [];
   }
