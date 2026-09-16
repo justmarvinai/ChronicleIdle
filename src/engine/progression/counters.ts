@@ -66,6 +66,9 @@ export const COUNTER_KEYS = [
   'quests.chests',
 ] as const;
 
+/** A quest chest's own claim count, for a chest whose payout runs on a cadence. */
+export const QUEST_CHEST_COUNTER = 'quests.chest.' as const;
+
 export type CounterKey = (typeof COUNTER_KEYS)[number];
 
 /**
@@ -79,6 +82,7 @@ export const COUNTER_PREFIXES = [
   'boss.fights.',
   'summon.pulls.',
   'summon.rarity.',
+  QUEST_CHEST_COUNTER,
 ] as const;
 
 const KEYS = new Set<string>(COUNTER_KEYS);

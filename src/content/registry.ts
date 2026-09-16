@@ -27,6 +27,8 @@ import { BOSSES, BOSS_BY_ID, bossTier } from '@content/bosses/index';
 import type { BossDef, BossTierDef } from '@content/bosses/types';
 import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
 import type { GearSetDef } from '@content/sets/types';
+import { QUESTS, QUEST_BOARDS, QUEST_BOARD_BY_PERIOD, QUEST_BY_ID } from '@content/quests/index';
+import type { QuestBoardDef, QuestDef, QuestPeriod } from '@content/quests/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
 import type { TitleDef } from '@content/titles/types';
 import type { Difficulty } from '@content/balance/battle';
@@ -68,6 +70,12 @@ export interface ContentRegistry {
   /** The period bosses (BOSSES.md): Gravemaw daily, Nyxara weekly. */
   bosses: readonly BossDef[];
   bossById(id: string): BossDef | undefined;
+  /** The quest boards (QUESTS_MISSIONS.md §2–§3): one a day, one a week. */
+  questBoards: readonly QuestBoardDef[];
+  questBoard(period: QuestPeriod): QuestBoardDef;
+  /** Every quest either board can show, the replacements included. */
+  quests: readonly QuestDef[];
+  questById(id: string): QuestDef | undefined;
   bossTier(bossId: string, tierId: string): BossTierDef | undefined;
   /** The encounter a key buys on a boss tier (BOSSES.md §1). */
   bossEncounter(bossId: string, tierId: string): EncounterDef | undefined;
@@ -134,6 +142,10 @@ export function buildContentRegistry(): ContentRegistry {
     bannerById: (id) => BANNER_BY_ID[id],
     bosses: BOSSES,
     bossById: (id) => BOSS_BY_ID[id],
+    questBoards: QUEST_BOARDS,
+    questBoard: (period) => QUEST_BOARD_BY_PERIOD[period],
+    quests: QUESTS,
+    questById: (id) => QUEST_BY_ID[id],
     bossTier: tierOf,
     bossEncounter: bossEncounterOf,
     summonPool: SUMMON_POOL,

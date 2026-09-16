@@ -20,7 +20,13 @@ import { enemySchema } from './enemy';
 import { settlementSchema, stageShapeIssues } from './stage';
 import { bannerSchema } from './banner';
 import { bossSchema } from './boss';
+import { FEATURE_IDS } from '@content/balance/unlocks';
+import type { Goal, QuestBoardDef } from '@content/quests/types';
+import { GOAL_COUNTERS } from '@engine/quests/goals';
+import { visibleQuests } from '@engine/quests/board';
+import { isCounterKey } from '@engine/progression/counters';
 import { gearSetSchema } from './gear-set';
+import { questBoardSchema } from './quest';
 import { titleSchema } from './title';
 
 export const currencySchema = z.object({
@@ -79,6 +85,7 @@ export function validateContentRegistry(
     gearSets: readonly unknown[];
     banners: readonly unknown[];
     bosses: readonly unknown[];
+    questBoards: readonly unknown[];
     summonPool: readonly { id: string; rarity: string }[];
   },
   refs: ContentRefs,
@@ -98,7 +105,88 @@ export function validateContentRegistry(
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
+    ...validateQuestBoards(registry.questBoards, registry.bosses, refs),
   ];
+}
+
+/**
+ * The quest boards (QUESTS_MISSIONS.md §2–§3). Three promises the design makes, each of which a
+ * content edit could quietly break:
+ *
+ * - **The hundred is always reachable.** A quest whose feature is locked is hidden and the
+ *   replacement quest carries its points, so the board's total must come to a hundred at *every*
+ *   unlock state — checked here at every player level the features open at.
+ * - **A goal measures something the game counts.** A counter goal's key must be one
+ *   `@engine/progression/counters` writes, and a `boss_fights` goal must name a boss that exists.
+ * - **The ladder ends at the full board**, which the schema checks, and every chest must be
+ *   reachable by the points the quests can actually pay.
+ */
+function validateQuestBoards(
+  boards: readonly unknown[],
+  bosses: readonly unknown[],
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const bossIds = new Set(
+    bosses.map((raw) => (raw as { id?: unknown }).id).filter((id): id is string => typeof id === 'string'),
+  );
+  const seen = new Set<string>();
+
+  boards.forEach((raw, index) => {
+    const result = questBoardSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`quests[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const board = result.data;
+    const path = `quests.${board.period}`;
+    if (seen.has(board.period)) error(path, 'duplicate board period');
+    seen.add(board.period);
+
+    const quests = [...board.quests, board.replacement];
+    for (const quest of quests) {
+      const questPath = `${path}.${quest.id}`;
+      if (!refs.i18nKeys.has(quest.name)) error(questPath, `missing i18n key ${quest.name}`);
+      if (!refs.assetKeys.has(quest.icon)) error(questPath, `missing icon ${quest.icon}`);
+      if (quest.period !== board.period) error(questPath, `belongs to ${quest.period}, not this board`);
+      for (const goal of flattenGoals(quest.goal as Goal)) {
+        if (goal.type === 'boss_fights' && !bossIds.has(goal.boss))
+          error(questPath, `goal names an unknown boss ${goal.boss}`);
+        const key = GOAL_COUNTERS[goal.type];
+        if (key && !isCounterKey(key)) error(questPath, `goal counts ${key}, which nothing writes`);
+      }
+      // A quest nobody can see is a reward nobody can earn.
+      if (quest.feature && unlockLevel(quest.feature) > PLAYER_MAX_LEVEL)
+        error(questPath, `needs ${quest.feature}, which never unlocks`);
+    }
+    if (board.quests.some((quest) => quest.id === board.replacement.id))
+      error(path, 'the replacement quest shares an id with a real one');
+
+    // Every unlock state the game passes through, plus the board's own level and the cap.
+    const levels = [
+      unlockLevel(board.feature),
+      ...FEATURE_IDS.map((feature) => unlockLevel(feature)),
+      PLAYER_MAX_LEVEL,
+    ].filter((level) => level >= unlockLevel(board.feature));
+    const target = board.chests[board.chests.length - 1]?.points ?? 100;
+    for (const level of [...new Set(levels)].sort((a, b) => a - b)) {
+      const total = visibleQuests(board as QuestBoardDef, level).reduce(
+        (sum, quest) => sum + quest.points,
+        0,
+      );
+      if (total !== target)
+        error(path, `a level-${level} chronicle sees ${total} points, not the ${target} the ladder needs`);
+    }
+  });
+  return issues;
+}
+
+/** A goal and, for `any`, everything inside it. */
+function flattenGoals(goal: Goal): Goal[] {
+  return goal.type === 'any' ? [goal, ...goal.goals.flatMap(flattenGoals)] : [goal];
 }
 
 /**

@@ -1,0 +1,49 @@
+/** The daily and weekly quests (docs/design/QUESTS_MISSIONS.md §2–§3) and the screen that lists them. */
+export const quests = {
+  // The daily board. Each line is what the row says; the numbers come from the goal itself.
+  'quest.login.name': 'Open the chronicle today',
+  'quest.claim_idle.name': 'Claim the Idle Chest',
+  'quest.clear_stages.name': 'Clear 5 campaign stages',
+  'quest.spend_energy.name': 'Spend 60 energy',
+  'quest.level_champions.name': 'Level up champions 3 times',
+  'quest.gear_levels.name': 'Upgrade gear 5 levels',
+  'quest.daily_boss.name': 'Fight the Daily Boss twice',
+  'quest.summon.name': 'Summon a champion',
+  'quest.win_manual.name': 'Win a battle in Manual mode',
+  'quest.forge.name': 'Craft or dismantle a gear piece',
+  'quest.win_battles.name': 'Win 3 battles',
+
+  // The weekly board.
+  'quest.daily_days.name': 'Complete the daily quests on 5 days',
+  'quest.clear_stages_weekly.name': 'Clear 60 campaign stages',
+  'quest.daily_boss_keys.name': 'Use 10 Daily Boss keys',
+  'quest.weekly_boss_keys.name': 'Use 3 Weekly Boss keys',
+  'quest.summon_ten.name': 'Summon 10 champions',
+  'quest.rank_up.name': 'Rank up a champion',
+  'quest.gear_twelve.name': 'Bring a gear piece to +12',
+  'quest.claim_idle_seven.name': 'Claim the Idle Chest 7 times',
+  'quest.win_battles_weekly.name': 'Win 20 battles',
+
+  // The screen (docs/tech/UI_DESIGN.md §5.14).
+  'quests.title': 'The Chronicler’s Ledger',
+  'quests.tab.daily': 'Daily',
+  'quests.tab.weekly': 'Weekly',
+  'quests.resetsIn': 'Resets in {time}',
+  'quests.points': '{points} / {of} points',
+  'quests.claim': 'Claim',
+  'quests.claimed': 'Claimed',
+  'quests.claimAll': 'Claim all ({count})',
+  'quests.nothingToClaim': 'Nothing to claim yet',
+  'quests.locked': 'The ledger opens at chronicle level {level}.',
+  'quests.progress': '{progress} / {target}',
+  'quests.reward': 'Reward',
+  'quests.chestAt': '{points} points',
+  'quests.chestClaimed': 'Taken',
+  'quests.chestCycle': 'Every {every}th time: {reward}',
+  'quests.claimedToast': 'Quest claimed — {points} points.',
+  'quests.chestToast': 'The {points}-point chest is yours.',
+  'quests.allClaimedToast': '{count} quests claimed.',
+  'quests.boardDone': 'Every quest on the board is done.',
+  'quests.hint.replacement':
+    'Some of the board opens with the chronicle. Until then this quest carries its points.',
+} as const;

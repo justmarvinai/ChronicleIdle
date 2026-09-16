@@ -69,6 +69,12 @@ export interface QuestDef {
 export interface QuestChestDef {
   points: number;
   currencies: CurrencyAmount[];
+  /**
+   * What the chest pays instead on every `every`-th claim of it — the design's "1 Ancient Shard
+   * (every 3rd day)" on the daily hundred (QUESTS_MISSIONS.md §2). The count is per chest and
+   * lifetime, so a player who finishes the board three days running sees it on the third.
+   */
+  cycle?: { every: number; instead: CurrencyAmount[] };
 }
 
 /** A period's board: its quests, the stand-in for locked ones, and the chest ladder. */
