@@ -116,9 +116,30 @@ async function main(): Promise<void> {
     campaign: { ...base.campaign, stars },
     teams: { ...base.teams, boss: { presets: [instanceIds, [], []], lastUsed: instanceIds } },
     stats: { ...COUNTERS },
+    // Everything a chronicle six chapters deep would be carrying. It used to hold gold, gems and
+    // three sigils and nothing else, which left the Forge unable to strike and the Tavern unable to
+    // pour — a fixture that could not do the things the chronicle it describes had plainly done.
     wallet: walletWith([
       { currency: 'gold', amount: 800_000 },
       { currency: 'gems', amount: 2_400 },
+      { currency: 'key_daily', amount: 2 },
+      { currency: 'key_weekly', amount: 2 },
+      { currency: 'shard_faded', amount: 24 },
+      { currency: 'shard_ancient', amount: 6 },
+      { currency: 'shard_sacred', amount: 1 },
+      { currency: 'brew_justice', amount: 40 },
+      { currency: 'brew_valor', amount: 40 },
+      { currency: 'brew_faith', amount: 40 },
+      { currency: 'brew_eclipse', amount: 40 },
+      { currency: 'brew_universal', amount: 25 },
+      { currency: 'tome_rare', amount: 12 },
+      { currency: 'tome_epic', amount: 6 },
+      { currency: 'tome_legendary', amount: 2 },
+      { currency: 'mat_scrap_iron', amount: 900 },
+      { currency: 'mat_ember_alloy', amount: 400 },
+      { currency: 'mat_starsteel', amount: 60 },
+      { currency: 'mat_arcane_dust', amount: 700 },
+      { currency: 'mat_refining_core', amount: 30 },
       { currency: 'mat_glyph_sigil', amount: 3 },
     ]),
     missions: {

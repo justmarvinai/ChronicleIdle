@@ -22,6 +22,14 @@ export default defineConfig({
   retries: process.env['CI'] ? 1 : 0,
   reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {
+    /*
+     * Playwright's default action timeout is *no* timeout: a click on a control that never becomes
+     * enabled waits until the whole test's budget is gone, which turns "this chronicle cannot
+     * afford a craft" into a half-hour hang with nothing in the log. Fifteen seconds is far longer
+     * than anything in this game takes to settle, and a control still disabled after it is a real
+     * failure worth hearing about quickly.
+     */
+    actionTimeout: 15_000,
     baseURL: 'http://localhost:4173',
     viewport: { width: 1600, height: 900 },
     trace: 'retain-on-failure',

@@ -81,6 +81,20 @@ Documentation
 | a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes/`; map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
 | a visual effect | owner sheet under `/game/assets/music_and_sounds/vfx/**` or a procedural recipe in `tools/vfx/recipes.ts`; register in `src/render/battle/fx/registry.ts`; add a credits row | `docs/tech/UI_DESIGN.md` §6.3 |
 
+## 4.1 A fixture must be able to do what its chronicle has done
+
+A save fixture describes a player at a point in the game, and every screen reads it. `path.chronicle`
+claimed six chapters of the Path and 24 crafts in its counters while carrying no Scrap Iron — so the
+Forge's Strike button was disabled, and a walkthrough that tried to craft waited on it forever.
+
+When you write or borrow a fixture, check the *verbs* the spec will use against the purse, the
+roster and the inventory it is given: a spec that crafts needs materials, one that pours brews needs
+brews, one that summons needs shards. `pnpm test:e2e` failing with a timeout on a visible, enabled-
+looking control is almost always this.
+
+The related trap: Playwright's action timeout is capped in `playwright.config.ts` precisely so this
+fails in fifteen seconds instead of consuming the test's whole budget. Do not remove it.
+
 ## 5. Never do
 
 - Never modify files under `/game` (generate derived assets into `public/assets/generated`).
