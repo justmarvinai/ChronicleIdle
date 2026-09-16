@@ -6,7 +6,57 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Phase 13 (The Chronicler's Path) is next._
+_Phase 14 (Tutorial & Onboarding) is next._
+
+## [0.0.13] — 2026-09-16 — Phase 13: The Chronicler's Path
+
+Eldric's mission line: ten chapters of twelve, walked in order from *Clear Thornwood Crossing 1-1*
+to *Defeat Nyxara (Nightmare)*, with a chapter chest at every tenth of the way and Eldric himself
+at the end of it.
+
+### Added
+
+- **The Path** (`missions` route, `UI_DESIGN.md` §5.15): ten chapter tabs, a rail of mission cards
+  that opens on the mission being walked, Eldric beside the chapter with a line for it, and the
+  chapter's own track with its chest. Every chapter can be read, not only the one in progress — a
+  card still to come says what it will ask for, and a state predicate the chronicle already
+  satisfies shows as met behind its lock.
+- **120 missions as data** (`content/missions/chapter_01..10.ts`): the design's tables exactly,
+  each mission a goal from the shared DSL plus what it pays. A chapter file is goals and rewards;
+  the id, the i18n key and the glyph all follow from where a mission sits.
+- **Eighteen more goal types** (`engine/quests/goals.ts`), most of them state predicates, because
+  that is what a mission line asks about: a stand cleared on one difficulty, a settlement's or a
+  difficulty's stars, copies owned by rarity, champions at a level or a rank (or both), a champion
+  whose every ability is finished, the strongest party the chronicle could field, pieces worn by
+  one champion, a complete set group, pieces at a level in the racks or on one champion, what this
+  period's keys put into a boss tier and the best a tier ever took — plus narrowed counters for a
+  craft bench, a summon shard, a boss tier and a day on which five daily quests were claimed.
+- **The line, derived** (`engine/missions/path.ts`): the chronicle is always on the first mission
+  it has not claimed, so the whole Path is a function of one list of claimed ids — no pointer to
+  keep in step with the content, and a mission inserted in a later release simply becomes the next
+  one walked into. A chapter opens when the chapter before it is finished.
+- **Save v11** with that list, the counters the open mission started from, the chests taken and the
+  piece Eldric's gift was struck as. The migration from v10 starts every chronicle at the first
+  page with today's counters as the baseline: the counter missions ask for play from here on, the
+  state missions read as already met, and a deep chronicle walks them a claim at a time.
+- **Eldric's own reward**: the last chapter's chest adds him to the roster with the ribbon a summon
+  gets, and opens the dialog that names his parting gift — a 6★ Legendary piece in the slot and set
+  the chronicle chooses, struck once and seeded by the choice so a reload cannot reroll it. Gear
+  now records `mission` as a provenance.
+- `tests/e2e/missions.spec.ts` and `tools/fixtures/path-chronicle.ts`: the chronicle the ROADMAP's
+  acceptance asks for — six chapters claimed, their chests taken, Intro mastered — opening on
+  chapter 7 and carrying on, in a production build and through the v11 save.
+
+### Changed
+
+- Mission 2.5 asks for **a rank-up** rather than the design's *"rank up a champion to 3★"*: a Rare
+  starts at 3★ and every starter is a Rare, so the row would have completed itself before it
+  opened. Chapter 4.3 keeps *to 4★* as the first rank a Rare has to climb to. `USER_QUESTIONS.md`
+  Q43 records it with the switch back.
+- `boss.fights.<boss>.<tier>` and `forge.crafts.<tier>` are counted now, because the Path asks for
+  a key spent on one tier and a piece struck at one bench.
+- `DIFFICULTIES` is the tuple the difficulty type derives from, so a schema can name it without a
+  cast.
 
 ## [0.0.12] — 2026-09-16 — Phase 12: Daily & Weekly Quests
 

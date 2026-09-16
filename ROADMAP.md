@@ -22,7 +22,7 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 10 | Daily Boss | 0.0.10 | ✅ shipped in 0.0.10 |
 | 11 | Weekly Boss | 0.0.11 | ✅ shipped in 0.0.11 |
 | 12 | Daily & Weekly Quests | 0.0.12 | ✅ shipped in 0.0.12 |
-| 13 | The Chronicler's Path (missions) | 0.0.13 | ⬜ |
+| 13 | The Chronicler's Path (missions) | 0.0.13 | ✅ shipped in 0.0.13 |
 | 14 | Tutorial & Onboarding | 0.0.14 | ⬜ |
 | 15 | Balance, Polish, Performance → **EA-0.1** | **0.1.0** | ⬜ |
 
@@ -307,6 +307,11 @@ chests, Quests screen, hidden-until-unlocked substitution, reset handling.
 every unlock state; claims are idempotent; period rollover while offline handled once.
 
 ## Phase 13 — The Chronicler's Path (`0.0.13`)
+
+**Status.** ✅ shipped in 0.0.13 (2026-09-16). See `CHANGELOG.md` for what landed. The line is
+derived from the list of claimed missions rather than stored as a pointer (ADR-040 again), and
+mission 2.5 asks for a rank-up rather than "a champion at 3★", which a Rare starter already is
+(Q43).
 
 **Goal.** 120 missions in 10 chapters, chapter chests, Eldric as the final reward (champion
 definition exists since Phase 1 with `obtain: ['mission']`), the missions screen with Eldric's

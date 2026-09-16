@@ -382,6 +382,46 @@ const featured: BannerDef = {
   middle shifts every later rotation. Append.
 - Rates, mercy, the epoch and the featured weight are `balance/summon.ts`, never the banner.
 
+### Missions (`src/content/missions/`)
+
+One file per chapter (`chapter_01.ts` … `chapter_10.ts`), each a `chapter()` of twelve
+`mission()`s and the chest at the end:
+
+```ts
+export default chapter({
+  index: 3,
+  missions: [
+    // 3.1 Clear Sunspire Bazaar 4-5
+    mission({ type: 'clear_stage', settlement: 4, stage: 5, difficulty: 'intro' }, [
+      { currency: 'gold', amount: 6_000 },
+    ]),
+    // 3.2 Deal 250,000 damage to Gravemaw (Easy) in a day
+    mission({ type: 'boss_damage', boss: 'boss.gravemaw', tier: 'easy', amount: 250_000 }, [
+      { currency: 'gems', amount: 20 },
+    ]),
+    …
+  ],
+  chest: { currencies: [{ currency: 'shard_sacred', amount: 1 }] },
+});
+```
+
+- Position is everything: the id (`mission.03.02`), the i18n key (`mission.03.02.name`, in
+  `src/i18n/en/missions.ts`) and the chapter a mission belongs to all follow from where it sits.
+  The glyph follows from the goal's family, and a mission may override it (the Nyxara rows wear her
+  eye) — nothing else is authored twice.
+- The line is walked in order, so a mission is only ever *the next one*: counter goals measure from
+  the moment it opens, state predicates are read live (`QUESTS_MISSIONS.md` §1). Prefer a state
+  predicate for anything a chronicle could already have done — a counter goal in a late chapter
+  asks the player to do it *again*.
+- A chapter's chest pays currencies; the tenth chapter's is the Path's own reward and carries
+  `champion` and `gearChoice` instead. The validator keeps both to the last chapter, checks that
+  the champion's own definition lists `mission` in `obtain`, and refuses a `all_previous` goal
+  anywhere but the last page.
+- The validator also holds the shape the design promises: ten chapters of twelve, ids that match
+  their position, a real stand and settlement, a real boss tier, a champion level inside the cap
+  for the rank it asks for, and a counter something actually writes. Adding a goal type means
+  naming its counter in `COUNTER_KEYS` and bumping it from the reducer that owns that play.
+
 ### Champion choices (`CHAMPION_CHOICES` in `balance/campaign.ts`)
 
 A reward that lets the player *name* a champion is a row here: the difficulty whose mastery owes

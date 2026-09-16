@@ -265,7 +265,17 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 10.12 | Complete every previous mission | **Eldric the Chronicler**, 6★ Legendary gear (choice), 500 Gm |
 
 Chapter chests (on finishing a chapter): 1 → 1 AS; 2 → 1 AS + 50 Gm; 3 → 1 SS; 4 → 1 SS + 100 Gm;
-5 → 1 SS + 1 GS; 6 → 1 PS; 7 → 1 PS + 200 Gm; 8 → 2 SS + 1 LT; 9 → 1 PS + 1 LT; 10 → (final reward).
+5 → 1 SS + 1 GS; 6 → 1 PS; 7 → 1 PS + 200 Gm; 8 → 2 SS + 1 LT; 9 → 1 PS + 1 LT; 10 → the final
+reward, which is where **Eldric** and the 6★ Legendary piece of choice arrive; mission 10.12 itself
+pays the 500 Gems listed beside them.
+
+**As shipped (0.0.13).** The line is walked in order and the save keeps only the missions claimed,
+so the chronicle is always on the first one it has not (ADR-041). A counter mission measures from
+the moment it opened; a state mission is read live, which is why a chronicle that arrives deep
+finds several of them already met and claims them one at a time. Two rows differ from the table
+above: 2.5 asks for **a rank-up** rather than "to 3★" (a Rare starter already is 3★ — Q43), and
+9.8 / 10.11 are *"reach 100 % on the tier"*, which is what defeating a damage-race boss means
+(`BOSSES.md` §1).
 
 ## 5. Screens
 
@@ -273,9 +283,9 @@ Chapter chests (on finishing a chapter): 1 → 1 AS; 2 → 1 AS + 50 Gm; 3 → 1
   with progress bar, points and reward; top points track with five chest nodes; "Claim" per quest
   and per chest with reward burst; reset timer.
 - **The Chronicler's Path** (clones `progress_missions_screen.png`): chapter tabs across the top;
-  a horizontal carousel of mission cards (icon, title, description, progress bar, lock state,
-  reward); bottom chapter-progress track with chest nodes; Eldric's portrait with a line of
-  dialogue that changes per chapter.
+  a horizontal carousel of mission cards (icon, line, progress bar, lock state, reward); bottom
+  chapter-progress track with the chapter's chest; Eldric's portrait with a line of dialogue that
+  changes per chapter. Full spec in `docs/tech/UI_DESIGN.md` §5.15.
 
 ## 6. Content shape
 

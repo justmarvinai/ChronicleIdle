@@ -426,3 +426,22 @@ follow that are worth naming: a quest added in a later version starts from the c
 baseline rather than from a player's whole history, and the one piece of memory a derived board
 cannot do without — whether a finished daily board has already counted its day — is a boolean in
 the period's record (Q42), not a second tracker.
+
+## ADR-041 — The mission line is a list of claimed ids, not a pointer
+**Context.** The Chronicler's Path is 120 missions, sequential inside a chapter and across
+chapters. The obvious save shape is the planned one: the chapter the chronicle is on, the mission
+inside it, and a progress map. That is three facts that have to agree with each other *and* with
+the content: insert a mission in chapter 3 in a later release and every stored pointer past it
+means something different, while a progress map keeps counting things the missions no longer ask
+for.
+**Decision.** The save keeps the ids that have been claimed, the counters the open mission started
+from, and the chapter chests taken. The mission being walked is *the first one not in that list*,
+and a chapter is open when every id of the chapter before it is. `pathView` derives the rest.
+**Consequences.** A mission added later simply becomes the next one walked into, and one removed
+stops being asked for — no migration either way. The baseline holds only the keys the open
+mission's own goal reads (`missionBaselineKeys`), so it is small and says what it is for. Two
+things follow: a claimed mission always reads as finished, whatever the counters do afterwards
+(the view reports its target rather than re-evaluating it), and a mission still to come is
+evaluated against the counters *as they stand*, so its counter goals read zero while its state
+predicates tell the truth — which is what lets the screen show a locked card the chronicle already
+satisfies.

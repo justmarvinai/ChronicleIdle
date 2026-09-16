@@ -383,9 +383,36 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - The hub's bottom-bar **Quests** button opens the ledger and carries the same badge; the Welcome
   Back panel says when a new day's or week's quests are waiting.
 
-### 5.15 The Chronicler's Path
-- Reference: `progress_missions_screen.png`. Chapter tabs; mission card carousel with arrows;
-  chapter track with chest nodes; Eldric portrait + line.
+### 5.15 The Chronicler's Path (`QUESTS_MISSIONS.md` §4)
+- Reference: `progress_missions_screen.png`. Backdrop `bg.bg6` with the interior ambience and two
+  lamp glows over the chronicler's table.
+- Header: ten **Chapter N** tabs (the names are prose and do not fit ten across, so the chapter's
+  own name sits with Eldric instead) and the Path's total — *72 / 120 missions*. A tab wears a
+  badge when that chapter's chest is waiting. Every tab is readable, including chapters still to
+  come: the Path is a promise as much as a task list.
+- **Mission cards** (`MissionCard`, a rail of fixed-height cards with an arrow either side that
+  steps one card): the mission's glyph on a framed crest, the line it asks for, a gold progress bar
+  carrying `progress / target`, its reward as a `RewardList`, and the press. Four states — the one
+  being walked wears the ember frame and a gold name (*In progress*, or **Claim** once it is
+  finished), a claimed one steps back to *Claimed* with a trophy and a muted bar, and one still to
+  come wears a broken shackle and the word *Locked*. A locked card's counter goals read zero (it
+  has not started); its state predicates read the truth, so a chronicle deep enough sees what it
+  already satisfies. The rail opens on the mission being walked, not at the start of its chapter.
+- **Eldric** sits under the rail in a `thin` panel: the chapter's name, his own, and his line for
+  that chapter (the Path's own line once every mission is claimed). His portrait is the placeholder
+  model, tinted, until he has one of his own (`ASSETS.md` §3).
+- **The chapter track** (`ChapterTrack`): *Chapter chest*, the chapter's `claimed / 12` on a gold
+  rail, and the chest node at the end — dim while the chapter is unfinished (*Finish the chapter*),
+  gold and pulsing when it can be taken, a trophy and *Taken* afterwards, with its contents on
+  hover. The tenth chapter's node wears Eldric's own glyph and names what it is holding.
+- **Eldric's parting gift** (`MissionGiftDialog`): the last chest owes a 6★ Legendary piece, so the
+  dialog offers the six slots and the set list, strikes it on *Strike it*, and shows the card it
+  made before it closes. Once — the piece's id is kept in the save.
+- Motion and sound: `reward.medium` on a mission, `reward.large` on a chest or the gift,
+  `ui.tab` on the tabs and the arrows, `ui.error` on a press the Path refuses; every claim raises a
+  reward toast with what it paid, and Eldric's arrival gets its own.
+- The hub's bottom-bar **Missions** button opens the Path and carries a badge for the mission or
+  the chest it owes.
 
 ### 5.16 Idle chest
 - See §5.2: the chest lives on the hub (the hotspot at the docks and the top-bar pill) and its

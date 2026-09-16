@@ -207,9 +207,9 @@ selected pointer and the auto-repeat count), v5 (Phase 4: `profile.titles` becom
 `profile.title`, the one title the chronicle *wears*; which titles are **earned** is derived from
 the play by `@engine/progression/titles`, never stored), v6 (Phase 6: `inventory` with every
 piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), v8 (Phase 9:
-`idle`), v9 (Phase 10: `bosses`) and v10 (Phase 12: `quests`). Fields below that no phase has
-shipped yet are the planned shape and are added by their phase with a migration and a fixture in
-`tests/fixtures/saves/`.
+`idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`) and v11 (Phase 13: `missions`). Fields
+below that no phase has shipped yet are the planned shape and are added by their phase with a
+migration and a fixture in `tests/fixtures/saves/`.
 
 ```ts
 interface SaveGame {
@@ -238,7 +238,10 @@ interface SaveGame {
   // against them — what has been claimed, and whether a finished daily board has counted its day.
   // A record whose key is older than now reads as a fresh board.
   quests: { daily: QuestPeriodSave; weekly: QuestPeriodSave };   // { periodKey, baseline, claimed, chests, dayCounted }
-  missions: { chapter: number; completed: string[]; claimed: string[]; progress: Record<string, number> };
+  // Shipped in save v11. The Chronicler's Path is derived from `claimed`: the mission being walked
+  // is the first one not in it, and a chapter opens when the one before it is finished (ADR-040).
+  // `baseline` is the counters the open mission started from — only the keys its own goal reads.
+  missions: { claimed: string[]; baseline: Record<string, number>; chests: number[]; gearChoice: string | null };
   // Shipped in save v8. The chest's whole state: when it was last emptied (ADR-033).
   idle: { lastClaimAt: number };
   tutorial: { completedSteps: string[]; activeStep: string | null; skippedChapters: string[] };
