@@ -3,6 +3,7 @@ import { unlockLevel } from '@engine/progression/unlocks';
 import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
+import { questsClaimable } from '@state/quests';
 import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -46,6 +47,8 @@ export default function HubScreen(_props: ScreenProps) {
   // The gate's own cards: keys left this period, and a dot when a chest is waiting (BOSSES.md §4).
   const daily = save ? bossView(save, 'boss.gravemaw', now) : null;
   const weekly = save ? bossView(save, 'boss.nyxara', now) : null;
+  // The ledger's own badge: quests finished and chests earned, across both boards.
+  const ledger = save ? questsClaimable(save, now) : 0;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
@@ -129,8 +132,13 @@ export default function HubScreen(_props: ScreenProps) {
               label={t('hub.quests')}
               glyph="glyph.burning_scroll"
               unlocked={quests}
+              notify={ledger}
               onClick={() =>
-                actions.push({ name: 'locked', feature: 'quests_daily', titleKey: 'hub.quests' })
+                actions.push(
+                  quests
+                    ? { name: 'quests' }
+                    : { name: 'locked', feature: 'quests_daily', titleKey: 'hub.quests' },
+                )
               }
               testId="nav-quests"
             />
@@ -185,12 +193,15 @@ function NavButton({
   label,
   glyph,
   unlocked,
+  notify = 0,
   onClick,
   testId,
 }: {
   label: string;
   glyph: Parameters<typeof Glyph>[0]['glyph'];
   unlocked: boolean;
+  /** How many things are waiting behind this button; 0 wears no badge. */
+  notify?: number;
   onClick: () => void;
   testId: string;
 }) {
@@ -210,6 +221,7 @@ function NavButton({
       data-testid={testId}
     >
       {label}
+      {unlocked && notify > 0 ? <NotificationDot count={notify} /> : null}
     </Button>
   );
 }

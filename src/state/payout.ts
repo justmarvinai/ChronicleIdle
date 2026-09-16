@@ -6,7 +6,7 @@
  * the change the UI ticks up still has to mention it. Reward lists that can contain energy pay
  * through here so that split lives in one place.
  */
-import type { CurrencyAmount } from '@content/currencies/types';
+import type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 import { addEnergy } from '@engine/economy/energy';
 import { grant, type CurrencyChange } from '@engine/economy/wallet';
 import type { SaveGame } from '@engine/schema/save';
@@ -29,4 +29,15 @@ export function payCurrencies(
     changes.push({ currency: 'energy', delta: energy, total: save.energy.value });
   }
   return changes;
+}
+
+/**
+ * One entry per currency, in first-named order. A reward list assembled from several sources — the
+ * five quests a "Claim all" takes at once — otherwise pays three separate piles of gold, and the
+ * toast and the top bar would count each of them.
+ */
+export function mergeAmounts(amounts: readonly CurrencyAmount[]): CurrencyAmount[] {
+  const total = new Map<CurrencyId, number>();
+  for (const { currency, amount } of amounts) total.set(currency, (total.get(currency) ?? 0) + amount);
+  return [...total].map(([currency, amount]) => ({ currency, amount }));
 }

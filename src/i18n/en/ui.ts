@@ -186,6 +186,8 @@ export const ui = {
   'welcome.title': 'Welcome back, Chronicler',
   'welcome.body': 'Emberhold kept the fires lit while you were away for {time}.',
   'welcome.energy': 'Energy regenerated',
+  'welcome.quests.daily': 'A new day’s quests are waiting in the ledger.',
+  'welcome.quests.weekly': 'A new week’s quests are waiting in the ledger.',
 
   'hub.hotspot.later': 'Written in a later chapter',
   'hub.bossCard.daily': 'Gravemaw, the Bone Tyrant',

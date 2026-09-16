@@ -11,6 +11,7 @@
  *
  * `@engine/quests/goals` evaluates both and says which family a goal belongs to.
  */
+import type { GlyphKey } from '@assets/manifest.generated';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { FeatureId } from '@content/balance/unlocks';
 
@@ -52,7 +53,8 @@ export interface QuestDef {
   period: QuestPeriod;
   /** i18n key for the line the row shows. */
   name: string;
-  icon: string;
+  /** The glyph the row wears; the validator checks it against the asset manifest. */
+  icon: GlyphKey;
   goal: Goal;
   points: number;
   rewards: CurrencyAmount[];

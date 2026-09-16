@@ -19,6 +19,7 @@ export const SCREENS: Record<RouteName, Lazy> = {
   forge: lazy(() => import('@ui/screens/forge/ForgeScreen')),
   portal: lazy(() => import('@ui/screens/portal/PortalScreen')),
   bosses: lazy(() => import('@ui/screens/bosses/BossScreen')),
+  quests: lazy(() => import('@ui/screens/quests/QuestsScreen')),
   campaign: lazy(() => import('@ui/screens/campaign/CampaignScreen')),
   settlement: lazy(() => import('@ui/screens/settlement/SettlementScreen')),
   'battle-setup': lazy(() => import('@ui/screens/battle-setup/BattleSetupScreen')),

@@ -21,7 +21,7 @@ import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import { boardComplete, boardView, type BoardView } from '@engine/quests/board';
 import type { QuestPeriodSave, SaveGame } from '@engine/schema/save';
 import { dailyKey, msUntilDailyReset, msUntilWeeklyReset, weeklyKey } from '@engine/time/clock';
-import { payCurrencies } from './payout';
+import { mergeAmounts, payCurrencies } from './payout';
 
 /** The key of the period a board is in right now. */
 export function questPeriodKey(period: QuestPeriod, now: number): string {
@@ -128,16 +128,17 @@ export function applyQuestClaim(
   }
 
   const record = writeableRecord(save, period, now);
-  const currencies: CurrencyAmount[] = [];
-  const changes: CurrencyChange[] = [];
   let points = 0;
+  const rewards: CurrencyAmount[] = [];
   for (const view of claimable) {
     record.claimed.push(view.quest.id);
     points += view.quest.points;
-    currencies.push(...view.quest.rewards);
-    changes.push(...payCurrencies(save, view.quest.rewards, now));
+    rewards.push(...view.quest.rewards);
     bumpCounter(save, 'quests.claimed');
   }
+  // Paid in one go, so five quests that each hand over gold read as one pile of it.
+  const currencies = mergeAmounts(rewards);
+  const changes = payCurrencies(save, currencies, now);
 
   // A board finished is the day the weekly quest counts (QUESTS_MISSIONS.md §3) — and one day
   // counts once, even for a chronicle that levels past a feature gate after finishing it and

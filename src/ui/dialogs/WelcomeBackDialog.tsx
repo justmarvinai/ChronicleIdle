@@ -26,6 +26,11 @@ export function WelcomeBackDialog({ onClose }: { onClose: () => void }) {
         <span className={styles.rowLabel}>{t('welcome.energy')}</span>
         <span className={`num ${styles.rowValue}`}>+{report.energyGained}</span>
       </div>
+      {report.questsRolled.length ? (
+        <p className={styles.body} data-testid="welcome-quests">
+          {t(report.questsRolled.includes('weekly') ? 'welcome.quests.weekly' : 'welcome.quests.daily')}
+        </p>
+      ) : null}
       {report.bossTributes.length ? (
         <div data-testid="welcome-tribute">
           <p className={styles.body}>{t('bosses.tribute')}</p>

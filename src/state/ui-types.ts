@@ -1,6 +1,7 @@
 import type { FeatureId } from '@content/balance/unlocks';
 import type { GearSlot } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
+import type { QuestPeriod } from '@content/quests/types';
 import type { I18nKey, I18nParams } from '@i18n/index';
 import type { DecodedChronicle } from './chronicle-file';
 
@@ -24,6 +25,8 @@ export type Route =
   | { name: 'portal'; banner?: string }
   /** The boss gate; `boss` opens on one of its tabs and `tier` selects a card (`BOSSES.md` §4). */
   | { name: 'bosses'; boss?: string; tier?: string }
+  /** The Chronicler's Ledger; `period` opens on one of its boards (`QUESTS_MISSIONS.md` §2–§3). */
+  | { name: 'quests'; period?: QuestPeriod }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }

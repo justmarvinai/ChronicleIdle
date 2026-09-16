@@ -14,6 +14,7 @@ import { IconButton } from '@ui/components/Button/IconButton';
 import { ChampionCard } from '@ui/components/ChampionCard/ChampionCard';
 import type { Rarity } from '@ui/styles/display-maps';
 import { CurrencyPill } from '@ui/components/CurrencyPill/CurrencyPill';
+import { RewardList } from '@ui/components/RewardList/RewardList';
 import { Divider } from '@ui/components/Divider/Divider';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { DecoFrame } from '@ui/components/Frame/DecoFrame';
@@ -153,6 +154,23 @@ export default function DevKitScreen(_props: ScreenProps) {
                 onAdd={() => undefined}
               />
               <CurrencyPill currency="energy" amount={4} cap={60} highlight="low" />
+            </Row>
+            <Row>
+              <RewardList
+                amounts={[
+                  { currency: 'gold', amount: 12_500 },
+                  { currency: 'gems', amount: 30 },
+                  { currency: 'shard_ancient', amount: 1 },
+                ]}
+              />
+              <RewardList
+                amounts={[
+                  { currency: 'tome_epic', amount: 2 },
+                  { currency: 'mat_glyph_sigil', amount: 1 },
+                ]}
+                layout="column"
+                size={22}
+              />
             </Row>
           </Section>
           <Section title="Bars, slots, stars, status, timers">
