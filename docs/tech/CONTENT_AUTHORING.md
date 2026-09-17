@@ -422,7 +422,7 @@ export default chapter({
   for the rank it asks for, and a counter something actually writes. Adding a goal type means
   naming its counter in `COUNTER_KEYS` and bumping it from the reducer that owns that play.
 
-### Tutorial (`src/content/tutorial/chapter_<n>.ts`)
+### Tutorial (`src/content/tutorial/<chapter>.ts`)
 
 A lesson is a `step()` in the chapter it belongs to. Position decides the id (`tut.2.3`) and the
 dialogue key (`tut.2.3.text`, in `src/i18n/en/tutorial.ts`), so a step is four decisions:

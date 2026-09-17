@@ -287,9 +287,11 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
     instead.
 - **The Armoury** (`screen-armoury`, reached from the hub's bottom bar, the champion Gear tab and
   the Forge): the racks and the bench. Backdrop `bg5` — the armory interior. Left: the
-  filter bar (sort + direction, set and minimum-star dropdowns, one-tap chips for slot, rarity,
-  worn/spare and locked, a clear link and a "shown of total" count) over a virtualised
-  `GearCard` grid, with the capacity band pinned to the bottom (`held / 400`, amber warning at
+  filter bar (sort + direction, set and minimum-star dropdowns, one-tap chips for slot, rarity and
+  locked, a clear link and a "shown of total" count) over a virtualised `GearCard` grid that on the
+  default *Set* sort is cut into one run per set, each opening with a heading row — the set's
+  crest, its name, `n-piece` and how many are on the racks — with the capacity band pinned to the
+  bottom (`held / 400`, amber warning at
   90 %, a red band and the overflow note when it is full). Right: the bench — the piece's crest
   in a rarity-lit frame, its name, slot, rarity, `+level` and stars, its power, its main stat,
   its substats with the roll count behind each, its set and what the set gives, who wears it (a

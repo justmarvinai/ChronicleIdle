@@ -22,7 +22,12 @@ function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-/** Sort, direction, and the filters GEAR.md §7 asks for: slot, rarity, set, stars, worn, locked. */
+/**
+ * Sort, direction, and the filters GEAR.md §7 asks for: slot, rarity, set, stars, locked.
+ *
+ * There is no worn/spare toggle: since worn pieces left the racks (the owner's first batch) it
+ * could only ever have emptied them.
+ */
 export function GearFilterBar({ view, onChange, shown, total }: GearFilterBarProps) {
   const { filters } = view;
   const setFilters = (patch: Partial<GearView['filters']>): void =>
@@ -32,7 +37,6 @@ export function GearFilterBar({ view, onChange, shown, total }: GearFilterBarPro
     filters.rarities.length +
     filters.sets.length +
     (filters.minStars > 0 ? 1 : 0) +
-    (filters.worn !== null ? 1 : 0) +
     (filters.locked !== null ? 1 : 0);
   return (
     <div className={styles.bar} data-testid="gear-filters">
@@ -134,20 +138,6 @@ export function GearFilterBar({ view, onChange, shown, total }: GearFilterBarPro
         </span>
         <button
           type="button"
-          className={[styles.chip, styles.text, filters.worn !== null ? styles.on : ''].join(' ')}
-          style={{ ['--chip' as string]: 'var(--gold-2)' }}
-          aria-pressed={filters.worn !== null}
-          data-testid="gear-filter-worn"
-          onMouseEnter={() => playSfx('ui.hover')}
-          onClick={() => (
-            playSfx('ui.tab'),
-            setFilters({ worn: filters.worn === null ? true : filters.worn ? false : null })
-          )}
-        >
-          {filters.worn === false ? t('armoury.filter.worn.no') : t('armoury.filter.worn.yes')}
-        </button>
-        <button
-          type="button"
           className={[styles.chip, styles.text, filters.locked === true ? styles.on : ''].join(' ')}
           style={{ ['--chip' as string]: 'var(--gold-2)' }}
           aria-pressed={filters.locked === true}
@@ -172,7 +162,6 @@ export function GearFilterBar({ view, onChange, shown, total }: GearFilterBarPro
                 sets: [],
                 minStars: 0,
                 mainStats: [],
-                worn: null,
                 locked: null,
               })
             )}

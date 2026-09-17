@@ -6,9 +6,55 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Early Access 0.1 is out. Next is the fine-tuning pass the owner asked for: `USER_QUESTIONS.md`
-Q45 (how generous the economy should be) and Q46 (what an audit can say about a game) are the two
-open questions it starts from._
+_The fine-tuning pass is under way. `USER_QUESTIONS.md` Q46 (what an audit can say about a game
+that never stops animating) is the one open question left._
+
+## [0.1.1] — 2026-09-17 — The owner's first batch
+
+Four changes from the owner's first pass over Early Access 0.1, and the answer to Q45.
+
+### Changed
+
+- **The Chronicler's Path opens at level 1** (`balance/unlocks.ts`), because the missions are what
+  guides a new player through everything the game has: waiting until level 6 left the first hour
+  with nothing pointing anywhere. Eldric teaches them straight after the first stand, so the Path
+  is explained the moment it exists — the tutorial's chapters are walked in order, and leaving *The
+  Path* at position five would have left the missions unexplained until level 5. The chapters are
+  now `awakening` → `the_path` → `the_hold` → `the_binding` → `routine` → `steel_and_bone`, and the
+  files are named for their chapter rather than their number, so moving one never renames a file.
+- **A piece of gear lives in exactly one place** (`engine/gear/query.ts`, `GearPickerDialog`,
+  `ArmouryScreen`): the racks hold what nobody is wearing, and a worn piece shows on its champion.
+  Listing worn gear everywhere read as an armoury twice its real size, and the slot picker offered
+  pieces that were on somebody — "more armour for another champion" that was nothing of the kind,
+  and that stripped that champion when taken. The steal-and-confirm flow is gone with it; there is
+  nothing left to take. The capacity band still counts every piece the chronicle owns.
+- **Upgrading a worn piece** starts from the champion wearing it: the Gear tab's *Upgrade* opens
+  the Armoury bench on that piece (`GearTab`). Without it, hiding worn gear from the racks would
+  have made an equipped piece impossible to level.
+- **The racks are read as sets** (`groupBySet`, `VirtualGrid` sections). *Set* is the sort the
+  Armoury opens on, and each set's pieces run together under a heading carrying the set's crest,
+  its name, `n-piece` and how many are on the racks — so a set being assembled is one block instead
+  of a scatter. Every set already wore its own crest on every card; what was missing was the
+  separation. Any other sort draws one straight grid.
+- **The worn/spare filter chip is gone.** With worn gear off the racks it could only empty them,
+  and the view it set is shared with the Forge's benches, where it would have silently hidden
+  pieces on a screen with no control to undo it.
+- **Q45 answered** (`USER_QUESTIONS.md`): the economy stands as measured — four Ancient Shards in
+  the first week is the intended shape, not an overshoot. `tools/sim/economy-script.ts`'s bands now
+  guard a signed-off shape rather than a provisional one.
+
+### Fixed
+
+- Four documents still pointed at `src/content/tutorial/chapter_<n>.ts`, which the chapter rename
+  had made dead paths (`AGENTS.md`, `CONTENT_AUTHORING.md`, `TUTORIAL.md`, `USER_QUESTIONS.md`).
+
+### Technical
+
+- `VirtualGrid` places its rows at measured offsets instead of counting them off a fixed row
+  height, which is what lets a windowed grid carry heading rows. A grid given a flat `items` list
+  lays out exactly as before — the other three screens that use it are untouched.
+- Save `v13`: the tutorial chapters changed position, so completed step ids are remapped
+  (`migrations.ts`). Skipped chapters are recorded by slug and needed nothing.
 
 ## [0.1.0] — 2026-09-16 — Early Access 0.1
 

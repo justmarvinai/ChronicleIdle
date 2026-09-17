@@ -19,6 +19,14 @@
   left: 0;
   will-change: transform;
 }
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  will-change: transform;
+}
 .empty {
   position: absolute;
   inset: 0;

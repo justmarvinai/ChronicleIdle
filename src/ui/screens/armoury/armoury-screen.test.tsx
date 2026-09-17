@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { INVENTORY_CAPACITY } from '@content/balance/gear';
+import { DEFAULT_GEAR_VIEW } from '@engine/gear/query';
 import type { GearInstance } from '@engine/gear/instance';
 import { useGameStore } from '@state/store';
 import { levelCostTotal } from '@state/gear';
@@ -62,6 +63,29 @@ function chronicle(drops = 6): GearInstance[] {
   return pieces;
 }
 
+/** A piece of a named set, straight onto the racks. */
+function stock(setId: string, serial: number): GearInstance {
+  const piece: GearInstance = {
+    instanceId: `gear-set-${serial}`,
+    slot: 'weapon',
+    setId,
+    rarity: 'epic',
+    stars: 5,
+    level: 0,
+    mainStat: 'atk',
+    subs: [{ stat: 'spd', value: 6, rolls: 1 }],
+    equippedTo: null,
+    locked: false,
+    acquiredAt: Date.UTC(2026, 8, 12) + serial,
+    source: 'campaign_drop',
+  };
+  useGameStore.setState((state) => {
+    if (state.save) state.save.inventory[piece.instanceId] = piece;
+    return state;
+  });
+  return piece;
+}
+
 describe('the Armoury', () => {
   beforeEach(() => void chronicle());
 
@@ -72,6 +96,37 @@ describe('the Armoury', () => {
     expect(screen.getByTestId('gear-detail')).toBeInTheDocument();
     expect(screen.getByTestId('gear-detail-main')).not.toBeEmptyDOMElement();
     expect(screen.getByTestId('armoury-capacity')).toHaveTextContent(`6 / ${INVENTORY_CAPACITY}`);
+  });
+
+  it('racks the pieces set by set, each run under its own crest', async () => {
+    const user = userEvent.setup();
+    // A fresh chronicle, so only the planted pieces are on the racks.
+    const a = actions();
+    a.resetGame();
+    a.newGame('Tester');
+    a.chooseStarter('champ.ser_corvin');
+    a.setGearView({ ...DEFAULT_GEAR_VIEW, filters: { ...DEFAULT_GEAR_VIEW.filters } });
+    stock('gear_set.warcry', 1);
+    stock('gear_set.ember_guard', 2);
+    stock('gear_set.ember_guard', 3);
+
+    render(stage(<ArmouryScreen route={ARMOURY} />));
+    const ember = screen.getByTestId('armoury-set-gear_set.ember_guard');
+    const warcry = screen.getByTestId('armoury-set-gear_set.warcry');
+    expect(ember).toHaveTextContent('Ember Guard');
+    // Its crest, the group size and how many of it are on the racks.
+    expect(within(ember).getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    expect(ember).toHaveTextContent('2-piece');
+    expect(ember).toHaveTextContent('2');
+    expect(warcry).toHaveTextContent('Warcry');
+    // Sets run in name order, so a set being assembled is one block rather than a scatter.
+    expect(ember.compareDocumentPosition(warcry) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    // Any other sort is one straight grid: a heading per set would fight the order.
+    await user.click(screen.getByRole('combobox', { name: 'Sort' }));
+    await user.click(screen.getByRole('option', { name: 'Power' }));
+    expect(screen.queryByTestId('armoury-set-gear_set.ember_guard')).not.toBeInTheDocument();
+    expect(screen.getByTestId('gear-count')).toHaveTextContent('3 of 3');
   });
 
   it('filters the racks by slot and clears the filter again', async () => {

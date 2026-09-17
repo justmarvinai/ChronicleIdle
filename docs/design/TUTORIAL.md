@@ -84,8 +84,10 @@ one spotlighted action.
 
 ## Data shape
 
-**As shipped (0.0.14).** The script lives in `src/content/tutorial/chapter_1..6.ts` (35 steps) and
-is validated with everything else by `pnpm content:validate`; the overlay is
+**As shipped (0.0.14).** The script lives in `src/content/tutorial/`, one file per chapter named
+for it (`awakening`, `the_path`, `the_hold`, `the_binding`, `routine`, `steel_and_bone`; 35 steps)
+with `index.ts` holding the order, and is validated with everything else by
+`pnpm content:validate`; the overlay is
 `src/ui/tutorial/TutorialOverlay.tsx` and the step machine `src/engine/tutorial/script.ts`.
 
 

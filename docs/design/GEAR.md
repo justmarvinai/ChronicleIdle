@@ -128,11 +128,18 @@ Returns materials by rarity: Common 2 Scrap; Uncommon 4 Scrap; Rare 6 Scrap + 2 
 
 - Capacity 400 pieces (Q in `USER_QUESTIONS.md`); warnings at 90 %; drops beyond capacity go to a
   temporary overflow (20) with a "manage inventory" prompt.
-- Filters: slot, set, rarity, stars, main stat, substat, equipped/unequipped, locked.
-  Sort: power, level, rarity, stars, newest.
+- **A piece lives in one place.** The racks hold what nobody is wearing; a worn piece shows on its
+  champion's Gear tab, and *Upgrade* there opens the Armoury bench on it. Listing worn gear in both
+  read as an armoury twice its real size, and every such piece was one that could not be taken.
+- Filters: slot, set, rarity, stars, main stat, locked. Sort: set, power, level, rarity, stars,
+  newest.
+- **Grouped by set**, which is the sort the racks open on: each set's pieces run together under a
+  heading with the set's crest, its name, how many pieces a complete group takes and how many are
+  on the racks. Any other sort draws one straight grid. Sets run in name order; within a set the
+  best piece leads (rarity, then stars, then level).
 - Lock toggle protects from dismantle and refine.
-- Equip flow: from champion screen slot → filtered list → compare panel (before/after stats,
-  set completion delta) → equip; swapping from another champion asks for confirmation.
+- Equip flow: from champion screen slot → the slot's spare pieces → compare panel (before/after
+  stats, set completion delta) → equip. Nothing here is on another champion, so nothing is taken.
 - Gear piece card: frame by rarity, star row, level badge, main stat, substats, set icon, slot glyph.
 
 ## 8. Gear instance data

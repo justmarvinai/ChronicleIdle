@@ -8,7 +8,7 @@ import type { ChampionInstance, Roster } from '@engine/champions/instance';
 import type { GearInstance, Inventory } from './instance';
 import { piecePower } from './stats';
 
-export const GEAR_SORTS = ['power', 'level', 'rarity', 'stars', 'recent'] as const;
+export const GEAR_SORTS = ['set', 'power', 'level', 'rarity', 'stars', 'recent'] as const;
 export type GearSort = (typeof GEAR_SORTS)[number];
 
 export interface GearFilters {
@@ -19,8 +19,6 @@ export interface GearFilters {
   /** Lowest star rank shown; 0 means every piece. */
   minStars: number;
   mainStats: GearStat[];
-  /** `null` = worn and spare alike. */
-  worn: boolean | null;
   locked: boolean | null;
 }
 
@@ -31,9 +29,11 @@ export interface GearView {
 }
 
 export const DEFAULT_GEAR_VIEW: GearView = {
-  sort: 'power',
-  descending: true,
-  filters: { slots: [], rarities: [], sets: [], minStars: 0, mainStats: [], worn: null, locked: null },
+  // The racks open grouped by set, the way a collector reads them: every Ember Guard piece
+  // together, so a set being assembled is visible rather than scattered (the owner's first batch).
+  sort: 'set',
+  descending: false,
+  filters: { slots: [], rarities: [], sets: [], minStars: 0, mainStats: [], locked: null },
 };
 
 export interface GearEntry {
@@ -65,7 +65,6 @@ export function matchesGearFilters(entry: GearEntry, filters: GearFilters): bool
   if (filters.sets.length && !filters.sets.includes(piece.setId)) return false;
   if (filters.minStars > 0 && piece.stars < filters.minStars) return false;
   if (filters.mainStats.length && !filters.mainStats.includes(piece.mainStat)) return false;
-  if (filters.worn !== null && (piece.equippedTo !== null) !== filters.worn) return false;
   if (filters.locked !== null && piece.locked !== filters.locked) return false;
   return true;
 }
@@ -88,6 +87,10 @@ export function compareGearEntries(a: GearEntry, b: GearEntry, sort: GearSort, d
 
 function primaryKey(a: GearEntry, b: GearEntry, sort: GearSort): number {
   switch (sort) {
+    // Ids are `gear_set.<slug>`, so comparing them groups each set's pieces together and keeps the
+    // groups in a stable order without the engine having to read the set's display name.
+    case 'set':
+      return a.piece.setId.localeCompare(b.piece.setId);
     case 'power':
       return a.power - b.power;
     case 'level':
@@ -124,4 +127,28 @@ export const inArmoury = (entry: GearEntry): boolean => entry.piece.equippedTo =
  */
 export function equipCandidates(entries: readonly GearEntry[], slot: GearSlot): GearEntry[] {
   return entries.filter((entry) => entry.piece.slot === slot && inArmoury(entry));
+}
+
+/** One set's pieces, in the order the sort put them. */
+export interface GearSetGroup {
+  setId: string;
+  entries: GearEntry[];
+}
+
+/**
+ * The racks cut into one run per set, the way a collector reads them (the owner's first batch):
+ * every Ember Guard piece together, under its own crest, so a set half-assembled is visible at a
+ * glance instead of scattered down the grid.
+ *
+ * Sets appear in the order their first piece does, so the chosen sort still decides the shape of
+ * the page; on the `set` sort — the racks' default — that is one contiguous run each.
+ */
+export function groupBySet(entries: readonly GearEntry[]): GearSetGroup[] {
+  const groups = new Map<string, GearSetGroup>();
+  for (const entry of entries) {
+    const group = groups.get(entry.piece.setId);
+    if (group) group.entries.push(entry);
+    else groups.set(entry.piece.setId, { setId: entry.piece.setId, entries: [entry] });
+  }
+  return [...groups.values()];
 }

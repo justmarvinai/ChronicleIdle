@@ -345,8 +345,8 @@ differently than written and are recorded rather than glossed: "Lighthouse ≥ 9
 accessibility, SEO and the paint budgets instead of the performance category, which cannot describe
 a permanently animating canvas (Q46); and the VPS and Vercel deploys need one real run on the
 owner's infrastructure, which this container does not have (`DEPLOYMENT.md` §4.1). The owner's
-improvements list is empty; the generosity of the economy is deferred to the fine-tuning pass as
-Q45.
+improvements list was empty at the release; their first pass over the built game followed it and
+shipped as `0.1.1` (see below).
 
 **Goal.** Turn the feature-complete game into the release.
 
@@ -359,6 +359,17 @@ with the guide followed literally; `CHANGELOG.md` release notes; tag `0.1.0`.
 **Acceptance criteria**: every EA-0.1 feature of the brief demonstrated in one recorded
 walkthrough; zero known blocking bugs; all CI green; Lighthouse ≥ 90; the owner's "improvements"
 list from the check-ins is empty or explicitly deferred to the backlog.
+
+---
+
+## After EA-0.1 — the fine-tuning pass
+
+The owner asked for fine-tuning once every feature was in. It runs as patch releases off `0.1.0`,
+one batch of the owner's notes at a time, each with its own `CHANGELOG.md` entry.
+
+| Batch | Shipped | What it covered |
+| --- | --- | --- |
+| First | `0.1.1` | The Chronicler's Path from level 1 and taught right after the first stand; worn gear off the racks and upgradeable from its champion; the racks grouped by set under each set's crest; Q45 answered — the economy stands as measured |
 
 ---
 

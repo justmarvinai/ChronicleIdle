@@ -7,6 +7,7 @@ import {
   DEFAULT_GEAR_VIEW,
   compareGearEntries,
   equipCandidates,
+  groupBySet,
   inArmoury,
   gearEntries,
   matchesGearFilters,
@@ -56,7 +57,7 @@ describe('the armoury query', () => {
     expect(entry?.wearer).toBeNull();
   });
 
-  it('filters by slot, rarity, set, stars, worn and locked', () => {
+  it('filters by slot, rarity, set, stars, main stat and locked', () => {
     const entry: GearEntry = {
       piece: piece(4, { equippedTo: 'champion-1', locked: true }),
       power: 100,
@@ -70,8 +71,6 @@ describe('the armoury query', () => {
     expect(matchesGearFilters(entry, { ...filters, sets: ['gear_set.ironhide'] })).toBe(false);
     expect(matchesGearFilters(entry, { ...filters, minStars: 5 })).toBe(false);
     expect(matchesGearFilters(entry, { ...filters, minStars: 4 })).toBe(true);
-    expect(matchesGearFilters(entry, { ...filters, worn: false })).toBe(false);
-    expect(matchesGearFilters(entry, { ...filters, worn: true })).toBe(true);
     expect(matchesGearFilters(entry, { ...filters, locked: false })).toBe(false);
     expect(matchesGearFilters(entry, { ...filters, mainStats: ['spd'] })).toBe(false);
     expect(matchesGearFilters(entry, { ...filters, mainStats: ['atk'] })).toBe(true);
@@ -90,7 +89,7 @@ describe('the armoury query', () => {
 
   it('orders a whole armoury by power, best first', () => {
     const entries = gearEntries(armoury([piece(8), piece(9), piece(10)]), {} as Roster);
-    const sorted = sortAndFilterGear(entries, DEFAULT_GEAR_VIEW);
+    const sorted = sortAndFilterGear(entries, { ...DEFAULT_GEAR_VIEW, sort: 'power', descending: true });
     expect(sorted).toHaveLength(3);
     for (let i = 1; i < sorted.length; i += 1)
       expect(sorted[i - 1]!.power).toBeGreaterThanOrEqual(sorted[i]!.power);
@@ -110,6 +109,21 @@ describe('the armoury query', () => {
     // Neither the champion's own piece nor another champion's: offering the latter is what made the
     // picker look fuller than the armoury was, and taking it would have stripped them silently.
     expect(candidates.map((e) => e.piece.instanceId)).toEqual([spare.instanceId]);
+  });
+
+  it('opens the racks grouped by set, every piece of one under one crest', () => {
+    const ember = { ...piece(31), setId: 'gear_set.ember_guard', instanceId: 'gear-31' };
+    const warcry = { ...piece(32), instanceId: 'gear-32' };
+    const ember2 = { ...piece(33), setId: 'gear_set.ember_guard', instanceId: 'gear-33' };
+    const entries = gearEntries(armoury([ember, warcry, ember2]), {} as Roster);
+    const groups = groupBySet(sortAndFilterGear(entries, DEFAULT_GEAR_VIEW));
+    expect(groups.map((g) => g.setId)).toEqual(['gear_set.ember_guard', 'gear_set.warcry']);
+    expect(groups[0]?.entries.map((e) => e.piece.instanceId).sort()).toEqual(['gear-31', 'gear-33']);
+    expect(groups[1]?.entries).toHaveLength(1);
+    // Nothing is dropped and nothing is doubled, whatever the sort.
+    const byPower = groupBySet(sortAndFilterGear(entries, { ...DEFAULT_GEAR_VIEW, sort: 'power' }));
+    expect(byPower.flatMap((g) => g.entries)).toHaveLength(3);
+    expect(new Set(byPower.map((g) => g.setId)).size).toBe(2);
   });
 
   it('keeps worn pieces out of the armoury and leaves the rest', () => {
