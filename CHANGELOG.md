@@ -47,6 +47,10 @@ Four changes from the owner's first pass over Early Access 0.1, and the answer t
 
 - Four documents still pointed at `src/content/tutorial/chapter_<n>.ts`, which the chapter rename
   had made dead paths (`AGENTS.md`, `CONTENT_AUTHORING.md`, `TUTORIAL.md`, `USER_QUESTIONS.md`).
+- `tests/e2e/tutorial.spec.ts` still named the Path's lesson by its old position (`tut.5.1`,
+  "Chapter 5"). The game was right and the test was stale — the skip fixture resumes on the Path's
+  chapter exactly as it should, migrated ids and all — but it is the one check that proves it, so
+  it failed until it was told where the chapter went.
 
 ### Technical
 

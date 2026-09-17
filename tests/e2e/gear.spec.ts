@@ -19,8 +19,11 @@ test.describe('gear', () => {
     await expect(page.getByTestId('gear-count')).toContainText('12 of 12');
     await expect(page.getByTestId('armoury-capacity')).toContainText('12 / 400');
     await expect(page.getByTestId('gear-detail')).toBeVisible();
-    // The racks read as sets: every piece of one under its crest (the owner's first batch).
-    await expect(page.getByTestId('armoury-set-gear_set.warcry')).toContainText('Warcry');
+    // The racks read as sets: each run under its own crest, sets in name order (the owner's first
+    // batch). Only the headings near the top are in the DOM — the grid is windowed.
+    const sets = page.locator('[data-testid^="armoury-set-"]');
+    await expect(sets.first()).toContainText('Ember Guard');
+    await expect(sets.first()).toContainText('2 on the racks');
 
     // Upgrading: four levels for the price the button quotes, and the roll at +4.
     await expect(page.getByTestId('gear-detail-level')).toHaveText('+0');

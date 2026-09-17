@@ -188,11 +188,12 @@ test.describe('the tutorial', () => {
     const problems = collectConsole(page);
     await importChronicleFile(page, SKIP_SAVE);
 
-    // The chronicle stands at the Hall with the Path's lesson open.
-    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.5.1', {
+    // The chronicle stands at the Hall with the Path's lesson open. The Path is chapter 2 now:
+    // the missions open at level 1, so Eldric names them straight after the first stand.
+    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.2.1', {
       timeout: 30_000,
     });
-    await expect(page.getByTestId('tutorial-lesson')).toContainText('Chapter 5');
+    await expect(page.getByTestId('tutorial-lesson')).toContainText('Chapter 2');
 
     // A reload resumes the lesson it was on, because the lesson is a fact about the save.
     await page.reload();
@@ -204,7 +205,7 @@ test.describe('the tutorial', () => {
     const welcome = page.getByTestId('dialog-welcome-back');
     if (await welcome.isVisible()) await welcome.getByRole('button', { name: 'Continue' }).click();
     await expect(welcome).toBeHidden();
-    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.5.1', {
+    await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.2.1', {
       timeout: 30_000,
     });
     await page.getByTestId('tutorial-skip').click();
