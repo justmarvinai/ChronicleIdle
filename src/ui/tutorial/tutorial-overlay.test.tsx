@@ -131,23 +131,20 @@ describe('the tutorial overlay', () => {
     await screen.findByTestId('tutorial-overlay');
     expect(screen.queryByTestId('tutorial-skip')).toBeNull();
 
-    // Chapter 2, at the level that opens it: the skip is there, and it ends the chapter.
+    // Chapter 2 — the Path — opens at level 1 with everything else still shut, so the skip is
+    // there, it ends that chapter, and nothing steps up behind it.
     act(() => {
       const a = actions();
       for (const step of content.tutorialChapters[0]?.steps ?? []) a.completeTutorialStep(step.id);
-      useGameStore.setState((state) => {
-        if (state.save) state.save.profile.level = 2;
-        return state;
-      });
       a.resetStack({ name: 'hub' });
     });
     expect((await screen.findByTestId('tutorial-overlay')).dataset['step']).toBe('tut.2.1');
     await user.click(screen.getByTestId('tutorial-skip'));
-    expect(tutorial().skippedChapters).toEqual(['tut.the_hold']);
+    expect(tutorial().skippedChapters).toEqual(['tut.the_path']);
     // The panel fades out, so it leaves the DOM a beat later.
     await waitFor(() => expect(screen.queryByTestId('tutorial-overlay')).toBeNull());
     // Skipping cost nothing: the chapter's own Provision is still handed over.
-    expect(save()?.provisionsClaimed).toContain('tutorial.the_hold');
+    expect(save()?.provisionsClaimed).toContain('tutorial.the_path');
   });
 
   it('says nothing once every chapter is walked or waved off', async () => {

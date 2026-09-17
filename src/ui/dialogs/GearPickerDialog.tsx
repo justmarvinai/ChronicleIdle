@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { playSfx } from '@audio/index';
-import type { ChampionId, GearSlot } from '@content/champions/types';
+import type { GearSlot } from '@content/champions/types';
 import { content } from '@content/registry';
 import { wornBy } from '@engine/gear/equip';
 import { DEFAULT_GEAR_VIEW, equipCandidates, gearEntries, sortAndFilterGear } from '@engine/gear/query';
@@ -30,8 +30,12 @@ export interface GearPickerDialogProps {
 }
 
 /**
- * The equip flow (docs/design/GEAR.md §7): the racks filtered to one slot, a before/after panel
- * for the piece under the cursor, and a confirmation when the piece is on somebody else.
+ * The equip flow (docs/design/GEAR.md §7): the racks filtered to one slot, and a before/after panel
+ * for the piece under the cursor.
+ *
+ * There is no "take it from somebody" confirmation any more, because there is nothing to take: the
+ * picker only offers pieces no champion is wearing (the owner's first batch). What used to be
+ * offered here made the armoury look twice its real size.
  */
 export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialogProps) {
   const actions = useGameStore(selectActions);
@@ -39,22 +43,19 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
   const inventory = useGameStore(selectInventory);
   const view = useGameStore(selectGearView);
   const [chosenId, setChosen] = useState<string | null>(null);
-  const [confirming, setConfirming] = useState(false);
 
   const champion = roster[instanceId];
   const def = champion ? content.championById(champion.defId) : undefined;
   const worn = useMemo(() => (champion ? wornBy(champion, inventory) : []), [champion, inventory]);
   const candidates = useMemo(() => {
-    const entries = equipCandidates(gearEntries(inventory, roster), slot, instanceId);
+    const entries = equipCandidates(gearEntries(inventory, roster), slot);
     // The racks' own sort, none of their filters: a picker that hides a candidate is a trap.
     return sortAndFilterGear(entries, { ...view, filters: DEFAULT_GEAR_VIEW.filters });
-  }, [inventory, roster, slot, instanceId, view]);
+  }, [inventory, roster, slot, view]);
 
   const chosen = chosenId ? (candidates.find((e) => e.piece.instanceId === chosenId) ?? null) : null;
   const replaced = worn.find((piece) => piece.slot === slot) ?? null;
   const compare = champion && def ? compareEquip(def, champion, worn, slot, chosen?.piece ?? null) : null;
-  const takenFrom = chosen?.wearer ?? null;
-  const takenFromName = takenFrom ? nameOf(takenFrom.defId) : null;
 
   const equip = (): void => {
     if (!chosen) return;
@@ -102,10 +103,7 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
                       size={128}
                       selected={chosenId === entry.piece.instanceId}
                       locked={entry.piece.locked}
-                      onClick={() => {
-                        setChosen(entry.piece.instanceId);
-                        setConfirming(false);
-                      }}
+                      onClick={() => setChosen(entry.piece.instanceId)}
                     />
                   );
                 })}
@@ -161,29 +159,9 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
       </div>
 
       <footer className={styles.footer}>
-        {confirming && takenFromName ? (
-          <>
-            <span className={styles.confirmText} role="alert">
-              {t('gearPicker.takeConfirm', { name: takenFromName })}
-            </span>
-            <Button variant="secondary" size="md" onClick={() => setConfirming(false)}>
-              {t('gearPicker.keep')}
-            </Button>
-            <Button variant="primary" size="md" onClick={equip} data-testid="gear-take-confirm">
-              {t('gearPicker.takeYes')}
-            </Button>
-          </>
-        ) : (
-          <Button
-            variant="primary"
-            size="lg"
-            disabled={!chosen}
-            onClick={() => (takenFromName ? setConfirming(true) : equip())}
-            data-testid="gear-equip"
-          >
-            {takenFromName ? t('gearPicker.take', { name: takenFromName }) : t('gearPicker.equip')}
-          </Button>
-        )}
+        <Button variant="primary" size="lg" disabled={!chosen} onClick={equip} data-testid="gear-equip">
+          {t('gearPicker.equip')}
+        </Button>
       </footer>
     </Dialog>
   );
@@ -193,9 +171,4 @@ function sign(delta: number): 'up' | 'down' | 'flat' {
   if (delta > 0) return 'up';
   if (delta < 0) return 'down';
   return 'flat';
-}
-
-function nameOf(defId: ChampionId): string {
-  const def = content.championById(defId);
-  return def ? translate(def.name) : defId;
 }

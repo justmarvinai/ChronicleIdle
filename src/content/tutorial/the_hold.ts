@@ -1,12 +1,12 @@
 /**
- * Chapter 2 — The Hold (docs/design/TUTORIAL.md §2): the Tavern at level 2, gear at level 3. Two
+ * Chapter 3 — The Hold (docs/design/TUTORIAL.md §2): the Tavern at level 2, gear at level 3. Two
  * lessons in one chapter, each waiting on the unlock that makes it true.
  */
 import { chapter, provision, step } from './dsl';
 
 export default chapter({
   slug: 'the_hold',
-  index: 2,
+  index: 3,
   trigger: { type: 'feature', feature: 'tavern_level' },
   steps: [
     // 2.1 — the Tavern.

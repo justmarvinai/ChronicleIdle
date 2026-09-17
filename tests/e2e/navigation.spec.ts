@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { closeDialog, openSettingsTab, settle, startChronicle } from './helpers';
 
+/** The Hall is absent on purpose: the missions open at level 1 and guide the player from there. */
 const LOCKED_HOTSPOTS: Record<string, RegExp> = {
   portal: /level 4/,
   tavern: /level 2/,
   forge: /level 8/,
-  hall: /level 6/,
   market: /later chapter/,
   idle: /level 5/,
 };

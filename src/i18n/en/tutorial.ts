@@ -38,31 +38,31 @@ export const tutorial = {
   'tut.1.11.text':
     'A Chronicler marches on full provisions. Take these — five hundred measures of energy — and do not ration them; more comes every minute.',
 
-  // Chapter 2 — The Hold
-  'tut.2.1.text': 'Your champions grow with drink and company. Visit the Tavern.',
-  'tut.2.2.text': 'Choose the champion to raise.',
-  'tut.2.3.text': 'Brews are distilled experience. A brew of the champion’s own element runs stronger.',
-  'tut.2.4.text': 'Now — raise them.',
-  'tut.2.5.text': 'Steel wins wars. Let us arm your champion.',
-  'tut.2.6.text': 'Every champion wears six pieces. Begin with the weapon.',
-  'tut.2.7.text': 'This one fell at Thornwood. Compare, then equip.',
-  'tut.2.8.text': 'Gold sharpens steel. Raise it once.',
-
-  // Chapter 3 — The Binding
-  'tut.3.1.text': 'The Portal reads the shards. I kept one Ancient Shard for this moment.',
-  'tut.3.2.text': 'Place it. Watch the colour — it tells the rarity before the page turns.',
-  'tut.3.3.text': 'A new name in your chronicle. Add them to your team before the next stand.',
-
-  // Chapter 4 — Routine
-  'tut.4.1.text': 'Each day brings its duties, each week its labours. Fulfil them and the chests open.',
-  'tut.4.2.text': 'This one is already done. Claim it.',
-  'tut.4.3.text':
-    'While you are away, Emberhold works for you. The chest fills with time — until it is full. Do not let it overflow.',
-
-  // Chapter 5 — The Path
-  'tut.5.1.text':
+  // Chapter 2 — The Path
+  'tut.2.1.text':
     'I have written you a path — one hundred and twenty pages of it. Walk it, and at its end I will fight beside you.',
-  'tut.5.2.text': 'Claim what you have already earned.',
+  'tut.2.2.text': 'Claim what you have already earned.',
+
+  // Chapter 3 — The Hold
+  'tut.3.1.text': 'Your champions grow with drink and company. Visit the Tavern.',
+  'tut.3.2.text': 'Choose the champion to raise.',
+  'tut.3.3.text': 'Brews are distilled experience. A brew of the champion’s own element runs stronger.',
+  'tut.3.4.text': 'Now — raise them.',
+  'tut.3.5.text': 'Steel wins wars. Let us arm your champion.',
+  'tut.3.6.text': 'Every champion wears six pieces. Begin with the weapon.',
+  'tut.3.7.text': 'This one fell at Thornwood. Compare, then equip.',
+  'tut.3.8.text': 'Gold sharpens steel. Raise it once.',
+
+  // Chapter 4 — The Binding
+  'tut.4.1.text': 'The Portal reads the shards. I kept one Ancient Shard for this moment.',
+  'tut.4.2.text': 'Place it. Watch the colour — it tells the rarity before the page turns.',
+  'tut.4.3.text': 'A new name in your chronicle. Add them to your team before the next stand.',
+
+  // Chapter 5 — Routine
+  'tut.5.1.text': 'Each day brings its duties, each week its labours. Fulfil them and the chests open.',
+  'tut.5.2.text': 'This one is already done. Claim it.',
+  'tut.5.3.text':
+    'While you are away, Emberhold works for you. The chest fills with time — until it is full. Do not let it overflow.',
 
   // Chapter 6 — Steel and Bone
   'tut.6.1.text':

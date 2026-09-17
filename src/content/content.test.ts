@@ -157,10 +157,11 @@ describe('content registry', () => {
     expect(first?.steps).toHaveLength(11);
     // Every other chapter opens with the feature it teaches, in unlock order, and can be skipped.
     expect(content.tutorialChapters.slice(1).map((chapter) => chapter.trigger)).toEqual([
+      // The Path comes first of the rest: the missions open at level 1 and are the guide.
+      { type: 'feature', feature: 'missions' },
       { type: 'feature', feature: 'tavern_level' },
       { type: 'feature', feature: 'summoning' },
       { type: 'feature', feature: 'quests_daily' },
-      { type: 'feature', feature: 'missions' },
       { type: 'feature', feature: 'tavern_rank' },
     ]);
     for (const chapter of content.tutorialChapters.slice(1)) expect(chapter.skippable, chapter.id).toBe(true);
@@ -189,7 +190,7 @@ describe('content registry', () => {
       'tut.1.5',
     ]);
     expect(content.tutorialSteps.filter((step) => step.script === 'summon').map((s) => s.id)).toEqual([
-      'tut.3.2',
+      'tut.4.2',
     ]);
     expect(content.tutorialStepById('tut.1.6')?.complete).toEqual({ type: 'ability_used', slot: 'a1' });
   });

@@ -51,7 +51,9 @@ describe('level rewards (ECONOMY.md §4)', () => {
     expect(amount(merged, 'gems')).toBe(LEVEL_GEMS_AMOUNT);
     expect(merged.energy).toBe(energyCap(4) + energyCap(5) + energyCap(6));
     expect(merged.unlocks).toContain('summoning');
-    expect(merged.unlocks).toContain('missions');
+    // The missions are not here: they open with the chronicle at level 1, not at 6.
+    expect(merged.unlocks).toContain('quests_daily');
+    expect(merged.unlocks).not.toContain('missions');
     expect(mergeLevelRewards([])).toEqual({ energy: 0, currencies: [], unlocks: [] });
   });
 });

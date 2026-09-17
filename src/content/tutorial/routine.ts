@@ -1,12 +1,12 @@
 /**
- * Chapter 4 — Routine (docs/design/TUTORIAL.md §4): the daily board and the Idle Chest, both at
+ * Chapter 5 — Routine (docs/design/TUTORIAL.md §4): the daily board and the Idle Chest, both at
  * level 5 — the two habits the rest of the chronicle is built on.
  */
 import { chapter, provision, step } from './dsl';
 
 export default chapter({
   slug: 'routine',
-  index: 4,
+  index: 5,
   trigger: { type: 'feature', feature: 'quests_daily' },
   steps: [
     // 4.1 — the ledger.

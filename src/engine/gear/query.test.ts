@@ -7,6 +7,7 @@ import {
   DEFAULT_GEAR_VIEW,
   compareGearEntries,
   equipCandidates,
+  inArmoury,
   gearEntries,
   matchesGearFilters,
   sortAndFilterGear,
@@ -95,16 +96,26 @@ describe('the armoury query', () => {
       expect(sorted[i - 1]!.power).toBeGreaterThanOrEqual(sorted[i]!.power);
   });
 
-  it('offers a slot only pieces of that slot, minus the one already on', () => {
+  it('offers a slot only the spare pieces of that slot, never one someone is wearing', () => {
     const worn = piece(11, { equippedTo: 'champion-1' });
+    const onAnother = piece(14, { equippedTo: 'champion-2' });
     const spare = piece(12);
     const helmet = {
       ...piece(13),
       slot: 'helmet' as const,
       instanceId: 'gear-13',
     };
-    const entries = gearEntries(armoury([worn, spare, helmet]), {} as Roster);
-    const candidates = equipCandidates(entries, 'weapon', 'champion-1');
+    const entries = gearEntries(armoury([worn, onAnother, spare, helmet]), {} as Roster);
+    const candidates = equipCandidates(entries, 'weapon');
+    // Neither the champion's own piece nor another champion's: offering the latter is what made the
+    // picker look fuller than the armoury was, and taking it would have stripped them silently.
     expect(candidates.map((e) => e.piece.instanceId)).toEqual([spare.instanceId]);
+  });
+
+  it('keeps worn pieces out of the armoury and leaves the rest', () => {
+    const worn = piece(21, { equippedTo: 'champion-1' });
+    const spare = piece(22);
+    const entries = gearEntries(armoury([worn, spare]), {} as Roster);
+    expect(entries.filter(inArmoury).map((e) => e.piece.instanceId)).toEqual([spare.instanceId]);
   });
 });

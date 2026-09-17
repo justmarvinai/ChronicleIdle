@@ -19,10 +19,11 @@ export const ENERGY_REFILL_AMOUNT = 100;
  */
 export const ENERGY_PROVISIONS = {
   'tutorial.awakening': 500,
+  // The Path is taught second: the missions open at level 1 and are what guides a new Chronicler.
+  'tutorial.the_path': 250,
   'tutorial.the_hold': 250,
   'tutorial.the_binding': 250,
   'tutorial.routine': 250,
-  'tutorial.the_path': 250,
 } as const satisfies Readonly<Record<string, number>>;
 
 /** The grants above, by id — the tutorial's chapters name one each (`TUTORIAL.md` §Provisions). */

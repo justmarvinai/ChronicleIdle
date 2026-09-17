@@ -79,6 +79,7 @@ export const gear = {
   'champions.gear.equip': 'Equip',
   'champions.gear.change': 'Change',
   'champions.gear.remove': 'Take off',
+  'champions.gear.upgrade': 'Upgrade',
   'champions.gear.sets': 'Set bonuses',
   'champions.gear.sets.none': 'No complete set yet.',
   'champions.gear.sets.count': '{worn} worn',

@@ -107,11 +107,21 @@ export function sortAndFilterGear(entries: readonly GearEntry[], view: GearView)
     .sort((a, b) => compareGearEntries(a, b, view.sort, view.descending));
 }
 
-/** The pieces that may go on a slot: the slot's own, and never one already worn there. */
-export function equipCandidates(
-  entries: readonly GearEntry[],
-  slot: GearSlot,
-  championId: string,
-): GearEntry[] {
-  return entries.filter((entry) => entry.piece.slot === slot && entry.piece.equippedTo !== championId);
+/**
+ * A piece is in the armoury only while nobody is wearing it (the owner's first batch).
+ *
+ * Worn gear used to be listed everywhere, which read as "look how much armour I have" when most of
+ * it was already on someone — and made the racks a list of things you mostly could not take. A
+ * piece now lives in exactly one place: the armoury until it is equipped, then the champion
+ * wearing it, whose rack is also where it is upgraded from.
+ */
+export const inArmoury = (entry: GearEntry): boolean => entry.piece.equippedTo === null;
+
+/**
+ * The pieces that may go on a slot: the slot's own, and only those no champion is wearing. Offering
+ * another champion's gear here is what made the picker look fuller than the armoury really was;
+ * taking it would have stripped that champion silently.
+ */
+export function equipCandidates(entries: readonly GearEntry[], slot: GearSlot): GearEntry[] {
+  return entries.filter((entry) => entry.piece.slot === slot && inArmoury(entry));
 }

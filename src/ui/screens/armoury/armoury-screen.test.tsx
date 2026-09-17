@@ -130,6 +130,20 @@ describe('the Armoury', () => {
     expect(Object.values(save().inventory).every((p) => !p.locked)).toBe(true);
   });
 
+  it('keeps a worn piece off the racks, and still opens it on the bench', () => {
+    const champion = Object.keys(save().roster)[0] as string;
+    const piece = Object.values(save().inventory)[0] as GearInstance;
+    actions().equipGear(champion, piece.instanceId);
+    actions().selectGearPiece(piece.instanceId);
+    render(stage(<ArmouryScreen route={ARMOURY} />));
+    // Five on the racks, six in storage: the sixth is on a champion, not filtered away, and the
+    // capacity band still counts it because it is still the chronicle's (the owner's first batch).
+    expect(screen.getByTestId('gear-count')).toHaveTextContent('5 of 5');
+    expect(screen.getByTestId('armoury-capacity')).toHaveTextContent(`6 / ${INVENTORY_CAPACITY}`);
+    // The bench is where its champion sends it to be upgraded, so it opens there all the same.
+    expect(screen.getByTestId('gear-detail-wearer')).toHaveTextContent('Worn by');
+  });
+
   it('takes a worn piece off from the bench', async () => {
     const user = userEvent.setup();
     const champion = Object.keys(save().roster)[0] as string;

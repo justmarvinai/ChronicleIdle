@@ -125,19 +125,25 @@ describe('the tutorial script', () => {
 
   it('holds the next chapter until the level that opens it', () => {
     const afterOne = { completedSteps: chapter(1).steps.map((s) => s.id), skippedChapters: [] };
-    expect(chapterStatus(chapter(2), afterOne, ctx({ playerLevel: 1 }))).toBe('locked');
-    expect(activeStep(CHAPTERS, afterOne, ctx({ playerLevel: 1, screen: 'hub' }))).toBeNull();
-    expect(chapterStatus(chapter(2), afterOne, ctx({ playerLevel: 2 }))).toBe('open');
-    expect(activeStep(CHAPTERS, afterOne, ctx({ playerLevel: 2, screen: 'hub' }))?.id).toBe('tut.2.1');
-    // Chapter 2's second lesson waits for gear at level 3, even at the Tavern's own level.
-    expect(activeStep(CHAPTERS, upTo('tut.2.5'), ctx({ playerLevel: 2, screen: 'hub' }))).toBeNull();
-    expect(activeStep(CHAPTERS, upTo('tut.2.5'), ctx({ playerLevel: 3, screen: 'hub' }))?.id).toBe('tut.2.5');
+    // The Path follows the Awakening with no wait at all: the missions open at level 1 because
+    // they are what guides the player, not a reward for reaching level 6 (the owner's first batch).
+    expect(chapterStatus(chapter(2), afterOne, ctx({ playerLevel: 1 }))).toBe('open');
+    expect(activeStep(CHAPTERS, afterOne, ctx({ playerLevel: 1, screen: 'hub' }))?.id).toBe('tut.2.1');
+    // The Hold behind it still waits for the Tavern at level 2.
+    const afterPath = upTo('tut.3.1');
+    expect(chapterStatus(chapter(3), afterPath, ctx({ playerLevel: 1 }))).toBe('locked');
+    expect(activeStep(CHAPTERS, afterPath, ctx({ playerLevel: 1, screen: 'hub' }))).toBeNull();
+    expect(chapterStatus(chapter(3), afterPath, ctx({ playerLevel: 2 }))).toBe('open');
+    expect(activeStep(CHAPTERS, afterPath, ctx({ playerLevel: 2, screen: 'hub' }))?.id).toBe('tut.3.1');
+    // The Hold's gear lesson waits for gear at level 3, even at the Tavern's own level.
+    expect(activeStep(CHAPTERS, upTo('tut.3.5'), ctx({ playerLevel: 2, screen: 'hub' }))).toBeNull();
+    expect(activeStep(CHAPTERS, upTo('tut.3.5'), ctx({ playerLevel: 3, screen: 'hub' }))?.id).toBe('tut.3.5');
   });
 
   it('teaches one thing at a time: an unfinished chapter holds the ones behind it', () => {
-    // Level 6 and chapter 2 still half-walked: the Path's lesson waits its turn.
-    const state = upTo('tut.2.5');
-    expect(activeStep(CHAPTERS, state, ctx({ playerLevel: 6, screen: 'missions' }))).toBeNull();
+    // Level 6 and the Hold still half-walked: Routine's lesson waits its turn, open though it is.
+    const state = upTo('tut.3.5');
+    expect(activeStep(CHAPTERS, state, ctx({ playerLevel: 6, screen: 'quests' }))).toBeNull();
     expect(chapterStatus(chapter(5), state, ctx({ playerLevel: 6 }))).toBe('open');
   });
 
@@ -156,10 +162,13 @@ describe('the tutorial script', () => {
 
   it('skips a chapter without leaving the game locked, and still pays what it carried', () => {
     const afterOne = { completedSteps: chapter(1).steps.map((s) => s.id), skippedChapters: [] };
-    const skipped: TutorialState = { ...afterOne, skippedChapters: ['tut.the_hold'] };
-    expect(chapterStatus(chapter(2), skipped, ctx({ playerLevel: 3 }))).toBe('skipped');
+    const skipped: TutorialState = {
+      completedSteps: [...afterOne.completedSteps, ...chapter(2).steps.map((s) => s.id)],
+      skippedChapters: ['tut.the_hold'],
+    };
+    expect(chapterStatus(chapter(3), skipped, ctx({ playerLevel: 3 }))).toBe('skipped');
     // The Binding is next in line the moment its level arrives.
-    expect(activeStep(CHAPTERS, skipped, ctx({ playerLevel: 4, screen: 'hub' }))?.id).toBe('tut.3.1');
+    expect(activeStep(CHAPTERS, skipped, ctx({ playerLevel: 4, screen: 'hub' }))?.id).toBe('tut.4.1');
     // The Hold's 250 energy is still owed, and the id is what keeps it to once.
     const ids = owedGrants(CHAPTERS, skipped, ctx({ playerLevel: 4, screen: 'hub' })).map((g) => g.id);
     expect(ids).toContain('tutorial.the_hold');
@@ -247,7 +256,7 @@ describe('the tutorial script', () => {
     expect(activeStep(CHAPTERS, upTo('tut.1.3'), { ...hub, dialogOpen: true, dialog: null })).toBeNull();
     // A lesson that names the dialog it is taught in is the exception.
     const picker = ctx({ screen: 'champions', dialog: 'gear-picker' });
-    expect(activeStep(CHAPTERS, upTo('tut.2.7'), { ...picker, playerLevel: 3 })?.id).toBe('tut.2.7');
+    expect(activeStep(CHAPTERS, upTo('tut.3.7'), { ...picker, playerLevel: 3 })?.id).toBe('tut.3.7');
   });
 
   it('counts the lesson for the overlay’s label', () => {

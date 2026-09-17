@@ -72,14 +72,12 @@ describe('the Path on the screen', () => {
     expect(view.chapters[1]?.unlocked).toBe(false);
   });
 
-  it('is closed until the chronicle reaches the level that opens it', () => {
-    const c = chronicle({ level: 5 });
-    expect(state(c).unlocked).toBe(false);
-    expect(state(c).unlockLevel).toBe(6);
-    expect(missionsClaimable(save(c), T0)).toBe(0);
-    const refused = c.actions.claimMission('mission.01.01');
-    expect(refused.ok).toBe(false);
-    if (!refused.ok) expect(refused.error.code).toBe('locked');
+  it('is open from the first level, because it is what guides the player', () => {
+    // The owner's first batch: the Path leads a new Chronicler through what the game holds, so it
+    // cannot be a reward for reaching level 6.
+    const c = chronicle({ level: 1 });
+    expect(state(c).unlocked).toBe(true);
+    expect(state(c).unlockLevel).toBe(1);
   });
 });
 

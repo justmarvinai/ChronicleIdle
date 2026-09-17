@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { playSfx } from '@audio/index';
 import { INVENTORY_CAPACITY, INVENTORY_OVERFLOW, INVENTORY_WARN_AT } from '@content/balance/gear';
 import type { GearInstance } from '@engine/gear/instance';
-import { gearEntries, sortAndFilterGear } from '@engine/gear/query';
+import { gearEntries, inArmoury, sortAndFilterGear } from '@engine/gear/query';
 import { t, translate } from '@i18n/index';
 import {
   selectActions,
@@ -48,7 +48,10 @@ export default function ArmouryScreen({ route }: ScreenProps) {
   useSceneAudio('hub', 'interior');
 
   const entries = useMemo(() => gearEntries(inventory, roster), [inventory, roster]);
-  const shown = useMemo(() => sortAndFilterGear(entries, view), [entries, view]);
+  // The racks hold what nobody is wearing. A worn piece still reaches the bench below, by the deep
+  // link its champion's rack uses to send it here for an upgrade.
+  const racked = useMemo(() => entries.filter(inArmoury), [entries]);
+  const shown = useMemo(() => sortAndFilterGear(racked, view), [racked, view]);
 
   // A deep link picks the piece once; afterwards the bench keeps whatever was last chosen.
   useEffect(() => {
@@ -82,7 +85,7 @@ export default function ArmouryScreen({ route }: ScreenProps) {
           view={view}
           onChange={(patch) => actions.setGearView(patch)}
           shown={shown.length}
-          total={entries.length}
+          total={racked.length}
         />
         <VirtualGrid
           items={shown}

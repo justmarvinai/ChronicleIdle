@@ -1,21 +1,25 @@
 /**
  * The tutorial script: six chapters, taught in order (docs/design/TUTORIAL.md).
+ *
+ * Files are named for their chapter, not their number, because the number is a *position* — this
+ * array is where the order lives, and moving a chapter should not rename a file. The Path sits
+ * second: the missions open at level 1 and are what guides the player from the first stand on.
  */
-import chapter_1 from './chapter_1';
-import chapter_2 from './chapter_2';
-import chapter_3 from './chapter_3';
-import chapter_4 from './chapter_4';
-import chapter_5 from './chapter_5';
-import chapter_6 from './chapter_6';
+import awakening from './awakening';
+import the_path from './the_path';
+import the_hold from './the_hold';
+import the_binding from './the_binding';
+import routine from './routine';
+import steel_and_bone from './steel_and_bone';
 import type { TutorialChapterDef, TutorialStepDef } from './types';
 
 export const TUTORIAL_CHAPTERS: readonly TutorialChapterDef[] = [
-  chapter_1,
-  chapter_2,
-  chapter_3,
-  chapter_4,
-  chapter_5,
-  chapter_6,
+  awakening,
+  the_path,
+  the_hold,
+  the_binding,
+  routine,
+  steel_and_bone,
 ];
 
 /** Every step, in script order — for the validator, the i18n check and the overlay's counter. */

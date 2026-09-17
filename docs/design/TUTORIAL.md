@@ -34,7 +34,19 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | 1.10 | Back on map | Stage 1-2 | "Onward. I will speak again when you have earned your second stand." (free play until 1-3 clear) | 1-3 cleared |
 | 1.11 | 1-3 cleared | Energy pill in the top bar | "A Chronicler marches on full provisions. Take these — five hundred measures of energy — and do not ration them; more comes every minute." (**grants 500 Energy**) | Continue |
 
-## Chapter 2 — The Hold (player level 2–3: Tavern, Gear)
+## Chapter 2 — The Path (from the first victory: Missions)
+
+> **Moved.** This chapter used to sit fifth, behind level 6. The missions now open with the
+> chronicle and are taught straight after the Awakening: they are what guides a player through what
+> the game holds, in the role the Arbiter plays in the games this one is in the family of (the
+> owner's first batch of changes).
+
+| Step | Trigger | Spotlight | Dialogue | Completes when |
+| --- | --- | --- | --- | --- |
+| 5.1 | Level 6, on hub | Chronicler's Hall | "I have written you a path — one hundred and twenty pages of it. Walk it, and at its end I will fight beside you." | Missions opened |
+| 5.2 | Missions | Mission 1.1 (already complete) | "Claim what you have already earned." (**grants 250 Energy**) | claimed |
+
+## Chapter 3 — The Hold (player level 2–3: Tavern, Gear)
 
 | Step | Trigger | Spotlight | Dialogue | Completes when |
 | --- | --- | --- | --- | --- |
@@ -47,7 +59,7 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | 2.7 | Gear list | The dropped weapon | "This one fell at Thornwood. Compare, then equip." | equipped |
 | 2.8 | Gear panel | Upgrade (+1) button | "Gold sharpens steel. Raise it once." (**grants 250 Energy** on completion) | gear leveled |
 
-## Chapter 3 — The Binding (level 4: Summoning)
+## Chapter 4 — The Binding (level 4: Summoning)
 
 | Step | Trigger | Spotlight | Dialogue | Completes when |
 | --- | --- | --- | --- | --- |
@@ -55,20 +67,13 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | 3.2 | Portal | Ancient Shard → Summon | "Place it. Watch the colour — it tells the rarity before the page turns." | reveal finished (deterministic Epic) |
 | 3.3 | Reveal | New champion card | "A new name in your chronicle. Add them to your team before the next stand." (**grants 250 Energy**) | Continue |
 
-## Chapter 4 — Routine (level 5: Quests, Idle Chest)
+## Chapter 5 — Routine (level 5: Quests, Idle Chest)
 
 | Step | Trigger | Spotlight | Dialogue | Completes when |
 | --- | --- | --- | --- | --- |
 | 4.1 | Level 5, on hub | Quests button | "Each day brings its duties, each week its labours. Fulfil them and the chests open." | Quests opened |
 | 4.2 | Quests | Login quest claim | "This one is already done. Claim it." | claimed |
 | 4.3 | Hub | Idle Chest at the docks | "While you are away, Emberhold works for you. The chest fills with time — until it is full. Do not let it overflow." (**grants 250 Energy**) | chest opened & claimed |
-
-## Chapter 5 — The Path (level 6: Missions)
-
-| Step | Trigger | Spotlight | Dialogue | Completes when |
-| --- | --- | --- | --- | --- |
-| 5.1 | Level 6, on hub | Chronicler's Hall | "I have written you a path — one hundred and twenty pages of it. Walk it, and at its end I will fight beside you." | Missions opened |
-| 5.2 | Missions | Mission 1.1 (already complete) | "Claim what you have already earned." (**grants 250 Energy**) | claimed |
 
 ## Chapter 6 — Steel and Bone (levels 7–15: Rank-up, Forge, Skills, Bosses)
 

@@ -109,14 +109,18 @@ line), 1 Mythic. Total **23**.
 
 ## 6. Progression map (what unlocks when)
 
+The Path is the exception to the ladder: it opens with the chronicle rather than at a level, because
+it is what tells a new Chronicler what this world holds and in what order to reach for it — the
+Arbiter's role in the games this one is in the family of. The tutorial teaches it second, straight
+after the first stand.
+
 | Player level | Unlock |
 | --- | --- |
-| 1 | Campaign (Intro), Champions, battle speeds ×1/×2 |
+| 1 | Campaign (Intro), Champions, **The Chronicler's Path (missions)**, battle speeds ×1/×2 |
 | 2 | Tavern (level up) |
 | 3 | Gear (equip/upgrade) |
 | 4 | Summoning Portal |
 | 5 | Daily Quests, Idle Chest |
-| 6 | The Chronicler's Path (missions) |
 | 7 | Tavern: Rank up |
 | 8 | Forge (crafting, dismantle) |
 | 9 | Tavern: Skill upgrades |

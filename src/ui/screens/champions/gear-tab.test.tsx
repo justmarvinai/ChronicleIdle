@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
-import { content } from '@content/registry';
 import { DEFAULT_GEAR_VIEW } from '@engine/gear/query';
 import type { GearInstance } from '@engine/gear/instance';
 import { useGameStore } from '@state/store';
@@ -144,26 +143,42 @@ describe('the champion Gear tab', () => {
     expect(powered).toBeGreaterThan(bare);
   });
 
-  it('asks before taking a piece off another champion', async () => {
+  it('never offers a piece another champion is wearing', async () => {
     const user = userEvent.setup();
     const other = Object.keys(save().roster).find((id) => id !== starter()) as string;
-    const piece = stock('weapon', 'gear_set.warcry', 4);
-    actions().equipGear(other, piece.instanceId);
-    const otherName = content.championById(save().roster[other]!.defId)?.name ?? '';
-    expect(otherName).not.toBe('');
+    // Distinct serials: `stock` keys the piece by serial, so a shared one would silently be the
+    // same piece and the test would pass without proving anything.
+    const worn = stock('weapon', 'gear_set.warcry', 41);
+    actions().equipGear(other, worn.instanceId);
+    const spare = stock('weapon', 'gear_set.swiftfoot', 42);
 
     openGearTab(starter());
     await user.click(within(screen.getByTestId('gear-slot-weapon')).getByRole('button'));
     const picker = await screen.findByTestId('dialog-gear-picker');
-    await user.click(within(picker).getAllByRole('button', { name: /Warcry/ })[0] as HTMLElement);
 
-    // The button now offers to take it, and the press only asks; nothing moves yet.
+    // Only the spare is on offer. The other champion's weapon used to be listed here, which read
+    // as a bigger armoury than the chronicle had and stripped them when taken (owner's batch).
+    expect(within(picker).queryAllByRole('button', { name: /Warcry/ })).toHaveLength(0);
+    const offered = within(picker).getAllByRole('button', { name: /Swiftfoot/ });
+    expect(offered.length).toBeGreaterThan(0);
+    await user.click(offered[0] as HTMLElement);
     await user.click(screen.getByTestId('gear-equip'));
-    expect(save().roster[other]?.gear.weapon).toBe(piece.instanceId);
 
-    await user.click(screen.getByTestId('gear-take-confirm'));
-    expect(save().roster[other]?.gear.weapon).toBeNull();
-    expect(save().roster[starter()]?.gear.weapon).toBe(piece.instanceId);
+    expect(save().roster[starter()]?.gear.weapon).toBe(spare.instanceId);
+    // And the other champion still has theirs.
+    expect(save().roster[other]?.gear.weapon).toBe(worn.instanceId);
+  });
+
+  it('sends a worn piece to the bench, because the armoury no longer lists it', async () => {
+    const user = userEvent.setup();
+    const piece = stock('chestplate', 'gear_set.ironhide', 43);
+    actions().equipGear(starter(), piece.instanceId);
+    openGearTab(starter());
+    await user.click(screen.getByTestId('gear-upgrade-chestplate'));
+    // The Armoury opens on that piece: upgrading happens at its bench, reached from the champion
+    // it is being upgraded for.
+    const route = useGameStore.getState().ui.stack.at(-1);
+    expect(route).toEqual({ name: 'armoury', pieceId: piece.instanceId });
   });
 
   it('takes a piece off from the slot itself', async () => {

@@ -33,7 +33,7 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
   summoning: 4,
   quests_daily: 5,
   idle_chest: 5,
-  missions: 6,
+  missions: 1,
   tavern_rank: 7,
   forge: 8,
   tavern_skills: 9,

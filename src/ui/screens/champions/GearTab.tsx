@@ -97,6 +97,20 @@ export function GearTab({ entry }: GearTabProps) {
                   >
                     {t('champions.gear.remove')}
                   </button>
+                  <button
+                    type="button"
+                    className={styles.remove}
+                    data-testid={`gear-upgrade-${slot}`}
+                    onMouseEnter={() => playSfx('ui.hover')}
+                    onClick={() => {
+                      // Worn gear is not in the armoury any more, so its bench is reached from
+                      // here — from the champion it is being upgraded for.
+                      playSfx('ui.open');
+                      actions.push({ name: 'armoury', pieceId: piece.instanceId });
+                    }}
+                  >
+                    {t('champions.gear.upgrade')}
+                  </button>
                 </>
               ) : (
                 <span className={styles.slotEmpty}>{t('champions.gear.empty')}</span>

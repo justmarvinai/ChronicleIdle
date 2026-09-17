@@ -209,7 +209,43 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       };
     },
   },
+  {
+    from: 12,
+    to: 13,
+    /*
+     * The missions open at level 1 (the owner's first batch), so the Path is taught second rather
+     * than fifth and the three chapters it overtook each moved down one. A step's id carries its
+     * chapter number — `tut.<chapter>.<index>` — so ids written before the move now name a
+     * different lesson, and a chronicle that had been taught the Tavern would read as having been
+     * taught the Path.
+     *
+     * Chapter ids are slugs (`tut.the_hold`), so `skippedChapters` is untouched; only the step ids
+     * rotate, and only for the four chapters that moved.
+     */
+    migrate: (raw) => {
+      const tutorial = (raw['tutorial'] ?? {}) as { completedSteps?: unknown; skippedChapters?: unknown };
+      const steps = Array.isArray(tutorial.completedSteps) ? tutorial.completedSteps : [];
+      const moved = steps.map((id) => {
+        if (typeof id !== 'string') return id;
+        const match = /^tut\.(\d)\.(\d{1,2})$/.exec(id);
+        const chapter = match ? Number(match[1]) : null;
+        const to = chapter === null ? null : (CHAPTER_MOVES[chapter] ?? null);
+        return to === null || !match ? id : `tut.${to}.${match[2]}`;
+      });
+      return {
+        ...raw,
+        saveVersion: 13,
+        tutorial: { ...tutorial, completedSteps: moved },
+      };
+    },
+  },
 ];
+
+/**
+ * Where each tutorial chapter went when the Path moved to second place. Chapters 1 and 6 did not
+ * move, so they are absent and their ids are left alone.
+ */
+const CHAPTER_MOVES: Readonly<Record<number, number>> = { 2: 3, 3: 4, 4: 5, 5: 2 };
 
 export interface MigrationResult {
   save: SaveGame;

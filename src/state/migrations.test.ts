@@ -40,7 +40,9 @@ describe('migrateSave', () => {
     expect(result.save.wallet.gems).toBe(150);
     expect(result.save.wallet.gold).toBe(3_275);
     expect(result.save.energy).toEqual({ value: 42, lastTickAt: 1_757_603_540_000 });
-    expect(result.save.provisionsClaimed).toEqual(['tutorial.awakening']);
+    // The Path opens at level 1 now, so a chronicle older than the tutorial has waved that off too
+    // and is not owed its Provision a second time.
+    expect(result.save.provisionsClaimed).toEqual(['tutorial.awakening', 'tutorial.the_path']);
     expect(result.save.settings.reducedMotion).toBe(true);
     expect(result.save.settings.launchFullscreen).toBe(false);
     expect(result.save.stats).toEqual({ playtime_ms: 3_600_000, hub_visits: 4 });
@@ -281,10 +283,10 @@ describe('migrateSave', () => {
     // A level-16 chronicle is not sent back to school: the five taught chapters count as waved off…
     expect(result.save.tutorial.skippedChapters).toEqual([
       'tut.awakening',
+      'tut.the_path',
       'tut.the_hold',
       'tut.the_binding',
       'tut.routine',
-      'tut.the_path',
     ]);
     // …Steel and Bone's lessons up to level 16 count as read…
     expect(result.save.tutorial.completedSteps).toEqual([
@@ -300,11 +302,11 @@ describe('migrateSave', () => {
     // The Provisions of the chapters it never walked are not back-paid.
     expect(result.save.provisionsClaimed).toEqual([
       'tutorial.awakening',
+      'tutorial.the_path',
       'tutorial.the_hold',
       'tutorial.gift.ancient_shard',
       'tutorial.the_binding',
       'tutorial.routine',
-      'tutorial.the_path',
     ]);
   });
 

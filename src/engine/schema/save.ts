@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 12 as const;
+export const SAVE_VERSION = 13 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -232,8 +232,8 @@ const tutorialSchema = z.object({
   skippedChapters: z.array(z.string()),
 });
 
-export const saveSchemaV12 = z.object({
-  saveVersion: z.literal(12),
+export const saveSchemaV13 = z.object({
+  saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   /** Root seed from which every subsystem derives its own stream. */
@@ -283,12 +283,12 @@ export const saveSchemaV12 = z.object({
   quests: z.object({ daily: questPeriodSchema, weekly: questPeriodSchema }),
   /** The Chronicler's Path (QUESTS_MISSIONS.md §4). Shipped in save v11. */
   missions: missionsSchema,
-  /** The tutorial script's progress (TUTORIAL.md). Shipped in save v12. */
+  /** The tutorial script's progress (TUTORIAL.md). Shipped in save v12; step ids rotated in v13. */
   tutorial: tutorialSchema,
 });
 
-export type SaveGameV12 = z.infer<typeof saveSchemaV12>;
-export type SaveGame = SaveGameV12;
+export type SaveGameV13 = z.infer<typeof saveSchemaV13>;
+export type SaveGame = SaveGameV13;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type MissionsSave = z.infer<typeof missionsSchema>;
 export type TutorialSave = z.infer<typeof tutorialSchema>;
@@ -299,7 +299,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV12;
+export const saveSchema = saveSchemaV13;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

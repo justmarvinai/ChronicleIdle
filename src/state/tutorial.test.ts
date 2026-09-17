@@ -209,16 +209,17 @@ describe('the tutorial in the save', () => {
     actions.newGame('Marvin');
     actions.chooseStarter('champ.reva_ashblade');
     // Walk to the Binding's second lesson: the Portal open, the shard Eldric kept back in hand.
-    for (const chapter of content.tutorialChapters.slice(0, 2))
+    // Three chapters come before it now — the Awakening, the Path and the Hold.
+    for (const chapter of content.tutorialChapters.slice(0, 3))
       for (const step of chapter.steps) actions.completeTutorialStep(step.id);
     store.setState((state) => {
       if (state.save) state.save.profile.level = 4;
       return state;
     });
     actions.resetStack({ name: 'hub' });
-    actions.completeTutorialStep('tut.3.1');
+    actions.completeTutorialStep('tut.4.1');
     actions.resetStack({ name: 'portal' });
-    expect(tutorialStep(world(store))?.step.id).toBe('tut.3.2');
+    expect(tutorialStep(world(store))?.step.id).toBe('tut.4.2');
     expect(
       actions.claimGrant('tutorial.gift.ancient_shard', [{ currency: 'shard_ancient', amount: 1 }]),
     ).toBe(true);
@@ -232,7 +233,7 @@ describe('the tutorial in the save', () => {
     // The lesson's own completion is now in the world (a pull has happened); once the overlay has
     // recorded it, the Portal is the Portal's own business again.
     expect(tutorialScript(world(store), 'summon')).toBe(true);
-    actions.completeTutorialStep('tut.3.2');
+    actions.completeTutorialStep('tut.4.2');
     expect(tutorialScript(world(store), 'summon')).toBe(false);
   });
 

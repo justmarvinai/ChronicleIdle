@@ -1,12 +1,12 @@
 /**
- * Chapter 3 — The Binding (docs/design/TUTORIAL.md §3): the Portal at level 4. Eldric hands over
+ * Chapter 4 — The Binding (docs/design/TUTORIAL.md §3): the Portal at level 4. Eldric hands over
  * the Ancient Shard he kept back, and the reveal it buys is always an Epic.
  */
 import { chapter, gift, provision, step } from './dsl';
 
 export default chapter({
   slug: 'the_binding',
-  index: 3,
+  index: 4,
   trigger: { type: 'feature', feature: 'summoning' },
   steps: [
     // 3.1 — the shard arrives with the lesson, so the Portal is never opened empty-handed.
