@@ -4,6 +4,7 @@
  * effect builders, and the lizard placeholder is tinted per faction until faction models exist.
  */
 import type { ModelKey, SpellKey } from '@assets/manifest.generated';
+import { facingOf, PLACEHOLDER_MODEL as LIZARD } from '@content/champions/models';
 import type {
   AbilityAi,
   AbilityDef,
@@ -46,7 +47,6 @@ export interface EnemyInput {
     tint: string;
     scale?: number;
     model?: ModelKey;
-    facing?: 'left' | 'right';
     desaturate?: boolean;
   };
   abilities: EnemyAbilityInput[];
@@ -58,6 +58,7 @@ export interface EnemyInput {
 export function defineEnemy(input: EnemyInput): EnemyDef {
   const slug = input.id.replace(/^enemy\./, '');
   const [hp, atk, def, spd, critRate, critDmg, res, acc] = input.stats;
+  const model = input.art.model ?? LIZARD;
   const abilities: AbilityDef[] = input.abilities.map((a) => ({
     slot: a.slot,
     id: `ab.${slug}.${a.key}`,
@@ -89,9 +90,9 @@ export function defineEnemy(input: EnemyInput): EnemyDef {
     role: input.role,
     stats: { hp, atk, def, spd, critRate, critDmg, res, acc },
     art: {
-      model: input.art.model ?? 'model.teritorial_lizard',
+      model,
       tint: input.art.tint,
-      facing: input.art.facing ?? 'left',
+      facing: facingOf(model),
       scale: input.art.scale ?? 1,
       ...(input.art.desaturate ? { desaturate: true } : {}),
     },

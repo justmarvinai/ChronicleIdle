@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'valor',
   role: 'attack',
   stats: [14_100, 1_560, 900, 98, 15, 60, 20, 0],
-  art: { model: 'model.thordakk', avatar: 'avatar.thordakk', facing: 'left' },
+  art: { model: 'model.thordakk', avatar: 'avatar.thordakk' },
   obtain: ['summon'],
   abilities: [
     {

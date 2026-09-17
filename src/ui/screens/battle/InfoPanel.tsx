@@ -14,7 +14,13 @@ export function InfoPanel({ log, view }: { log: readonly BattleEvent[]; view: Ba
     if (node) node.scrollTop = node.scrollHeight;
   }, [lines.length]);
   return (
-    <Panel kind="ember-tall" padding={16} className={styles.info} data-testid="battle-info">
+    <Panel
+      kind="ember-tall"
+      padding={16}
+      className={styles.info}
+      contentClassName={styles.infoBody}
+      data-testid="battle-info"
+    >
       <h2 className={`display ${styles.infoTitle}`}>{t('battle.log')}</h2>
       <ol ref={list} className={styles.logList} data-testid="battle-log">
         {lines.length === 0 ? <li className={styles.logEmpty}>{t('battle.logEmpty')}</li> : null}

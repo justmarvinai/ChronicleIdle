@@ -112,18 +112,26 @@ Status effects (`docs/design/BATTLE.md` §5), role icons (attack `glyph-crossed-
 See `UI_DESIGN.md` §4.
 
 ### Models
-| Model | Facing (verify in Phase 1) | Users |
+Facing verified against the art in `0.1.2`; the values live in `src/content/champions/models.ts`.
+
+| Model | Facing | Users |
 | --- | --- | --- |
-| anuria | left | Anuria |
-| darius | left | Darius |
+| anuria | right | Anuria |
+| darius | right | Darius |
 | khazgor | right | Khazgor |
-| maruan | left | Maruan |
-| rattledagger | left | Rattledagger |
+| maruan | right | Maruan |
+| rattledagger | right | Rattledagger |
 | sethlurias | right | Sethlurias |
-| thordakk | left | Thordakk |
+| thordakk | right | Thordakk |
 | teritorial_lizard | left | every other champion (tinted), every enemy (faction tint, boss scale), boss placeholders |
 
-The presenter flips sprites so allies face right and enemies face left.
+The presenter flips sprites so allies face right and enemies face left. Which way a sheet is
+*drawn* is declared once, in `src/content/champions/models.ts`: all seven finished champion sheets
+face right, the placeholder lizard faces left. That table is the only place it is written down —
+the asset pipeline stamps it into the manifest (for `SpriteView`) and the content DSLs resolve it
+(for the battle stage), and `satisfies Record<ModelKey, …>` fails the build when new art arrives
+without an answer. Five sheets were wrong while the pipeline kept its own guess, and every screen
+that draws a champion showed them facing away.
 
 ## 3. Placeholder tinting
 
@@ -147,6 +155,8 @@ from `tools/audio` and `tools/vfx` land in the same groups.
 
 ## 5. Conventions for new owner assets
 
+- A new model: add its facing to `src/content/champions/models.ts` (look at the art, do not guess)
+  — the typecheck asks for it, and nothing else needs to change.
 - Champion: `/game/assets/champions/<id>/` with `<id>_avatar.png`, `still/<id>_still.png`,
   `idle/frame_000…008.png`; optional `attack/`, `cast/`, `hit/`, `death/` folders (same frame
   scheme, any frame count; durations default 100 ms for actions).

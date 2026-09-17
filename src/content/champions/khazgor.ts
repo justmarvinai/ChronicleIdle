@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'valor',
   role: 'defense',
   stats: [17_400, 940, 1_460, 94, 15, 50, 40, 0],
-  art: { model: 'model.khazgor', avatar: 'avatar.khazgor', facing: 'right' },
+  art: { model: 'model.khazgor', avatar: 'avatar.khazgor' },
   obtain: ['summon'],
   abilities: [
     {

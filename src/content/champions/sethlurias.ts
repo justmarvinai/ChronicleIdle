@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'justice',
   role: 'support',
   stats: [14_900, 1_060, 1_140, 102, 15, 50, 35, 30],
-  art: { model: 'model.sethlurias', avatar: 'avatar.sethlurias', facing: 'right' },
+  art: { model: 'model.sethlurias', avatar: 'avatar.sethlurias' },
   obtain: ['summon'],
   abilities: [
     {

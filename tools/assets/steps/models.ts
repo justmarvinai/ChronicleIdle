@@ -2,14 +2,25 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import sharp, { type OverlayOptions } from 'sharp';
 import type { AtlasAnimation, AtlasEntry, AtlasFrame } from '@assets/manifest-types';
+import { MODEL_FACING, type Facing } from '@content/champions/models.ts';
 import { pixiAtlasJson } from '../lib/atlas.ts';
 import type { BuildContext } from '../lib/context.ts';
 import { SOURCE_ROOT, listDirs, listFiles, walk } from '../lib/util.ts';
 
 /** Folder-name prefixes that only describe rarity and are not part of the model id. */
 const RARITY_PREFIXES = ['common_', 'uncommon_', 'rare_', 'epic_', 'legendary_', 'mythic_'];
-/** Source art facing, verified by inspection (docs/tech/ASSETS.md §2). Unknown models face left. */
-const MODEL_FACING: Record<string, 'left' | 'right'> = { khazgor: 'right', sethlurias: 'right' };
+/**
+ * The facing stamped into the manifest comes from the one table in `@content/champions/models.ts`,
+ * so the sheet the pipeline packs and the champion the game draws can never disagree about it.
+ * A folder with no entry there is new art nobody has looked at yet: it faces left (the placeholder
+ * lizard's way) and says so, rather than guessing quietly.
+ */
+function facingOf(id: string, log: { warn: (message: string) => void }): Facing {
+  const declared = (MODEL_FACING as Record<string, Facing | undefined>)[`model.${id}`];
+  if (declared) return declared;
+  log.warn(`model.${id} has no facing in src/content/champions/models.ts — assuming left`);
+  return 'left';
+}
 /** Idle frames are authored at 200 ms; action animations default to 100 ms. */
 const FPS: Record<string, number> = { idle: 5 };
 const DEFAULT_FPS = 10;
@@ -52,7 +63,10 @@ export async function buildModels(ctx: BuildContext): Promise<void> {
       const sources = (await walk(dir)).filter(
         (p) => !/_avatar\.(png|jpg|webp)$/i.test(p) && !p.endsWith('.gif'),
       );
-      await ctx.cached(`model:${root}/${folder}`, sources, async () => {
+      // The facing is stamped into the entry, so it belongs in the key: changing the table has to
+      // re-emit the model, not read a cached entry that still carries the old answer.
+      const facing = facingOf(id, ctx.log);
+      await ctx.cached(`model:${root}/${folder}@${facing}`, sources, async () => {
         const animations: Record<string, Frame[]> = {};
         for (const sub of await listDirs(dir)) {
           if (sub === 'still') continue;
@@ -116,7 +130,7 @@ export async function buildModels(ctx: BuildContext): Promise<void> {
           h: atlasH,
           frames,
           animations: anims,
-          facing: MODEL_FACING[id] ?? 'left',
+          facing,
         };
         return { outputs: [image.rel, json.rel], entries: { [`model.${id}`]: entry } };
       });

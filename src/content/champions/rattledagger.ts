@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'eclipse',
   role: 'attack',
   stats: [12_800, 1_540, 860, 110, 20, 65, 20, 20],
-  art: { model: 'model.rattledagger', avatar: 'avatar.rattledagger', facing: 'left' },
+  art: { model: 'model.rattledagger', avatar: 'avatar.rattledagger' },
   obtain: ['summon'],
   abilities: [
     {

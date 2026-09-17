@@ -28,6 +28,22 @@ test.describe('the Summoning Portal', () => {
     await page.getByTestId('portal-summon-1').click();
     await expect(page.getByTestId('summon-card-0')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('summon-results')).toBeVisible({ timeout: 30_000 });
+    // The champion steps *through* the gate, so the card lands on the ring's centre rather than in
+    // the middle of the window, which is off to one side of it (the owner's batch).
+    const offset = await page.evaluate(() => {
+      const card = document.querySelector('[data-testid="summon-card-0"]');
+      const layer = document.querySelector('[data-testid="summon-ritual"]');
+      if (!card || !layer) return null;
+      const c = card.getBoundingClientRect();
+      const l = layer.getBoundingClientRect();
+      // `RING` in `@render/summon/ritualScene`, in the scene's own 1920×1080 stage pixels.
+      return {
+        dx: c.left + c.width / 2 - (l.left + (900 / 1920) * l.width),
+        dy: c.top + c.height / 2 - (l.top + (470 / 1080) * l.height),
+      };
+    });
+    expect(Math.abs(offset?.dx ?? 999)).toBeLessThan(2);
+    expect(Math.abs(offset?.dy ?? 999)).toBeLessThan(2);
     await expect(page.getByTestId('portal-held-faded')).toContainText('39');
     await page.getByTestId('summon-continue').click();
     await expect(page.getByTestId('summon-reveal')).toBeHidden();

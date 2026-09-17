@@ -9,6 +9,46 @@ All notable changes to ChronicleIdle are documented here. The format follows
 _The fine-tuning pass is under way. `USER_QUESTIONS.md` Q46 (what an audit can say about a game
 that never stops animating) is the one open question left._
 
+## [0.1.2] — 2026-09-17 — The owner's second batch
+
+Three things that were drawn wrong. No system changed; three of them stopped lying about where
+they were.
+
+### Fixed
+
+- **The battle log stays inside its panel.** It was growing as tall as the fight and running off
+  the bottom of the screen, with the line numbers cut off against the frame. The flex column was
+  on the `Panel` rather than on its content box — a `KitSurface`'s own children are the fill, the
+  frame and the content, so `flex: 1` on the list never applied and `overflow-y` had no height to
+  scroll against. The column moved to `contentClassName`, the list got the `min-height: 0` a flex
+  item needs before it will shrink below its content, and the markers got padding wide enough for
+  three digits. `battle.spec.ts` now measures the list against the panel.
+- **The summoned champion lands in the gate.** The reveal was centred on the window while the ring
+  hangs at (900, 470) — deliberately off-centre, in the open space between the shard rail and the
+  banner column — so the card sat 60 px right and 40 px below the portal it had just come through.
+  The cards are pinned to the ring's own centre now, passed down from `RING` so there is no second
+  copy of the number, and being out of the overlay's flow they no longer shift when the results row
+  lands. `portal.spec.ts` measures the card against the ring.
+- **Five of seven champions faced away from the enemy.** Anuria is the one the owner saw; Darius,
+  Maruan, Rattledagger and Thordakk had it too, on the battle stage *and* on every screen that
+  draws a champion sprite (Champions, the Tavern, the Path, the banner panel). The asset pipeline
+  kept a `MODEL_FACING` table of its own with only Khazgor and Sethlurias in it — everything else
+  fell through to a `left` default that was wrong for all five — and the champion files copied the
+  same wrong answers by hand.
+
+### Changed
+
+- **Facing belongs to the sheet, not to the champion.** One table
+  (`src/content/champions/models.ts`) is now the only place it is written down, read twice: the
+  pipeline stamps it into the manifest (for `SpriteView`) and the content DSLs resolve it (for the
+  battle stage). Champion files no longer declare `art.facing` and enemies no longer default it.
+  `satisfies Record<ModelKey, …>` makes new art fail the typecheck until somebody has looked at it
+  and answered, and `content.test.ts` holds the manifest and the table to each other.
+- The models step's cache key carries the facing, so changing the table re-emits the atlas instead
+  of serving an entry that still holds the old answer.
+- `ASSETS.md`'s model table said "Facing (verify in Phase 1)" and was never verified. It is now,
+  against the art, and says so.
+
 ## [0.1.1] — 2026-09-17 — The owner's first batch
 
 Four changes from the owner's first pass over Early Access 0.1, and the answer to Q45.

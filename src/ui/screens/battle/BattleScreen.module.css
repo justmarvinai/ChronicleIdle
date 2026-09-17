@@ -290,6 +290,13 @@
   width: 460px;
   height: 640px;
   z-index: var(--z-scene);
+}
+/*
+ * The column lives on the panel's content box, not on the panel: a `KitSurface`'s own children are
+ * the fill, the frame and the content, so a `display: flex` up there leaves the log an ordinary
+ * block that grows as tall as its lines and spills out of the frame.
+ */
+.infoBody {
   display: flex;
   flex-direction: column;
 }
@@ -300,8 +307,13 @@
 }
 .logList {
   flex: 1;
+  /* A flex item's default `min-height: auto` refuses to shrink below its content, and then there is
+     nothing for `overflow-y` to scroll. */
+  min-height: 0;
   margin: 0;
-  padding: 0 0 0 20px;
+  /* Markers sit in this padding: three digits of a 120-line log need the room, or they are cut off
+     against the frame. */
+  padding: 0 0 0 42px;
   overflow-y: auto;
   font-size: 15px;
   line-height: 1.4;
@@ -314,6 +326,13 @@
 }
 .logLine {
   margin-bottom: 2px;
+  /* The log is read as a column of events; a wrapped line must not run under its own number. */
+  overflow-wrap: anywhere;
+}
+.logLine::marker,
+.logEmpty::marker {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
 }
 .tone_ally {
   color: var(--text-1);

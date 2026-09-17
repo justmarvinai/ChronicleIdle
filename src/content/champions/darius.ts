@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'eclipse',
   role: 'support',
   stats: [14_600, 1_120, 1_080, 108, 15, 50, 35, 30],
-  art: { model: 'model.darius', avatar: 'avatar.darius', facing: 'left' },
+  art: { model: 'model.darius', avatar: 'avatar.darius' },
   obtain: ['summon'],
   abilities: [
     {

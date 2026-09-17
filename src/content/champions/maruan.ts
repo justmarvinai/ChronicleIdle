@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'faith',
   role: 'support',
   stats: [15_300, 1_090, 1_110, 106, 15, 50, 30, 20],
-  art: { model: 'model.maruan', avatar: 'avatar.maruan', facing: 'left' },
+  art: { model: 'model.maruan', avatar: 'avatar.maruan' },
   obtain: ['summon'],
   abilities: [
     {

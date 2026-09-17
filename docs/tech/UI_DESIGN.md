@@ -251,6 +251,11 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   "2/3", turn counter, timer; top-centre (boss): boss HP bar with phase pips and boss status row;
   bottom-left: *Info*, *Auto*, *×N speed*; bottom-right: ability bar (A1–A4 `AbilityIcon`,
   passive tag), current champion mini-portrait; target reticle on hover.
+- *Info* opens the **battle log**: a 460 × 640 ember panel of numbered events, newest pinned to the
+  bottom, capped at the last 120 lines, with the hotkey legend under it. The list scrolls inside
+  the frame — the flex column belongs to the panel's *content box*, and the list needs
+  `min-height: 0` to shrink below its content, or it grows as tall as the fight and spills off the
+  screen. Markers sit in the list's own padding, wide enough for three digits.
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
 
 ### 5.10 Battle result
@@ -312,8 +317,11 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Reveal: the press dims the scene, the ritual plays in the gate, then the cards land — one at
   192 px, ten in a 5×2 grid in sequence with the rarest last and marked *Best of the ten*. Each
   card carries the champion's name and either a "NEW" ribbon or "Duplicate — rank-up material".
-  *Skip* is offered throughout; the results row (*Continue* / *Summon again* / *View champion*)
-  sits clear of the bottom bar.
+  The cards land **on the ring's own centre** (`RING` in `ritualScene.ts`, passed to the overlay as
+  CSS variables), not in the middle of the window: the champion steps *through* the gate, and the
+  gate hangs off to one side of it. Out of the overlay's flow, the card also stays put when the
+  results row lands instead of shifting up. *Skip* is offered throughout; the results row
+  (*Continue* / *Summon again* / *View champion*) sits clear of the bottom bar.
 - Dialogs: *Rates* (all four shards: the rarity rows, the pool size behind each and the mercy
   owed), *The last summons* (the save's bounded history, newest first, each row opening the
   champion it became) and the champion picker (every summonable champion of the owed rarity).

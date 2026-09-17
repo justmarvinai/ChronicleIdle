@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'justice',
   role: 'attack',
   stats: [13_200, 1_480, 880, 104, 15, 60, 25, 10],
-  art: { model: 'model.anuria', avatar: 'avatar.anuria', facing: 'left' },
+  art: { model: 'model.anuria', avatar: 'avatar.anuria' },
   obtain: ['summon'],
   abilities: [
     {

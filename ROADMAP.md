@@ -370,6 +370,7 @@ one batch of the owner's notes at a time, each with its own `CHANGELOG.md` entry
 | Batch | Shipped | What it covered |
 | --- | --- | --- |
 | First | `0.1.1` | The Chronicler's Path from level 1 and taught right after the first stand; worn gear off the racks and upgradeable from its champion; the racks grouped by set under each set's crest; Q45 answered — the economy stands as measured |
+| Second | `0.1.2` | The battle log inside its panel; the summoned champion centred in the gate; every champion facing the enemy, with facing moved to one table the pipeline and the content both read |
 
 ---
 

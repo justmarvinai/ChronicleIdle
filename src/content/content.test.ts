@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { BOSS_STAGE_NUMBER, SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
 import { CHAMPION_IDS, STARTER_IDS } from '@content/champions/types';
+import { MODEL_FACING, PLACEHOLDER_MODEL } from '@content/champions/models';
 import { FACTION_ARCHETYPES } from '@content/enemies/types';
 import { STATUSES } from '@content/statuses/index';
 import { ENERGY_PROVISIONS } from '@content/balance/energy';
@@ -121,6 +122,28 @@ describe('content registry', () => {
     });
     for (const id of STARTER_IDS) expect(content.championById(id)?.rarity).toBe('rare');
     expect(content.champions.filter((c) => !c.art.placeholder)).toHaveLength(7);
+  });
+
+  it('faces every unit the way its sheet is drawn, so an ally looks at the enemy', () => {
+    // One table, two readers: the pipeline stamps it into the manifest (which `SpriteView` reads)
+    // and the content DSLs resolve it (which the battle stage mirrors from). They must agree, or a
+    // champion faces one way on the Champions screen and the other way in a fight.
+    for (const [key, facing] of Object.entries(MODEL_FACING)) {
+      const entry = manifest.entries[key];
+      expect(entry?.kind, key).toBe('atlas');
+      expect(entry && 'facing' in entry ? entry.facing : null, key).toBe(facing);
+    }
+    for (const champion of content.champions)
+      expect(champion.art.facing, champion.id).toBe(MODEL_FACING[champion.art.model]);
+    for (const enemy of content.enemies)
+      expect(enemy.art.facing, enemy.id).toBe(MODEL_FACING[enemy.art.model]);
+    // Every finished sheet is drawn facing right; the placeholder lizard is the one that faces
+    // left, which is why an enemy wearing it needs no mirror and an ally does.
+    expect(
+      Object.entries(MODEL_FACING)
+        .filter(([, facing]) => facing === 'left')
+        .map(([key]) => key),
+    ).toEqual([PLACEHOLDER_MODEL]);
   });
 
   it('renders every ability description with live numbers and no unresolved placeholders', () => {

@@ -2,11 +2,6 @@
   position: absolute;
   inset: 0;
   z-index: var(--z-chrome);
-  display: grid;
-  grid-template-rows: 1fr auto;
-  place-items: center;
-  /* The bottom bar stays where it is; the results row sits clear of it. */
-  padding: 90px 40px 150px;
   pointer-events: none;
 }
 
@@ -23,12 +18,22 @@
   pointer-events: auto;
 }
 
+/*
+ * The cards land *in the gate*, not in the middle of the window: the ring hangs off-centre, in the
+ * open space between the shard rail and the banner column (`RING` in `ritualScene.ts`), and the
+ * champion steps through it. `--ring-x`/`--ring-y` come from that constant, so there is no second
+ * copy of the number here.
+ *
+ * Being out of the overlay's flow also means the card does not shift when the results panel lands.
+ */
 .grid {
-  position: relative;
+  position: absolute;
+  left: var(--ring-x);
+  top: var(--ring-y);
+  transform: translate(-50%, -50%);
   display: grid;
   gap: 14px;
   place-items: center;
-  align-self: center;
 }
 
 .gridMany {
@@ -72,7 +77,12 @@
 }
 
 .actions {
-  position: relative;
+  /* Clear of the Portal's own bottom bar, centred on the window: the way out is chrome, not
+     ceremony. 150px is where the overlay's old bottom padding held it. */
+  position: absolute;
+  left: 50%;
+  bottom: 150px;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;

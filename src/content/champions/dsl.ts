@@ -3,6 +3,7 @@
  * assemble plain objects; validation happens in `@engine/schema/content`.
  */
 import type { AvatarKey, ModelKey, SpellKey } from '@assets/manifest.generated';
+import { facingOf, PLACEHOLDER_MODEL } from './models';
 import type {
   AbilityAi,
   AbilityDef,
@@ -140,8 +141,11 @@ export interface ChampionInput {
   role: ChampionDef['role'];
   /** HP / ATK / DEF / SPD / C.RATE / C.DMG / RES / ACC at 6★ level 60. */
   stats: [number, number, number, number, number, number, number, number];
-  /** A finished model, or a placeholder tint for the lizard. */
-  art: { model: ModelKey; avatar: AvatarKey; facing: 'left' | 'right' } | { placeholderTint: string };
+  /**
+   * A finished model, or a placeholder tint for the lizard. Which way the art faces is not asked
+   * for here: it belongs to the sheet (`MODEL_FACING`), not to the champion wearing it.
+   */
+  art: { model: ModelKey; avatar: AvatarKey } | { placeholderTint: string };
   obtain: ChampionDef['obtain'];
   abilities: AbilityInput[];
   passive?: PassiveInput;
@@ -150,9 +154,9 @@ export interface ChampionInput {
 }
 
 const PLACEHOLDER: Omit<ChampionArt, 'tint'> = {
-  model: 'model.teritorial_lizard',
+  model: PLACEHOLDER_MODEL,
   avatar: 'avatar.teritorial_lizard',
-  facing: 'left',
+  facing: facingOf(PLACEHOLDER_MODEL),
   placeholder: true,
 };
 
@@ -167,7 +171,7 @@ export function defineChampion(input: ChampionInput): ChampionDef {
   const art: ChampionArt =
     'placeholderTint' in input.art
       ? { ...PLACEHOLDER, tint: input.art.placeholderTint }
-      : { ...input.art, tint: null, placeholder: false };
+      : { ...input.art, facing: facingOf(input.art.model), tint: null, placeholder: false };
   const abilities: AbilityDef[] = input.abilities.map((a) => ({
     slot: a.slot,
     id: `ab.${champ}.${a.key}`,

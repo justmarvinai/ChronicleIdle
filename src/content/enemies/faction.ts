@@ -6,6 +6,7 @@
  * colours — never a copy of a kit. The boss is authored with `defineEnemy` like a champion.
  */
 import type { Element, Role } from '@content/champions/types';
+import { facingOf, PLACEHOLDER_MODEL as LIZARD } from '@content/champions/models';
 import { ARCHETYPES } from './archetypes';
 import type { EnemyDef, FactionArchetype } from './types';
 
@@ -54,9 +55,9 @@ function unitDef(input: FactionUnitInput, faction: FactionInput): EnemyDef {
     role: kit.role as Role,
     stats: { hp, atk, def, spd, critRate, critDmg, res, acc },
     art: {
-      model: 'model.teritorial_lizard',
+      model: LIZARD,
       tint: faction.tint,
-      facing: 'left',
+      facing: facingOf(LIZARD),
       scale: kit.scale ?? 1,
     },
     abilities: kit.abilities.map((a) => ({

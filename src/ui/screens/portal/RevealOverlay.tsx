@@ -6,6 +6,7 @@ import { t, translate } from '@i18n/index';
 import type { SummonSummary } from '@state/summon';
 import { Button } from '@ui/components/Button/Button';
 import { ChampionCard } from '@ui/components/ChampionCard/ChampionCard';
+import { RING } from '@render/summon/ritualScene';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import { revealOrder } from '@ui/summon/portal-view';
 import styles from './RevealOverlay.module.css';
@@ -114,7 +115,12 @@ export function RevealOverlay({
   };
 
   return (
-    <div className={styles.overlay} data-testid="summon-reveal" data-phase={phase}>
+    <div
+      className={styles.overlay}
+      style={{ ['--ring-x' as string]: `${RING.x}px`, ['--ring-y' as string]: `${RING.y}px` }}
+      data-testid="summon-reveal"
+      data-phase={phase}
+    >
       <div className={styles.scrim} />
       {phase !== 'done' ? (
         <Button

@@ -78,6 +78,25 @@ test.describe('battle', () => {
     await page.getByTestId('battle-info-toggle').click();
     await expect(page.getByTestId('battle-info')).toBeVisible();
     expect(await page.getByTestId('battle-log').locator('li').count()).toBeGreaterThan(3);
+    // And it stays inside its frame: the log used to grow past the panel and run off the screen,
+    // because the flex column was on the panel rather than on its content box (the owner's batch).
+    const logBox = await page.evaluate(() => {
+      const panel = document.querySelector('[data-testid="battle-info"]');
+      const list = document.querySelector('[data-testid="battle-log"]');
+      if (!panel || !list) return null;
+      const p = panel.getBoundingClientRect();
+      const l = list.getBoundingClientRect();
+      const lines = [...list.querySelectorAll('li')].map((li) => li.getBoundingClientRect());
+      return {
+        inside: l.top >= p.top - 1 && l.bottom <= p.bottom + 1,
+        // Markers live in the list's padding; too little of it cut the line numbers off.
+        marginLeft: Math.min(...lines.map((r) => r.left - p.left)),
+        lastLineInside: lines.length > 0 && (lines.at(-1)?.bottom ?? 0) <= l.bottom + 1,
+      };
+    });
+    expect(logBox?.inside, 'the log is inside the panel').toBe(true);
+    expect(logBox?.lastLineInside, 'the newest line is inside the log').toBe(true);
+    expect(logBox?.marginLeft ?? -1).toBeGreaterThan(0);
     await page.getByTestId('battle-info-toggle').click();
 
     // Pause and resume from the menu.
