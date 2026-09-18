@@ -9,6 +9,7 @@ import { createMemoryStorage } from '@platform/storage';
 import { bootGame } from './boot';
 import { availableDifficulties, currentPointer, pointerCost, runsAffordable } from './campaign';
 import { startPersistence } from './persistence';
+import { isTowerUnlocked } from './tower';
 import { createGameStore } from './store';
 
 const T0 = new Date(2026, 8, 12, 12, 0).getTime();
@@ -257,7 +258,10 @@ describe('campaign runs through the store', () => {
     const toasts = store.getState().ui.toasts.map((toast) => toast.textKey);
     expect(toasts).toContain('campaign.difficultyOpen');
     expect(toasts).toContain('campaign.speedUnlocked');
+    // The tower is gated on progress, so the clear that opens it is the only thing that can say so.
+    expect(toasts).toContain('campaign.towerOpen');
     expect(availableDifficulties(store.getState().save!)).toEqual(['intro', 'normal']);
+    expect(isTowerUnlocked(store.getState().save!)).toBe(true);
   });
 
   it('exposes the pointer, the cost and the difficulties a chronicle may choose', () => {

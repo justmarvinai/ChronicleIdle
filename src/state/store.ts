@@ -1464,6 +1464,10 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                   toast('reward', 'campaign.speedUnlocked', {
                     speed: maxBattleSpeed(progressOf(save)),
                   });
+                // The tower is gated on progress rather than on a level, so no level-up
+                // celebration can announce it — the clear that opens it has to say so itself
+                // (ETERNAL_TOWER.md §1).
+                if (input.pointer.difficulty === 'intro') toast('reward', 'campaign.towerOpen');
               }
               events.emit({
                 type: 'campaign.runFinished',

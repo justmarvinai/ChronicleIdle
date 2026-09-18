@@ -441,6 +441,7 @@ export const ui = {
   'campaign.stageShort': '{settlement}-{stage}',
   'campaign.difficultyOpen': '{difficulty} difficulty is open.',
   'campaign.speedUnlocked': 'Battle speed ×{speed} unlocked.',
+  'campaign.towerOpen': 'The Eternal Tower stands open. A hundred floors, and a key every quarter hour.',
 
   'settlement.stages': 'Stands',
   'settlement.stage': 'Stage {settlement}-{stage}',

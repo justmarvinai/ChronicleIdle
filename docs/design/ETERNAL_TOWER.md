@@ -26,9 +26,10 @@ who clears the campaign does, whatever their level.
 
 One hundred floors, climbed **in order**. Floor *n* opens when floor *n−1* is cleared.
 
-Three facts are stored and everything else is read off them: when the season began, how high the
-climb has got, and the best it has ever got. Because floors are taken in order, the highest floor
-cleared is the whole record — there is no per-floor list to keep in step with it.
+Little is stored and everything else is read off it (§8): when the tower was first entered, which
+season the climb belongs to, how high it got, and the best it has ever got. Because floors are
+taken in order, the highest floor cleared is the whole record — there is no per-floor list to keep
+in step with it.
 
 | Floor state | Meaning |
 | --- | --- |
@@ -96,8 +97,8 @@ A full climb to floor 100 is **1,334,407 gold** and exactly **300 energy** over 
 eighth of what the campaign pays over the same thirty days (`ECONOMY.md` §8), which is the size a
 second source should be. Brews are the point as much as the gold: the same climb hands over **250
 Universal Brews** and **30 element brews** (three on each of the ten boss floors), which is what
-levels the champions the next floor needs. It also pays 28,920 chronicle XP and 216,900 champion XP
-to each champion that fought.
+levels the champions the next floor needs. The climb is also worth 28,920 chronicle XP, and 216,900
+champion XP to every champion that fought every floor of it.
 
 A **defeat pays nothing**, and the key is already spent.
 
