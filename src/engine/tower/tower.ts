@@ -1,14 +1,18 @@
 /**
- * The Eternal Tower's state and rules (docs/design/ETERNAL_TOWER.md §2, §5, §6).
+ * The Eternal Tower’s state and rules (docs/design/ETERNAL_TOWER.md §2, §6, §7).
  *
- * Three facts are stored and everything else is read off them: when this season began, how high
- * the climb has got, and the key pool. Floors are climbed in order, so one number — the highest
- * floor cleared — says which floors are behind the player, which one is next and which boss floors
- * may be fought again. There is no per-floor record to keep in step.
+ * Little is stored and everything else is read off it: the instant the tower was first entered,
+ * which season the climb belongs to, how high it got, and the key pool. Floors are climbed in
+ * order, so one number — the highest floor cleared — says which floors are behind the player,
+ * which one is next and which boss floors may be fought again. There is no per-floor record to
+ * keep in step.
  *
- * A season is anchored to the first floor the chronicle ever attempted, and turns over in whole
- * thirty-day steps from there, so a chronicle closed for three months resumes on a season boundary
- * rather than mid-season (the same discipline as the boss period and the Idle Chest, ADR-033).
+ * A season is anchored to the first floor the chronicle ever attempted — `firstAttemptAt` never
+ * moves again — and runs in whole thirty-day steps from there. The climb carries the *index* of
+ * the season it belongs to, exactly as a boss's record carries its period key, so a climb from an
+ * older season reads as an empty one and nothing has to run while the game is closed (ADR-033).
+ * That also keeps the season's number honest: it is the distance from the anchor, not a counter
+ * that a reset could lose.
  */
 import {
   TOWER_FLOORS,
@@ -25,11 +29,14 @@ import { bossFloorsUpTo, isBossFloor } from './encounter';
 /** The tower's slice of the save (v14). */
 export interface TowerSave {
   /**
-   * When the current season began, or 0 while the tower has never been entered. A fresh chronicle
-   * must not be handed a season that is already stale by the time it unlocks the tower.
+   * The first floor this chronicle ever attempted, and the anchor every season is measured from;
+   * 0 while the tower has never been entered. A fresh chronicle must not be handed a season that
+   * is already stale by the time it unlocks the tower, so this is not the save's birthday.
    */
-  seasonStartedAt: number;
-  /** Highest floor cleared this season; 0 before the first clear. */
+  firstAttemptAt: number;
+  /** Which season (0-based, from the anchor) the climb below belongs to. */
+  climbSeason: number;
+  /** Highest floor cleared in `climbSeason`; 0 before the first clear. */
   highestFloor: number;
   /** Highest floor ever cleared. This outlives the season, as boss records outlive their period. */
   bestFloor: number;
@@ -43,7 +50,8 @@ export const TOWER_SEASON_MS = TOWER_SEASON_DAYS * MS_PER_DAY;
 /** A tower nobody has entered: no season, no climb, and a full ring of keys to start on. */
 export function emptyTower(now = 0): TowerSave {
   return {
-    seasonStartedAt: 0,
+    firstAttemptAt: 0,
+    climbSeason: 0,
     highestFloor: 0,
     bestFloor: 0,
     keys: { value: TOWER_KEY_CAP, lastTickAt: now },
@@ -54,41 +62,47 @@ export function emptyTower(now = 0): TowerSave {
 // The season
 // ---------------------------------------------------------------------------------------------
 
-/** How many whole seasons have passed since this one began; 0 while it is still running. */
+/**
+ * Which season `now` falls in, counted from the anchor: 0 for the first thirty days, 1 for the
+ * next, and −1 while the tower has never been entered.
+ */
+export function seasonIndex(state: TowerSave, now: number): number {
+  if (state.firstAttemptAt <= 0) return -1;
+  return Math.max(0, Math.floor((now - state.firstAttemptAt) / TOWER_SEASON_MS));
+}
+
+/** How many whole seasons the chronicle has finished; 0 while it is still on its first. */
 export function seasonsElapsed(state: TowerSave, now: number): number {
-  if (state.seasonStartedAt <= 0) return 0;
-  return Math.max(0, Math.floor((now - state.seasonStartedAt) / TOWER_SEASON_MS));
+  return Math.max(0, seasonIndex(state, now));
 }
 
 /**
- * The tower as it stands at `now`: the stored state while the season runs, and a climb reset to
- * the foot of the tower once thirty days have passed. Pure — nothing is written here.
+ * The tower as it stands at `now`: the stored state while its season runs, and a climb reset to
+ * the foot of the tower once the season it belongs to is behind us. Pure — nothing is written
+ * here, so a chronicle opened after a year reads correctly without a reset ever having run.
  */
 export function currentSeason(state: TowerSave, now: number): TowerSave {
-  const elapsed = seasonsElapsed(state, now);
-  if (elapsed === 0) return state;
-  return {
-    ...state,
-    seasonStartedAt: state.seasonStartedAt + elapsed * TOWER_SEASON_MS,
-    highestFloor: 0,
-  };
+  const index = seasonIndex(state, now);
+  if (index < 0 || index === state.climbSeason) return state;
+  return { ...state, climbSeason: index, highestFloor: 0 };
 }
 
-/** When this season ends, or null while the tower has never been entered. */
-export function seasonEndsAt(state: TowerSave): number | null {
-  return state.seasonStartedAt > 0 ? state.seasonStartedAt + TOWER_SEASON_MS : null;
+/** When the season `now` falls in ends, or null while the tower has never been entered. */
+export function seasonEndsAt(state: TowerSave, now: number): number | null {
+  const index = seasonIndex(state, now);
+  return index < 0 ? null : state.firstAttemptAt + (index + 1) * TOWER_SEASON_MS;
 }
 
 /** How long this season still has to run, or null before the first climb. */
 export function msUntilSeasonEnd(state: TowerSave, now: number): number | null {
-  const season = currentSeason(state, now);
-  const ends = seasonEndsAt(season);
+  const ends = seasonEndsAt(state, now);
   return ends === null ? null : Math.max(0, ends - now);
 }
 
 /** The season number a chronicle is on, counting the first as 1; 0 before the first climb. */
 export function seasonNumber(state: TowerSave, now: number): number {
-  return state.seasonStartedAt > 0 ? seasonsElapsed(state, now) + 1 : 0;
+  const index = seasonIndex(state, now);
+  return index < 0 ? 0 : index + 1;
 }
 
 // ---------------------------------------------------------------------------------------------

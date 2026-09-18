@@ -374,6 +374,17 @@ one batch of the owner's notes at a time, each with its own `CHANGELOG.md` entry
 
 ---
 
+## After EA-0.1 — features the owner asked for
+
+New systems asked for after the release, each shipped as a minor version: one feature, complete in
+the running game, to the same Definition of Done as a phase (`AGENTS.md` §3).
+
+| Version | Feature | What it covered |
+| --- | --- | --- |
+| `0.2.0` | **The Eternal Tower** (`docs/design/ETERNAL_TOWER.md`) | A hundred floors climbed in order, opened by clearing the whole Intro campaign; every tenth floor a boss floor that rolls for Ancient and Sacred Shards on the owner's own table; the Eternal Key (cap 10, one every 15 minutes, spent won or lost); gold, 1–5 energy, brews and XP per floor; ordinary floors one-time, boss floors farmable; a thirty-day season that resets the climb and keeps the best floor. Plus **Account Power** in the header — every owned champion's power summed, under the experience bar. Save v14 |
+
+---
+
 ## Backlog (after EA-0.1 — not scheduled)
 
 | Item | Notes |

@@ -21,7 +21,10 @@ test.describe('navigation', () => {
     await settle(page);
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible();
-    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(3);
+    // Campaign, both bosses and the tower. The tower's card is there from the start and says what
+    // opens it, because it is gated on clearing Intro rather than on a level.
+    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(4);
+    await expect(page.getByTestId('mode-tower')).toContainText(/Intro/);
   });
 
   test('every other hotspot explains why it is still closed', async ({ page }) => {

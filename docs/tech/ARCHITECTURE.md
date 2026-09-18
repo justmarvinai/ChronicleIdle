@@ -132,6 +132,17 @@ squash-stretch, lunges and projectile flights rather than authored attack animat
 Each is a folder of reducers + calculators + tests. Cross-cutting rules (unlock gating, cost
 checks) are helpers in `engine/progression/unlocks.ts` and `engine/economy/wallet.ts`.
 
+`engine/economy/pool.ts` is the one implementation of a **regenerating resource**: a
+`{ value, lastTickAt }` pair that earns whole units on read, stops at a cap, accepts grants past it
+and is spent with a typed error when it is short. Energy and the Eternal Key are both thin calls
+into it (`engine/economy/energy.ts` and `engine/tower/tower.ts`), which is why a rule stated once —
+"regeneration pauses above the cap" — holds for both without being written twice.
+
+`engine/tower/` is three files: `encounter.ts` (what a floor fields, derived from its number),
+`tower.ts` (the keys, the thirty-day season and each floor's state) and `rewards.ts` (what a floor
+pays, and the seeded shard roll on a boss floor). Nothing about a floor is authored
+(`docs/design/ETERNAL_TOWER.md` §3).
+
 `engine/summon/` is four files: `summon.ts` (the rarity row and the champion roll), `pity.ts`
 (mercy counters, guarantees, soft climbs), `rotation.ts` (the fourteen-day wheel from a fixed UTC
 epoch, and which mercy rules a Primordial Rotation swaps in) and `choices.ts` (which champion
@@ -188,8 +199,8 @@ planRefine(piece, sacrifice) → Result<RefinePlan>    // the climb, and the re-
 
 ## 4. State (Zustand)
 
-Slices: `profile`, `wallet`, `energy`, `roster`, `gear`, `campaign`, `bosses`, `summon`, `quests`,
-`missions`, `idle`, `tutorial`, `settings`, `stats`, `ui` (transient: screen stack, dialogs,
+Slices: `profile`, `wallet`, `energy`, `roster`, `gear`, `campaign`, `bosses`, `tower`, `summon`,
+`quests`, `missions`, `idle`, `tutorial`, `settings`, `stats`, `ui` (transient: screen stack, dialogs,
 selection), `battle` (transient controller). Persisted slices form `SaveGame`; `ui` and `battle`
 are not persisted (an interrupted battle is forfeited, energy already spent — standard for the
 genre; a "battle in progress" flag prevents double-spend on reload).
@@ -207,8 +218,9 @@ selected pointer and the auto-repeat count), v5 (Phase 4: `profile.titles` becom
 `profile.title`, the one title the chronicle *wears*; which titles are **earned** is derived from
 the play by `@engine/progression/titles`, never stored), v6 (Phase 6: `inventory` with every
 piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), v8 (Phase 9:
-`idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`), v11 (Phase 13: `missions`) and v12
-(Phase 14: `tutorial`). Fields
+`idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`), v11 (Phase 13: `missions`), v12
+(Phase 14: `tutorial`), v13 (0.1.1: the tutorial's step ids rotate when the Path moves to chapter 2) and v14
+(0.2.0: `tower`, plus the `key_eternal` wallet row). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -230,6 +242,15 @@ interface SaveGame {
   // discipline). `claimed` holds `<tierId>:<pct>` per chest taken; `records` outlive every reset.
   bosses: Record<BossId, { periodKey: string; keysUsed: number; damage: Record<string, number>;
             claimed: string[]; records: Record<string, { damage: number; team: string[]; at: number }> }>;
+  // Shipped in save v14. An anchor, a period key, two floors and a key pool: the first floor the
+  // chronicle ever attempted (0 until then, so a migrated chronicle does not start a season it has
+  // not played, and it never moves again), which season the climb belongs to, how high that climb
+  // got, and the best floor ever — which outlives the season, as a boss record outlives its
+  // period. A climb stamped with an older season reads as an empty one, so the thirty-day reset
+  // happens at the door. Every floor's state is read off `highestFloor`, because floors are
+  // climbed in order, so there is no per-floor list to fall out of step (ETERNAL_TOWER.md §2, §8).
+  tower: { firstAttemptAt: number; climbSeason: number; highestFloor: number; bestFloor: number;
+           keys: { value: number; lastTickAt: number } };
   // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
   // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
   // the campaign's stars, so the ledger cannot disagree with the play).

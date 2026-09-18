@@ -37,7 +37,9 @@ export default function LockedScreen({ route }: ScreenProps) {
           <Glyph glyph="glyph.broken_shackle" size={96} color="var(--gold-2)" />
           <h2 className={`display ${styles.title}`}>{t('locked.title')}</h2>
           <Divider kind="deco" index={3} width={320} />
-          {levelLocked ? (
+          {locked.reasonKey ? (
+            <p className={styles.body}>{t(locked.reasonKey)}</p>
+          ) : levelLocked ? (
             <>
               <p className={styles.body}>{t('locked.levelBody', { level: needed, current: level })}</p>
               <Bar

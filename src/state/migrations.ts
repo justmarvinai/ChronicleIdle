@@ -245,9 +245,9 @@ export const MIGRATIONS: readonly MigrationStep[] = [
     to: 14,
     /*
      * The Eternal Tower. A chronicle that predates it has never climbed, so the slice starts
-     * empty — and deliberately with `seasonStartedAt: 0` rather than `now`: a season is anchored
+     * empty — and deliberately with `firstAttemptAt: 0` rather than `now`: a season is anchored
      * to the first floor actually attempted, so a save migrated today and opened in a month still
-     * gets a full thirty days when its owner finally walks in (ETERNAL_TOWER.md §6).
+     * gets a full thirty days when its owner finally walks in (ETERNAL_TOWER.md §7).
      *
      * The keys start full, which is what a new tower is worth: ten floors' worth of welcome.
      * `key_eternal` also joins the wallet, because the wallet holds a row per currency.
@@ -260,7 +260,8 @@ export const MIGRATIONS: readonly MigrationStep[] = [
         saveVersion: 14,
         wallet: { ...wallet, key_eternal: wallet['key_eternal'] ?? 0 },
         tower: {
-          seasonStartedAt: 0,
+          firstAttemptAt: 0,
+          climbSeason: 0,
           highestFloor: 0,
           bestFloor: 0,
           keys: { value: TOWER_KEY_CAP, lastTickAt: updatedAt },

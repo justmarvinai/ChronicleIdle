@@ -87,6 +87,7 @@ export const ui = {
   'gameModes.tower.body':
     'A hundred floors that only get harder. One key an attempt; every tenth floor a boss that may drop shards.',
   'gameModes.tower.locked': 'Finish the Intro campaign — all twelve settlements — and the tower opens.',
+  'gameModes.tower.gate': 'Clear the Intro campaign',
   'gameModes.weeklyBoss': 'Weekly Boss',
   'gameModes.weeklyBoss.body': 'Nyxara, Mother of Shadows. Three keys a week; three phases.',
   'gameModes.enter': 'Enter',

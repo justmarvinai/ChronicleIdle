@@ -19,6 +19,7 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Daily Boss Key | stone-vine/icon-key | daily reset (2) | daily boss |
 | `key_weekly` | Weekly Boss Key | stone-vine/icon-key (violet tint) | weekly reset (3) | weekly boss |
+| `key_eternal` | Eternal Key | stone-vine/icon-key (gold tint) | 1 per 15 min, capped at 10 | the Eternal Tower (1 a floor) |
 | `shard_faded` | Faded Shard | spell-icons/earth-dark-crystal | gold exchange, drops, quests | summon |
 | `shard_ancient` | Ancient Shard | spell-icons/earth-sapphire-shard | first clears, chests, gems, missions | summon |
 | `shard_sacred` | Sacred Shard | spell-icons/earth-citrine-shard | Hard clears, weekly boss, missions, gems | summon |
@@ -33,7 +34,7 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | `mat_refining_core` | Refining Core | spell-icons/earth-geode-crystal | star chests, bosses, dismantle | refine |
 | `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | 20-star chests (interim, Q38); later weekly boss, missions, weekly quests | choose set when crafting |
 
-24 wallet entries. Quest points and mission progress are tracked separately (not wallet items).
+25 wallet entries. Quest points and mission progress are tracked separately (not wallet items).
 
 ## 3. Champion growth costs
 
@@ -132,6 +133,27 @@ played on a surplus of roughly 1,000–3,000 energy:
 Total in the first two days for an engaged player: ≈ 3,000 energy over cap, then the +1/min
 regeneration (1,440/day) carries the routine. `ENERGY_PROVISIONS` in `balance/energy.ts` lists
 every grant so they can be tuned in one place.
+
+### 5.2 The Eternal Key (`ETERNAL_TOWER.md` §6)
+
+The tower's key is energy's mechanism with different numbers, and it is literally the same code:
+`@engine/economy/pool.ts` holds a `{ value, lastTickAt }` pool that regenerates on read, and both
+energy and the key are thin calls into it.
+
+| Rule | Energy | Eternal Key |
+| --- | --- | --- |
+| Cap | `60 + 10 × (level − 1)` | **10**, flat |
+| Regeneration | 1 per 60 s below the cap | 1 per **15 min** below the cap |
+| Overflow | grants may exceed the cap; regeneration pauses above it | the same (a chronicle may sit at 16/10) |
+| Charged | when a stage starts | when a floor starts, won or lost |
+
+Ten keys is ten floors in a sitting and four more an hour after that, so the key paces a session
+rather than a day. Over a thirty-day season regeneration alone is ~2,880 keys against a hundred
+floors — the cap is the constraint, never the total.
+
+Nothing grants keys in `0.2.0`: the cap is reached by waiting and the over-cap case is unreachable
+until a source exists. A gem exchange is sized in `balance/tower.ts`
+(`TOWER_KEY_REFILL_GEMS = 40` for 5) and deliberately not wired — `USER_QUESTIONS.md` Q49.
 
 ## 6. Idle Chest
 
@@ -249,6 +271,14 @@ because the boss and chest lines do not scale with how often you sit down — on
 Gold should feel tight but never blocking, and no script of any activity level ends a day in the red
 — that invariant is a band, not a hope. A casual player earns ~218k a day (the boss and the chest do
 not care how long you play) and spends ~53k of it.
+
+**The tower is not on that table, on purpose.** A full climb to floor 100 pays ≈1.07 M gold and
+≈300 energy, but it is a *season's* income rather than a day's, and it is paid once: ordinary floors
+are one-time clears (`ETERNAL_TOWER.md` §4). Spread over its thirty days that is ~36k gold a day
+against the ~322k above — a tenth, which is the size a second source should be, and it arrives
+exactly when a player has run out of first clears to farm. What the tower is really for is brews:
+a climb hands over ~300 Universal Brews and the element brews of twelve factions, which is what
+levels the champions that the next floor needs.
 
 ## 9. Daily / weekly reset
 

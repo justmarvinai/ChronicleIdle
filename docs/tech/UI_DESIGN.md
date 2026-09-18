@@ -139,7 +139,9 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 ### 5.2 Hub — Emberhold
 - Reference: `main_hub_screen.png` (structure), `main_hub_screen_alternative_2.png` (mood).
 - Layout: full-bleed `bg8` (night harbour town) with hotspots placed on real buildings; top bar
-  (profile chip left: avatar `frame-round-sm`, name, level, XP bar, power; currencies centre-right:
+  (profile chip left: avatar `frame-round-sm`, name, level, XP bar and, under the bar, the
+  **Account Power** row — every owned champion's power summed, gold numerals, ticking up when the
+  roster gains a level, a rank or a piece of gear; currencies centre-right:
   Energy, Gold, Gems, +; the Idle Chest as a framed pill with its countdown, once it is unlocked;
   settings right); left edge: Idle Chest at the docks — the hourglass hotspot wearing a gold
   `FillRing` (an SVG arc, exact at any size) with its countdown under the banner and a dot once it
@@ -365,6 +367,36 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   the period's pool after it, a personal-best line, the chests the damage has just earned, and
   *Back to the gate* as the primary press.
 
+### 5.13a The Eternal Tower (`docs/design/ETERNAL_TOWER.md`)
+- Reference: `different_content_battles_screen.png` for the card that leads here, the boss gate
+  (§5.13) for the shape — a standing panel on the left, the content itself on the right. Backdrop
+  `bg.bg1` graded to near-black with the interior ambient preset, because the tower is somewhere
+  the campaign's own factions are stacked up inside.
+- Left rail (440 px, `ember-tall`): **The Climb**. A blurb saying what the tower is, then four
+  hairline rows — *Season* (`No. 1`, or *Not begun*), *Resets in*, *Climbed* (`7 of 100`) and
+  *Best ever*. The keys sit at the foot of the panel, pushed there by `margin-top: auto` so the
+  panel reads top-down whatever the numbers are: the shackle glyph, `9 / 10` in gold (**ember when
+  the count is over the cap**, because 16/10 is a state worth seeing), *Next in 14m 35s* on the
+  right, a stamina `Bar` clamped to the cap under them, and the primary **Climb floor N** —
+  disabled, with the reason, when no key is held. When every floor is behind the player the button
+  is replaced by the line that says the tower begins again when the season turns.
+- Right (a stone surface, 488 px to the right edge): **the ladder**. One hundred rungs in a
+  `ScrollArea`, *reversed* so floor 1 sits at the bottom and the climb runs upward like the tower
+  does. Six columns hold the whole ladder in line: the floor number, the boss glyph (a flaming
+  skull, ember) or a gap, who holds the floor (its faction's settlement), the shard odds on a boss
+  floor, the floor's state, and the **Fight** button on the two states that take a key.
+- Rung states carry their own weight: the one open floor wears a gold frame and an ember gradient,
+  a boss floor a blood-red one, cleared floors sit at 55 % opacity and sealed floors at 38 % — so
+  the eye lands on the next fight without reading a word. The screen opens scrolled to that floor
+  (or to the floor the route named, which is how the result screen sends the player back).
+- The floor's fight is an ordinary battle: it goes through battle setup, so a team may be rebuilt
+  between floors. The key is charged when the fight starts (`ETERNAL_TOWER.md` §6).
+- The result screen (§5.10) swaps the campaign's stars and spoils for a **tower panel**: the floor
+  and whether it was the keeper's, whether the climb advanced (and whether it is the highest the
+  chronicle has ever stood), the currencies the floor paid as a spoils list, and the keeper's
+  shards on their own line. *Back to the tower* is the only press; a defeat says the floor held and
+  the key is spent, and does not offer a retry the player may not be able to afford.
+
 ### 5.14 Quests — The Chronicler's Ledger (`QUESTS_MISSIONS.md` §2–§3)
 - Reference: the RSL missions/quests layout (`progress_missions_screen.png` for the track).
   Backdrop `bg.bg3` (the runed gate, where the chronicler stands with their ledger) with the
@@ -480,8 +512,10 @@ Rules the overlay holds to:
 
 ### 5.19 Game Modes
 - Reference: `different_content_battles_screen.png`. Horizontal cards: Campaign (current stage),
-  Daily Boss (keys, timer), Weekly Boss (keys, timer); cards for locked content show the unlock
-  level. Backlog cards (Dungeons, Events) do not exist in EA-0.1.
+  Daily Boss (keys, timer), Weekly Boss (keys, timer), **The Eternal Tower** (the climb and the
+  keys held); cards for locked content show what opens them — a chronicle level for most, and
+  *Clear the Intro campaign* for the tower, which is gated on progress rather than on a level
+  (`ETERNAL_TOWER.md` §1). Backlog cards (Dungeons, Events) do not exist in EA-0.1.
 
 ## 6. Animation language
 

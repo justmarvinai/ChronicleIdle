@@ -238,8 +238,10 @@ const tutorialSchema = z.object({
  * from the climb — floors are taken in order — so there is no per-floor list to keep in step.
  */
 export const towerSchema = z.object({
-  /** 0 while the tower has never been entered; a season is anchored to the first attempt. */
-  seasonStartedAt: z.number().int().nonnegative(),
+  /** 0 while the tower has never been entered; every season is measured from this instant. */
+  firstAttemptAt: z.number().int().nonnegative(),
+  /** Which season (0-based, from the anchor) `highestFloor` belongs to. */
+  climbSeason: z.number().int().min(0),
   highestFloor: z.number().int().min(0),
   /** Outlives the season, as a boss record outlives its period. */
   bestFloor: z.number().int().min(0),

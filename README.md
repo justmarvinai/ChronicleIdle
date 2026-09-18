@@ -28,7 +28,7 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 | `CAMPAIGN.md` — 12 settlements × 10 stages × 3 difficulties | `ASSETS.md` — inventory of `/game`, usage map, pipeline |
 | `GEAR.md` — slots, stars, stats, 14 sets, crafting | `DEPLOYMENT.md` — Ubuntu VPS (nginx) and Vercel |
 | `ECONOMY.md` — 24 currencies, energy, player level, idle chest | `DECISIONS.md` — architecture decision records |
-| `SUMMONING.md`, `BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md` | `CREDITS.md` — asset provenance and licences |
+| `SUMMONING.md`, `BOSSES.md`, `ETERNAL_TOWER.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md` | `CREDITS.md` — asset provenance and licences |
 
 ## Assets
 

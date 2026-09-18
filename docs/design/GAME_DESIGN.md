@@ -38,8 +38,10 @@ short sessions of decisions, long tails of accumulation.
   farming a target stage/set on auto-repeat, tavern upgrades, summon if shards.
 - **Weekly:** weekly boss ×3 keys, weekly quests, featured banner rotation, push a new
   difficulty/settlement.
+- **Monthly (once Intro is behind you):** climb the Eternal Tower for as long as the keys hold, then
+  come back when the season turns and climb it again (`ETERNAL_TOWER.md`).
 - **Long-term (weeks/months):** complete Hard, 6★ the roster, perfect gear, finish the Chronicler's
-  Path, unlock ×4 speed.
+  Path, unlock ×4 speed, stand higher in the tower than last season.
 
 ## 2. Core loop
 
@@ -49,11 +51,12 @@ short sessions of decisions, long tails of accumulation.
   Idle chest / quests / bosses / campaign drops ──▶ Currencies & materials ──▶ Tavern (level/rank/skills)
             ▲                                                 │                 Forge & Gear (equip/upgrade)
             │                                                 ▼
-            └──────────── Stronger team ◀────── Beat harder content (campaign, bosses) ──▶ Player XP → unlocks
+            └──────────── Stronger team ◀────── Beat harder content (campaign, bosses, tower) ──▶ Player XP → unlocks
 ```
 
 Stall points are deliberate: a difficulty wall in the campaign pushes the player into bosses,
-crafting and summoning, which feed back into the campaign.
+crafting and summoning, which feed back into the campaign. When the campaign itself runs out of
+first clears, the Eternal Tower is the next number to raise, and it raises itself every thirty days.
 
 ## 3. Systems overview
 
@@ -63,9 +66,10 @@ crafting and summoning, which feed back into the campaign.
 | Battle | Turn-meter combat, 3 v up to 4 in campaign and 4 v boss + adds, waves, status effects, manual/auto, ×1–×4 speed | `BATTLE.md` |
 | Campaign | 12 settlements × 10 stages × Intro/Normal/Hard, farmable, 3-star ratings, drops | `CAMPAIGN.md` |
 | Gear | 6 slots, 6 rarities, 1–6 stars, +0…+16, main/sub stats, 14 sets, refine, craft, dismantle | `GEAR.md` |
-| Economy | 24 wallet currencies, energy, player level 1–100, idle chest, sources/sinks | `ECONOMY.md` |
+| Economy | 25 wallet currencies, energy, player level 1–100, idle chest, sources/sinks | `ECONOMY.md` |
 | Summoning | 4 shard types, standard portal + featured banner, pity, deterministic rotation | `SUMMONING.md` |
 | Bosses | Daily boss (4 tiers, 2 keys/day) and weekly boss (3 tiers, 3 keys/week), damage-threshold rewards | `BOSSES.md` |
+| Eternal Tower | 100 floors climbed in order, every 10th a boss floor, keys on a 15-minute clock, a 30-day season | `ETERNAL_TOWER.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
 | Tutorial | Interactive scripted onboarding with Eldric the Chronicler | `TUTORIAL.md` |
@@ -130,11 +134,16 @@ after the first stand.
 | 18 | Gear refine (star-up) |
 | 20 | Auto-repeat ×25 (×10 from level 5) |
 | 30 | Auto-repeat ×50 |
+| — | **The Eternal Tower**: all 120 Intro stages cleared |
 | — | Normal difficulty: all 120 Intro stages cleared |
 | — | Hard difficulty: all 120 Normal stages cleared |
 | — | ×3 speed: Normal complete; ×4 speed: Hard complete |
 
 Idle-chest capacity bands are level driven (`ECONOMY.md` §5).
+
+Three unlocks are gated on **progress** rather than on a level, and they are the ones that mark the
+end of a stretch of the game: Normal, Hard, and the Eternal Tower. A player who has cleared Intro
+has run out of first clears; the tower is what is waiting for them (`ETERNAL_TOWER.md` §1).
 
 ## 7. Glossary
 
@@ -148,7 +157,7 @@ Idle-chest capacity bands are level driven (`ECONOMY.md` §5).
 | Passive | Always-on or triggered ability without a slot |
 | Aura | Team-wide bonus if the champion is the leader (Legendary/Mythic only) |
 | Buff / Debuff | Timed status effect; positive/negative; see `BATTLE.md` §5 |
-| Keys | Daily/weekly boss entries |
+| Keys | Daily/weekly boss entries; the Eternal Key is the tower's own (1 a floor, 10 held) |
 | Shard | Summon token; four kinds |
 | Brew | Champion XP consumable, one per element + universal |
 | Tome | Skill-upgrade consumable, one per rarity Rare+ |
@@ -156,3 +165,5 @@ Idle-chest capacity bands are level driven (`ECONOMY.md` §5).
 | Idle chest | Offline/online accumulating reward chest |
 | Chronicler's Path | Long mission line with escalating rewards |
 | Chronicler's Provisions | Energy bundles granted by the tutorial chapters (500 + 4 × 250) |
+| Floor | One fight in the Eternal Tower; every tenth is a boss floor |
+| Season | The tower's thirty-day period; the climb resets, the best floor does not |

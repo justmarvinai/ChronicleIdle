@@ -27,6 +27,7 @@ import {
   repeatableFloors,
   rollTowerShards,
   seasonNumber,
+  seasonEndsAt,
   shardOdds,
   spendKeys,
   towerEncounterId,
@@ -39,7 +40,8 @@ const T0 = Date.UTC(2026, 8, 18);
 
 /** A tower at a given climb, keys full as of `T0`. */
 const at = (highestFloor: number, patch: Partial<TowerSave> = {}): TowerSave => ({
-  seasonStartedAt: T0,
+  firstAttemptAt: T0,
+  climbSeason: 0,
   highestFloor,
   bestFloor: highestFloor,
   keys: { value: TOWER_KEY_CAP, lastTickAt: T0 },
@@ -168,13 +170,16 @@ describe('the tower season', () => {
     const now = T0 + MS_PER_DAY * 95;
     const turned = currentSeason(state, now);
     expect(seasonNumber(state, now)).toBe(4);
-    expect(turned.seasonStartedAt).toBe(T0 + TOWER_SEASON_MS * 3);
+    // The anchor never moves; the climb is simply stamped with the season it now belongs to.
+    expect(turned.firstAttemptAt).toBe(T0);
+    expect(turned.climbSeason).toBe(3);
+    expect(seasonEndsAt(state, now)).toBe(T0 + TOWER_SEASON_MS * 4);
     expect(msUntilSeasonEnd(state, now)).toBe(TOWER_SEASON_MS - MS_PER_DAY * 5);
   });
 
   it('has no season at all until the tower is first entered', () => {
     const fresh = emptyTower(T0);
-    expect(fresh.seasonStartedAt).toBe(0);
+    expect(fresh.firstAttemptAt).toBe(0);
     expect(seasonNumber(fresh, T0 + MS_PER_DAY * 400)).toBe(0);
     expect(msUntilSeasonEnd(fresh, T0)).toBeNull();
     // And a chronicle that unlocks the tower a year later still gets a full season.

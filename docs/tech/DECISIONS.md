@@ -475,3 +475,44 @@ Two rules fell out of building it, and both are checked rather than remembered. 
 because one that could open anywhere opened on the title screen. And a lesson never opens over a
 dialog it does not name: the Welcome Back report and a level-up are the game asking the player a
 question, and two things holding the screen at once is a player with nothing to press.
+
+## ADR-043 — A tower floor is a function of its number, and the climb is one number
+**Context.** The Eternal Tower is a hundred floors that will one day be more. Authored the way
+campaign stands are, that is a hundred files of waves, drops and scaling to write and retune, and
+two hundred when the owner asks for floors 101–200. It also wants per-floor state — which floors
+are cleared, which boss floors may be fought again — which in the obvious shape is a hundred rows
+in the save that can fall out of step with each other.
+**Decision.** Nothing about a floor is authored. Who holds it, what stands on it, how hard it hits,
+what it pays and what it may drop are all pure functions of the floor number
+(`@engine/tower/encounter.ts`, `rewards.ts`), and its encounter is derived on demand and memoised
+by the content registry exactly as a campaign stage's is. The fight is pitched at Intro's flat
+multiplier and stage index 0 — both 1.0 — so `towerScale(floor)` is the *only* curve acting on a
+tower enemy: one number decides how hard a floor is. The save keeps three facts and a key pool:
+when the season began, how high this season's climb has got, and the best floor ever reached.
+Because floors are climbed in order, `highestFloor` alone says which floors are behind the player,
+which one is open and which boss floors are repeatable.
+**Consequences.** Floors 101–200 are `TOWER_FLOORS = 200` and nothing else; the curve is defined
+per floor rather than between endpoints, so growing it never retunes a floor that already exists.
+The shard table is read by floor with its last row held flat above it, which is the owner's rule
+("after floor 100 the chances do not increase") expressed as a lookup rather than as a special
+case. There is no per-floor state to desynchronise, and no migration when floors are added. The
+cost is that a floor cannot be hand-authored — a floor with a scripted gimmick would need a new
+mechanism — and that a tuning pass moves a whole band of floors at once rather than one.
+
+## ADR-044 — One regenerating pool, used by energy and the Eternal Key
+**Context.** The tower's key is energy with different numbers: a value that earns a unit on a
+clock, stops at a cap, may be granted past that cap, and is spent with an error when it is short.
+Energy already implemented all of that, timestamp discipline included. Writing it a second time
+means two places where "regeneration pauses above the cap" has to stay true, and the second one is
+the one that quietly drifts.
+**Decision.** `@engine/economy/pool.ts` is that mechanism once — `regenerate`, `msUntilNext`, `add`
+and `take` over a `{ value, lastTickAt }` pair, with the caller naming the cap, the period and the
+error code a shortfall throws. `engine/economy/energy.ts` became thin wrappers around it and the
+tower's keys are wrappers of the same shape. Nothing is stored but the pair: whole units are earned
+on read, so nothing has to run while the game is closed.
+**Consequences.** Energy's existing tests were the safety net for the extraction and passed
+unchanged, which is the evidence the refactor was behaviour-preserving. The next resource on a
+clock — a dungeon's tickets, a shop's daily stock — is a cap, a period and an error code. The
+over-cap case (a chronicle at 16/10) is one implementation rather than two, so it is either right
+everywhere or wrong everywhere; the tower's UI shows it in ember because it is a state worth
+seeing, and nothing in `0.2.0` can reach it yet.

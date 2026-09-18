@@ -5,6 +5,57 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q49 — Nothing grants Eternal Keys, so 16/10 is unreachable
+
+**Why it matters.** You asked for a cap that the count may exceed — "you can go above it for
+example 16/10 but max. always stays 10". That is built: regeneration stops at ten, a *grant* does
+not, and the display turns ember when the count is over the cap. But `0.2.0` ships no source of
+keys other than the clock, so no chronicle can actually get there. The over-cap rule is real and
+untested by play.
+
+**The default in use.** Nothing grants keys. The exchange the rule was clearly written for is
+sized and sitting in `src/content/balance/tower.ts` — `TOWER_KEY_REFILL_GEMS = 40` for
+`TOWER_KEY_REFILL_AMOUNT = 5`, priced against the energy refill (50 gems for 100 energy) so that
+a key costs about what ten minutes of the clock is worth — and deliberately **not wired**, because
+what a key should cost is an economy decision and gems already have four sinks (`ECONOMY.md` §7).
+
+Say the word and it is a button on the tower screen. The other candidates, if you would rather not
+sell them: the daily quest chest, a weekly quest, a chapter chest on the Chronicler's Path, or a
+first-clear bundle on a boss floor.
+
+### Q48 — A lost floor still spends its Eternal Key
+
+**Why it matters.** Ten keys is ten attempts, and the tower is built to be attempted at the edge of
+what a roster can beat — a floor you lose is the normal way to find the top of your climb. Refunding
+a loss would make the key free at exactly the moment it matters and turn the tower into an unlimited
+retry counter.
+
+**The default in use.** The key is charged when the floor starts and is not returned on a defeat,
+which is how the campaign's energy and the bosses' keys already work. It also closes the hole a
+refund opens: a crash or a reload mid-fight cannot buy a free attempt. The result screen says so
+plainly ("The floor held. The key is spent; another returns shortly.") rather than leaving the
+player to work it out.
+
+If you would rather a defeat cost nothing, it is one line in `applyTowerFloorStart` — charge on the
+victory instead of on the start — but a battle abandoned by closing the tab would then be free.
+
+### Q47 — When a tower season starts counting
+
+**Why it matters.** "The tower resets every 30 days" needs an anchor. A global one — every
+chronicle's season turning over on the same date, like the banner rotation's fixed epoch — is
+simpler, but it would reset a new player's tower two days after they earned it by finishing the
+whole Intro campaign, which is the opposite of a reward.
+
+**The default in use.** The season is anchored **per chronicle, to the first floor it ever
+attempts** (`tower.seasonStartedAt` is 0 until then), and turns over in whole thirty-day steps from
+there — so a chronicle closed for three months resumes on a season boundary rather than mid-season,
+and a save migrated today gets a full thirty days whenever its owner finally walks in. The best
+floor ever reached survives every reset; only the climb goes back to the foot of the tower.
+
+The alternative, if you want every player on the same season (for a future leaderboard, or so that
+"the tower resets tonight" means one thing): `seasonsElapsed` takes its epoch from a constant, and
+making that constant global rather than per-save is a two-line change in `@engine/tower/tower.ts`.
+
 ### Q46 — What "Lighthouse ≥ 90" can mean for a game that never stops animating
 
 **Why it matters.** ROADMAP Phase 15 accepts on "Lighthouse ≥ 90". Audited as a desktop page —

@@ -931,7 +931,8 @@
     "skippedChapters": []
   },
   "tower": {
-    "seasonStartedAt": 0,
+    "firstAttemptAt": 0,
+    "climbSeason": 0,
     "highestFloor": 0,
     "bestFloor": 0,
     "keys": { "value": 10, "lastTickAt": 1789214400000 }

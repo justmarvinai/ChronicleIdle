@@ -39,7 +39,8 @@ export type Route =
   /** `bench`: started by the perf screen; the result returns there instead of the result screen. */
   | { name: 'battle'; bench?: boolean }
   | { name: 'battle-result' }
-  | { name: 'locked'; feature: FeatureId | 'later-phase'; titleKey: I18nKey }
+  /** `reasonKey` overrides the level count for a feature no level opens (the tower). */
+  | { name: 'locked'; feature: FeatureId | 'later-phase'; titleKey: I18nKey; reasonKey?: I18nKey }
   | { name: 'devkit' }
   | { name: 'perf' };
 

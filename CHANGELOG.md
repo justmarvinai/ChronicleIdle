@@ -6,8 +6,58 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_The fine-tuning pass is under way. `USER_QUESTIONS.md` Q46 (what an audit can say about a game
-that never stops animating) is the one open question left._
+_Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
+say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
+lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
+
+## [0.2.0] — 2026-09-18 — The Eternal Tower
+
+The first mode that outlasts the campaign. A chronicle that has cleared Intro has run out of first
+clears; the tower gives it a hundred floors that keep getting harder, a resource that paces a
+sitting rather than a day, and a reason to come back every thirty days. Design:
+`docs/design/ETERNAL_TOWER.md`.
+
+### Added
+
+- **The Eternal Tower.** A hundred floors climbed in order, opened by clearing the **whole Intro
+  campaign** — a progress gate, not a level gate, which is why the Game Modes card and the Locked
+  screen both name the campaign instead of a number. Ordinary floors are one-time clears; every
+  tenth floor is a **boss floor** and may be fought again for its shards. The tower resets every
+  thirty days: the climb goes back to the foot of the tower, the best floor ever reached does not.
+- **Nothing about a floor is authored** (ADR-043). Who holds it (the twelve campaign factions
+  cycle), what stands on it, how hard it hits, what it pays and what it may drop are all functions
+  of the floor number, so floors 101–200 are one constant away. The fight is pitched at Intro's
+  flat multiplier and stage index 0, which leaves `towerScale(floor)` as the only curve acting on a
+  tower enemy: floor 1 is 5.0× the archetype base (Intro's last stand is 4.8), floor 50 is 24.0 and
+  floor 100 about 120 — four times the campaign's hardest.
+- **The Eternal Key**, the 25th wallet currency: one per attempt won or lost, capped at 10, one
+  back every fifteen minutes. A grant may carry the count above the cap (16/10 holds, with the
+  clock frozen until spending drops it back under) — nothing grants keys yet, so `USER_QUESTIONS.md`
+  Q49 asks the owner whether to wire the gem exchange that is already sized in `balance/tower.ts`.
+- **What a floor pays.** Gold (`600 × 1.045^(floor−1)`, ×3 on a boss floor), 1–5 energy in steps of
+  twenty floors, Universal Brews, an element brew on a boss floor, and champion and chronicle XP.
+  Shards are the only rolled part, on the owner's own table: floor 10 pays Ancient at 0.1 % up to
+  floor 100's 5 % Ancient and 0.65 % Sacred, and floors above the table's last row keep that row's
+  odds. A defeat pays nothing, and the key is already spent.
+- **The tower screen** (`docs/tech/UI_DESIGN.md` §5.13a): the season, the reset countdown, the
+  climb, the best floor and the keys on the left; a hundred-rung ladder on the right, reversed so
+  floor 1 sits at the bottom, opening scrolled to the floor a key may buy. The battle result swaps
+  stars and spoils for what the floor paid and whether the climb advanced.
+- **Account Power in the header.** Every owned champion's power, summed, under the experience bar
+  on every screen (the owner's ask alongside the tower).
+- Save **v14**: the `tower` slice and the `key_eternal` wallet row, with the 13 → 14 migration and
+  a `v14.json` fixture. The migration deliberately writes `firstAttemptAt: 0` — a season a
+  chronicle has not started must not already be running down.
+
+### Changed
+
+- **One regenerating pool, used twice** (ADR-044). `@engine/economy/pool.ts` is now the single
+  implementation of "a value that earns a unit on a clock, stops at a cap, accepts grants past it
+  and is spent with a typed error"; energy became thin wrappers around it and the tower's keys are
+  wrappers of the same shape. Energy's existing tests passed unchanged, which is what says the
+  extraction changed no behaviour.
+- The Locked screen can state a reason other than a level, so a feature no level opens says what
+  actually opens it.
 
 ## [0.1.2] — 2026-09-17 — The owner's second batch
 

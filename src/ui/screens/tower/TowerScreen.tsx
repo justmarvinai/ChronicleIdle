@@ -25,7 +25,7 @@ import styles from './TowerScreen.module.css';
 type TowerRoute = Extract<Route, { name: 'tower' }>;
 
 /**
- * The Eternal Tower (docs/tech/UI_DESIGN.md §5.16): the climb on the right as a ladder of floors,
+ * The Eternal Tower (docs/tech/UI_DESIGN.md §5.13a): the climb on the right as a ladder of floors,
  * the season and the keys on the left. A hundred rows is a list, not a grid, so it scrolls rather
  * than windowing — and it opens on the floor the player is about to fight.
  */

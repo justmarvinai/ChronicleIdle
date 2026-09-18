@@ -156,9 +156,10 @@ bosses ×1.8 HP and ×1.25 ATK/DEF. Strings live in `src/i18n/en/campaign.ts`.
 
 Campaign encounters are **not** authored: `stageEncounter(settlement, stage, difficulty)` derives
 all 360 of them from the stage, and the registry resolves and memoises them by the id
-`encounter.stage.<nn>.<nn>.<difficulty>`. Period bosses derive theirs too (§3.2), so the only
-authored `EncounterDef` left is the perf bench (`src/content/encounters/bench.ts`). The validator
-checks enemy ids, i18n keys, the backdrop key and the party size per kind.
+`encounter.stage.<nn>.<nn>.<difficulty>`. Period bosses derive theirs too (§3.2), and so does every
+floor of the Eternal Tower (`encounter.tower.<nnn>`, §3.3), so the only authored `EncounterDef`
+left is the perf bench (`src/content/encounters/bench.ts`). The validator checks enemy ids, i18n
+keys, the backdrop key and the party size per kind.
 
 ### 3.2 Period boss
 
@@ -222,6 +223,29 @@ bigger pool and pays more chronicle XP than the one below it, the tier enemy car
 stats, the boss's enrage cadence and its phases, the escort each tier fields is the one the boss
 block points at, and the first enrage step must land inside half the ally-turn limit — the share of a race a boss actually gets to act in, so a mechanic that could never fire is
 a build error (ADR-036).
+
+### 3.3 Tower floors
+
+There is **nothing to author**. A floor of the Eternal Tower is a function of its number
+(`@engine/tower/encounter.ts`, ADR-043): the twelve campaign factions cycle as it climbs, the
+window of units walks by one per floor, every tenth floor fields the faction's named boss with two
+of its own, and `towerScale(floor)` is the only multiplier on the enemy — the encounter is pitched
+at `difficulty: 'intro'` and `stageIndex: 0`, both of which come out at 1.0, so one number decides
+how hard a floor is.
+
+To change the tower you change `src/content/balance/tower.ts`:
+
+| I want… | Change |
+| --- | --- |
+| more floors | `TOWER_FLOORS`. Nothing else: the curve is defined per floor, so existing floors keep their numbers |
+| the climb steeper or kinder | `TOWER_SCALE_BASE` (floor 1, against Intro's last stand at 4.8) and `TOWER_SCALE_GROWTH` — run `pnpm sim:balance` after |
+| a floor to pay more | `TOWER_GOLD_BASE` / `_GROWTH` / `_BOSS_MULT`, `TOWER_ENERGY_PER_BAND`, the brew and XP helpers |
+| different shard odds | a row in `TOWER_SHARD_ODDS`. Floors above its last row keep that row's odds, so the table only needs rows where the numbers change |
+| a different key economy | `TOWER_KEY_CAP`, `TOWER_KEY_REGEN_SECONDS`, `TOWER_KEY_COST` |
+| a longer or shorter season | `TOWER_SEASON_DAYS`. It is read at the door, so changing it needs no migration |
+
+A floor that needed a scripted gimmick would need a new mechanism rather than a data file — say so
+in `USER_QUESTIONS.md` before building one.
 
 ## 4. Settlement and stands
 
@@ -483,6 +507,7 @@ immediately by every chronicle that already qualifies.
 | `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers |
 | `summon.ts` | shard rates, pity, exchange prices, featured weight, rotation epoch |
 | `idle.ts` | capacity bands, hourly yields, chance rolls |
+| `tower.ts` | floor count, the scale curve, enemy levels, the faction cycle, key cap/regen, season length, gold/energy/brew/XP per floor, `TOWER_SHARD_ODDS` |
 | `economy.ts` | starting wallet, name limits, reset hour/day, gem/gold sanity targets |
 | `unlocks.ts` | player-level unlock table |
 

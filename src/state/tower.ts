@@ -132,8 +132,9 @@ export function applyTowerFloorStart(
   if (!spent.ok) return spent;
   save.tower = {
     ...state,
-    // A season is anchored to the first floor actually attempted, never to the save's birthday.
-    seasonStartedAt: state.seasonStartedAt > 0 ? state.seasonStartedAt : input.now,
+    // A season is anchored to the first floor actually attempted, never to the save's birthday,
+    // and the anchor never moves again.
+    firstAttemptAt: state.firstAttemptAt > 0 ? state.firstAttemptAt : input.now,
     keys: spent.value,
   };
   return ok({ floor: input.floor, encounterId: towerEncounterId(input.floor), keysLeft: spent.value.value });

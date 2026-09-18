@@ -309,6 +309,7 @@ docs/design/GEAR.md            slots, rarities, stars, main/sub stats, sets, upg
 docs/design/ECONOMY.md         currencies, energy, player level, idle chest, sources & sinks
 docs/design/SUMMONING.md       shards, banners, rates, pity, rotation, reveal ritual
 docs/design/BOSSES.md          daily boss and weekly boss
+docs/design/ETERNAL_TOWER.md   the endless tower: floors, keys, the season, the shard table
 docs/design/QUESTS_MISSIONS.md daily/weekly quests and the Chronicler's Path mission line
 docs/design/TUTORIAL.md        interactive onboarding script
 docs/tech/ARCHITECTURE.md      runtime architecture, engine design, state, saves, rendering

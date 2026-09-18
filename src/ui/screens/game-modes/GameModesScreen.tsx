@@ -36,6 +36,10 @@ interface ModeDef {
    * condition (`ETERNAL_TOWER.md` §1), which no level can stand in for.
    */
   gate?: 'intro';
+  /** What the locked button says when "Unlocks at level N" would be a lie. */
+  gateKey?: I18nKey;
+  /** What the Locked screen says instead of counting levels, for the same reason. */
+  lockedKey?: I18nKey;
 }
 
 const MODES: readonly ModeDef[] = [
@@ -75,6 +79,8 @@ const MODES: readonly ModeDef[] = [
     glyph: 'glyph.broken_shackle',
     route: { name: 'tower' },
     gate: 'intro',
+    gateKey: 'gameModes.tower.gate',
+    lockedKey: 'gameModes.tower.locked',
   },
 ];
 
@@ -109,7 +115,12 @@ export default function GameModesScreen(_props: ScreenProps) {
               actions.push(
                 unlocked && mode.route
                   ? mode.route
-                  : { name: 'locked', feature: mode.feature, titleKey: mode.titleKey },
+                  : {
+                      name: 'locked',
+                      feature: mode.feature,
+                      titleKey: mode.titleKey,
+                      ...(mode.lockedKey ? { reasonKey: mode.lockedKey } : {}),
+                    },
               )
             }
           />
@@ -175,7 +186,9 @@ function ModeCard({
             onClick={() => (playSfx('ui.error'), onOpen(false))}
             data-testid={`enter-${mode.id}`}
           >
-            {t('common.unlocksAtLevel', { level: unlockLevel(mode.feature) })}
+            {mode.gateKey
+              ? t(mode.gateKey)
+              : t('common.unlocksAtLevel', { level: unlockLevel(mode.feature) })}
           </Button>
         )}
       </div>
