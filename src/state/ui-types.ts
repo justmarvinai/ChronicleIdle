@@ -29,6 +29,8 @@ export type Route =
   | { name: 'quests'; period?: QuestPeriod }
   /** The Chronicler's Path; `chapter` opens on one of its ten tabs (`QUESTS_MISSIONS.md` §4). */
   | { name: 'missions'; chapter?: number }
+  /** The Eternal Tower; `floor` scrolls the ladder to one (`ETERNAL_TOWER.md` §7). */
+  | { name: 'tower'; floor?: number }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }

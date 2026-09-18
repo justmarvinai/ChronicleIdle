@@ -26,6 +26,12 @@ import { addEnergy, regenerateEnergy, spendEnergy } from '@engine/economy/energy
 import { grant, spend, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { createNewGame } from '@engine/save/new-game';
+import {
+  applyTowerFloorFinish,
+  applyTowerFloorStart,
+  type TowerFloorStarted,
+  type TowerFloorSummary,
+} from './tower';
 import type { SaveGame, Settings, TeamMode } from '@engine/schema/save';
 import type { BattleOutcome } from '@engine/battle/index';
 import { sanitizeTeam, validateTeam } from '@engine/battle/teams';
@@ -249,6 +255,14 @@ export interface GameActions {
   claimIdleChest(): Result<IdleClaimSummary>;
   /** Spends a boss key on a tier and hands back the fight it bought (`BOSSES.md` §1). */
   startBossFight(bossId: string, tierId: string): Result<BossFightStarted>;
+  /** Spends an Eternal Key and points the save at the tower floor it bought. */
+  startTowerFloor(floor: number): Result<TowerFloorStarted>;
+  /** Banks a finished tower floor: the climb, the rewards and the XP. */
+  finishTowerFloor(input: {
+    floor: number;
+    outcome: BattleOutcome;
+    party: readonly string[];
+  }): Result<TowerFloorSummary>;
   /** Banks a finished boss fight: its damage joins the period's pool for that tier. */
   finishBossFight(input: {
     bossId: string;
@@ -1160,6 +1174,36 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               });
               // The fight already paid the level; the celebration waits for the result screen.
               noteLevelUp(summary.levelUp, 'boss', false);
+              return result;
+            },
+
+            startTowerFloor(floor) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<TowerFloorStarted> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTowerFloorStart(state.save, { floor, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              return result;
+            },
+
+            finishTowerFloor(input) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<TowerFloorSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTowerFloorFinish(state.save, { ...input, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const summary = result.value;
+              if (summary.changes.length)
+                events.emit({ type: 'currency.changed', changes: summary.changes, reason: 'tower' });
+              // The floor already paid the level; the celebration waits for the result screen.
+              noteLevelUp(summary.levelUp, 'tower', false);
               return result;
             },
 

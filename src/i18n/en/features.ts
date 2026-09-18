@@ -31,6 +31,8 @@ export const features = {
   'feature.quests_weekly.hint': 'A longer list, a heavier chest.',
   'feature.weekly_boss.name': 'Weekly Boss',
   'feature.weekly_boss.hint': 'The hardest fight the week has.',
+  'feature.eternal_tower.name': 'The Eternal Tower',
+  'feature.eternal_tower.hint': 'A hundred floors, and a key every quarter hour.',
   'feature.gear_refine.name': 'Gear Refining',
   'feature.gear_refine.hint': 'Reroll a substat, at a price.',
   'feature.auto_repeat_10.name': 'Auto-repeat ×10',

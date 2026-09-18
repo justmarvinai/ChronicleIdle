@@ -83,6 +83,10 @@ export const ui = {
   'gameModes.campaign.body': 'Twelve settlements, ten stands each. Three difficulties.',
   'gameModes.dailyBoss': 'Daily Boss',
   'gameModes.dailyBoss.body': 'Gravemaw, the Bone Tyrant. Two keys a day; damage adds up.',
+  'gameModes.tower': 'The Eternal Tower',
+  'gameModes.tower.body':
+    'A hundred floors that only get harder. One key an attempt; every tenth floor a boss that may drop shards.',
+  'gameModes.tower.locked': 'Finish the Intro campaign — all twelve settlements — and the tower opens.',
   'gameModes.weeklyBoss': 'Weekly Boss',
   'gameModes.weeklyBoss.body': 'Nyxara, Mother of Shadows. Three keys a week; three phases.',
   'gameModes.enter': 'Enter',

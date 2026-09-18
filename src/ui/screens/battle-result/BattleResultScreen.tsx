@@ -5,9 +5,11 @@ import { playSfx } from '@audio/index';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { battleController } from '@state/battle/index';
 import { bossSession, clearBossSession } from '@state/boss-session';
+import { clearTowerSession, towerSession } from '@state/tower-session';
 import { batchRewards, batchStars, campaignSession, clearCampaignSession } from '@state/campaign-session';
 import { currentRunView, launchCampaignRun, nextPointerAfter } from '@ui/flows/campaign';
 import { BossOutcomePanel } from './BossOutcomePanel';
+import { TowerOutcomePanel } from './TowerOutcomePanel';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
@@ -40,6 +42,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const campaign = useStore(campaignSession);
   // A boss fight banks damage instead of stars, so its result reads its own panel (BOSSES.md §1).
   const boss = useStore(bossSession);
+  // A tower floor banks a climb; its own panel says what the floor paid (ETERNAL_TOWER.md §4).
+  const tower = useStore(towerSession);
   const outcome = session.outcome;
   const encounter = session.encounter;
   const victory = outcome?.kind === 'victory';
@@ -101,6 +105,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
     battleController.end();
     clearCampaignSession();
     clearBossSession();
+    clearTowerSession();
     actions.resetStack({ name: 'hub' });
     if (route === 'hub') return;
     actions.push({ name: 'campaign' });
@@ -222,6 +227,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
           ) : null}
           {boss.summary ? (
             <BossOutcomePanel summary={boss.summary} />
+          ) : tower.summary ? (
+            <TowerOutcomePanel summary={tower.summary} />
           ) : rewards ? (
             <div className={styles.rewards} data-testid="result-rewards">
               <h3 className={`display ${styles.rewardTitle}`}>{t('battleResult.rewards')}</h3>
@@ -302,7 +309,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
                 </p>
               ) : null}
             </div>
-          ) : (
+          ) : tower.summary ? null : (
             <p className={styles.noRewards}>{t('battleResult.noRewards')}</p>
           )}
           <p className={`num ${styles.seed}`}>{t('battleResult.seed', { seed: outcome.seed })}</p>
@@ -369,7 +376,22 @@ export default function BattleResultScreen(_props: ScreenProps) {
             {t('bosses.result.back')}
           </Button>
         ) : null}
-        {boss.summary ? null : (
+        {tower.summary ? (
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => {
+              battleController.end();
+              clearTowerSession();
+              actions.resetStack({ name: 'hub' });
+              actions.push({ name: 'tower' });
+            }}
+            data-testid="result-tower"
+          >
+            {t('tower.result.back')}
+          </Button>
+        ) : null}
+        {boss.summary || tower.summary ? null : (
           <Button
             variant="secondary"
             size="md"
@@ -392,7 +414,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
             {t('battleResult.replay')}
           </Button>
         ) : null}
-        {boss.summary ? null : victory && next ? (
+        {boss.summary || tower.summary ? null : victory && next ? (
           <Button variant="primary" size="lg" onClick={goNext} data-testid="result-next">
             {t('battleResult.nextStage')}
           </Button>

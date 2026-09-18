@@ -14,6 +14,7 @@ import { StatusIcon } from '@ui/components/StatusIcon/StatusIcon';
 import { STATUS_BY_ID } from '@content/statuses/index';
 import { batchRewards, campaignSession, stopCampaignBatch } from '@state/campaign-session';
 import { settleBossFight } from '@ui/flows/boss';
+import { settleTowerFloor } from '@ui/flows/tower';
 import { settleCampaignRun } from '@ui/flows/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
@@ -130,8 +131,11 @@ export default function BattleScreen({ route }: ScreenProps) {
     // A victory the player steered every turn of counts for the daily quest; one the AI touched
     // does not (QUESTS_MISSIONS.md §2).
     actions.recordBattle(outcome, encounter.id, !usedAuto);
-    // A boss fight banks its damage here; a campaign run pays out and may start the next of a batch.
-    if (!settleBossFight(outcome) && settleCampaignRun(outcome).repeated) return;
+    // A boss fight banks its damage here, a tower floor its climb; a campaign run pays out and may
+    // start the next of a batch. Each says whether the fight was theirs, so only one of them acts.
+    if (settleBossFight(outcome) || settleTowerFloor(outcome)) {
+      // Nothing to repeat: a key bought one fight.
+    } else if (settleCampaignRun(outcome).repeated) return;
     const id = window.setTimeout(() => actions.replace({ name: 'battle-result' }), RESULT_DELAY_MS);
     return () => window.clearTimeout(id);
   }, [status, outcome, encounter, actions, bench, usedAuto]);

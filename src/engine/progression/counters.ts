@@ -69,6 +69,13 @@ export const COUNTER_KEYS = [
   // The Chronicler's Path
   'missions.claimed',
   'missions.chests',
+  // The Eternal Tower
+  'tower.attempts',
+  'tower.cleared',
+  /** Boss floors cleared, which is what the shard rolls come from. */
+  'tower.bosses',
+  /** Highest floor ever reached. Written as a maximum rather than added to. */
+  'tower.best',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */
@@ -90,6 +97,8 @@ export const COUNTER_PREFIXES = [
   'forge.crafts.',
   'summon.pulls.',
   'summon.rarity.',
+  /** `tower.floor.<n>`, so a mission may name a floor. */
+  'tower.floor.',
   QUEST_CHEST_COUNTER,
 ] as const;
 

@@ -9,6 +9,7 @@ import type { CurrencyDef, CurrencyId } from '@content/currencies/types';
 import { ENCOUNTERS, ENCOUNTER_BY_ID } from '@content/encounters/index';
 import type { EncounterDef } from '@content/encounters/types';
 import { ENEMIES, ENEMY_BY_ID } from '@content/enemies/index';
+import { towerFaction } from '@content/balance/tower';
 import { FACTIONS, FACTION_BY_ID } from '@content/enemies/factions/index';
 import type { FactionDef } from '@content/enemies/faction';
 import type { EnemyDef } from '@content/enemies/types';
@@ -38,6 +39,7 @@ import type { TutorialChapterDef, TutorialStepDef } from '@content/tutorial/type
 import type { Difficulty } from '@content/balance/battle';
 import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounter';
 import { bossEncounter, parseBossEncounterId } from '@engine/bosses/encounter';
+import { parseTowerEncounterId, towerEncounter, towerEncounterId } from '@engine/tower/encounter';
 
 export interface ContentRegistry {
   currencies: readonly CurrencyDef[];
@@ -48,7 +50,7 @@ export interface ContentRegistry {
   enemyById(id: string): EnemyDef | undefined;
   /** Authored encounters only; campaign fights are derived from their stage. */
   encounters: readonly EncounterDef[];
-  /** Resolves authored ids and, on demand, `encounter.stage.<nn>.<nn>.<difficulty>`. */
+  /** Resolves authored ids and, on demand, campaign stages, boss tiers and tower floors. */
   encounterById(id: string): EncounterDef | undefined;
   /** The encounter fought when a stage is run on a difficulty (CAMPAIGN.md §8). */
   stageEncounter(stageId: string, difficulty: Difficulty): EncounterDef | undefined;
@@ -87,6 +89,8 @@ export interface ContentRegistry {
   bossTier(bossId: string, tierId: string): BossTierDef | undefined;
   /** The encounter a key buys on a boss tier (BOSSES.md §1). */
   bossEncounter(bossId: string, tierId: string): EncounterDef | undefined;
+  /** The encounter a key buys on a tower floor (ETERNAL_TOWER.md §3). */
+  towerEncounter(floor: number): EncounterDef | undefined;
   /** The tutorial script, in the order it is taught (`TUTORIAL.md`). */
   tutorialChapters: readonly TutorialChapterDef[];
   tutorialSteps: readonly TutorialStepDef[];
@@ -121,6 +125,18 @@ export function buildContentRegistry(): ContentRegistry {
     const tier = tierOf(bossId, tierId);
     return boss && tier ? bossEncounter(boss, tier) : undefined;
   };
+  /** A tower floor's encounter: derived from its number and the faction holding it. */
+  const towerEncounterOf = (floor: number): EncounterDef | undefined => {
+    const id = towerEncounterId(floor);
+    const cached = derived.get(id);
+    if (cached) return cached;
+    const settlement = SETTLEMENT_BY_INDEX[towerFaction(floor)];
+    const faction = settlement ? FACTION_BY_ID[settlement.faction] : undefined;
+    if (!settlement || !faction) return undefined;
+    const encounter = towerEncounter(floor, faction, settlement);
+    derived.set(id, encounter);
+    return encounter;
+  };
   return {
     currencies: CURRENCIES,
     currencyById: CURRENCY_BY_ID,
@@ -135,7 +151,9 @@ export function buildContentRegistry(): ContentRegistry {
       const stage = parseStageEncounterId(id);
       if (stage) return stageEncounterOf(stage.stageId, stage.difficulty);
       const boss = parseBossEncounterId(id);
-      return boss ? bossEncounterOf(boss.bossId, boss.tierId) : undefined;
+      if (boss) return bossEncounterOf(boss.bossId, boss.tierId);
+      const floor = parseTowerEncounterId(id);
+      return floor === null ? undefined : towerEncounterOf(floor);
     },
     stageEncounter: stageEncounterOf,
     factions: FACTIONS,
@@ -163,6 +181,7 @@ export function buildContentRegistry(): ContentRegistry {
     questById: (id) => QUEST_BY_ID[id],
     bossTier: tierOf,
     bossEncounter: bossEncounterOf,
+    towerEncounter: towerEncounterOf,
     tutorialChapters: TUTORIAL_CHAPTERS,
     tutorialSteps: TUTORIAL_STEPS,
     tutorialStepById: (id) => TUTORIAL_STEP_BY_ID[id],

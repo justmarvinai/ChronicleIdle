@@ -5,6 +5,7 @@ import { sanitizeTeam, suggestTeam } from '@engine/battle/teams';
 import { scaledEnemyStats } from '@engine/battle/index';
 import { parseStageEncounterId } from '@engine/campaign/encounter';
 import { parseBossEncounterId } from '@engine/bosses/encounter';
+import { parseTowerEncounterId } from '@engine/tower/encounter';
 import { parseStageId, type StagePointer } from '@engine/campaign/progress';
 import { autoRepeatTiers } from '@engine/campaign/run';
 import { unlockLevel } from '@engine/progression/unlocks';
@@ -30,6 +31,7 @@ import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { launchBattle } from '@ui/flows/battle';
 import { launchBossFight } from '@ui/flows/boss';
+import { launchTowerFloor } from '@ui/flows/tower';
 import { launchCampaignRun } from '@ui/flows/campaign';
 import { pointerCost, runsAffordable, stageRefOf } from '@state/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
@@ -61,6 +63,8 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const pointer = stagePointerOf(encounterId);
   // A boss fight costs a key instead of energy, and its own flow spends it (BOSSES.md §1).
   const boss = parseBossEncounterId(encounterId);
+  // So does a tower floor, and its own flow spends that (ETERNAL_TOWER.md §3).
+  const towerFloor = parseTowerEncounterId(encounterId);
   const ref = pointer ? stageRefOf(pointer) : null;
   const partySize = encounter?.partySize ?? 3;
   const mode: TeamMode = partySize === 4 ? 'boss' : 'campaign';
@@ -119,12 +123,16 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
       ? launchCampaignRun({ pointer, instanceIds: team, control, repeat })
       : boss
         ? launchBossFight({ bossId: boss.bossId, tierId: boss.tierId, instanceIds: team, control })
-        : launchBattle({ encounterId, instanceIds: team, control });
+        : towerFloor !== null
+          ? launchTowerFloor({ floor: towerFloor, instanceIds: team, control })
+          : launchBattle({ encounterId, instanceIds: team, control });
     if (!result.ok) {
       setError(
         result.error.code === 'insufficient_energy'
           ? t('campaignRun.insufficientEnergy', { cost })
-          : result.error.message,
+          : result.error.code === 'insufficient_keys'
+            ? t('tower.noKeys')
+            : result.error.message,
       );
       playSfx('ui.error');
     }

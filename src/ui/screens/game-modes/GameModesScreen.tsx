@@ -7,6 +7,7 @@ import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { currentPointer } from '@state/campaign';
+import { isTowerUnlocked } from '@state/tower';
 import { selectActions, selectFeatureUnlocked, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -30,6 +31,11 @@ interface ModeDef {
   glyph: GlyphKey;
   /** Where "Enter" goes; locked-phase modes fall back to the Locked screen. */
   route?: Route;
+  /**
+   * `intro` gates on the whole Intro campaign instead of on a player level — the tower's own
+   * condition (`ETERNAL_TOWER.md` §1), which no level can stand in for.
+   */
+  gate?: 'intro';
 }
 
 const MODES: readonly ModeDef[] = [
@@ -59,6 +65,16 @@ const MODES: readonly ModeDef[] = [
     art: 'bg.bg9',
     glyph: 'glyph.cursed_eye',
     route: { name: 'bosses', boss: 'boss.nyxara' },
+  },
+  {
+    id: 'tower',
+    feature: 'eternal_tower',
+    titleKey: 'gameModes.tower',
+    bodyKey: 'gameModes.tower.body',
+    art: 'bg.bg1',
+    glyph: 'glyph.broken_shackle',
+    route: { name: 'tower' },
+    gate: 'intro',
   },
 ];
 
@@ -115,7 +131,9 @@ function ModeCard({
   note?: string;
   onOpen: (unlocked: boolean) => void;
 }) {
-  const unlocked = useGameStore(selectFeatureUnlocked(mode.feature));
+  const byLevel = useGameStore(selectFeatureUnlocked(mode.feature));
+  const introDone = useGameStore((state) => (state.save ? isTowerUnlocked(state.save) : false));
+  const unlocked = mode.gate === 'intro' ? introDone : byLevel;
   const art = backdrop(mode.art);
   return (
     <DecoFrame

@@ -13,6 +13,7 @@ import { sets } from './sets';
 import { summoning } from './summoning';
 import { tavern } from './tavern';
 import { titles } from './titles';
+import { tower } from './tower';
 import { tutorial } from './tutorial';
 import { ui } from './ui';
 
@@ -33,5 +34,6 @@ export const en = {
   ...bosses,
   ...quests,
   ...missions,
+  ...tower,
   ...tutorial,
 } as const;

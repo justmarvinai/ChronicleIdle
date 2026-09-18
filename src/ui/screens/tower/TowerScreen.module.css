@@ -1,0 +1,182 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.side {
+  position: absolute;
+  left: 24px;
+  top: 100px;
+  width: 440px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+}
+
+.panel {
+  height: 100%;
+}
+.panelBody {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 24px;
+  color: var(--gold-3);
+}
+
+.blurb {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-3);
+}
+
+.rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 5px;
+  border-bottom: var(--hairline);
+}
+.row dt {
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.row dd {
+  margin: 0 0 0 auto;
+  font-size: 18px;
+  color: var(--text-1);
+}
+
+/* The keys: the count, whether it is over the cap, and when the next one lands. */
+.keys {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+.keyCount {
+  font-size: 22px;
+  color: var(--gold-3);
+}
+.keyCount[data-over='true'] {
+  color: var(--ember-3);
+}
+.keyNext {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.topped {
+  margin: 0;
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--gold-2);
+}
+
+.enter {
+  width: 100%;
+}
+
+.ladderWrap {
+  composes: surfaceStone from global;
+  position: absolute;
+  left: 488px;
+  right: 24px;
+  top: 100px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  padding: 10px 14px;
+}
+
+.ladder {
+  height: 100%;
+}
+
+.floors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* One rung. The grid keeps every column in line down the whole ladder. */
+.floor {
+  display: grid;
+  grid-template-columns: 54px 24px 1fr 150px 108px 92px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.12));
+}
+
+.number {
+  font-size: 20px;
+  color: var(--text-2);
+}
+
+.bossFloor {
+  background: linear-gradient(to right, rgba(74, 24, 18, 0.55), rgba(0, 0, 0, 0.15));
+  border-color: rgba(201, 162, 74, 0.28);
+}
+
+/* The one floor a key may open leads the eye; everything behind or above it recedes. */
+.next {
+  border-color: var(--gold-2);
+  background: linear-gradient(to right, rgba(120, 76, 22, 0.5), rgba(0, 0, 0, 0.2));
+}
+.next .number {
+  color: var(--gold-3);
+}
+.cleared {
+  opacity: 0.55;
+}
+.locked {
+  opacity: 0.38;
+}
+.repeatable .number {
+  color: var(--gold-2);
+}
+
+.who {
+  font-size: 15px;
+  color: var(--text-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.odds {
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: right;
+}
+
+.state {
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  text-align: right;
+}
+
+.spacer,
+.noButton {
+  display: block;
+}
