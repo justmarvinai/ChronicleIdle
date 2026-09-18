@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { playSfx } from '@audio/index';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { content } from '@content/registry';
+import { accountPower } from '@engine/champions/query';
 import { xpToNextLevel } from '@engine/progression/player-level';
 import { t, translate } from '@i18n/index';
-import { selectProfile } from '@state/selectors';
+import { selectInventory, selectProfile, selectRoster } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { Bar } from '@ui/components/Bar/Bar';
+import { Glyph } from '@ui/components/Glyph/Glyph';
+import { entriesOf } from '@ui/screens/champions/roster-view';
 import { profileAvatar } from '@ui/champions/art';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import { imageUrl } from '@assets/manifest';
@@ -16,6 +19,11 @@ import styles from './ProfileChip.module.css';
 /** Avatar ring, name, worn title, level and XP bar (clones the reference profile chip). */
 export function ProfileChip({ onClick }: { onClick: () => void }) {
   const profile = useGameStore(selectProfile);
+  const roster = useGameStore(selectRoster);
+  const inventory = useGameStore(selectInventory);
+  // Every champion's power, gear and sets included. Memoised on the two slices it reads, because
+  // the chip is on every screen and a full roster is two hundred stat blocks.
+  const power = useMemo(() => accountPower(entriesOf(roster, inventory)), [roster, inventory]);
   const level = profile?.level ?? 0;
   // The ring flares each time the level climbs; the first render is not a level-up.
   const seen = useRef(level);
@@ -90,6 +98,11 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
           height={16}
           width={190}
         />
+        <span className={styles.power} title={t('topbar.accountPower')} data-testid="account-power">
+          <Glyph glyph="glyph.crossed_swords" size={13} color="var(--gold-2)" />
+          <span className={styles.powerLabel}>{t('topbar.accountPower')}</span>
+          <span className={`num ${styles.powerValue}`}>{power.toLocaleString('en-US')}</span>
+        </span>
       </span>
     </button>
   );

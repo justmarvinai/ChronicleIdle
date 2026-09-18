@@ -92,6 +92,14 @@ export function rosterEntries(
   return entries;
 }
 
+/**
+ * Every champion's power added together — what the header calls the chronicle's standing. Gear and
+ * set bonuses are already in each entry's power, so this is the whole account in one number.
+ */
+export function accountPower(entries: readonly RosterEntry[]): number {
+  return entries.reduce((sum, entry) => sum + entry.power, 0);
+}
+
 export function matchesFilters(entry: RosterEntry, filters: RosterFilters): boolean {
   const { instance, def } = entry;
   if (filters.rarities.length && !filters.rarities.includes(def.rarity)) return false;

@@ -73,6 +73,7 @@ export const ui = {
   'hub.weeklyBoss': 'Weekly Boss',
 
   'topbar.profile': 'Profile',
+  'topbar.accountPower': 'Account Power',
   'topbar.settings': 'Settings',
   'topbar.wallet': 'Wallet',
   'topbar.add': 'Get more {currency}',
