@@ -7,6 +7,7 @@ export const CURRENCY_IDS = [
   'energy',
   'key_daily',
   'key_weekly',
+  'key_eternal',
   'shard_faded',
   'shard_ancient',
   'shard_sacred',

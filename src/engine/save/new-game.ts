@@ -11,6 +11,7 @@ import {
   type Settings,
 } from '@engine/schema/save';
 import { dailyKey, weeklyKey } from '@engine/time/clock';
+import { emptyTower } from '@engine/tower/tower';
 
 export interface NewGameInput {
   name: string;
@@ -66,5 +67,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     missions: { claimed: [], baseline: {}, chests: [], gearChoice: null },
     // Nothing taught yet: chapter 1 opens over the new-game dialog itself (TUTORIAL.md 1.1).
     tutorial: { completedSteps: [], skippedChapters: [] },
+    // The tower waits on the whole Intro campaign; its season starts on the first floor attempted.
+    tower: emptyTower(now),
   };
 }

@@ -7,6 +7,7 @@ import { TUTORIAL_CHAPTERS } from '@content/tutorial/index';
 import { SaveError } from '@engine/errors';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
 import { stepFeatureGates } from '@engine/tutorial/index';
+import { TOWER_KEY_CAP } from '@content/balance/tower';
 import { SAVE_VERSION, saveSchema, type SaveGame } from '@engine/schema/save';
 
 export interface MigrationStep {
@@ -236,6 +237,34 @@ export const MIGRATIONS: readonly MigrationStep[] = [
         ...raw,
         saveVersion: 13,
         tutorial: { ...tutorial, completedSteps: moved },
+      };
+    },
+  },
+  {
+    from: 13,
+    to: 14,
+    /*
+     * The Eternal Tower. A chronicle that predates it has never climbed, so the slice starts
+     * empty — and deliberately with `seasonStartedAt: 0` rather than `now`: a season is anchored
+     * to the first floor actually attempted, so a save migrated today and opened in a month still
+     * gets a full thirty days when its owner finally walks in (ETERNAL_TOWER.md §6).
+     *
+     * The keys start full, which is what a new tower is worth: ten floors' worth of welcome.
+     * `key_eternal` also joins the wallet, because the wallet holds a row per currency.
+     */
+    migrate: (raw) => {
+      const wallet = (raw['wallet'] ?? {}) as Record<string, number>;
+      const updatedAt = typeof raw['updatedAt'] === 'number' ? raw['updatedAt'] : 0;
+      return {
+        ...raw,
+        saveVersion: 14,
+        wallet: { ...wallet, key_eternal: wallet['key_eternal'] ?? 0 },
+        tower: {
+          seasonStartedAt: 0,
+          highestFloor: 0,
+          bestFloor: 0,
+          keys: { value: TOWER_KEY_CAP, lastTickAt: updatedAt },
+        },
       };
     },
   },

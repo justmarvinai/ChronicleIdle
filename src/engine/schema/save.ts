@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 13 as const;
+export const SAVE_VERSION = 14 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -232,6 +232,21 @@ const tutorialSchema = z.object({
   skippedChapters: z.array(z.string()),
 });
 
+/**
+ * The Eternal Tower (ETERNAL_TOWER.md). Three facts and a key pool: when this season began, how
+ * high the climb got, and the best it has ever got. Which floors are behind the player follows
+ * from the climb — floors are taken in order — so there is no per-floor list to keep in step.
+ */
+export const towerSchema = z.object({
+  /** 0 while the tower has never been entered; a season is anchored to the first attempt. */
+  seasonStartedAt: z.number().int().nonnegative(),
+  highestFloor: z.number().int().min(0),
+  /** Outlives the season, as a boss record outlives its period. */
+  bestFloor: z.number().int().min(0),
+  /** Eternal Keys: a value that a grant may carry above the cap, and its last tick. */
+  keys: z.object({ value: z.number().min(0), lastTickAt: z.number().int().nonnegative() }),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -287,8 +302,16 @@ export const saveSchemaV13 = z.object({
   tutorial: tutorialSchema,
 });
 
+/** v14 adds the Eternal Tower; everything else is v13's. */
+export const saveSchemaV14 = saveSchemaV13.extend({
+  saveVersion: z.literal(14),
+  tower: towerSchema,
+});
+
 export type SaveGameV13 = z.infer<typeof saveSchemaV13>;
-export type SaveGame = SaveGameV13;
+export type SaveGameV14 = z.infer<typeof saveSchemaV14>;
+export type SaveGame = SaveGameV14;
+export type TowerSaveData = z.infer<typeof towerSchema>;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type MissionsSave = z.infer<typeof missionsSchema>;
 export type TutorialSave = z.infer<typeof tutorialSchema>;
@@ -299,7 +322,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV13;
+export const saveSchema = saveSchemaV14;
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

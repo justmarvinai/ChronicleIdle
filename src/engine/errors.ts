@@ -5,6 +5,7 @@ export type GameErrorCode =
   | 'save_version_unsupported'
   | 'insufficient_currency'
   | 'insufficient_energy'
+  | 'insufficient_keys'
   | 'locked'
   | 'invalid_argument'
   | 'battle_invalid_state';

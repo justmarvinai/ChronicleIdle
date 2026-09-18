@@ -18,6 +18,7 @@ export const FEATURE_IDS = [
   'quests_weekly',
   'weekly_boss',
   'gear_refine',
+  'eternal_tower',
   'auto_repeat_10',
   'auto_repeat_25',
   'auto_repeat_50',
@@ -41,6 +42,12 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
   quests_weekly: 12,
   weekly_boss: 15,
   gear_refine: 18,
+  /**
+   * The tower is gated on *progress*, not on level: the whole Intro campaign behind you
+   * (`isDifficultyComplete`). Level 1 here so the level gate never speaks for it — the Game Modes
+   * card and the route both ask the campaign.
+   */
+  eternal_tower: 1,
   auto_repeat_10: 5,
   auto_repeat_25: 20,
   auto_repeat_50: 30,

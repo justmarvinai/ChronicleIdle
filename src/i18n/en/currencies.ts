@@ -10,6 +10,9 @@ export const currencies = {
   'currency.key_daily.description': 'One fight against Gravemaw. Two keys every day.',
   'currency.key_weekly.name': 'Weekly Boss Key',
   'currency.key_weekly.description': 'One fight against Nyxara. Three keys every week.',
+  'currency.key_eternal.name': 'Eternal Key',
+  'currency.key_eternal.description':
+    'One floor of the Eternal Tower. One key every fifteen minutes, up to ten.',
   'currency.shard_faded.name': 'Faded Shard',
   'currency.shard_faded.description': 'Binds a Common, Uncommon or Rare champion.',
   'currency.shard_ancient.name': 'Ancient Shard',

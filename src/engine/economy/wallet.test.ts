@@ -5,7 +5,7 @@ describe('wallet', () => {
   it('starts every currency at zero', () => {
     const w = emptyWallet();
     expect(Object.values(w).every((v) => v === 0)).toBe(true);
-    expect(Object.keys(w)).toHaveLength(24);
+    expect(Object.keys(w)).toHaveLength(25);
   });
 
   it('grants and reports changes without mutating the input', () => {

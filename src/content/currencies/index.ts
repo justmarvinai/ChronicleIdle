@@ -20,6 +20,15 @@ export const CURRENCIES: readonly CurrencyDef[] = [
     c({ id: 'key_weekly', icon: 'ui.stone_vine.icon_key', tint: '#9b5de5', category: 'keys', topBar: false }),
   ),
   defineCurrency(
+    c({
+      id: 'key_eternal',
+      icon: 'ui.stone_vine.icon_key',
+      tint: '#f0d57a',
+      category: 'keys',
+      topBar: false,
+    }),
+  ),
+  defineCurrency(
     c({ id: 'shard_faded', icon: 'spell.earth_dark_crystal', category: 'shards', topBar: false }),
   ),
   defineCurrency(

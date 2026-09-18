@@ -25,7 +25,7 @@ describe('content registry', () => {
     expect(issues.filter((i) => i.severity === 'warning').map((i) => i.path)).toEqual([
       'champions.champ.varkos_sundered_king.stats.hp',
     ]);
-    expect(content.currencies).toHaveLength(24);
+    expect(content.currencies).toHaveLength(25);
     expect(content.currencies.filter((c) => c.topBar).map((c) => c.id)).toEqual(['gold', 'gems', 'energy']);
     // Twelve factions, each fielding the six archetypes plus one named stage boss.
     expect(content.factions).toHaveLength(SETTLEMENT_COUNT);
