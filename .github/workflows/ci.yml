@@ -41,15 +41,19 @@ jobs:
   e2e:
     # Each spec drives a WebGL battle stage through swiftshader and runs one worker
     # (`playwright.config.ts`), so the suite is serial inside a job and grows with every phase:
-    # Phase 10's boss race alone is a 50-turn fight. Sharding gives each half its own runner —
+    # Phase 10's boss race alone is a 50-turn fight. Sharding gives each part its own runner —
     # no two stages on one machine, and the wall-clock stays in sight of a coffee.
-    name: e2e ${{ matrix.shard }}/2
+    #
+    # Three shards, not two: at 42 tests a half took 42 minutes on a slow runner, which is both
+    # past the old 45-minute cap and long enough for a browser session to die of resource
+    # pressure. A third of the suite is ~28 minutes on that same bad day.
+    name: e2e ${{ matrix.shard }}/3
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -65,7 +69,7 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       # No `--` separator: pnpm 10 swallows flags after it, and the shard would silently be the
       # whole suite in each job.
-      - run: pnpm test:e2e --shard=${{ matrix.shard }}/2
+      - run: pnpm test:e2e --shard=${{ matrix.shard }}/3
         env:
           CI: 'true'
       # One shard is enough for an audit of the document, and shard 1 already has the build and a

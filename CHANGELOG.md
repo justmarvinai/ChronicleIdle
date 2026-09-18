@@ -58,6 +58,12 @@ sitting rather than a day, and a reason to come back every thirty days. Design:
   extraction changed no behaviour.
 - The Locked screen can state a reason other than a level, so a feature no level opens says what
   actually opens it.
+- **CI shards the e2e suite three ways instead of two**, with a 60-minute job cap. At 42 tests a
+  half took 42 minutes on a slow runner — past the old 45-minute cap, and long enough for a
+  browser session to die of resource pressure. The tutorial's chapter-1 walk also gets the same
+  ten-minute budget as every other full-flow spec; it was the only one on six, and it is the
+  longest scripted run in the suite (the naming, the binding, four screens, then a manual battle
+  played turn by turn to a victory).
 
 ## [0.1.2] — 2026-09-17 — The owner's second batch
 

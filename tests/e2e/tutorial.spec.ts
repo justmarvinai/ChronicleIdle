@@ -97,7 +97,14 @@ async function spendAnyTurn(page: Page): Promise<void> {
 }
 
 test.describe('the tutorial', () => {
-  test.setTimeout(360_000);
+  /*
+   * The same ten minutes the other full-flow specs get (`walkthrough`, both bosses). Chapter 1
+   * is the longest scripted run in the suite — the naming, the binding, four screens and then a
+   * manual battle played turn by turn to a victory — and six minutes left it no headroom: on a
+   * slow CI runner it timed out mid-fight waiting for the auto button, and the retry lost the
+   * browser session outright. The work is the same; only the budget was wrong for it.
+   */
+  test.setTimeout(600_000);
 
   test('walks the first chapter from the naming to the Provisions', async ({ page }) => {
     const problems = collectConsole(page);
