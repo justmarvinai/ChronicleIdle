@@ -43,18 +43,6 @@ export function isBossFloor(floor: number): boolean {
   return floor % TOWER_BOSS_EVERY === 0;
 }
 
-/** The boss floor at or below `floor`, or 0 when the climb has not reached one. */
-export function lastBossFloor(floor: number): number {
-  return Math.floor(Math.max(0, floor) / TOWER_BOSS_EVERY) * TOWER_BOSS_EVERY;
-}
-
-/** Every boss floor up to and including `floor`, lowest first. */
-export function bossFloorsUpTo(floor: number): number[] {
-  const floors: number[] = [];
-  for (let f = TOWER_BOSS_EVERY; f <= floor; f += TOWER_BOSS_EVERY) floors.push(f);
-  return floors;
-}
-
 /**
  * Which of a faction's six units stand on an ordinary floor. The window walks by one per floor, so
  * two floors of the same faction are never the same fight and every archetype takes its turn.

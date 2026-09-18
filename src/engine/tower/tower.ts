@@ -24,7 +24,7 @@ import {
 import { add, msUntilNext, regenerate, take, type Pool } from '@engine/economy/pool';
 import { fail, type Result } from '@engine/errors';
 import { MS_PER_DAY } from '@engine/time/clock';
-import { bossFloorsUpTo, isBossFloor } from './encounter';
+import { isBossFloor } from './encounter';
 
 /** The tower's slice of the save (v14). */
 export interface TowerSave {
@@ -71,11 +71,6 @@ export function seasonIndex(state: TowerSave, now: number): number {
   return Math.max(0, Math.floor((now - state.firstAttemptAt) / TOWER_SEASON_MS));
 }
 
-/** How many whole seasons the chronicle has finished; 0 while it is still on its first. */
-export function seasonsElapsed(state: TowerSave, now: number): number {
-  return Math.max(0, seasonIndex(state, now));
-}
-
 /**
  * The tower as it stands at `now`: the stored state while its season runs, and a climb reset to
  * the foot of the tower once the season it belongs to is behind us. Pure — nothing is written
@@ -109,8 +104,6 @@ export function seasonNumber(state: TowerSave, now: number): number {
 // Keys
 // ---------------------------------------------------------------------------------------------
 
-export const towerKeyCap = (): number => TOWER_KEY_CAP;
-
 export function regenerateKeys(keys: Pool, now: number): Pool {
   return regenerate(keys, TOWER_KEY_CAP, KEY_PERIOD_MS, now);
 }
@@ -120,7 +113,12 @@ export function msUntilNextKey(keys: Pool, now: number): number | null {
   return msUntilNext(keys, TOWER_KEY_CAP, KEY_PERIOD_MS, now);
 }
 
-/** A grant, which may carry the pool above the cap (16/10). */
+/**
+ * A grant, which may carry the pool above the cap (16/10). Nothing in the game calls this yet —
+ * regeneration stops at the cap and no source hands keys out — so the over-cap case the owner
+ * asked for is arithmetic and display only until one exists (`USER_QUESTIONS.md` Q49). Its test is
+ * what holds the rule true in the meantime.
+ */
 export function addKeys(keys: Pool, amount: number, now: number): Pool {
   return add(keys, amount, TOWER_KEY_CAP, KEY_PERIOD_MS, now);
 }
@@ -158,11 +156,6 @@ export function floorState(state: TowerSave, floor: number): FloorState {
 export function isFloorOpen(state: TowerSave, floor: number): boolean {
   const at = floorState(state, floor);
   return at === 'next' || at === 'repeatable';
-}
-
-/** The boss floors the climb has opened for repeat runs, lowest first. */
-export function repeatableFloors(state: TowerSave): number[] {
-  return bossFloorsUpTo(state.highestFloor);
 }
 
 /**

@@ -71,7 +71,7 @@ towerScale(floor) = TOWER_SCALE_BASE × TOWER_SCALE_GROWTH ^ (floor − 1)
 | Campaign, Intro's last stand | 4.8 (`1.0 × stageScale(119)`) |
 | **Tower floor 1** | **5.0** |
 | Campaign, Hard's last stand | 28.8 (`6.0 × stageScale(119)`) |
-| **Tower floor 50** | **24.0** |
+| **Tower floor 50** | **24.1** |
 | **Tower floor 100** | **≈120** — about four times the campaign's hardest |
 
 The curve simply carries on for floors added later; it is defined per floor, not between endpoints,
@@ -84,18 +84,20 @@ part, and only on boss floors.
 
 | Reward | Ordinary floor | Boss floor |
 | --- | --- | --- |
-| Gold | `600 × 1.045^(floor−1)` — 600 at floor 1, ≈46,000 at floor 100 | ×3 |
+| Gold | `600 × 1.045^(floor−1)` — 600 at floor 1, ≈46,800 at floor 100 | ×3 (≈140,500 at floor 100) |
 | Energy | 1–5, a step every twenty floors | same |
-| Universal Brew | `1 + floor/25` | same |
+| Universal Brew | `1 + ⌊(floor−1)/25⌋` — 1 at floor 1, 4 from floor 76 | same |
 | Element brew | — | 3 of the faction's element |
 | Chronicle XP | `40 + 4 × (floor−1)` | ×3 |
 | Champion XP | `300 + 30 × (floor−1)` | ×3 |
 | Shards | — | see §5 |
 
-A full climb to floor 100 is ≈**1.07 M gold** and ≈**300 energy** over a season — about a tenth of
-what the campaign pays over the same thirty days (`ECONOMY.md` §8), which is the size a second
-source should be. Brews are the point as much as the gold: the tower is where a player who has run
-out of campaign to farm gets what levels their champions.
+A full climb to floor 100 is **1,334,407 gold** and exactly **300 energy** over a season — about an
+eighth of what the campaign pays over the same thirty days (`ECONOMY.md` §8), which is the size a
+second source should be. Brews are the point as much as the gold: the same climb hands over **250
+Universal Brews** and **30 element brews** (three on each of the ten boss floors), which is what
+levels the champions the next floor needs. It also pays 28,920 chronicle XP and 216,900 champion XP
+to each champion that fought.
 
 A **defeat pays nothing**, and the key is already spent.
 

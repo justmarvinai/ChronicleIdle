@@ -14,17 +14,16 @@ import { MS_PER_DAY, MS_PER_MINUTE } from '@engine/time/clock';
 import {
   TOWER_SEASON_MS,
   addKeys,
-  bossFloorsUpTo,
   canAttemptFloor,
   currentSeason,
   emptyTower,
   floorState,
   isBossFloor,
+  isFloorOpen,
   msUntilNextKey,
   msUntilSeasonEnd,
   nextFloor,
   parseTowerEncounterId,
-  repeatableFloors,
   rollTowerShards,
   seasonNumber,
   seasonEndsAt,
@@ -60,8 +59,10 @@ describe('the tower floor', () => {
   it('marks every tenth floor a boss floor', () => {
     expect([10, 20, 50, 100].every(isBossFloor)).toBe(true);
     expect([1, 9, 11, 99].some(isBossFloor)).toBe(false);
-    expect(bossFloorsUpTo(35)).toEqual([10, 20, 30]);
-    expect(bossFloorsUpTo(9)).toEqual([]);
+    // Ten of them in a hundred floors, and the last floor is one.
+    const bossFloors = Array.from({ length: TOWER_FLOORS }, (_, i) => i + 1).filter(isBossFloor);
+    expect(bossFloors).toHaveLength(TOWER_FLOORS / 10);
+    expect(bossFloors.at(-1)).toBe(TOWER_FLOORS);
   });
 
   it('starts just past the campaign and ends far above it', () => {
@@ -86,7 +87,9 @@ describe('the tower climb', () => {
     // An ordinary cleared floor is spent; a cleared boss floor may be fought again.
     expect(floorState(state, 11)).toBe('cleared');
     expect(floorState(state, 10)).toBe('repeatable');
-    expect(repeatableFloors(state)).toEqual([10]);
+    // Every boss floor behind the climb stays open, and only those.
+    const open = Array.from({ length: 12 }, (_, i) => i + 1).filter((f) => isFloorOpen(state, f));
+    expect(open).toEqual([10]);
   });
 
   it('has nothing above its last floor', () => {

@@ -272,13 +272,13 @@ Gold should feel tight but never blocking, and no script of any activity level e
 — that invariant is a band, not a hope. A casual player earns ~218k a day (the boss and the chest do
 not care how long you play) and spends ~53k of it.
 
-**The tower is not on that table, on purpose.** A full climb to floor 100 pays ≈1.07 M gold and
-≈300 energy, but it is a *season's* income rather than a day's, and it is paid once: ordinary floors
-are one-time clears (`ETERNAL_TOWER.md` §4). Spread over its thirty days that is ~36k gold a day
-against the ~322k above — a tenth, which is the size a second source should be, and it arrives
-exactly when a player has run out of first clears to farm. What the tower is really for is brews:
-a climb hands over ~300 Universal Brews and the element brews of twelve factions, which is what
-levels the champions that the next floor needs.
+**The tower is not on that table, on purpose.** A full climb to floor 100 pays 1,334,407 gold and
+300 energy, but it is a *season's* income rather than a day's, and it is paid once: ordinary floors
+are one-time clears (`ETERNAL_TOWER.md` §4). Spread over its thirty days that is ~44k gold a day
+against the ~322k above — about an eighth, which is the size a second source should be, and it
+arrives exactly when a player has run out of first clears to farm. What the tower is really for is
+brews: a climb hands over 250 Universal Brews and 30 element brews, which is what levels the
+champions that the next floor needs.
 
 ## 9. Daily / weekly reset
 

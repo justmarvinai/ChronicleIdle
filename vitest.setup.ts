@@ -11,6 +11,9 @@ class ResizeObserverStub {
 }
 globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObserver;
 
+/** jsdom does not scroll, so `scrollIntoView` is missing; screens that open on a row call it. */
+Element.prototype.scrollIntoView ??= function scrollIntoView(): void {};
+
 afterEach(() => {
   cleanup();
 });

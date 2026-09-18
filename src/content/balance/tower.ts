@@ -16,8 +16,6 @@ import { SETTLEMENT_COUNT } from './campaign';
 export const TOWER_FLOORS = 100;
 /** Every tenth floor is a boss floor — the only ones that may be fought again. */
 export const TOWER_BOSS_EVERY = 10;
-/** A tower fight fields four champions, as boss fights do (owner's answer Q2). */
-export const TOWER_PARTY_SIZE = 4;
 /** All turns before the floor is lost; a tower floor is a fight, not a damage race. */
 export const TOWER_TURN_LIMIT = 40;
 export const TOWER_TURN_LIMIT_BOSS = 50;
@@ -32,8 +30,9 @@ export const TOWER_TURN_LIMIT_BOSS = 50;
  * tower enemy and one number decides how hard a floor is (`BATTLE.md` §4.5 does the rest).
  *
  * Floor 1 sits just past the campaign's Intro ceiling (`DIFFICULTY_MULT.intro × stageScale(119)`
- * = 4.8). Compounding per floor reaches ≈24× that by floor 100 — about four times the campaign's
- * last stand on Hard (6.0 × 4.8 = 28.8) — and simply carries on for floors added later.
+ * = 4.8). Compounding per floor reaches 24.1 by floor 50 and 119.7 by floor 100 — about four times
+ * the campaign's last stand on Hard (6.0 × 4.8 = 28.8) — and simply carries on for floors added
+ * later.
  */
 export const TOWER_SCALE_BASE = 5;
 export const TOWER_SCALE_GROWTH = 1.0326;
@@ -92,9 +91,10 @@ export const TOWER_SEASON_DAYS = 30;
 // ---------------------------------------------------------------------------------------------
 
 /**
- * Gold is the tower's main pay, growing with the floor. Floor 1 leaves 600 and floor 100 ≈ 46,000;
- * a season climbed to the top is ≈1.07 M, about a tenth of what the campaign pays over the same
- * thirty days (`ECONOMY.md` §8), which is the size a second source should be.
+ * Gold is the tower's main pay, growing with the floor. Floor 1 leaves 600 and floor 100 ≈ 46,800
+ * (≈140,500 as a boss floor); a season climbed to the top is ≈1.33 M, about an eighth of what the
+ * campaign pays over the same thirty days (`ECONOMY.md` §8), which is the size a second source
+ * should be.
  */
 export const TOWER_GOLD_BASE = 600;
 export const TOWER_GOLD_GROWTH = 1.045;
@@ -107,8 +107,8 @@ export function towerGold(floor: number, boss: boolean): number {
 }
 
 /**
- * Energy per floor: one to five, a step every twenty floors. Three hundred energy over a full
- * climb — a fortnight of the campaign's regeneration, handed over for playing something else.
+ * Energy per floor: one to five, a step every twenty floors. Exactly three hundred energy over a
+ * full climb — five hours of the campaign's regeneration, handed over for playing something else.
  */
 export const TOWER_ENERGY_PER_BAND = [1, 2, 3, 4, 5] as const;
 export const TOWER_ENERGY_BAND_FLOORS = 20;
@@ -144,10 +144,11 @@ export function towerPlayerXp(floor: number, boss: boolean): number {
 /** Champion XP per floor, on the same shape as the chronicle's. */
 export const TOWER_CHAMPION_XP_BASE = 300;
 export const TOWER_CHAMPION_XP_PER_FLOOR = 30;
+export const TOWER_CHAMPION_XP_BOSS_MULT = 3;
 
 export function towerChampionXp(floor: number, boss: boolean): number {
   const xp = TOWER_CHAMPION_XP_BASE + TOWER_CHAMPION_XP_PER_FLOOR * (floor - 1);
-  return Math.round(xp * (boss ? TOWER_GOLD_BOSS_MULT : 1));
+  return Math.round(xp * (boss ? TOWER_CHAMPION_XP_BOSS_MULT : 1));
 }
 
 // ---------------------------------------------------------------------------------------------
