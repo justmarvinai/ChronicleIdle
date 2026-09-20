@@ -13,20 +13,25 @@ import { Panel } from '@ui/components/Frame/Panel';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { Toggle } from '@ui/components/Toggle/Toggle';
-import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
 import { elementLabel, rarityLabel, roleLabel } from '@ui/screens/champions/roster-view';
 import { ELEMENT_COLOR, RARITY_COLOR } from '@ui/styles/display-maps';
-import { filterChampions, NO_FILTERS, type IndexChampion, type IndexFilters } from './index-view';
+import {
+  championSections,
+  filterChampions,
+  NO_FILTERS,
+  type IndexChampion,
+  type IndexFilters,
+} from './index-view';
 import styles from './IndexScreen.module.css';
 
 const CARD = 128;
-const GRID_H = 792;
 
 /** Every champion in the game, found or not, with the one selected opened beside the grid. */
 export function ChampionsTab({ entries }: { entries: readonly IndexChampion[] }) {
   const [filters, setFilters] = useState<IndexFilters>(NO_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const shown = useMemo(() => filterChampions(entries, filters), [entries, filters]);
+  const sections = useMemo(() => championSections(shown), [shown]);
   const selected = shown.find((e) => e.def.id === selectedId) ?? shown[0] ?? null;
 
   return (
@@ -67,36 +72,55 @@ export function ChampionsTab({ entries }: { entries: readonly IndexChampion[] })
           />
         </div>
 
-        <VirtualGrid<IndexChampion>
-          items={shown}
-          columns={6}
-          cellWidth={CARD}
-          cellHeight={CARD + 34}
-          height={GRID_H}
-          keyOf={(entry) => entry.def.id}
-          emptyLabel={t('index.empty')}
-          renderItem={(entry) => (
-            <ChampionCard
-              name={translate(entry.def.name)}
-              rarity={entry.def.rarity}
-              element={entry.def.element}
-              role={entry.def.role}
-              stars={baseStars(entry.def.rarity)}
-              level={1}
-              avatar={entry.def.art.avatar}
-              size={CARD}
-              compact
-              dimmed={!entry.found}
-              tint={entry.def.art.tint}
-              placeholder={entry.def.art.placeholder}
-              placeholderLabel={t('champions.placeholder')}
-              badge={entry.copies > 1 ? `×${entry.copies}` : null}
-              selected={selected?.def.id === entry.def.id}
-              onClick={() => setSelectedId(entry.def.id)}
-              testId={`index-card-${entry.def.id}`}
-            />
-          )}
-        />
+        <ScrollArea height="100%" className={styles.gridScroll ?? ''}>
+          {sections.length === 0 ? (
+            <p className={styles.hint} data-testid="index-empty">
+              {t('index.empty')}
+            </p>
+          ) : null}
+          {sections.map((section) => (
+            <section key={section.element} className={styles.elementSection}>
+              <h3
+                className={`display ${styles.elementHead}`}
+                style={{ color: ELEMENT_COLOR[section.element] }}
+                data-testid={`index-element-${section.element}`}
+              >
+                {elementLabel(section.element)}
+              </h3>
+              {section.groups.map((group) => (
+                <div key={group.role} className={styles.roleGroup}>
+                  <h4 className={styles.roleHead} data-testid={`index-role-${section.element}-${group.role}`}>
+                    {roleLabel(group.role)}
+                  </h4>
+                  <div className={styles.cardRow}>
+                    {group.entries.map((entry) => (
+                      <ChampionCard
+                        key={entry.def.id}
+                        name={translate(entry.def.name)}
+                        rarity={entry.def.rarity}
+                        element={entry.def.element}
+                        role={entry.def.role}
+                        stars={baseStars(entry.def.rarity)}
+                        level={1}
+                        avatar={entry.def.art.avatar}
+                        size={CARD}
+                        compact
+                        dimmed={!entry.found}
+                        tint={entry.def.art.tint}
+                        placeholder={entry.def.art.placeholder}
+                        placeholderLabel={t('champions.placeholder')}
+                        badge={entry.copies > 1 ? `×${entry.copies}` : null}
+                        selected={selected?.def.id === entry.def.id}
+                        onClick={() => setSelectedId(entry.def.id)}
+                        testId={`index-card-${entry.def.id}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+          ))}
+        </ScrollArea>
       </section>
 
       {selected ? <ChampionPage entry={selected} /> : null}

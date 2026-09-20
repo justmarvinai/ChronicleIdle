@@ -5,7 +5,7 @@
 import type { ChampionDef, ChampionId, Element, Rarity, Role } from '@content/champions/types';
 import type { EnemyDef } from '@content/enemies/types';
 import { content } from '@content/registry';
-import { RARITIES } from '@content/champions/types';
+import { ELEMENTS, RARITIES, ROLES } from '@content/champions/types';
 import type { ChampionInstance } from '@engine/champions/instance';
 
 /** One champion in the catalogue: its definition, and how many copies the chronicle has. */
@@ -57,6 +57,36 @@ export function filterChampions(entries: readonly IndexChampion[], filters: Inde
       (!filters.role || def.role === filters.role) &&
       (!filters.foundOnly || found),
   );
+}
+
+/** One role's cards inside an element's section. */
+export interface IndexRoleGroup {
+  role: Role;
+  entries: IndexChampion[];
+}
+
+/** One element's section of the catalogue, its roles in `ROLES` order. */
+export interface IndexSection {
+  element: Element;
+  groups: IndexRoleGroup[];
+}
+
+/**
+ * The catalogue as it is read rather than as it is stored: a section per element, and inside each
+ * one a group per role. A flat grid of 23 cards is a wall; the element a champion answers to and
+ * the job it does are the two things a player sorts by, so they are the two headings.
+ */
+export function championSections(entries: readonly IndexChampion[]): IndexSection[] {
+  const sections: IndexSection[] = [];
+  for (const element of ELEMENTS) {
+    const groups: IndexRoleGroup[] = [];
+    for (const role of ROLES) {
+      const inGroup = entries.filter((e) => e.def.element === element && e.def.role === role);
+      if (inGroup.length > 0) groups.push({ role, entries: inGroup });
+    }
+    if (groups.length > 0) sections.push({ element, groups });
+  }
+  return sections;
 }
 
 /** How much of the roster the chronicle has found, for the header's tally. */

@@ -4,9 +4,17 @@
  */
 import { describe, expect, it } from 'vitest';
 import { content } from '@content/registry';
+import { ELEMENTS, ROLES } from '@content/champions/types';
 import { createInstance } from '@engine/champions/instance';
 import type { ChampionInstance } from '@engine/champions/instance';
-import { bestiary, filterChampions, foundCount, indexChampions, NO_FILTERS } from './index-view';
+import {
+  bestiary,
+  championSections,
+  filterChampions,
+  foundCount,
+  indexChampions,
+  NO_FILTERS,
+} from './index-view';
 
 function roster(...ids: readonly string[]): Record<string, ChampionInstance> {
   const out: Record<string, ChampionInstance> = {};
@@ -77,5 +85,32 @@ describe('the bestiary', () => {
     const ids = bestiary().flatMap((c) => [...c.units.map((u) => u.id), c.boss.id]);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toHaveLength(content.settlements.length * 7);
+  });
+});
+
+describe('the catalogue in sections', () => {
+  it('runs element by element, and role by role inside each one', () => {
+    const sections = championSections(indexChampions({}));
+    expect(sections.map((s) => s.element)).toEqual(
+      ELEMENTS.filter((element) => content.champions.some((c) => c.element === element)),
+    );
+    for (const section of sections) {
+      // Roles keep their declared order, and a role with nobody in it has no heading at all.
+      const roles = section.groups.map((g) => g.role);
+      expect(roles).toEqual(ROLES.filter((role) => roles.includes(role)));
+      for (const group of section.groups) {
+        expect(group.entries.length).toBeGreaterThan(0);
+        for (const entry of group.entries) {
+          expect(entry.def.element).toBe(section.element);
+          expect(entry.def.role).toBe(group.role);
+        }
+      }
+    }
+  });
+
+  it('holds every champion exactly once, whatever the filters left', () => {
+    const all = indexChampions({});
+    const ids = championSections(all).flatMap((s) => s.groups.flatMap((g) => g.entries.map((e) => e.def.id)));
+    expect(new Set(ids).size).toBe(all.length);
   });
 });

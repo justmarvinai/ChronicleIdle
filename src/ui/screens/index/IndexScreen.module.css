@@ -63,6 +63,40 @@
   padding: 14px 18px;
 }
 
+/*
+ * The catalogue reads as a sorted list rather than a wall of cards: a heading per element, a
+ * caption per role inside it, and the cards of that group on one wrapping row.
+ */
+.gridScroll {
+  flex: 1;
+  min-height: 0;
+}
+.elementSection {
+  margin-bottom: 14px;
+}
+.elementHead {
+  margin: 0 0 4px;
+  font-size: 21px;
+  letter-spacing: 0.04em;
+  border-bottom: var(--hairline);
+}
+.roleGroup {
+  margin: 0 0 10px;
+}
+.roleHead {
+  margin: 6px 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.cardRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .page {
   height: 100%;
 }

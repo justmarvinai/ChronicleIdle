@@ -20,9 +20,15 @@
   z-index: 1;
   pointer-events: none;
 }
+/*
+ * `border-box` or a panel told to be as tall as its parent is taller than it by its own padding:
+ * the frame draws at the right height, the content runs past it, and a ScrollArea inside never
+ * sees an overflow to scroll (the Index's lore ran off the bottom of the page with no thumb).
+ */
 .content {
   position: relative;
   z-index: 2;
+  box-sizing: border-box;
   height: 100%;
   min-height: 0;
 }
