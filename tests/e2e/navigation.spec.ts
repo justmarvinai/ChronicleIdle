@@ -30,6 +30,9 @@ test.describe('navigation', () => {
   test('the Chronicle of Changes is a frame on the title screen, and opens from Settings', async ({
     page,
   }) => {
+    // Two screens in one walk: the title frame, then a whole chronicle begun to reach Settings.
+    // It fits the default minute on this machine and does not on a CI runner.
+    test.slow();
     await gotoTitle(page);
     // A frame, not a window: nothing is pressed to see it.
     const panel = page.getByTestId('title-changelog');
