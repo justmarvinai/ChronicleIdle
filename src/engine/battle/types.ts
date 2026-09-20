@@ -195,7 +195,15 @@ export type ElementMatch = 'strong' | 'weak' | 'neutral';
 export type BattleEvent =
   | { type: 'battle.started'; seed: string; waveCount: number }
   | { type: 'wave.started'; wave: number; waveCount: number; enemyIds: string[]; units: UnitView[] }
-  | { type: 'turn.started'; unitId: string; turn: number; allyTurns: number; tm: Record<string, number> }
+  | {
+      type: 'turn.started';
+      unitId: string;
+      turn: number;
+      allyTurns: number;
+      tm: Record<string, number>;
+      /** The acting unit's ability cooldowns after this turn's tick, keyed by ability id. */
+      cooldowns: Record<string, number>;
+    }
   | { type: 'turn.skipped'; unitId: string; reason: 'stun' | 'freeze' | 'sleep' | 'fear' }
   | { type: 'dot.tick'; unitId: string; status: StatusId; amount: number; hpAfter: number }
   | {

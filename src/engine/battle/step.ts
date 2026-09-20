@@ -153,15 +153,18 @@ function startTurn(state: BattleState, unit: BattleUnit, events: BattleEvent[]):
   state.turn += 1;
   if (unit.side === 'ally') state.allyTurns += 1;
   unit.flags.turnsTaken += 1;
+  const ctx = makeContext(state, unit, 'turn', events);
+  for (const ability of unit.abilities) if (ability.cooldown > 0) ability.cooldown -= 1;
+  // Announced after the tick: the cooldowns the turn is played with are the ones the ability bar
+  // has to draw, and the HUD's view is built from events rather than re-read from the simulation.
   events.push({
     type: 'turn.started',
     unitId: unit.id,
     turn: state.turn,
     allyTurns: state.allyTurns,
     tm: tmSnapshot(state),
+    cooldowns: Object.fromEntries(unit.abilities.map((a) => [a.id, a.cooldown])),
   });
-  const ctx = makeContext(state, unit, 'turn', events);
-  for (const ability of unit.abilities) if (ability.cooldown > 0) ability.cooldown -= 1;
   if (unit.flags.healNextTurn > 0) {
     healUnit(ctx, unit, unit, Math.floor(unit.maxHp * (unit.flags.healNextTurn / 100)), 'survive');
     unit.flags.healNextTurn = 0;

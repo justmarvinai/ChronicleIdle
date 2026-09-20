@@ -64,7 +64,19 @@ export function applyEventToView(view: BattleView, event: BattleEvent): BattleVi
           const tm = event.tm[u.id] === undefined ? u.tm : (event.tm[u.id] as number);
           const boss =
             u.id === event.unitId && u.boss ? { ...u.boss, turnsTaken: u.boss.turnsTaken + 1 } : u.boss;
-          return tm === u.tm && boss === u.boss ? u : { ...u, tm, boss };
+          // Only the acting unit's cooldowns are announced, and they are the ones the bar shows.
+          const abilities =
+            u.id === event.unitId
+              ? u.abilities.map((a) => {
+                  const cooldown = event.cooldowns[a.id];
+                  return cooldown === undefined || cooldown === a.cooldown
+                    ? a
+                    : { ...a, cooldown, ready: cooldown === 0 };
+                })
+              : u.abilities;
+          return tm === u.tm && boss === u.boss && abilities === u.abilities
+            ? u
+            : { ...u, tm, boss, abilities };
         }),
       };
     case 'turn.ended':

@@ -89,3 +89,28 @@ describe('presented battle view', () => {
     expect(applyEventToView(view, { type: 'passive.triggered', unitId: 'x', passiveId: 'y' })).toBe(view);
   });
 });
+
+describe('the cooldowns the bar draws', () => {
+  it('come with the turn that is about to be played, not with the snapshot it started from', () => {
+    // A boss stands long enough for an ability with a cooldown to be spent and to come back.
+    const encounter = content.encounterById(bossEncounterId('boss.gravemaw', 'easy'));
+    if (!encounter) throw new Error('missing boss encounter');
+    const state = createBattle({ ...setup(), encounter }, 'view-cooldowns');
+    let view = snapshot(state);
+    const { events } = runAuto(state);
+    let sawCooling = false;
+    for (const event of events) {
+      view = applyEventToView(view, event);
+      if (event.type !== 'turn.started') continue;
+      const unit = view.units.find((u) => u.id === event.unitId);
+      // Whatever the simulation announced is what the view holds for the unit taking the turn.
+      for (const ability of unit?.abilities ?? []) {
+        expect(ability.cooldown).toBe(event.cooldowns[ability.id] ?? 0);
+        expect(ability.ready).toBe(ability.cooldown === 0);
+        if (ability.cooldown > 0) sawCooling = true;
+      }
+    }
+    // A fight this long spends something with a cooldown, so the numbers are not all zeroes.
+    expect(sawCooling).toBe(true);
+  });
+});
