@@ -1,10 +1,15 @@
+/*
+ * Centred by margin, not by `left: 50%` + `translateX(-50%)`: the banner slides in on its own
+ * transform, which would overwrite the centring half of that pair and leave it hanging right.
+ */
 .banner {
   position: absolute;
   top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   z-index: var(--z-toast);
   width: 720px;
+  margin: 0 auto;
 }
 .fill {
   position: absolute;

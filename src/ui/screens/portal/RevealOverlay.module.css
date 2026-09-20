@@ -77,12 +77,20 @@
 }
 
 .actions {
-  /* Clear of the Portal's own bottom bar, centred on the window: the way out is chrome, not
-     ceremony. 150px is where the overlay's old bottom padding held it. */
+  /*
+   * Clear of the Portal's own bottom bar, centred on the window: the way out is chrome, not
+   * ceremony. 150px is where the overlay's old bottom padding held it.
+   *
+   * Centred by margin rather than `left: 50%` + `translateX(-50%)`: this block is animated in, and
+   * the animation writes its own `transform`, which took the centring half of that pair with it and
+   * left the buttons hanging off to the right (the owner's fourth batch).
+   */
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 150px;
-  transform: translateX(-50%);
+  width: fit-content;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
