@@ -71,6 +71,16 @@ async function spendKeyUntil(page: Page, damage: number): Promise<void> {
   await settle(page);
 }
 
+/** The bosses live behind Battle now, not on the hub (the owner's third batch). */
+async function openBossGate(page: Page, mode: 'daily' | 'weekly'): Promise<void> {
+  await page.getByTestId('nav-battle').click();
+  await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+  await page.getByTestId(`enter-${mode}`).click();
+  await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+}
+
 test.describe('the daily boss', () => {
   // Two races at ×2 with the full stage and its FX; a software renderer needs the room.
   test.setTimeout(600_000);
@@ -79,10 +89,12 @@ test.describe('the daily boss', () => {
     const problems = collectConsole(page);
     await importChronicleFile(page, SAVE);
 
-    // The hub wears the boss's state: two keys and a dot saying they are unspent.
-    const hotspot = page.getByTestId('boss-daily');
-    await expect(hotspot).toContainText('2');
-    await hotspot.click();
+    // Battle leads to the gate, and the mode card wears the boss's state: two keys, unspent.
+    await page.getByTestId('nav-battle').click();
+    await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
+    await settle(page);
+    await expect(page.getByTestId('mode-daily')).toContainText('2');
+    await page.getByTestId('enter-daily').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
     await settle(page);
 
@@ -143,9 +155,7 @@ test.describe('the daily boss', () => {
     await page.getByTestId('btn-continue').click();
     await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    await page.getByTestId('boss-daily').click();
-    await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
+    await openBossGate(page, 'daily');
     expect(await bankedDamage(page)).toBe(banked);
     await expect(page.getByTestId('bosses-keys')).toContainText('0/2');
     await expect(page.getByTestId('boss-chest-easy-5')).toBeDisabled();

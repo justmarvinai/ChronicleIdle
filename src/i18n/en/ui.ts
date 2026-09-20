@@ -62,15 +62,12 @@ export const ui = {
   'hub.chroniclersHall': 'Chronicler’s Hall',
   'hub.campaign': 'Campaign',
   'hub.champions': 'Champions',
-  'hub.bossGate': 'Boss Gate',
   'hub.idleChest': 'Idle Chest',
   'hub.missions': 'Missions',
   'hub.quests': 'Quests',
   'hub.index': 'Index',
   'hub.battle': 'Battle',
   'hub.market': 'Market',
-  'hub.dailyBoss': 'Daily Boss',
-  'hub.weeklyBoss': 'Weekly Boss',
 
   'topbar.profile': 'Profile',
   'topbar.accountPower': 'Account Power',
@@ -196,9 +193,6 @@ export const ui = {
   'welcome.quests.weekly': 'A new week’s quests are waiting in the ledger.',
 
   'hub.hotspot.later': 'Written in a later chapter',
-  'hub.bossCard.daily': 'Gravemaw, the Bone Tyrant',
-  'hub.bossCard.weekly': 'Nyxara, Mother of Shadows',
-  'hub.bossCard.keys': 'Keys',
   'hub.idleChest.body': 'Fills while you are away.',
 
   'starter.title': 'Bind your first champion',

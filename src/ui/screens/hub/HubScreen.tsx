@@ -1,5 +1,4 @@
 import { t } from '@i18n/index';
-import { unlockLevel } from '@engine/progression/unlocks';
 import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
@@ -14,7 +13,6 @@ import { BottomBar } from '@ui/components/BottomBar/BottomBar';
 import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { NotificationDot } from '@ui/components/NotificationDot/NotificationDot';
-import { Panel } from '@ui/components/Frame/Panel';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
@@ -45,9 +43,13 @@ export default function HubScreen(_props: ScreenProps) {
 
   // The Idle Chest wears its fill on the building itself (`UI_DESIGN.md` §5.2).
   const chest = save ? idleView(save, now) : null;
-  // The gate's own cards: keys left this period, and a dot when a chest is waiting (BOSSES.md §4).
-  const daily = save ? bossView(save, 'boss.gravemaw', now) : null;
-  const weekly = save ? bossView(save, 'boss.nyxara', now) : null;
+  // The bosses live behind Battle now, not in panels pasted over the town (the owner's third
+  // batch). What the hub keeps of them is the one thing worth interrupting a player for: a chest
+  // their damage has already earned (BOSSES.md §4).
+  const bossChests = !save
+    ? 0
+    : (dailyBoss ? (bossView(save, 'boss.gravemaw', now)?.claimable ?? 0) : 0) +
+      (weeklyBoss ? (bossView(save, 'boss.nyxara', now)?.claimable ?? 0) : 0);
   // The ledger's own badge: quests finished and chests earned, across both boards.
   const ledger = save ? questsClaimable(save, now) : 0;
   // The Path's: the mission it is on, if it is finished, and any chapter chest still waiting.
@@ -87,39 +89,6 @@ export default function HubScreen(_props: ScreenProps) {
             : {})}
         />
       ))}
-
-      <aside className={styles.bossColumn} aria-label={t('hub.bossGate')}>
-        <BossCard
-          title={t('hub.dailyBoss')}
-          name={t('hub.bossCard.daily')}
-          glyph="glyph.flaming_skull"
-          unlocked={dailyBoss}
-          level={unlockLevel('daily_boss')}
-          keys={daily ? `${daily.keysLeft}/${daily.boss.keysPerPeriod}` : '0'}
-          notify={(daily?.claimable ?? 0) > 0}
-          onClick={() =>
-            dailyBoss
-              ? actions.push({ name: 'bosses', boss: 'boss.gravemaw' })
-              : actions.push({ name: 'locked', feature: 'daily_boss', titleKey: 'hub.dailyBoss' })
-          }
-          testId="boss-daily"
-        />
-        <BossCard
-          title={t('hub.weeklyBoss')}
-          name={t('hub.bossCard.weekly')}
-          glyph="glyph.cursed_eye"
-          unlocked={weeklyBoss}
-          level={unlockLevel('weekly_boss')}
-          keys={weekly ? `${weekly.keysLeft}/${weekly.boss.keysPerPeriod}` : '0'}
-          notify={(weekly?.claimable ?? 0) > 0}
-          onClick={() =>
-            weeklyBoss
-              ? actions.push({ name: 'bosses', boss: 'boss.nyxara' })
-              : actions.push({ name: 'locked', feature: 'weekly_boss', titleKey: 'hub.weeklyBoss' })
-          }
-          testId="boss-weekly"
-        />
-      </aside>
 
       <BottomBar
         left={
@@ -192,6 +161,7 @@ export default function HubScreen(_props: ScreenProps) {
             data-testid="nav-battle"
           >
             {t('hub.battle')}
+            {bossChests > 0 ? <NotificationDot count={bossChests} /> : null}
           </Button>
         }
       />
@@ -233,59 +203,5 @@ function NavButton({
       {label}
       {unlocked && notify > 0 ? <NotificationDot count={notify} /> : null}
     </Button>
-  );
-}
-
-function BossCard({
-  title,
-  name,
-  glyph,
-  unlocked,
-  level,
-  keys = '0',
-  notify = false,
-  onClick,
-  testId,
-}: {
-  title: string;
-  name: string;
-  glyph: Parameters<typeof Glyph>[0]['glyph'];
-  unlocked: boolean;
-  level: number;
-  /** Keys left this period, as `left/of`. */
-  keys?: string;
-  /** A chest is waiting behind this gate. */
-  notify?: boolean;
-  onClick: () => void;
-  testId: string;
-}) {
-  return (
-    <Panel
-      kind="thin"
-      padding={14}
-      className={[styles.bossCard, unlocked ? '' : styles.bossLocked].join(' ')}
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
-      data-testid={testId}
-      aria-label={title}
-    >
-      <div className={styles.bossHead}>
-        <Glyph
-          glyph={unlocked ? glyph : 'glyph.broken_shackle'}
-          size={34}
-          color={unlocked ? 'var(--ember-3)' : 'var(--text-3)'}
-        />
-        <div>
-          <div className={`display ${styles.bossTitle}`}>{title}</div>
-          <div className={styles.bossName}>{name}</div>
-        </div>
-      </div>
-      <div className={styles.bossFoot}>
-        {unlocked ? `${t('hub.bossCard.keys')} ${keys}` : t('common.unlocksAtLevel', { level })}
-      </div>
-      {notify ? <NotificationDot /> : null}
-    </Panel>
   );
 }

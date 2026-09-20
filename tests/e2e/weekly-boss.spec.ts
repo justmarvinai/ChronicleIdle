@@ -33,6 +33,16 @@ async function bankedDamage(page: Page): Promise<number> {
   return Number(match[1].replaceAll(',', ''));
 }
 
+/** The bosses live behind Battle now, not on the hub (the owner's third batch). */
+async function openBossGate(page: Page, mode: 'daily' | 'weekly'): Promise<void> {
+  await page.getByTestId('nav-battle').click();
+  await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+  await page.getByTestId(`enter-${mode}`).click();
+  await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+}
+
 test.describe('the weekly boss', () => {
   // A race with seven units on a software-rendered stage; a shared runner needs the room.
   test.setTimeout(600_000);
@@ -41,10 +51,12 @@ test.describe('the weekly boss', () => {
     const problems = collectConsole(page);
     await importChronicleFile(page, SAVE);
 
-    // The hub wears the gate's state: three keys this week, and they are unspent.
-    const card = page.getByTestId('boss-weekly');
-    await expect(card).toContainText('3');
-    await card.click();
+    // Battle leads to the gate, and the mode card wears its state: three keys this week, unspent.
+    await page.getByTestId('nav-battle').click();
+    await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
+    await settle(page);
+    await expect(page.getByTestId('mode-weekly')).toContainText('3');
+    await page.getByTestId('enter-weekly').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
     await settle(page);
 
@@ -124,9 +136,7 @@ test.describe('the weekly boss', () => {
     await page.getByTestId('btn-continue').click();
     await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    await page.getByTestId('boss-weekly').click();
-    await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
+    await openBossGate(page, 'weekly');
     expect(await bankedDamage(page)).toBe(banked);
     await expect(page.getByTestId('bosses-keys')).toContainText('2/3');
     await expect(page.getByTestId('boss-chest-normal-2')).toBeDisabled();

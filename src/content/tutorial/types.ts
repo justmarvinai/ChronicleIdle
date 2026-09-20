@@ -34,8 +34,6 @@ export const TUTORIAL_TARGETS = [
   'hub.idle',
   'hub.quests',
   'hub.missions',
-  'hub.bossDaily',
-  'hub.bossWeekly',
   'topbar.energy',
   // The campaign
   'modes.campaign',

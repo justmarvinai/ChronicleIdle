@@ -29,8 +29,6 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'hub.idle': testId('hotspot-idle'),
   'hub.quests': testId('nav-quests'),
   'hub.missions': testId('nav-missions'),
-  'hub.bossDaily': testId('boss-daily'),
-  'hub.bossWeekly': testId('boss-weekly'),
   'topbar.energy': testId('pill-energy'),
 
   'modes.campaign': testId('mode-campaign'),
