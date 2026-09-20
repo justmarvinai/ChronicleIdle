@@ -95,6 +95,26 @@ async function spendTurn(page: Page, slot: 'a1' | 'a2'): Promise<void> {
   await spend(page, ability);
 }
 
+/**
+ * Plays the fight on until Eldric reaches `step`, pressing the ability the lesson is waiting for
+ * whenever its champion is up and spending anyone else's turn on whatever they have ready.
+ *
+ * A single press is not enough to build this on. `spend` lets a refused press go — the turn can
+ * resolve as the click lands, a lesson can open over it — and on a loaded machine that happens
+ * often enough to matter. Pressing once and then spending every later turn on A1 leaves a lesson
+ * that is waiting for A2 waiting forever, which is a stall rather than a slow run: the fight keeps
+ * going, the overlay never moves, and the only thing that ends it is the budget. So the lesson
+ * moving on is what ends this loop, and the taught ability is offered every turn until it does.
+ */
+async function playUntilLesson(page: Page, step: string, slot: 'a1' | 'a2'): Promise<void> {
+  for (let turn = 0; turn < 24; turn += 1) {
+    if ((await currentLesson(page)) === step) return;
+    const taught = page.getByTestId(`ability-${slot}`);
+    if ((await taught.count()) > 0 && !(await taught.isDisabled())) await spend(page, taught);
+    else await spendAnyTurn(page);
+  }
+}
+
 /** Spends whatever the champion whose turn it is has ready. */
 async function spendAnyTurn(page: Page): Promise<void> {
   for (const slot of ['a1', 'a2', 'a3', 'a4'] as const) {
@@ -112,11 +132,12 @@ test.describe('the tutorial', () => {
    * screens, a battle played turn by turn to a victory, and then two whole stands more, because
    * the lesson that teaches free play only ends when the third stand falls.
    *
-   * Ten minutes was the other full-flow specs' budget and still not enough here — CI runners vary
-   * by about 3× (the walkthrough has taken 2.3 minutes in the container and 6.8 on a bad runner),
-   * and on a bad one this ran out mid-fight. `fightOnAuto` now watches the two trailing stands at
-   * ×2, which is the cap a fresh chronicle has, and the budget is fifteen minutes so that a
-   * runner having a bad day is slow rather than red.
+   * Ten minutes was the other full-flow specs' budget and twice not enough here, and the budget
+   * was never the whole story: under load a refused press could leave a lesson waiting forever
+   * (see `playUntilLesson`), which reads as a slow test and is really a stuck one. With that
+   * fixed the walk takes 2.8 minutes in this container and 4.4 with six busy loops on its four
+   * cores, so fifteen minutes is room for a runner having a much worse day than that. The two
+   * trailing stands are also watched at ×2, the cap a fresh chronicle has.
    */
   test.setTimeout(900_000);
 
@@ -153,19 +174,13 @@ test.describe('the tutorial', () => {
     await spendTurn(page, 'a1');
 
     // 1.7 — the second wave, on a champion who has a second ability. Until that moment arrives
-    // Eldric says nothing and the fight is the player's own, which is what this loop plays out.
-    for (let turn = 0; turn < 24; turn += 1) {
-      if ((await currentLesson(page)) === 'tut.1.7') break;
-      await spendAnyTurn(page);
-    }
+    // Eldric says nothing and the fight is the player's own, which is what this plays out.
+    await playUntilLesson(page, 'tut.1.7', 'a1');
     await readLesson(page, 'tut.1.7');
-    await spendTurn(page, 'a2');
 
-    // 1.8 — handing the fight over.
-    for (let turn = 0; turn < 24; turn += 1) {
-      if ((await currentLesson(page)) === 'tut.1.8') break;
-      await spendAnyTurn(page);
-    }
+    // 1.8 — handing the fight over. A2 is what this lesson is waiting for, so it is offered every
+    // turn until Eldric moves on rather than pressed once and hoped for.
+    await playUntilLesson(page, 'tut.1.8', 'a2');
     await readLesson(page, 'tut.1.8');
     await page.getByTestId('battle-auto').click();
 
