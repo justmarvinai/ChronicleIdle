@@ -169,25 +169,31 @@ test.describe('battle', () => {
   test('marking an enemy holds through the fight, in manual and in auto', async ({ page }) => {
     await freshChronicle(page);
     await openStageSetup(page, 1);
-    await setAuto(page, false);
+    // Auto never opens a decision, so a press on an enemy there can only ever be a mark.
+    await setAuto(page, true);
     await startBattle(page);
-    await waitForDecision(page);
+    const enemy = page.getByTestId('plate-w0e0');
+    await expect(enemy).toBeVisible({ timeout: 30_000 });
 
-    // A press on an enemy marks it — no ability chosen, no turn spent (BATTLE.md §7.1).
-    const enemies = page.locator('[data-testid^="plate-w0e"]');
-    const first = enemies.first();
-    await first.click();
-    await expect(first).toHaveAttribute('data-focused', 'true');
-    // Pressing the marked one again lifts the mark.
-    await first.click();
-    await expect(first).toHaveAttribute('data-focused', 'false');
-    await first.click();
-    await expect(first).toHaveAttribute('data-focused', 'true');
+    // A press marks the enemy; a press on the marked one lifts the mark (BATTLE.md §7.1).
+    await enemy.click();
+    await expect(enemy).toHaveAttribute('data-focused', 'true');
+    await enemy.click();
+    await expect(enemy).toHaveAttribute('data-focused', 'false');
+    await enemy.click();
+    await expect(enemy).toHaveAttribute('data-focused', 'true');
 
-    // Auto has no decisions to open, and the mark is still the player's to set.
+    // The mark belongs to the player, not to the mode: it survives the switch to manual, and it
+    // is what the turn opens on.
     await page.getByTestId('battle-auto').click();
-    await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'true');
-    await expect(first).toHaveAttribute('data-focused', 'true');
+    await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'false');
+    await waitForDecision(page);
+    await expect(enemy).toHaveAttribute('data-focused', 'true');
+    await expect(enemy).toHaveAttribute('data-targeted', 'true');
+
+    // A press that spends the turn on the marked enemy is an attack, not a second toggle.
+    await enemy.click();
+    await expect(enemy).toHaveAttribute('data-focused', 'true');
 
     await page.getByTestId('battle-pause').click();
     await page.getByTestId('pause-retreat').click();

@@ -26,8 +26,10 @@ never built, one that had furniture pasted on it, and a gate that arrived too la
   stand), the fourteen **gear sets**, and every **status** a fight can carry.
 - **Mark the enemy every champion attacks** (`docs/design/BATTLE.md` §7.1). A press on an enemy
   marks it: while it stands, it is the target every ally takes — in manual mode as the
-  preselection a turn opens with, in auto as the policy's answer. Pressing it again lifts the mark,
-  Tab marks from the keyboard, and the kill that takes the enemy clears it. One line of state
+  preselection a turn opens with, in auto as the policy's answer. Tab marks from the keyboard, and
+  the kill that takes the enemy clears it. A press that can also spend the turn on that enemy
+  attacks and keeps the mark; one that cannot — in auto, or between turns — toggles, so pressing
+  the marked enemy hands targeting back to the policy. One line of state
   (`focusId`) read in one place (`pickTarget`), which is why both modes and the preselection are
   the same rule rather than three that drift. It sits above a kit's declared `prefer` — that is
   the champion's opinion, this is the player's — and below only a Provoke.

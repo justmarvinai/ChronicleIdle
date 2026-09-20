@@ -48,6 +48,7 @@ export const UnitPlate = memo(function UnitPlate({
       aria-label={`${translate(unit.name)}, ${t('common.levelShort', { level: unit.level })}`}
       data-testid={`plate-${unit.id}`}
       data-targetable={targetable ? 'true' : 'false'}
+      data-targeted={targeted ? 'true' : 'false'}
       data-focused={focused ? 'true' : 'false'}
       onClick={interactive ? () => onPick?.(unit.id) : undefined}
       onMouseEnter={() => onHover?.(unit.id)}

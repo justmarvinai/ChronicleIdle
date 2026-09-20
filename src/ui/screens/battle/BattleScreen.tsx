@@ -194,16 +194,19 @@ export default function BattleScreen({ route }: ScreenProps) {
   };
   /**
    * A press on an enemy marks it: every ally attacks it while it stands, in manual mode and in
-   * auto (BATTLE.md §7.1). Pressing the one already marked lifts the mark. When a decision is open
-   * and the chosen ability can reach that unit, the same press also spends the turn on it, which
-   * is what the fight did before there was a mark at all.
+   * auto (BATTLE.md §7.1). When a decision is open and the chosen ability can reach that unit the
+   * same press also spends the turn on it — which is what the fight did before there was a mark at
+   * all — so attacking the marked enemy again keeps the mark rather than lifting it. A press that
+   * only marks toggles: pressing the marked enemy hands the choice back to the policy.
    */
   const onPickUnit = (unitId: string): void => {
     const unit = view?.units.find((u) => u.id === unitId);
+    const attacks = selectedAbility !== null && validTargets.has(unitId);
     if (unit?.side === 'enemy' && unit.alive) {
-      const next = focusId === unitId ? null : unitId;
+      const next = attacks || focusId !== unitId ? unitId : null;
       battleController.setFocus(next);
-      playSfx(next ? 'ui.tab' : 'ui.cancel');
+      // An attack brings its own sound with it; a bare mark needs one.
+      if (!attacks) playSfx(next ? 'ui.tab' : 'ui.cancel');
     }
     if (!selectedAbility || !validTargets.has(unitId)) return;
     setTarget(unitId);

@@ -264,9 +264,10 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   screen. Markers sit in the list's own padding, wide enough for three digits.
 - **The marked enemy** (`BATTLE.md` §7.1): an enemy plate takes the pointer at all times, not only
   while a turn is open, because marking one is something a player does between turns and in auto
-  mode. The marked plate wears a gold frame and a ◆ beside its name; pressing it again lifts the
-  mark. When a turn *is* open and the chosen ability can reach that enemy, the same press also
-  spends the turn on it, which is what a press did before the mark existed.
+  mode. The marked plate wears a gold frame and a ◆ beside its name. When a turn *is* open and the
+  chosen ability can reach that enemy, the press attacks and keeps the mark, which is what a press
+  did before the mark existed; a press that cannot cast toggles, so pressing the marked plate in
+  auto or between turns lifts the mark.
 - Ability icons: the round button clips nothing (the art clips itself), so the keyboard number and
   the passive tag sit whole on the rim wearing the same dark chip with a gold hairline. An ability
   on cooldown greys and darkens under the turns remaining, in gold.

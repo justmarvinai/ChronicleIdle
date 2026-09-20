@@ -213,9 +213,15 @@ ability kind:
 ### 7.1 The enemy the player marks
 
 A press on an enemy's plate **marks** it, in manual mode and in auto, whether or not a turn is
-open; pressing the marked one again lifts the mark, and Tab does the same thing from the keyboard.
-While it stands, it is the target every ally picks: in manual mode it is the preselection a
-decision opens with, in auto it is what the policy returns.
+open, and Tab does the same thing from the keyboard. While it stands, it is the target every ally
+picks: in manual mode it is the preselection a decision opens with, in auto it is what the policy
+returns.
+
+A press that can also **spend the turn** on that enemy — a decision is open and the chosen ability
+reaches it — is an attack first: it sets the mark and casts, which is what a press on an enemy did
+before there was a mark at all. Only a press that cannot cast toggles, so pressing the marked enemy
+in auto, or between turns, hands targeting back to the policy. Attacking the enemy you marked is
+the ordinary case in manual mode, and it must not quietly undo the mark.
 
 The mark is one line in the state (`focusId`) read by `pickTarget`, so both modes and the
 preselection are the same rule rather than three. It sits above everything in the table above,
@@ -225,9 +231,8 @@ below exactly one thing: a **Provoke**, which is not a choice anybody has.
 A marked enemy that turns untargetable — a Veil, say — is simply not in the pool, so the policy
 reads the field again on its own without the mark going away. A marked enemy that **dies** clears
 the mark outright: unit ids belong to their wave, so a mark left on a corpse could never match
-anything again and would only sit on the HUD saying nothing. Pressing the mark again lifts it, and
-it never survives the fight — it is an input to the simulation, like the control mode, not
-something the save remembers.
+anything again and would only sit on the HUD saying nothing. The mark never survives the fight —
+it is an input to the simulation, like the control mode, not something the save remembers.
 
 `prefer` overrides the default for enemy-targeting abilities, whoever casts it — one of
 `lowest_hp`, `lowest_hp_percent` (the Marksman archetype's shot, which picks off the champion
