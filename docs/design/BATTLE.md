@@ -222,10 +222,12 @@ preselection are the same rule rather than three. It sits above everything in th
 including `prefer` — a declared preference is a kit's opinion and the mark is the player's — and
 below exactly one thing: a **Provoke**, which is not a choice anybody has.
 
-A marked enemy that falls or turns untargetable is simply not in the pool, so the policy reads the
-field again on its own. The mark itself is kept, because a wave can put another unit in that slot;
-it is cleared by pressing it again, and it never survives the fight — it is an input to the
-simulation, like the control mode, not something the save remembers.
+A marked enemy that turns untargetable — a Veil, say — is simply not in the pool, so the policy
+reads the field again on its own without the mark going away. A marked enemy that **dies** clears
+the mark outright: unit ids belong to their wave, so a mark left on a corpse could never match
+anything again and would only sit on the HUD saying nothing. Pressing the mark again lifts it, and
+it never survives the fight — it is an input to the simulation, like the control mode, not
+something the save remembers.
 
 `prefer` overrides the default for enemy-targeting abilities, whoever casts it — one of
 `lowest_hp`, `lowest_hp_percent` (the Marksman archetype's shot, which picks off the champion

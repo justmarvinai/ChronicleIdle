@@ -192,11 +192,11 @@ describe('the enemy the player marks', () => {
     const state = marked();
     setFocus(state, 'w0e0');
     untilTurnOf(state, 'a0');
+    // A fallen enemy is not in the target pool, so the policy reads the field again rather than
+    // aiming at a corpse. (The kill itself clears the mark — `combat.ts` — since unit ids are per
+    // wave and a mark on a corpse can never match anything again.)
     state.units['w0e0']!.alive = false;
-    // The mark is kept — the next wave may hold the same slot — but a fallen enemy is not in the
-    // pool, so the policy reads the field again rather than aiming at a corpse.
     expect(autoDecide(state, state.units['a0']!).targetId).toBe('w0e1');
-    expect(state.focusId).toBe('w0e0');
   });
 
   it('never marks an ally, and clears on null', () => {

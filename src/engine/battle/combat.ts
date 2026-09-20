@@ -252,6 +252,9 @@ function resolveLethal(ctx: ActionContext, source: BattleUnit | null, target: Ba
   target.hp = 0;
   target.tm = 0;
   target.statuses = [];
+  // A mark names a standing enemy (BATTLE.md §7.1). Unit ids are per wave, so a mark left on a
+  // corpse could never match anything again — it would only sit on the HUD saying nothing.
+  if (ctx.state.focusId === target.id) ctx.state.focusId = null;
   report(ctx, target.id).alive = false;
   void source;
   return true;

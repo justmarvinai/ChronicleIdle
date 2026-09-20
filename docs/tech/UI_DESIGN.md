@@ -149,7 +149,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   settings right); left edge: Idle Chest at the docks — the hourglass hotspot wearing a gold
   `FillRing` (an SVG arc, exact at any size) with its countdown under the banner and a dot once it
   is full; bottom bar: **Missions**, **Quests**, **Armoury**, **Index**, **Champions**,
-  primary **BATTLE** (opens Game Modes, and wears the boss-chest dot).
+  primary **BATTLE** (opens Game Modes, and wears the boss-chest dot). **Index** opens the
+  Chronicle Index (§5.20).
 - Hotspots (label banner `banner-plain` + glow ring + dot): Tavern, Forge, Portal (statue replaced
   with a violet gate overlay), Chronicler's Hall (missions), Campaign gate (world map), Champions
   barracks, Boss gate.
@@ -527,6 +528,31 @@ Rules the overlay holds to:
   keys held); cards for locked content show what opens them — a chronicle level for most, and
   *Clear the Intro campaign* for the tower, which is gated on progress rather than on a level
   (`ETERNAL_TOWER.md` §1). Backlog cards (Dungeons, Events) do not exist in EA-0.1.
+
+### 5.20 The Chronicle Index
+
+- Reached from the hub's bottom bar (**Index**), open from level 1 — it is a reference, not a
+  reward. Backdrop `bg.bg5` with the interior ambience, like every other reading room.
+- Four tabs across the head, a one-line blurb, and — on the champions tab only — the tally
+  (`12 of 23 champions found`) in gold on the right.
+- **Champions**: the whole roster of definitions, found or not, richest rarity first and
+  alphabetical inside it. Six columns of `ChampionCard` in a `VirtualGrid`, compact (no level
+  badge, no stars on the card), **dimmed when unfound**, wearing `×N` when the chronicle holds
+  more than one. Rarity / element / role dropdowns and a *Found only* switch. The page beside it:
+  portrait framed in the rarity's colour, base→max stars, rarity · element · role, whether it is
+  in the chronicle, the authored stats (6★ level 60, before gear), every ability with its cooldown
+  and live numbers, the passive, the aura, the lore and where it comes from.
+- **Bestiary**: the twelve settlements as numbered tabs, each page its faction's six rank-and-file
+  and the boss that holds the last stand (wearing a **BOSS** tag). Cards are the enemy's own sprite
+  over its name; the page beside them prints archetype · element · role, the settlement-1 base
+  stats the encounter scales, and the kit.
+- **Gear Sets**: the fourteen crests, each with its piece count, what a complete group gives, and
+  the settlements that favour it. The set's own description *is* its bonus text — printing the
+  passives beside it said the same sentence twice.
+- **Statuses**: buffs then debuffs, each with its tinted chip and what it does. A status's text is
+  written for one cast ("by {value} %"), and a glossary has no cast, so the amount stands as `X`.
+- Everything here is a read of the content registry, so the Index grows by itself every time the
+  content does. Nothing on this screen spends anything.
 
 ## 6. Animation language
 

@@ -1,0 +1,332 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.head {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 96px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.blurb {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-3);
+}
+.tally {
+  margin-left: auto;
+  font-size: 19px;
+  color: var(--gold-3);
+}
+
+.body {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 150px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+}
+
+/* A catalogue reads as a list beside the page it opens. */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 620px;
+  gap: 18px;
+  height: 100%;
+}
+.listSide {
+  composes: surfaceStone from global;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.factionTabs {
+  flex-wrap: wrap;
+}
+.scroller {
+  composes: surfaceStone from global;
+  padding: 14px 18px;
+}
+
+.page {
+  height: 100%;
+}
+.pageBody {
+  height: 100%;
+  min-height: 0;
+}
+.pageHead {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.portrait {
+  position: relative;
+  width: 148px;
+  height: 148px;
+  flex: none;
+  background-size: cover;
+  background-position: center top;
+  border: 2px solid var(--gold-1);
+}
+.portraitTint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+}
+.beastPortrait {
+  width: 148px;
+  height: 148px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(201, 162, 74, 0.35);
+  overflow: hidden;
+}
+.pageTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.pageTitle h2 {
+  margin: 0;
+  font-size: 30px;
+}
+.pageMeta {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.found {
+  margin: 0;
+  font-size: 14px;
+  color: var(--gold-2);
+}
+
+.section {
+  margin: 16px 0 8px;
+  font-size: 20px;
+  color: var(--gold-3);
+}
+.hint {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px 14px;
+}
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-bottom: var(--hairline);
+}
+.stat dt {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+.stat dd {
+  margin: 0 0 0 auto;
+  font-size: 16px;
+  color: var(--text-1);
+}
+
+.ability {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: var(--hairline);
+}
+.abilityHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.abilityName {
+  font-size: 17px;
+  color: var(--text-1);
+}
+.tag {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.abilityText {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+.lore {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-2);
+  font-style: italic;
+}
+.obtain {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* The bestiary's own list: a sprite, a name, and the boss wearing its tag. */
+.beastGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.beast {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.12));
+  border: 1px solid rgba(201, 162, 74, 0.2);
+  cursor: var(--cursor-pointer);
+  transition:
+    border-color var(--t-fast),
+    transform var(--t-fast) var(--ease-out);
+}
+.beast:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold-2);
+}
+.beastOn {
+  border-color: var(--gold-2);
+  box-shadow: 0 0 18px rgba(240, 213, 122, 0.28);
+}
+.beastArt {
+  height: 84px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.beastName {
+  font-size: 13px;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-2);
+}
+.bossTag {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ember-3);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(216, 85, 47, 0.5);
+}
+
+/* The sets and the statuses are read, not chosen between, so they are plain columns of cards. */
+.setGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.setCard {
+  height: 100%;
+}
+.setBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.setHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.crest {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.setName {
+  font-size: 19px;
+  color: var(--gold-3);
+}
+.setPieces {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.setText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+.setBonus {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--gold-2);
+}
+.setHomes {
+  margin: auto 0 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.statusCard {
+  height: 100%;
+}
+.statusBody {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.statusName {
+  font-size: 17px;
+  color: var(--text-1);
+}
+.statusText {
+  margin: 3px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-2);
+}

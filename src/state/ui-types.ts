@@ -9,6 +9,7 @@ import type { DecodedChronicle } from './chronicle-file';
 export type ChampionTab = 'info' | 'abilities' | 'lore' | 'gear';
 export type TavernTab = 'level' | 'rank' | 'skills';
 export type ForgeTab = 'craft' | 'dismantle' | 'refine';
+export type IndexTab = 'champions' | 'bestiary' | 'sets' | 'statuses';
 
 export type Route =
   | { name: 'title' }
@@ -31,6 +32,8 @@ export type Route =
   | { name: 'missions'; chapter?: number }
   /** The Eternal Tower; `floor` scrolls the ladder to one (`ETERNAL_TOWER.md` §7). */
   | { name: 'tower'; floor?: number }
+  /** The Chronicle Index; `tab` opens one of its four catalogues (`UI_DESIGN.md` §5.20). */
+  | { name: 'index'; tab?: IndexTab }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
   | { name: 'campaign' }

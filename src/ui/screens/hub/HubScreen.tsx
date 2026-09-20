@@ -140,7 +140,7 @@ export default function HubScreen(_props: ScreenProps) {
               label={t('hub.index')}
               glyph="glyph.owl"
               unlocked
-              onClick={() => actions.push({ name: 'locked', feature: 'champions', titleKey: 'hub.index' })}
+              onClick={() => actions.push({ name: 'index' })}
               testId="nav-index"
             />
             <NavButton

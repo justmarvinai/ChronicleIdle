@@ -5,8 +5,9 @@ import { STARTER_IDS } from '@content/champions/types';
 import { createInstance } from '@engine/champions/instance';
 import { createRng } from '@engine/rng/rng';
 import { createBattle, type BattleSetup } from './create';
-import { replay, runAuto, step } from './step';
+import { replay, runAuto, setFocus, step } from './step';
 import { snapshot } from './snapshot';
+import { ability, battle, champion, enemy, untilTurnOf } from './test-utils';
 import type { BattleEvent, BattleState, Decision } from './types';
 
 function party(ids: string[], level = 1) {
@@ -151,5 +152,26 @@ describe('battle lifecycle', () => {
     expect(
       (outcomes.get('victory') ?? 0) + (outcomes.get('defeat') ?? 0) + (outcomes.get('timeout') ?? 0),
     ).toBe(1000);
+  });
+});
+
+describe('a mark on a standing enemy', () => {
+  it('is cleared by the kill that takes it', () => {
+    const state = battle({
+      party: [
+        champion({
+          abilities: [ability('a1', [{ kind: 'damage', target: 'single_enemy', mult: 40, stat: 'ATK' }])],
+        }),
+      ],
+      waves: [[enemy({ stats: { spd: 1, hp: 10 } }), enemy({ stats: { spd: 1, hp: 10_000 } })]],
+    });
+    setFocus(state, 'w0e0');
+    expect(state.focusId).toBe('w0e0');
+    untilTurnOf(state, 'a0');
+    const request = state.pending;
+    if (!request) throw new Error('no request');
+    step(state, { unitId: 'a0', abilityId: request.abilities[0]!.abilityId, targetId: 'w0e0' });
+    expect(state.units['w0e0']?.alive).toBe(false);
+    expect(state.focusId).toBe(null);
   });
 });
