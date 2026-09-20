@@ -66,6 +66,8 @@ export interface BattleView {
   turnLimit: number;
   phase: BattleState['phase'];
   control: BattleState['control'];
+  /** The enemy the player has marked, if any (BATTLE.md §7.1). */
+  focusId: string | null;
   pending: DecisionRequest | null;
   outcome: BattleOutcome | null;
 }
@@ -148,6 +150,7 @@ export function snapshot(state: BattleState): BattleView {
     turnLimit: state.turnLimit,
     phase: state.phase,
     control: state.control,
+    focusId: state.focusId,
     pending: state.pending,
     outcome: state.outcome,
   };

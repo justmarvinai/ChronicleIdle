@@ -303,6 +303,12 @@ export interface BattleState {
   waveFresh: boolean;
   phase: BattlePhase;
   control: 'manual' | 'auto';
+  /**
+   * The enemy the player has marked, if any (BATTLE.md §7.1). An input like `control`, not a
+   * recorded decision: while it stands and an ability can reach it, it is the target every ally
+   * picks — in manual mode as the preselection, in auto as the policy's answer.
+   */
+  focusId: string | null;
   pending: DecisionRequest | null;
   decisions: Decision[];
   reports: Record<string, UnitReport>;

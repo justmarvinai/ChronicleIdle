@@ -32,9 +32,6 @@
     opacity var(--t-base),
     transform var(--t-fast);
 }
-.plateEnemy {
-  border-color: rgba(255, 77, 109, 0.28);
-}
 .plateActive {
   z-index: 2;
   box-shadow:
@@ -55,6 +52,30 @@
     0 0 0 3px var(--debuff),
     0 0 30px rgba(255, 77, 109, 0.55);
   animation: none;
+}
+
+/*
+ * The marked enemy (BATTLE.md §7.1). An enemy plate takes the pointer whether or not a decision
+ * is open, because marking one is a thing a player does between turns and in auto mode — where
+ * there are no decisions at all.
+ */
+.plateEnemy {
+  border-color: rgba(255, 77, 109, 0.28);
+  pointer-events: auto;
+  cursor: var(--cursor-pointer);
+}
+.plateFocused {
+  border-color: var(--gold-2);
+  box-shadow:
+    0 0 0 2px var(--gold-2),
+    0 0 26px rgba(240, 213, 122, 0.45);
+}
+.focusTag {
+  margin-left: auto;
+  color: var(--gold-3);
+  font-size: 14px;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(240, 213, 122, 0.8);
 }
 .plateDead {
   opacity: 0.35;

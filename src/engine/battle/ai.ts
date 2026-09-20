@@ -166,6 +166,14 @@ export function pickTarget(state: BattleState, unit: BattleUnit, ability: UnitAb
   if (forced) return forced;
   const enemies = targetableEnemies(state, unit);
   if (!enemies.length) return null;
+  // The player's own mark, if they set one (BATTLE.md §7.1). It answers for every ally, in manual
+  // mode as the preselected target and in auto as the policy's pick, and it is only overruled by
+  // a Provoke — which is not a choice anybody has. An enemy that has fallen or turned untargetable
+  // is simply not in this pool, so the policy's own reading takes over without the mark going away.
+  if (unit.side === 'ally' && state.focusId) {
+    const marked = enemies.find((e) => e.id === state.focusId);
+    if (marked) return marked;
+  }
   // A declared preference wins over the side's default (the Marksman archetype picks off the
   // champion closest to death; a champion kit may ask for the biggest threat instead).
   const prefer = ability.def.ai.prefer;

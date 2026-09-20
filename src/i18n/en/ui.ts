@@ -355,6 +355,7 @@ export const ui = {
   'battle.passive': 'Passive',
   'battle.aura': 'Aura',
   'battle.boss': 'Boss',
+  'battle.focus': 'Marked — every champion attacks this one',
   'battle.boss.unshakeable': 'Unshakeable',
   'battle.boss.unshakeableHint': 'Immune to {list}. Damage over time, DEF Down and Weaken still work.',
   'battle.boss.enragesIn': 'Enrages in {turns} of its turns',

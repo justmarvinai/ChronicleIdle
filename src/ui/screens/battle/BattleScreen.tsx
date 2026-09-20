@@ -92,6 +92,9 @@ export default function BattleScreen({ route }: ScreenProps) {
       })),
     [request],
   );
+  // The enemy the player has marked (BATTLE.md §7.1). It lives in the simulation, not here, so it
+  // survives a turn ending and steers auto mode as well as manual.
+  const focusId = view?.focusId ?? null;
   const [hovered, setHovered] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const [cutIn, setCutIn] = useState<CutInState | null>(null);
@@ -189,7 +192,19 @@ export default function BattleScreen({ route }: ScreenProps) {
       validTargets.has(target ?? '') && selectedAbility === abilityId ? target : picked.autoTarget;
     cast(abilityId, chosenTarget);
   };
+  /**
+   * A press on an enemy marks it: every ally attacks it while it stands, in manual mode and in
+   * auto (BATTLE.md §7.1). Pressing the one already marked lifts the mark. When a decision is open
+   * and the chosen ability can reach that unit, the same press also spends the turn on it, which
+   * is what the fight did before there was a mark at all.
+   */
   const onPickUnit = (unitId: string): void => {
+    const unit = view?.units.find((u) => u.id === unitId);
+    if (unit?.side === 'enemy' && unit.alive) {
+      const next = focusId === unitId ? null : unitId;
+      battleController.setFocus(next);
+      playSfx(next ? 'ui.tab' : 'ui.cancel');
+    }
     if (!selectedAbility || !validTargets.has(unitId)) return;
     setTarget(unitId);
     cast(selectedAbility, unitId);
@@ -262,7 +277,12 @@ export default function BattleScreen({ route }: ScreenProps) {
         const list = choice?.validTargets ?? [];
         if (!list.length) return;
         const index = target ? list.indexOf(target) : -1;
-        setTarget(list[(index + 1) % list.length] ?? null);
+        const next = list[(index + 1) % list.length] ?? null;
+        setTarget(next);
+        // Cycling onto an enemy is the keyboard's way of marking it, so the choice outlives this
+        // turn exactly as a press on its plate would; cycling allies leaves the mark alone.
+        const unit = next ? view?.units.find((u) => u.id === next) : null;
+        if (unit?.side === 'enemy') battleController.setFocus(next);
         playSfx('ui.hover');
         return;
       }
@@ -284,6 +304,7 @@ export default function BattleScreen({ route }: ScreenProps) {
     validTargets,
     setSelectedAbility,
     setTarget,
+    view,
   ]);
 
   if (!encounter || !view || !save) return null;
@@ -326,7 +347,8 @@ export default function BattleScreen({ route }: ScreenProps) {
             active={unit.id === (request?.unitId ?? activeUnitId)}
             targetable={!!request && validTargets.has(unit.id)}
             targeted={!!request && (target === unit.id || (hovered === unit.id && validTargets.has(unit.id)))}
-            onPick={request ? onPickUnit : undefined}
+            focused={focusId === unit.id}
+            onPick={request || (unit.side === 'enemy' && unit.alive) ? onPickUnit : undefined}
             onHover={setHovered}
           />
         ))}

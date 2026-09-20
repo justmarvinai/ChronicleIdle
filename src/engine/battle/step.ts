@@ -413,6 +413,17 @@ export function setControl(state: BattleState, control: 'manual' | 'auto'): void
   state.control = control;
 }
 
+/**
+ * Marks the enemy every ally attacks while it stands (BATTLE.md §7.1), or clears the mark with
+ * `null`. An input like `setControl`, not a recorded decision: it steers what the policy picks
+ * rather than answering an open request, and a decision already pending keeps the preselection it
+ * was built with until the player changes it or the next request is built.
+ */
+export function setFocus(state: BattleState, unitId: string | null): void {
+  const unit = unitId ? state.units[unitId] : null;
+  state.focusId = unit && unit.side === 'enemy' ? unit.id : null;
+}
+
 /** Runs the battle to its end with the AI deciding for every ally; returns every event. */
 export function runAuto(
   state: BattleState,

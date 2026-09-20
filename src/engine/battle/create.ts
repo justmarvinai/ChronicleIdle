@@ -244,6 +244,7 @@ export function createBattle(setup: BattleSetup, seed: string): BattleState {
     waveFresh: true,
     phase: 'running',
     control: setup.control,
+    focusId: null,
     pending: null,
     decisions: [],
     reports: {},

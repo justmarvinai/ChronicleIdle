@@ -12,6 +12,8 @@ export interface UnitPlateProps {
   active: boolean;
   targetable: boolean;
   targeted: boolean;
+  /** The enemy the player has marked: every ally attacks it while it stands (BATTLE.md §7.1). */
+  focused?: boolean;
   onPick?: ((id: string) => void) | undefined;
   onHover?: ((id: string | null) => void) | undefined;
 }
@@ -22,12 +24,13 @@ export const UnitPlate = memo(function UnitPlate({
   active,
   targetable,
   targeted,
+  focused = false,
   onPick,
   onHover,
 }: UnitPlateProps) {
   const anchor = plateAnchor(unit.side, unit.slot, unit.art.scale, unit.guarding !== null);
   const shieldPct = unit.maxHp > 0 ? Math.min(100, (unit.shield / unit.maxHp) * 100) : 0;
-  const interactive = targetable && !!onPick;
+  const interactive = !!onPick;
   return (
     <div
       className={[
@@ -36,6 +39,7 @@ export const UnitPlate = memo(function UnitPlate({
         active ? styles.plateActive : '',
         targetable ? styles.plateTargetable : '',
         targeted ? styles.plateTargeted : '',
+        focused ? styles.plateFocused : '',
         unit.alive ? '' : styles.plateDead,
       ].join(' ')}
       style={{ left: anchor.x, top: anchor.y }}
@@ -44,6 +48,7 @@ export const UnitPlate = memo(function UnitPlate({
       aria-label={`${translate(unit.name)}, ${t('common.levelShort', { level: unit.level })}`}
       data-testid={`plate-${unit.id}`}
       data-targetable={targetable ? 'true' : 'false'}
+      data-focused={focused ? 'true' : 'false'}
       onClick={interactive ? () => onPick?.(unit.id) : undefined}
       onMouseEnter={() => onHover?.(unit.id)}
       onMouseLeave={() => onHover?.(null)}
@@ -58,6 +63,11 @@ export const UnitPlate = memo(function UnitPlate({
         <span className={`num ${styles.plateLevel}`}>{unit.level}</span>
         <span className={`display ${styles.plateName}`}>{translate(unit.name)}</span>
         {unit.isBoss ? <span className={styles.bossTag}>{t('battle.boss')}</span> : null}
+        {focused ? (
+          <span className={styles.focusTag} title={t('battle.focus')} aria-label={t('battle.focus')}>
+            ◆
+          </span>
+        ) : null}
       </div>
       <div className={styles.plateHp}>
         <Bar value={unit.hp} max={unit.maxHp} kind="health" height={16} />

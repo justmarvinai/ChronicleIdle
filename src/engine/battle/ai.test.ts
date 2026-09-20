@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { autoDecide } from './ai';
+import { setFocus } from './step';
 import { ability, battle, champion, enemy, untilTurnOf } from './test-utils';
 
 const hit = (mult = 1) => ({ kind: 'damage', target: 'single_enemy', mult, stat: 'ATK' }) as const;
@@ -155,5 +156,56 @@ describe('auto-battle policy', () => {
     expect(autoDecide(state, state.units['a0']!).abilityId).toBe(buff.id);
     state.waveFresh = false;
     expect(autoDecide(state, state.units['a0']!).abilityId).toBe(nuke.id);
+  });
+});
+
+describe('the enemy the player marks', () => {
+  const hero = () => champion({ abilities: [ability('a1', [hit()])] });
+  /** Two enemies the policy would separate: the one with the higher ATK is its own pick. */
+  const marked = () =>
+    battle({
+      party: [hero()],
+      waves: [
+        [enemy({ stats: { spd: 1, atk: 50, hp: 5_000 } }), enemy({ stats: { spd: 1, atk: 400, hp: 5_000 } })],
+      ],
+    });
+
+  it("is what every ally attacks, over the policy's own reading", () => {
+    const state = marked();
+    untilTurnOf(state, 'a0');
+    // Left to itself the policy takes the biggest threat — the second enemy.
+    expect(autoDecide(state, state.units['a0']!).targetId).toBe('w0e1');
+    setFocus(state, 'w0e0');
+    expect(autoDecide(state, state.units['a0']!).targetId).toBe('w0e0');
+    // A request already open keeps the preselection it was built with; the mark steers the next one.
+    expect(state.pending?.abilities[0]?.autoTarget).toBe('w0e1');
+  });
+
+  it('is the preselection a manual request is built with', () => {
+    const state = marked();
+    setFocus(state, 'w0e0');
+    untilTurnOf(state, 'a0');
+    expect(state.pending?.abilities[0]?.autoTarget).toBe('w0e0');
+  });
+
+  it('hands the choice back when the marked enemy falls', () => {
+    const state = marked();
+    setFocus(state, 'w0e0');
+    untilTurnOf(state, 'a0');
+    state.units['w0e0']!.alive = false;
+    // The mark is kept — the next wave may hold the same slot — but a fallen enemy is not in the
+    // pool, so the policy reads the field again rather than aiming at a corpse.
+    expect(autoDecide(state, state.units['a0']!).targetId).toBe('w0e1');
+    expect(state.focusId).toBe('w0e0');
+  });
+
+  it('never marks an ally, and clears on null', () => {
+    const state = marked();
+    setFocus(state, 'a0');
+    expect(state.focusId).toBe(null);
+    setFocus(state, 'w0e1');
+    expect(state.focusId).toBe('w0e1');
+    setFocus(state, null);
+    expect(state.focusId).toBe(null);
   });
 });

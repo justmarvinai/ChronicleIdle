@@ -210,6 +210,23 @@ ability kind:
 | Debuff ability | Enemy without that debuff with the highest threat (ATK × SPD) |
 | AoE | n/a |
 
+### 7.1 The enemy the player marks
+
+A press on an enemy's plate **marks** it, in manual mode and in auto, whether or not a turn is
+open; pressing the marked one again lifts the mark, and Tab does the same thing from the keyboard.
+While it stands, it is the target every ally picks: in manual mode it is the preselection a
+decision opens with, in auto it is what the policy returns.
+
+The mark is one line in the state (`focusId`) read by `pickTarget`, so both modes and the
+preselection are the same rule rather than three. It sits above everything in the table above,
+including `prefer` — a declared preference is a kit's opinion and the mark is the player's — and
+below exactly one thing: a **Provoke**, which is not a choice anybody has.
+
+A marked enemy that falls or turns untargetable is simply not in the pool, so the policy reads the
+field again on its own. The mark itself is kept, because a wave can put another unit in that slot;
+it is cleared by pressing it again, and it never survives the fight — it is an input to the
+simulation, like the control mode, not something the save remembers.
+
 `prefer` overrides the default for enemy-targeting abilities, whoever casts it — one of
 `lowest_hp`, `lowest_hp_percent` (the Marksman archetype's shot, which picks off the champion
 closest to death), `highest_atk` or `lowest_def`. Provoke still wins over a preference.

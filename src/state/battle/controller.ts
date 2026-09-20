@@ -10,6 +10,7 @@ import {
   createBattle,
   retreat as retreatBattle,
   setControl as setBattleControl,
+  setFocus as setBattleFocus,
   snapshot,
   step,
   type BattleEvent,
@@ -98,6 +99,12 @@ export interface BattleController {
   /** Answers the pending request (manual mode). */
   decide(decision: Decision): Result<void>;
   setControl(control: 'manual' | 'auto'): void;
+  /**
+   * Marks the enemy every ally attacks while it stands (BATTLE.md §7.1), or clears it with `null`.
+   * It steers the policy rather than answering a request, so it works in both control modes and
+   * between turns.
+   */
+  setFocus(unitId: string | null): void;
   setSpeed(speed: BattleSpeed): void;
   setPaused(paused: boolean): void;
   retreat(): void;
@@ -276,6 +283,13 @@ export function createBattleController(): BattleController {
         }
       }
       void pump();
+    },
+    setFocus(unitId) {
+      if (!state) return;
+      setBattleFocus(state, unitId);
+      const view = store.getState().view;
+      // The mark is drawn from the view, so it has to reach the HUD before the next event does.
+      if (view && view.focusId !== state.focusId) publish({ view: { ...view, focusId: state.focusId } });
     },
     setSpeed(speed) {
       publish({ speed });

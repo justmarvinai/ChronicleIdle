@@ -138,6 +138,9 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 
 ### 5.2 Hub — Emberhold
 - Reference: `main_hub_screen.png` (structure), `main_hub_screen_alternative_2.png` (mood).
+- The bosses are **not** on the hub: two cards floating over the artwork were web furniture pasted
+  on a painting (§7.1 of `CLAUDE.md`), and everything they said lives on Game Modes. What the hub
+  keeps is a counted dot on **Battle** when a boss chest is waiting.
 - Layout: full-bleed `bg8` (night harbour town) with hotspots placed on real buildings; top bar
   (profile chip left: avatar `frame-round-sm`, name, level, XP bar and, under the bar, the
   **Account Power** row — every owned champion's power summed, gold numerals, ticking up when the
@@ -146,7 +149,7 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   settings right); left edge: Idle Chest at the docks — the hourglass hotspot wearing a gold
   `FillRing` (an SVG arc, exact at any size) with its countdown under the banner and a dot once it
   is full; bottom bar: **Missions**, **Quests**, **Armoury**, **Index**, **Champions**,
-  primary **BATTLE** (opens Game Modes). Right column: Daily Boss / Weekly Boss gate cards with timers.
+  primary **BATTLE** (opens Game Modes, and wears the boss-chest dot).
 - Hotspots (label banner `banner-plain` + glow ring + dot): Tavern, Forge, Portal (statue replaced
   with a violet gate overlay), Chronicler's Hall (missions), Campaign gate (world map), Champions
   barracks, Boss gate.
@@ -258,6 +261,14 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   the frame — the flex column belongs to the panel's *content box*, and the list needs
   `min-height: 0` to shrink below its content, or it grows as tall as the fight and spills off the
   screen. Markers sit in the list's own padding, wide enough for three digits.
+- **The marked enemy** (`BATTLE.md` §7.1): an enemy plate takes the pointer at all times, not only
+  while a turn is open, because marking one is something a player does between turns and in auto
+  mode. The marked plate wears a gold frame and a ◆ beside its name; pressing it again lifts the
+  mark. When a turn *is* open and the chosen ability can reach that enemy, the same press also
+  spends the turn on it, which is what a press did before the mark existed.
+- Ability icons: the round button clips nothing (the art clips itself), so the keyboard number and
+  the passive tag sit whole on the rim wearing the same dark chip with a gold hairline. An ability
+  on cooldown greys and darkens under the turns remaining, in gold.
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
 
 ### 5.10 Battle result
