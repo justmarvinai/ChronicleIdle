@@ -62,7 +62,8 @@
   pointer-events: none;
 }
 .cooldownTurns {
-  font-size: 40px;
+  /* The number is the icon's, so it scales with it: 40px on the fight's 96px buttons. */
+  font-size: calc(var(--ability-size, 96px) * 0.42);
   line-height: 1;
   color: var(--gold-3);
   text-shadow:
@@ -70,27 +71,31 @@
     0 2px 0 rgba(0, 0, 0, 0.9);
 }
 
-/* Both badges wear the same chip so they read as one family and never lose to the art behind. */
+/*
+ * Both badges wear the same chip so they read as one family and never lose to the art behind, and
+ * the chip is a fraction of the icon rather than a fixed size: at 22px on a 56px icon (the
+ * Index's pages) it swallowed a third of the art.
+ */
 .passive,
 .hotkey {
+  --chip: max(15px, calc(var(--ability-size, 96px) * 0.23));
   position: absolute;
   bottom: -2px;
-  min-width: 22px;
-  height: 22px;
+  min-width: var(--chip);
+  height: var(--chip);
   padding: 0 4px;
   display: grid;
   place-items: center;
   background: var(--bg-0);
   border: 1px solid var(--gold-1);
   color: var(--gold-3);
+  font-size: calc(var(--chip) * 0.68);
   line-height: 1;
   pointer-events: none;
 }
 .passive {
   right: -2px;
-  font-size: 15px;
 }
 .hotkey {
   left: -2px;
-  font-size: 15px;
 }

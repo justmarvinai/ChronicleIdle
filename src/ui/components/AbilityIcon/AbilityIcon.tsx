@@ -44,7 +44,7 @@ export function AbilityIcon({
         selected ? styles.selected : '',
         cooldown > 0 ? styles.cooling : '',
       ].join(' ')}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, ['--ability-size' as string]: `${size}px` }}
       data-cooldown={cooldown > 0 ? cooldown : undefined}
       onMouseEnter={() => ready && playSfx('ui.hover')}
       onClick={() => ready && onClick && (playSfx('ui.tab'), onClick())}
