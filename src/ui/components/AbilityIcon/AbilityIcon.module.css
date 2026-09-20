@@ -1,7 +1,12 @@
+/*
+ * The button does not clip: a round `overflow: hidden` cut the corner badges — the keyboard
+ * number and the passive tag — into slivers that read as art bleeding over them (the owner's
+ * third batch). The art clips itself to the circle instead, and the badges sit on the rim where
+ * they belong.
+ */
 .button {
   position: relative;
   border-radius: 50%;
-  overflow: hidden;
   transition:
     transform var(--t-fast) var(--ease-out),
     filter var(--t-fast);
@@ -21,6 +26,7 @@
     0 0 0 3px var(--gold-2),
     var(--glow-gold);
 }
+
 .glow,
 .art,
 .frame,
@@ -37,37 +43,54 @@
   inset: 9%;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
+  transition: filter var(--t-fast);
 }
 .frame {
   background-size: 100% 100%;
   pointer-events: none;
 }
+
+/* On cooldown the ability reads as spent: the art goes grey and dark under the turns left. */
+.cooling .art {
+  filter: grayscale(0.9) brightness(0.42);
+}
 .cooldown {
   display: grid;
   place-items: center;
-  background: rgba(11, 10, 13, 0.7);
-  color: var(--text-1);
-  font-size: 34px;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+  background: rgba(11, 10, 13, 0.55);
+  pointer-events: none;
 }
-.passive {
+.cooldownTurns {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow:
+    0 0 10px rgba(0, 0, 0, 0.95),
+    0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* Both badges wear the same chip so they read as one family and never lose to the art behind. */
+.passive,
+.hotkey {
   position: absolute;
-  right: 6px;
-  bottom: 4px;
-  width: 24px;
-  height: 24px;
+  bottom: -2px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
   display: grid;
   place-items: center;
   background: var(--bg-0);
   border: 1px solid var(--gold-1);
   color: var(--gold-3);
-  font-size: 16px;
+  line-height: 1;
+  pointer-events: none;
+}
+.passive {
+  right: -2px;
+  font-size: 15px;
 }
 .hotkey {
-  position: absolute;
-  left: 8px;
-  bottom: 4px;
+  left: -2px;
   font-size: 15px;
-  color: var(--text-2);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
 }

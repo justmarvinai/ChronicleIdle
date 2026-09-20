@@ -36,10 +36,16 @@ export function AbilityIcon({
   return (
     <button
       type="button"
-      aria-label={label}
+      aria-label={cooldown > 0 ? `${label} — ${cooldown}` : label}
       aria-disabled={!ready || undefined}
-      className={[styles.button, ready ? styles.ready : '', selected ? styles.selected : ''].join(' ')}
+      className={[
+        styles.button,
+        ready ? styles.ready : '',
+        selected ? styles.selected : '',
+        cooldown > 0 ? styles.cooling : '',
+      ].join(' ')}
       style={{ width: size, height: size }}
+      data-cooldown={cooldown > 0 ? cooldown : undefined}
       onMouseEnter={() => ready && playSfx('ui.hover')}
       onClick={() => ready && onClick && (playSfx('ui.tab'), onClick())}
     >
@@ -49,12 +55,16 @@ export function AbilityIcon({
       <span className={styles.art} style={{ backgroundImage: `url("${imageUrl(icon, 'full')}")` }} />
       <span className={styles.frame} style={{ backgroundImage: `url("${ring}")` }} aria-hidden="true" />
       {cooldown > 0 ? (
-        <span className={styles.cooldown}>
-          <span className="num">{cooldown}</span>
+        <span className={styles.cooldown} aria-hidden="true">
+          <span className={`num ${styles.cooldownTurns}`}>{cooldown}</span>
         </span>
       ) : null}
       {passive ? <span className={`display ${styles.passive}`}>P</span> : null}
-      {hotkey ? <span className={`num ${styles.hotkey}`}>{hotkey}</span> : null}
+      {hotkey ? (
+        <span className={`num ${styles.hotkey}`} aria-hidden="true">
+          {hotkey}
+        </span>
+      ) : null}
     </button>
   );
 }
