@@ -139,8 +139,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 ### 5.2 Hub — Emberhold
 - Reference: `main_hub_screen.png` (structure), `main_hub_screen_alternative_2.png` (mood).
 - The bosses are **not** on the hub: two cards floating over the artwork were web furniture pasted
-  on a painting (§7.1 of `CLAUDE.md`), and everything they said lives on Game Modes. What the hub
-  keeps is a counted dot on **Battle** when a boss chest is waiting.
+  on a painting (§7.1 of `CLAUDE.md`). Everything they said lives on Game Modes, keys included
+  (§5.19). What the hub keeps is a counted dot on **Battle** when a boss chest is waiting.
 - Layout: full-bleed `bg8` (night harbour town) with hotspots placed on real buildings; top bar
   (profile chip left: avatar `frame-round-sm`, name, level, XP bar and, under the bar, the
   **Account Power** row — every owned champion's power summed, gold numerals, ticking up when the
@@ -524,11 +524,13 @@ Rules the overlay holds to:
 - Layer `--z-tutorial` (300): above the dialogs it dims, below the loading screen.
 
 ### 5.19 Game Modes
-- Reference: `different_content_battles_screen.png`. Horizontal cards: Campaign (current stage),
-  Daily Boss (keys, timer), Weekly Boss (keys, timer), **The Eternal Tower** (the climb and the
-  keys held); cards for locked content show what opens them — a chronicle level for most, and
-  *Clear the Intro campaign* for the tower, which is gated on progress rather than on a level
-  (`ETERNAL_TOWER.md` §1). Backlog cards (Dungeons, Events) do not exist in EA-0.1.
+- Reference: `different_content_battles_screen.png`. Horizontal cards, each reporting its own live
+  state in gold numerals under the blurb: Campaign (the stand the chronicle is on), Daily Boss and
+  Weekly Boss (`Keys n/m` left this period — the number the hub's panels used to carry, §5.2),
+  **The Eternal Tower** (`Floor n · Keys k/c`, the floor a key would open and the ring held). A
+  card that is still shut reports nothing live; its button says what opens it — a chronicle level
+  for most, and *Clear the Intro campaign* for the tower, which is gated on progress rather than
+  on a level (`ETERNAL_TOWER.md` §1). Backlog cards (Dungeons, Events) do not exist in EA-0.1.
 
 ### 5.20 The Chronicle Index
 

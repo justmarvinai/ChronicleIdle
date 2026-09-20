@@ -6,8 +6,9 @@ import { content } from '@content/registry';
 import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
+import { bossView } from '@state/bosses';
 import { currentPointer } from '@state/campaign';
-import { isTowerUnlocked } from '@state/tower';
+import { isTowerUnlocked, towerView } from '@state/tower';
 import { selectActions, selectFeatureUnlocked, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -17,6 +18,7 @@ import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { CARD_FRAME, CARD_TINT } from '@ui/styles/display-maps';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { TopBar } from '@ui/components/TopBar/TopBar';
+import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import type { Route } from '@state/ui-types';
@@ -40,6 +42,8 @@ interface ModeDef {
   gateKey?: I18nKey;
   /** What the Locked screen says instead of counting levels, for the same reason. */
   lockedKey?: I18nKey;
+  /** A boss card reports the keys left this period, the way the campaign card reports the stand. */
+  boss?: string;
 }
 
 const MODES: readonly ModeDef[] = [
@@ -60,6 +64,7 @@ const MODES: readonly ModeDef[] = [
     art: 'bg.bg3',
     glyph: 'glyph.flaming_skull',
     route: { name: 'bosses', boss: 'boss.gravemaw' },
+    boss: 'boss.gravemaw',
   },
   {
     id: 'weekly',
@@ -69,6 +74,7 @@ const MODES: readonly ModeDef[] = [
     art: 'bg.bg9',
     glyph: 'glyph.cursed_eye',
     route: { name: 'bosses', boss: 'boss.nyxara' },
+    boss: 'boss.nyxara',
   },
   {
     id: 'tower',
@@ -88,43 +94,64 @@ const MODES: readonly ModeDef[] = [
 export default function GameModesScreen(_props: ScreenProps) {
   const actions = useGameStore(selectActions);
   const save = useGameStore(selectSave);
+  const now = useNow(30_000);
   useSceneAudio('hub', 'hub');
   const here = save ? currentPointer(save) : null;
   const settlement = here ? content.settlementByIndex(here.settlement) : null;
+  /**
+   * What a card says under its blurb. The campaign names the stand the chronicle is on; a boss
+   * names the keys left this period, which is the number the hub used to carry and the only one
+   * worth knowing before walking in (BOSSES.md §4).
+   */
+  const noteFor = (mode: ModeDef): string | null => {
+    if (mode.id === 'campaign' && here && settlement)
+      return `${t('campaign.stageShort', { settlement: here.settlement, stage: here.stage })} · ${translate(settlement.name)} · ${t(`campaign.difficulty.${here.difficulty}`)}`;
+    if (!save) return null;
+    if (mode.boss) {
+      const view = bossView(save, mode.boss, now);
+      return view ? t('gameModes.keys', { left: view.keysLeft, total: view.boss.keysPerPeriod }) : null;
+    }
+    if (mode.id === 'tower') {
+      const view = towerView(save, now);
+      // At the top of the tower there is no next floor, so the climb itself is the number.
+      return t('gameModes.tower.note', {
+        floor: view.next ?? view.highestFloor,
+        keys: view.keys,
+        cap: view.keyCap,
+      });
+    }
+    return null;
+  };
   return (
     <div className={styles.root} data-testid="screen-game-modes">
       <Backdrop asset="bg.bg6" grade="rgba(20, 18, 40, 0.45)" parallax={8} />
       <AmbientLayer preset="interior" />
       <TopBar title={t('gameModes.title')} onBack={() => actions.pop()} />
       <div className={styles.cards}>
-        {MODES.map((mode, index) => (
-          <ModeCard
-            key={mode.id}
-            mode={mode}
-            index={index}
-            {...(mode.id === 'campaign' && here && settlement
-              ? {
-                  note: `${t('campaign.stageShort', {
-                    settlement: here.settlement,
-                    stage: here.stage,
-                  })} · ${translate(settlement.name)} · ${t(`campaign.difficulty.${here.difficulty}`)}`,
-                }
-              : {})}
-            // A card that is not open yet says so on the locked screen, route or no route.
-            onOpen={(unlocked) =>
-              actions.push(
-                unlocked && mode.route
-                  ? mode.route
-                  : {
-                      name: 'locked',
-                      feature: mode.feature,
-                      titleKey: mode.titleKey,
-                      ...(mode.lockedKey ? { reasonKey: mode.lockedKey } : {}),
-                    },
-              )
-            }
-          />
-        ))}
+        {MODES.map((mode, index) => {
+          const note = noteFor(mode);
+          return (
+            <ModeCard
+              key={mode.id}
+              mode={mode}
+              index={index}
+              {...(note ? { note } : {})}
+              // A card that is not open yet says so on the locked screen, route or no route.
+              onOpen={(unlocked) =>
+                actions.push(
+                  unlocked && mode.route
+                    ? mode.route
+                    : {
+                        name: 'locked',
+                        feature: mode.feature,
+                        titleKey: mode.titleKey,
+                        ...(mode.lockedKey ? { reasonKey: mode.lockedKey } : {}),
+                      },
+                )
+              }
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -169,7 +196,8 @@ function ModeCard({
       </div>
       <div className={styles.foot}>
         <p className={styles.body}>{t(mode.bodyKey)}</p>
-        {note ? (
+        {/* A card that is still shut reports nothing live: the button says what it is waiting for. */}
+        {unlocked && note ? (
           <p className={`num ${styles.note}`} data-testid={`note-${mode.id}`}>
             {note}
           </p>

@@ -44,6 +44,8 @@ test.describe('the Eternal Tower', () => {
     await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
     await settle(page);
     await expect(page.getByTestId('mode-tower')).toContainText('A hundred floors');
+    // The card reports the climb the way the boss cards report their keys.
+    await expect(page.getByTestId('note-tower')).toHaveText('Floor 1 · Keys 10/10');
     await page.getByTestId('enter-tower').click();
     await expect(page.getByTestId('screen-tower')).toBeVisible({ timeout: 20_000 });
     await settle(page);

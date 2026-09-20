@@ -80,6 +80,9 @@ export const ui = {
   'gameModes.campaign.body': 'Twelve settlements, ten stands each. Three difficulties.',
   'gameModes.dailyBoss': 'Daily Boss',
   'gameModes.dailyBoss.body': 'Gravemaw, the Bone Tyrant. Two keys a day; damage adds up.',
+  /** The keys a boss card reports, the number the hub's panels used to carry. */
+  'gameModes.keys': 'Keys {left}/{total}',
+  'gameModes.tower.note': 'Floor {floor} · Keys {keys}/{cap}',
   'gameModes.tower': 'The Eternal Tower',
   'gameModes.tower.body':
     'A hundred floors that only get harder. One key an attempt; every tenth floor a boss that may drop shards.',

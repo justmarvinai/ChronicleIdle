@@ -93,7 +93,7 @@ test.describe('the daily boss', () => {
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    await expect(page.getByTestId('mode-daily')).toContainText('2');
+    await expect(page.getByTestId('note-daily')).toHaveText('Keys 2/2');
     await page.getByTestId('enter-daily').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
     await settle(page);

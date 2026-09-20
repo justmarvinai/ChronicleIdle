@@ -55,7 +55,7 @@ test.describe('the weekly boss', () => {
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    await expect(page.getByTestId('mode-weekly')).toContainText('3');
+    await expect(page.getByTestId('note-weekly')).toHaveText('Keys 3/3');
     await page.getByTestId('enter-weekly').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
     await settle(page);

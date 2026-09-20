@@ -46,8 +46,11 @@ never built, one that had furniture pasted on it, and a gate that arrived too la
   so the first pieces a player saw were a reward they could not use.
 - **The bosses left the hub.** Two rectangular cards floated over Emberhold's sky saying a boss
   unlocks at level 10 — web furniture pasted on a painting, which is the one thing `CLAUDE.md`
-  §7.1 forbids. Everything they said is one press away on Game Modes; what the hub keeps is a
-  counted dot on **Battle** when a boss chest is waiting.
+  §7.1 forbids. What the hub keeps is a counted dot on **Battle** when a boss chest is waiting,
+  and the number the panels carried moved to where it is acted on: every Game Modes card now
+  reports its own live state under the blurb — `Keys 2/2` on a boss, `Floor 14 · Keys 4/10` on the
+  tower, the stand the chronicle is on for the campaign. A card that is still shut reports
+  nothing; its button says what opens it.
 
 ### Fixed
 
