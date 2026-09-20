@@ -8,7 +8,9 @@ import { services, servicesReady } from '@state/services';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
+import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
+import { ChangelogView } from '@ui/changelog/ChangelogView';
 import { useFullscreenOffer } from '@ui/hooks/useFullscreen';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import { importChronicle } from '@ui/flows/importChronicle';
@@ -62,94 +64,123 @@ export default function TitleScreen(_props: ScreenProps) {
     <div ref={root} className={styles.root} data-testid="screen-title">
       <Backdrop asset="bg.bg9" grade="rgba(70, 30, 110, 0.28)" parallax={16} />
       <AmbientLayer preset="title" />
-      <motion.img
-        src={imageUrl('logo.chronicle_idle_png')}
-        alt={t('app.name')}
-        className={styles.logo}
-        draggable={false}
-        initial={{ opacity: 0, y: -24, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
-      />
-      <div className={styles.glint} aria-hidden="true" />
-
-      <motion.nav
-        className={styles.menu}
-        initial="hidden"
-        animate="show"
-        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.35 } } }}
-        aria-label={t('app.name')}
-      >
-        {hasSave && profile ? (
-          <motion.div variants={item}>
-            <Button
-              variant="primary"
-              size="lg"
-              className={styles.menuButton}
-              onClick={continueGame}
-              data-testid="btn-continue"
-            >
-              {t('title.continue')}
-            </Button>
-            <div className={`num ${styles.continueAs}`}>
-              {t('title.continueAs', { name: profile.name, level: profile.level })}
-            </div>
+      <div className={styles.stage}>
+        <div className={styles.menuColumn}>
+          <motion.div
+            className={styles.brand}
+            initial={{ opacity: 0, y: -24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <img
+              src={imageUrl('logo.chronicle_idle_png')}
+              alt={t('app.name')}
+              className={styles.logo}
+              draggable={false}
+            />
+            <div className={styles.glint} aria-hidden="true" />
           </motion.div>
-        ) : null}
-        <motion.div variants={item}>
-          <Button
-            variant={hasSave ? 'secondary' : 'primary'}
-            size="lg"
-            className={styles.menuButton}
-            onClick={() => actions.openDialog({ name: hasSave ? 'new-game-confirm' : 'new-game' })}
-            data-testid="btn-new-chronicle"
+          <motion.nav
+            className={styles.menu}
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.35 } } }}
+            aria-label={t('app.name')}
           >
-            {t('title.newChronicle')}
-          </Button>
-        </motion.div>
-        <motion.div variants={item}>
-          <Button
-            variant="secondary"
-            size="md"
-            className={styles.menuButton}
-            onClick={() => void importChronicle()}
-            data-testid="btn-import"
-            data-skip-fullscreen-offer="true"
-          >
-            {t('title.import')}
-          </Button>
-        </motion.div>
-        <motion.div variants={item}>
-          <Button
-            variant="secondary"
-            size="md"
-            className={styles.menuButton}
-            onClick={() => actions.openDialog({ name: 'settings' })}
-            data-testid="btn-settings"
-          >
-            {t('title.settings')}
-          </Button>
-        </motion.div>
-      </motion.nav>
+            {hasSave && profile ? (
+              <motion.div variants={item}>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className={styles.menuButton}
+                  onClick={continueGame}
+                  data-testid="btn-continue"
+                >
+                  {t('title.continue')}
+                </Button>
+                <div className={`num ${styles.continueAs}`}>
+                  {t('title.continueAs', { name: profile.name, level: profile.level })}
+                </div>
+              </motion.div>
+            ) : null}
+            <motion.div variants={item}>
+              <Button
+                variant={hasSave ? 'secondary' : 'primary'}
+                size="lg"
+                className={styles.menuButton}
+                onClick={() => actions.openDialog({ name: hasSave ? 'new-game-confirm' : 'new-game' })}
+                data-testid="btn-new-chronicle"
+              >
+                {t('title.newChronicle')}
+              </Button>
+            </motion.div>
+            <motion.div variants={item}>
+              <Button
+                variant="secondary"
+                size="md"
+                className={styles.menuButton}
+                onClick={() => void importChronicle()}
+                data-testid="btn-import"
+                data-skip-fullscreen-offer="true"
+              >
+                {t('title.import')}
+              </Button>
+            </motion.div>
+            <motion.div variants={item}>
+              <Button
+                variant="secondary"
+                size="md"
+                className={styles.menuButton}
+                onClick={() => actions.openDialog({ name: 'settings' })}
+                data-testid="btn-settings"
+              >
+                {t('title.settings')}
+              </Button>
+            </motion.div>
+          </motion.nav>
 
-      {boot.unsupportedSaveVersion !== null ? (
-        <Panel kind="thin" className={styles.notice} data-testid="notice-newer-save">
-          <div className={`display ${styles.noticeTitle}`}>{t('save.newerVersion.title')}</div>
-          <p className={styles.noticeBody}>{t('save.newerVersion.body')}</p>
-          <Button size="sm" variant="secondary" onClick={exportCorrupt}>
-            {t('settings.export')}
-          </Button>
-        </Panel>
-      ) : null}
-      {boot.error === 'save_corrupt' && boot.corruptSaveText ? (
-        <Panel kind="thin" className={styles.notice} data-testid="notice-corrupt-save">
-          <div className={`display ${styles.noticeTitle}`}>{t('app.error.title')}</div>
-          <p className={styles.noticeBody}>{t('save.import.error.schema', { detail: 'stored save' })}</p>
-          <Button size="sm" variant="secondary" onClick={exportCorrupt}>
-            {t('settings.export')}
-          </Button>
-        </Panel>
-      ) : null}
+          {boot.unsupportedSaveVersion !== null ? (
+            <Panel kind="thin" className={styles.notice} data-testid="notice-newer-save">
+              <div className={`display ${styles.noticeTitle}`}>{t('save.newerVersion.title')}</div>
+              <p className={styles.noticeBody}>{t('save.newerVersion.body')}</p>
+              <Button size="sm" variant="secondary" onClick={exportCorrupt}>
+                {t('settings.export')}
+              </Button>
+            </Panel>
+          ) : null}
+          {boot.error === 'save_corrupt' && boot.corruptSaveText ? (
+            <Panel kind="thin" className={styles.notice} data-testid="notice-corrupt-save">
+              <div className={`display ${styles.noticeTitle}`}>{t('app.error.title')}</div>
+              <p className={styles.noticeBody}>{t('save.import.error.schema', { detail: 'stored save' })}</p>
+              <Button size="sm" variant="secondary" onClick={exportCorrupt}>
+                {t('settings.export')}
+              </Button>
+            </Panel>
+          ) : null}
+        </div>
+
+        <motion.div
+          className={styles.chronicle}
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+        >
+          <Panel
+            kind="ember-tall"
+            padding={20}
+            className={styles.chroniclePanel}
+            contentClassName={styles.chronicleBody}
+            data-testid="title-changelog"
+          >
+            <header className={styles.chronicleHead}>
+              <Glyph glyph="glyph.burning_scroll" size={24} className={styles.chronicleMark ?? ''} />
+              <h2 className={`display ${styles.chronicleTitle}`}>{t('changelog.title')}</h2>
+              <span className={styles.chronicleSubtitle}>{t('changelog.subtitle')}</span>
+            </header>
+            <ChangelogView height="100%" testId="title-changelog-view" />
+          </Panel>
+        </motion.div>
+      </div>
 
       <div className={styles.corner}>
         {supported ? (

@@ -9,6 +9,7 @@ import type { FactionDef } from '@content/enemies/faction';
 import type { SettlementDef } from '@content/stages/types';
 import type { GearSetDef } from '@content/sets/types';
 import type { TitleDef } from '@content/titles/types';
+import type { ReleaseDef } from '@content/changelog/types';
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
 import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
@@ -34,6 +35,7 @@ import { isCounterKey } from '@engine/progression/counters';
 import { gearSetSchema } from './gear-set';
 import { questBoardSchema } from './quest';
 import { titleSchema } from './title';
+import { compareReleases, releaseSchema } from './changelog';
 
 export const currencySchema = z.object({
   id: z.enum(CURRENCY_IDS),
@@ -88,6 +90,7 @@ export function validateContentRegistry(
     factions: readonly FactionDef[];
     settlements: readonly unknown[];
     titles: readonly unknown[];
+    releases: readonly unknown[];
     gearSets: readonly unknown[];
     banners: readonly unknown[];
     bosses: readonly unknown[];
@@ -110,6 +113,7 @@ export function validateContentRegistry(
     ...settlements.issues,
     ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters, registry.bosses),
     ...validateTitles(registry.titles, refs),
+    ...validateReleases(registry.releases, refs),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
@@ -687,6 +691,40 @@ function validateTitles(titles: readonly unknown[], refs: ContentRefs): Validati
       error(`${path}.condition`, `level ${def.condition.level} is past the cap`);
     if (def.condition.kind === 'settlement_boss' && def.condition.settlement > SETTLEMENT_COUNT)
       error(`${path}.condition`, `settlement ${def.condition.settlement} does not exist`);
+  });
+  return issues;
+}
+
+/**
+ * The Chronicle of Changes (CONTENT_AUTHORING.md §13). It is the game's own news, so it is held to
+ * three things a careless edit breaks: every line has a string, the list runs newest first (which
+ * is the order the panel prints, unsorted), and a release is named once.
+ */
+function validateReleases(releases: readonly unknown[], refs: ContentRefs): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const seen = new Set<string>();
+  let previous: ReleaseDef | undefined;
+  releases.forEach((raw, index) => {
+    const parsed = releaseSchema.safeParse(raw);
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues)
+        error(`releases[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = parsed.data as ReleaseDef;
+    const path = `releases.${def.id}`;
+    if (seen.has(def.id)) error(path, 'duplicate id');
+    seen.add(def.id);
+    if (def.id !== `release.${def.release.replace(/\./g, '_')}`)
+      error(path, `id does not match version ${def.release}`);
+    if (!refs.i18nKeys.has(def.name)) error(path, `missing i18n key ${def.name}`);
+    for (const change of def.changes)
+      if (!refs.i18nKeys.has(change.text)) error(path, `missing i18n key ${change.text}`);
+    if (previous && compareReleases(previous.release, def.release) <= 0)
+      error(path, `out of order: ${def.release} must come before ${previous.release}`);
+    previous = def;
   });
   return issues;
 }

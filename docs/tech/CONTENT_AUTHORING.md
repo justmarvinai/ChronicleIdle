@@ -546,3 +546,40 @@ Each constant has a doc comment: what it does, what it affects, safe range.
    survives — fit `DIFFICULTY_MULT` and `stageScale` to that table rather than guessing.
 4. Note the change under "Balance" in `CHANGELOG.md`; the design tables in `docs/design/` carry
    the same numbers, so update them in the same commit.
+
+## 13. The Chronicle of Changes
+
+The game's own news (`docs/tech/UI_DESIGN.md` §5.21). `CHANGELOG.md` is the engineering record;
+this is what the player reads on the title screen and from Settings. **Every shipped version gets
+a release here, in the same commit** (`CLAUDE.md` §9.3).
+
+1. Add the release at the **top** of `RELEASES` in `src/content/changelog/index.ts`:
+
+```ts
+release('0.5.0', '2026-09-20', [
+  { kind: 'added', slug: 'chronicle_of_changes', lead: true },
+  { kind: 'changed', slug: 'title_layout' },
+]),
+```
+
+   - `kind` is one of `added` (a new thing to do), `content` (more of a thing that exists),
+     `changed` (something works better), `balance` (numbers moved) or `fixed` (it was broken).
+   - `lead: true` marks a headline — the one or two lines of a release worth reading first. Most
+     releases have one; a release with everything marked has nothing marked.
+   - `slug` keys the string; the id and the keys are derived from the version, so nothing else to
+     write.
+
+2. Add the strings under the same prefix in `src/i18n/en/changelog.ts`:
+
+```ts
+'release.0_5_0.name': 'The Chronicle of Changes',
+'release.0_5_0.chronicle_of_changes': 'The title screen now keeps a chronicle of …',
+```
+
+   Write for someone who plays the game and has never read a commit. Name the thing that changed
+   and what it does for them. No file paths, no jargon, no version numbers inside a line, and
+   nothing a player cannot see — a refactor that changed no behaviour is not news.
+
+3. `pnpm content:validate` checks that every line has a string, that the id matches the version,
+   and that the list really is newest first.
+

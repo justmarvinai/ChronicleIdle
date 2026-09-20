@@ -3,6 +3,7 @@ import { bosses } from './bosses';
 import { missions } from './missions';
 import { quests } from './quests';
 import { campaign } from './campaign';
+import { changelog } from './changelog';
 import { champions } from './champions';
 import { currencies } from './currencies';
 import { enemies } from './enemies';
@@ -24,6 +25,7 @@ export const en = {
   ...champions,
   ...enemies,
   ...campaign,
+  ...changelog,
   ...titles,
   ...features,
   ...gear,

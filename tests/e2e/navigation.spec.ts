@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { closeDialog, openSettingsTab, settle, startChronicle } from './helpers';
+import { closeDialog, gotoTitle, openSettingsTab, settle, startChronicle } from './helpers';
 
 /** The Hall is absent on purpose: the missions open at level 1 and guide the player from there. */
 const LOCKED_HOTSPOTS: Record<string, RegExp> = {
@@ -25,6 +25,52 @@ test.describe('navigation', () => {
     // opens it, because it is gated on clearing Intro rather than on a level.
     await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(4);
     await expect(page.getByTestId('mode-tower')).toContainText(/Intro/);
+  });
+
+  test('the Chronicle of Changes is a frame on the title screen, and opens from Settings', async ({
+    page,
+  }) => {
+    await gotoTitle(page);
+    // A frame, not a window: nothing is pressed to see it.
+    const panel = page.getByTestId('title-changelog');
+    await expect(panel).toBeVisible();
+    const view = page.getByTestId('title-changelog-view');
+    const newest = view.locator('[data-release]').first();
+    await expect(newest.getByText('Latest')).toBeVisible();
+    await expect(view.locator('li[data-kind]').first()).toBeVisible();
+    // It stays in its frame and scrolls the years of releases it holds.
+    const fits = await page.evaluate(() => {
+      const box = document.querySelector('[data-testid="title-changelog"]')?.getBoundingClientRect();
+      const scroller = document.querySelector('[data-testid="title-changelog-view"] [class*="viewport"]');
+      const lines = [...document.querySelectorAll('[data-testid="title-changelog-view"] li')];
+      return {
+        insideWindow: !!box && box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1,
+        scrolls: !!scroller && scroller.scrollHeight > scroller.clientHeight + 4,
+        insideRight: lines.every((li) => li.getBoundingClientRect().right <= (box?.right ?? 0) + 1),
+      };
+    });
+    expect(fits.insideWindow, 'the frame is inside the window').toBe(true);
+    expect(fits.scrolls, 'the list scrolls').toBe(true);
+    expect(fits.insideRight, 'no line runs past the frame').toBe(true);
+
+    // The chips filter and the toggle flips the order.
+    await view.getByTestId('title-changelog-view-filter-fixed').click();
+    const kinds = await view
+      .locator('li[data-kind]')
+      .evaluateAll((els) => Array.from(new Set(els.map((el) => (el as HTMLElement).dataset.kind ?? ''))));
+    expect(kinds).toEqual(['fixed']);
+    await view.getByTestId('title-changelog-view-filter-all').click();
+    const first = await view.locator('[data-release]').first().getAttribute('data-release');
+    await view.getByTestId('title-changelog-view-order').click();
+    await expect(view.locator('[data-release]').first()).not.toHaveAttribute('data-release', first ?? '');
+
+    // And the same chronicle opens from inside a chronicle.
+    await startChronicle(page);
+    await openSettingsTab(page, 'About');
+    await page.getByTestId('open-changelog').click();
+    await expect(page.getByTestId('dialog-changelog')).toBeVisible();
+    await expect(page.getByTestId('dialog-changelog-view').locator('li[data-kind]').first()).toBeVisible();
+    await closeDialog(page);
   });
 
   test('every other hotspot explains why it is still closed', async ({ page }) => {

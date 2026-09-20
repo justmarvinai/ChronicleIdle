@@ -18,7 +18,7 @@ the procedure. Read both before starting.
 PLAN     → write the phase's task list (screens, engine modules, content, tests) before coding
 BUILD    → engine first (with tests), then content, then state, then UI/render, then audio/FX
 VERIFY   → run the Definition of Done (below); play the feature in the browser end-to-end
-DOCUMENT → CHANGELOG.md entry, ROADMAP.md status line, docs updated if behaviour changed
+DOCUMENT → CHANGELOG.md entry, a Chronicle of Changes release, ROADMAP.md status line, docs
 SHIP     → conventional commit(s), push, tag `0.0.<phase>` (or `0.1.0` for EA-0.1)
 CHECK-IN → post summary; ask the owner (optionally) for improvements/bugs before the next phase
 ```
@@ -54,6 +54,9 @@ Performance
 
 Documentation
 - [ ] `CHANGELOG.md` updated (Added / Changed / Fixed / Balance).
+- [ ] The **Chronicle of Changes** has a release for this version in `src/content/changelog/`, with
+      its strings in `src/i18n/en/changelog.ts` — one short player-facing sentence per change
+      (`CLAUDE.md` §9.3). This is what the player reads on the title screen; `CHANGELOG.md` is not.
 - [ ] `ROADMAP.md` phase status set to `✅ shipped in x.y.z`.
 - [ ] Any new tunable documented in the relevant `docs/design/*.md` table.
 - [ ] Any new question added to `USER_QUESTIONS.md` with its default.
@@ -62,6 +65,7 @@ Documentation
 
 | I want to add… | Do this | Reference |
 | --- | --- | --- |
+| a line in the player's changelog | a `release(...)` at the top of `src/content/changelog/index.ts` plus its strings in `src/i18n/en/changelog.ts`; **required for every shipped version** | `docs/tech/CONTENT_AUTHORING.md` §13, `CLAUDE.md` §9.3 |
 | a champion | `src/content/champions/<id>.ts` with `defineChampion`, abilities via the effect DSL, add sprite/avatar to `/game/assets/champions/<id>` (or use placeholder), run validate | `docs/tech/CONTENT_AUTHORING.md` §2 |
 | an ability effect that does not exist | add a new effect type in `src/engine/battle/effects/`, register in the effect resolver, write tests, document in `docs/design/BATTLE.md` §6 | `docs/design/BATTLE.md` |
 | an enemy | `src/content/enemies/<id>.ts` with `defineEnemy` (archetype + stat curve + abilities) | `docs/design/CAMPAIGN.md` §5 |

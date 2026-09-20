@@ -2,6 +2,8 @@
  * The content registry: every definition the game knows, indexed by id. Built once at boot from
  * the content modules and validated by `validateContent` (dev boot, tests, CI).
  */
+import { LATEST_RELEASE, RELEASES, RELEASE_BY_ID } from '@content/changelog/index';
+import type { ReleaseDef } from '@content/changelog/types';
 import { CHAMPIONS, CHAMPION_BY_ID } from '@content/champions/index';
 import type { ChampionDef, ChampionId } from '@content/champions/types';
 import { CURRENCIES, CURRENCY_BY_ID } from '@content/currencies/index';
@@ -67,6 +69,11 @@ export interface ContentRegistry {
   /** Titles in display order, earliest first (ECONOMY.md §4). */
   titles: readonly TitleDef[];
   titleById(id: string): TitleDef | undefined;
+  /** The Chronicle of Changes, newest first (CONTENT_AUTHORING.md §13). */
+  releases: readonly ReleaseDef[];
+  releaseById(id: string): ReleaseDef | undefined;
+  /** The release the panel opens on; `undefined` only if nothing has shipped. */
+  latestRelease: ReleaseDef | undefined;
   /** The fourteen gear sets (GEAR.md §5); two-piece sets first. */
   gearSets: readonly GearSetDef[];
   gearSetById(id: string): GearSetDef | undefined;
@@ -166,6 +173,9 @@ export function buildContentRegistry(): ContentRegistry {
     settlementOfStage: (id) => SETTLEMENT_OF_STAGE[id],
     titles: TITLES,
     titleById: (id) => TITLE_BY_ID[id],
+    releases: RELEASES,
+    releaseById: (id) => RELEASE_BY_ID[id],
+    latestRelease: LATEST_RELEASE,
     gearSets: GEAR_SETS,
     gearSetById: (id) => GEAR_SET_BY_ID[id],
     banners: BANNERS,

@@ -132,9 +132,14 @@ Every component has states: default, hover, active, disabled, focus-visible, and
 Format: **Reference** → **Layout** → **Elements** → **Interactions** → **Motion & sound**.
 
 ### 5.1 Title
-- Reference: none (own). Backdrop `bg9` slow zoom + violet fog; logo (`chronicle_idle.svg`) with
-  ember glint sweep; buttons: *Continue* (if save), *New Chronicle*, *Import Save*, *Settings*;
-  version tag bottom-right. Music: hub track. Entering "New Chronicle" fades to the tutorial.
+- Reference: none (own). Backdrop `bg9` slow zoom + violet fog. Music: hub track. Entering "New
+  Chronicle" fades to the tutorial.
+- **Two columns**, like a launcher: the wordmark (`chronicle_idle.svg`, ember glint sweep) over the
+  menu on the left — *Continue* (if a save exists), *New Chronicle*, *Import Save*, *Settings* —
+  and the **Chronicle of Changes** on the right, a frame the height of the screen (§5.21). The
+  grid runs between the top edge and the corner controls and stretches, so the chronicle's frame
+  is exactly as tall as the space it is given. Save notices sit under the menu in the same column.
+- Corner controls bottom-right: fullscreen, credits, the version tag.
 
 ### 5.2 Hub — Emberhold
 - Reference: `main_hub_screen.png` (structure), `main_hub_screen_alternative_2.png` (mood).
@@ -678,3 +683,23 @@ variants are used for Duskmere Marsh and Frostvein Pass.
 - `prefers-reduced-motion` or the setting: menu animations become fades; battle unchanged.
 - Colour is never the only carrier: rarity also shown by star count and label; buff/debuff icons
   differ in shape and have a small +/− mark.
+
+### 5.21 The Chronicle of Changes
+- What the game tells the player about itself: every release, newest first, read as news rather
+  than as a commit log. It is a **frame on the title screen** (§5.1), always visible — never a
+  window that has to be opened — and the same view opens from *Settings → About → Chronicle of
+  Changes* while a chronicle is being played.
+- A release prints its version in a gold plate, its name in the display face, a **LATEST** badge on
+  the newest one, and the day it shipped. Under it, one line per change: the kind's glyph, the
+  kind's name in its colour (**New** gold, **Content** epic violet, **Improved** justice blue,
+  **Balance** ember, **Fixed** buff green), then the sentence. A line marked as a highlight takes
+  the kind's colour as a left rail and a wash, and reads a point larger.
+- Above the list, a chip per kind with the number of lines it holds — the everything chip first —
+  and under them an order toggle that flips newest/oldest. A chip with no lines is disabled. The
+  content is authored newest first and printed as authored, so "oldest" is a reversal and the
+  panel never compares two version strings.
+- The view takes its height from its container (`100%` inside the title frame, a number inside the
+  dialog); the chips sit above and the list takes what is left and scrolls.
+- Content: `src/content/changelog/` with its strings in `src/i18n/en/changelog.ts`
+  (`CONTENT_AUTHORING.md` §13). Every shipped version writes a release there — that rule is
+  `CLAUDE.md` §9.3, and it is the owner's standing instruction.

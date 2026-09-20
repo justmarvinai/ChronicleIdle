@@ -193,6 +193,17 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
           <div>
             <p className={styles.body}>{t('app.version', { version: services().appVersion })}</p>
             <div className={styles.row}>
+              <span className={styles.rowLabel}>{t('changelog.title')}</span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => actions.openDialog({ name: 'changelog' })}
+                data-testid="open-changelog"
+              >
+                {t('changelog.open')}
+              </Button>
+            </div>
+            <div className={styles.row}>
               <span className={styles.rowLabel}>{t('settings.credits')}</span>
               <Button variant="secondary" size="sm" onClick={() => actions.openDialog({ name: 'credits' })}>
                 {t('settings.credits')}

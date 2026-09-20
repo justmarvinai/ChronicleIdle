@@ -57,6 +57,8 @@ export type DialogRoute =
   | { name: 'new-game-confirm' }
   | { name: 'import-confirm'; decoded: DecodedChronicle; fileName: string }
   | { name: 'credits' }
+  /** The Chronicle of Changes, the same one the title screen keeps open (UI_DESIGN.md §5.21). */
+  | { name: 'changelog' }
   | { name: 'reset-confirm' }
   | { name: 'welcome-back' }
   | { name: 'avatar-picker' }

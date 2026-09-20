@@ -3,23 +3,20 @@
   inset: 0;
   overflow: hidden;
 }
+/* The wordmark and the sweep that crosses it ride together at the top of the left column. */
+.brand {
+  position: relative;
+  width: 660px;
+  max-width: 100%;
+}
 .logo {
-  position: absolute;
-  left: 50%;
-  top: 96px;
-  width: 760px;
-  transform: translateX(-50%);
-  z-index: var(--z-scene);
+  display: block;
+  width: 100%;
   filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 30px rgba(155, 93, 229, 0.35));
 }
 .glint {
   position: absolute;
-  left: 50%;
-  top: 96px;
-  width: 760px;
-  height: 330px;
-  transform: translateX(-50%);
-  z-index: var(--z-scene);
+  inset: 0;
   pointer-events: none;
   background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, 0.35) 50%, transparent 58%);
   background-size: 300% 100%;
@@ -36,12 +33,33 @@
     background-position: -120% 0;
   }
 }
-.menu {
+/*
+ * The screen is two columns between the top edge and the corner controls (UI_DESIGN.md §5.1): the
+ * wordmark over what you came to press on the left, the Chronicle of Changes on the right. The
+ * grid stretches, so the chronicle's frame is exactly as tall as the space it is given — the news
+ * runs the height of the screen the way a launcher's does.
+ */
+.stage {
   position: absolute;
-  left: 50%;
-  top: 560px;
-  transform: translateX(-50%);
+  left: 56px;
+  right: 56px;
+  top: 88px;
+  bottom: 84px;
   z-index: var(--z-chrome);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 900px);
+  gap: 56px;
+  align-items: stretch;
+}
+.menuColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  min-width: 0;
+}
+.menu {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -58,11 +76,8 @@
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
 }
 .notice {
-  position: absolute;
-  left: 40px;
-  bottom: 120px;
   width: 520px;
-  z-index: var(--z-chrome);
+  max-width: 100%;
 }
 .noticeTitle {
   font-size: var(--fs-h2);
@@ -85,4 +100,42 @@
 .version {
   color: var(--text-3);
   font-size: var(--fs-small);
+}
+
+/* The chronicle: a frame, always on the title screen, never a window you have to open. */
+.chronicle {
+  min-height: 0;
+  display: flex;
+}
+.chroniclePanel {
+  flex: 1;
+  min-height: 0;
+}
+.chronicleBody {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+.chronicleHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.chronicleMark {
+  align-self: center;
+  color: var(--gold-2);
+}
+.chronicleTitle {
+  margin: 0;
+  font-size: 26px;
+  color: var(--gold-3);
+}
+.chronicleSubtitle {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-3);
+  font-size: 14px;
+  text-align: right;
 }

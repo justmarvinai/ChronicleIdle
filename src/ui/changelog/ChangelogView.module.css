@@ -1,0 +1,221 @@
+/*
+ * The Chronicle of Changes (docs/tech/UI_DESIGN.md §5.21). A column of releases read newest
+ * first: a chip row that filters by kind and flips the order, then a scrolling list where every
+ * line wears its kind's icon and colour, and a headline wears a rail.
+ *
+ * Class names are camel case throughout — the bundler exposes CSS module locals in that form only
+ * (`localsConvention: 'camelCaseOnly'` in vite.config.ts), and anything else silently applies to
+ * nothing.
+ */
+.root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+/*
+ * The chips get the whole width and the order toggle sits under them on the right: six chips and
+ * a toggle do not share a line at this width, and a toggle wrapped alone looks like an accident.
+ */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 8px;
+  color: var(--text-3);
+  white-space: nowrap;
+  transition:
+    color var(--t-fast),
+    filter var(--t-fast),
+    transform var(--t-fast) var(--ease-out);
+}
+.chip:hover:not(:disabled) {
+  color: var(--text-1);
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+.chip:disabled {
+  opacity: 0.4;
+}
+/* Active: the chip takes its kind's colour, which is the same colour its lines carry below. */
+.chipOn {
+  color: var(--kind);
+}
+.chipOn .chipGlyph {
+  opacity: 1;
+}
+.chipGlyph {
+  color: var(--kind);
+  opacity: 0.75;
+}
+.chipLabel {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.chipCount {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.order {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 9px;
+  color: var(--text-3);
+  white-space: nowrap;
+  transition:
+    color var(--t-fast),
+    filter var(--t-fast),
+    transform var(--t-fast) var(--ease-out);
+}
+.order:hover {
+  color: var(--gold-3);
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+.orderGlyph {
+  color: var(--gold-2);
+}
+.orderLabel {
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+/* Oldest first reads as a flip of the same control, so the mark turns over rather than changing. */
+.order[data-order='oldest'] .orderGlyph {
+  transform: scaleY(-1);
+}
+.list {
+  flex: 1;
+  min-height: 0;
+}
+.empty {
+  margin: 12px 0;
+  color: var(--text-3);
+}
+
+.release {
+  padding: 0 0 14px;
+}
+.release + .release {
+  border-top: 1px solid rgba(201, 162, 74, 0.18);
+  padding-top: 14px;
+}
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.version {
+  flex: none;
+  padding: 1px 8px;
+  background: rgba(201, 162, 74, 0.14);
+  border: 1px solid rgba(201, 162, 74, 0.45);
+  color: var(--gold-3);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 21px;
+  color: var(--text-1);
+  letter-spacing: 0.02em;
+}
+.latest {
+  flex: none;
+  padding: 1px 8px;
+  background: linear-gradient(180deg, var(--ember-2), var(--ember-1));
+  border: 1px solid var(--gold-2);
+  color: var(--gold-3);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.date {
+  flex: none;
+  color: var(--text-3);
+  font-size: 13px;
+}
+.lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.line {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 3px 8px 3px 7px;
+  border-left: 2px solid transparent;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.lineGlyph {
+  flex: none;
+  margin-top: 2px;
+  color: var(--kind);
+}
+.lineBody {
+  flex: 1;
+  min-width: 0;
+}
+/* The kind's name opens the sentence, so a line says what it is before it says what it did. */
+.tag {
+  margin-right: 7px;
+  color: var(--kind);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.text {
+  font-size: 15px;
+}
+/* A headline: the one or two lines of a release worth reading first. */
+.lead {
+  border-left-color: var(--kind);
+  background: linear-gradient(to right, color-mix(in srgb, var(--kind) 14%, transparent), transparent 75%);
+  color: var(--text-1);
+}
+.lead .text {
+  font-size: 16px;
+}
+
+/* One custom property per kind, so a chip, a glyph, a tag and a rail all read from one place. */
+.kindAll {
+  --kind: var(--gold-3);
+}
+.kindAdded {
+  --kind: var(--gold-3);
+}
+.kindContent {
+  --kind: var(--r-epic);
+}
+.kindChanged {
+  --kind: var(--el-justice);
+}
+.kindBalance {
+  --kind: var(--ember-3);
+}
+.kindFixed {
+  --kind: var(--buff);
+}

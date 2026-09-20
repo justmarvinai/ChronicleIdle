@@ -6,6 +6,7 @@ import { useLevelUpCelebration } from '@ui/hooks/useLevelUpCelebration';
 import { AvatarPickerDialog } from './AvatarPickerDialog';
 import { ChampionPickerDialog } from './ChampionPickerDialog';
 import { BattlePauseDialog } from './BattlePauseDialog';
+import { ChangelogDialog } from './ChangelogDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { FoodPickerDialog } from './FoodPickerDialog';
 import { GearPickerDialog } from './GearPickerDialog';
@@ -52,6 +53,7 @@ export function DialogHost() {
         />
       ) : null}
       {dialog?.name === 'credits' ? <CreditsDialog key="credits" onClose={closeDialog} /> : null}
+      {dialog?.name === 'changelog' ? <ChangelogDialog key="changelog" onClose={closeDialog} /> : null}
       {dialog?.name === 'reset-confirm' ? <ResetConfirmDialog key="reset" onClose={closeDialog} /> : null}
       {dialog?.name === 'welcome-back' ? <WelcomeBackDialog key="welcome" onClose={closeDialog} /> : null}
       {/* The pickers return to the profile they were opened from, so they close themselves. */}

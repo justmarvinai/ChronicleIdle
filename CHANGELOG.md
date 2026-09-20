@@ -10,6 +10,35 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.5.0] — 2026-09-20 — The Chronicle of Changes
+
+The game tells the player what changed in it, and from now on every version does.
+
+### Added
+
+- **The Chronicle of Changes**, a frame on the title screen — always there, never a window you
+  open. Releases newest first: the version in a gold plate, the release's name, a **LATEST** badge
+  on the newest, the day it shipped, then one line per change with its kind's glyph and colour
+  (**New** gold, **Content** violet, **Improved** blue, **Balance** ember, **Fixed** green). A
+  release's headline lines take the kind's colour as a rail. A chip per kind carries the number of
+  lines it holds and filters to it; a toggle under them flips newest/oldest. `UI_DESIGN.md` §5.21.
+- **The same chronicle from inside a chronicle**: *Settings → About → Chronicle of Changes* opens
+  the identical view in a dialog. One component, two frames.
+- **26 releases backfilled**, 0.0.0 to this one, written as news rather than as commit subjects —
+  the whole history of the game in the words a player would use.
+- `src/content/changelog/` with a Zod schema, a registry entry and validator rules: every line has
+  a string, an id matches its version, and the list really is newest first. `pnpm content:validate`
+  fails otherwise. Authoring guide: `CONTENT_AUTHORING.md` §13.
+
+### Changed
+
+- **The title screen is two columns**, like a launcher: the wordmark over the menu on the left, the
+  chronicle running the height of the screen on the right. Save notices moved into the left column
+  under the menu, where they used to float over the bottom-left corner.
+- **Every shipped version now writes a player-facing release** (`CLAUDE.md` §2.10 and §9.3, the
+  owner's standing instruction). `CHANGELOG.md` stays the engineering record; the Chronicle of
+  Changes is what the player reads, and `AGENTS.md`'s Definition of Done requires both.
+
 ## [0.4.2] — 2026-09-20
 
 ### Changed

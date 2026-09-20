@@ -53,7 +53,10 @@ battle animation, music and sound.
 8. **Never serif fonts. Never generic rounded "AI-slop" UI.** See §7.
 9. **Everything is pushed directly to `main`.** The owner granted direct pushes; there are no
    long-lived development branches (§9.4).
-10. **Explicitly out of scope:** PvP, clans, guilds, arena, chat, friends, microtransactions,
+10. **The player is told what changed.** Every shipped version adds a release to the in-game
+    Chronicle of Changes (§9.3), which is a frame on the title screen — always visible, never a
+    window you have to open — and a button in Settings.
+11. **Explicitly out of scope:** PvP, clans, guilds, arena, chat, friends, microtransactions,
     accounts, analytics that leave the device.
 
 ## 3. Tech stack
@@ -279,6 +282,14 @@ next phase starts.
 - Versioning: `0.<phase>.<patch>` during development; **EA-0.1 = `0.1.0`** is tagged when all
   EA-0.1 features from the brief are complete. The pre-release phases use `0.0.<phase>` tags.
 - `CHANGELOG.md` is updated in the same commit as the change (Keep-a-Changelog format).
+- **Two changelogs, one commit.** `CHANGELOG.md` is the engineering record and says what moved in
+  the repository. `src/content/changelog/` is the **Chronicle of Changes the player reads** on the
+  title screen and from Settings (owner's instruction), and every shipped version writes a release
+  there in the same commit: a name, the date, and one short sentence per change, tagged
+  `added` / `content` / `changed` / `balance` / `fixed`, with the one or two lines that lead marked
+  as highlights. Write those lines for someone who plays the game and has never read a commit — no
+  file paths, no jargon, no version numbers inside a line. `pnpm content:validate` fails when a
+  release is missing a string or is out of order.
 
 ### 9.4 Branch policy
 
