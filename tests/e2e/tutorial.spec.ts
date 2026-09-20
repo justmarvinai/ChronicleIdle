@@ -50,7 +50,12 @@ async function enterSettlement(page: Page): Promise<void> {
   await settle(page);
 }
 
-/** One stand, fought on auto from the stand list. */
+/**
+ * One stand, fought on auto from the stand list — and watched at the fastest speed the chronicle
+ * has. A fresh chronicle caps at ×2 (`CAMPAIGN.md` §1), and the stand plays out event by event
+ * through a software renderer, so the speed is most of what this costs. The wait matches every
+ * other one in the suite for the same event.
+ */
 async function fightOnAuto(page: Page, stage: string): Promise<void> {
   await page.getByTestId(stage).click();
   await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
@@ -58,7 +63,12 @@ async function fightOnAuto(page: Page, stage: string): Promise<void> {
   const auto = page.getByTestId('setup-auto').getByRole('switch');
   if ((await auto.getAttribute('aria-checked')) !== 'true') await auto.click();
   await page.getByTestId('start-battle').click();
-  await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 20_000 });
+  const speed = page.getByTestId('battle-speed');
+  // The setting is remembered, so only the first of these fights has to press it.
+  if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
+  await expect(speed).toContainText('2');
+  await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 300_000 });
 }
 
 /** An enemy the reticle will actually take — a fallen one is no longer a target. */
@@ -98,13 +108,17 @@ async function spendAnyTurn(page: Page): Promise<void> {
 
 test.describe('the tutorial', () => {
   /*
-   * The same ten minutes the other full-flow specs get (`walkthrough`, both bosses). Chapter 1
-   * is the longest scripted run in the suite — the naming, the binding, four screens and then a
-   * manual battle played turn by turn to a victory — and six minutes left it no headroom: on a
-   * slow CI runner it timed out mid-fight waiting for the auto button, and the retry lost the
-   * browser session outright. The work is the same; only the budget was wrong for it.
+   * The longest scripted run in the suite by a wide margin: the naming, the binding, four
+   * screens, a battle played turn by turn to a victory, and then two whole stands more, because
+   * the lesson that teaches free play only ends when the third stand falls.
+   *
+   * Ten minutes was the other full-flow specs' budget and still not enough here — CI runners vary
+   * by about 3× (the walkthrough has taken 2.3 minutes in the container and 6.8 on a bad runner),
+   * and on a bad one this ran out mid-fight. `fightOnAuto` now watches the two trailing stands at
+   * ×2, which is the cap a fresh chronicle has, and the budget is fifteen minutes so that a
+   * runner having a bad day is slow rather than red.
    */
-  test.setTimeout(600_000);
+  test.setTimeout(900_000);
 
   test('walks the first chapter from the naming to the Provisions', async ({ page }) => {
     const problems = collectConsole(page);
