@@ -9,10 +9,16 @@ export interface AbilityIconProps {
   size?: number;
   /** Turns remaining; 0 = ready. */
   cooldown?: number;
+  /** Styling only: a passive never lights up and is never castable. */
   passive?: boolean;
   disabled?: boolean;
   selected?: boolean;
-  hotkey?: string;
+  /**
+   * The chip on the icon's rim — the key that casts it on the fight's bar, `P` for a passive
+   * there. A list leaves it off: its rows say which slot and what kind in their own text, and a
+   * two-character chip on a 56 px circle only covers the art.
+   */
+  badge?: string;
   onClick?: () => void;
 }
 
@@ -25,7 +31,7 @@ export function AbilityIcon({
   passive = false,
   disabled = false,
   selected = false,
-  hotkey,
+  badge,
   onClick,
 }: AbilityIconProps) {
   const ready = cooldown === 0 && !disabled && !passive;
@@ -59,10 +65,9 @@ export function AbilityIcon({
           <span className={`num ${styles.cooldownTurns}`}>{cooldown}</span>
         </span>
       ) : null}
-      {passive ? <span className={`display ${styles.passive}`}>P</span> : null}
-      {hotkey ? (
-        <span className={`num ${styles.hotkey}`} aria-hidden="true">
-          {hotkey}
+      {badge ? (
+        <span className={`num ${styles.badge}`} aria-hidden="true">
+          {badge}
         </span>
       ) : null}
     </button>

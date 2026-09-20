@@ -6,6 +6,12 @@
  */
 .button {
   position: relative;
+  /*
+   * Never shrink. The icon is round and it is sized in px; a flex row that runs out of width
+   * takes it out of the icon first, and a 56 px circle squashed to 47 is an egg with the art
+   * stretched inside it — which is how every ability list drew them.
+   */
+  flex: none;
   border-radius: 50%;
   transition:
     transform var(--t-fast) var(--ease-out),
@@ -72,15 +78,14 @@
 }
 
 /*
- * Both badges wear the same chip so they read as one family and never lose to the art behind, and
- * the chip is a fraction of the icon rather than a fixed size: at 22px on a 56px icon (the
- * Index's pages) it swallowed a third of the art.
+ * The chip is a fraction of the icon rather than a fixed size: at 22px on a 56px icon it swallowed
+ * a third of the art. Only the fight's bar asks for one at all — a list labels its rows in text.
  */
-.passive,
-.hotkey {
+.badge {
   --chip: max(15px, calc(var(--ability-size, 96px) * 0.23));
   position: absolute;
-  bottom: -2px;
+  /* On the rim, not past it: a chip hanging below the box crosses the row's divider. */
+  bottom: 0;
   min-width: var(--chip);
   height: var(--chip);
   padding: 0 4px;
@@ -93,9 +98,6 @@
   line-height: 1;
   pointer-events: none;
 }
-.passive {
-  right: -2px;
-}
-.hotkey {
-  left: -2px;
+.badge {
+  left: 0;
 }

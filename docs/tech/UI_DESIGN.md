@@ -195,8 +195,10 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   delta), the power either side, and the set groups the swap would make or break. A piece worn by
   another champion turns the button into *Take from <name>*, and the press asks once before it
   strips them.
-  **Abilities**: A1–A4 rows (`AbilityIcon`, name, description with live numbers, cooldown,
-  upgrade dots), passive, aura; *Upgrade* jumps to Tavern skills with this champion selected.
+  **Abilities**: A1–A4 rows (`AbilityIcon`, the slot as a chip beside the name, then the name,
+  description with live numbers, cooldown, upgrade dots), passive, aura — the row's own text says
+  which slot and what kind, so the icon carries no chip; *Upgrade* jumps to Tavern skills with
+  this champion selected.
 
 ### 5.5 Tavern
 - Reference: `tavern_champion_upgrade_screen.png` (its fourth tab, *Ascend*, is not ours: Q9 keeps
@@ -270,12 +272,15 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   while a turn is open, because marking one is something a player does between turns and in auto
   mode; the marked plate wears a gold frame and a ◆ beside its name, and pressing it again lifts
   the mark (`BATTLE.md` §7.1).
-- Ability icons: the round button clips nothing (the art clips itself), so the keyboard number and
-  the passive tag sit whole on the rim wearing the same dark chip with a gold hairline. Both chips,
-  and the cooldown number, are fractions of the icon's own size, so the same component reads right
-  on the fight's 96 px buttons and on the 56 px icons a page prints beside an ability. An ability
-  on cooldown greys and darkens under the turns remaining, in gold — the count arrives with the
-  turn being played (`turn.started` carries it), not from the ability's authored cooldown.
+- Ability icons: the round button clips nothing (the art clips itself) and **never shrinks** — it
+  is sized in px, and a flex row short of width would otherwise take it out of the icon and leave
+  an egg with the art stretched inside. One chip sits on the rim, dark with a gold hairline, and
+  only the fight's bar asks for one: the key that casts it, `P` on a passive. A list leaves it
+  off and labels its rows in text (§5.4, §5.20), because a two-character chip on a 56 px circle
+  covers the art it is meant to badge. The chip and the cooldown number are fractions of the
+  icon's own size. An ability on cooldown greys and darkens under the turns remaining, in gold —
+  the count arrives with the turn being played (`turn.started` carries it), not from the ability's
+  authored cooldown.
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
 
 ### 5.10 Battle result

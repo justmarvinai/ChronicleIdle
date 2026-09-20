@@ -370,3 +370,19 @@
   line-height: 1.4;
   color: var(--text-2);
 }
+
+/*
+ * The slot reads beside the name rather than on the icon. A round 56 px icon has no corner a
+ * two-character chip can sit in without covering the art, and in a list the slot is a label
+ * rather than a key to press — the fight's own bar keeps its keyboard number on the button.
+ */
+.slotTag {
+  flex: none;
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  color: var(--gold-3);
+  background: var(--bg-0);
+  border: 1px solid var(--gold-1);
+}

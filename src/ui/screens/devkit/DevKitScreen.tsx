@@ -292,17 +292,17 @@ export default function DevKitScreen(_props: ScreenProps) {
               <AbilityIcon
                 icon="spell.fire_flame_burst"
                 label="Fireball"
-                hotkey="1"
+                badge="1"
                 onClick={() => undefined}
               />
-              <AbilityIcon icon="spell.hunt_frost_bolt" label="Frost" cooldown={3} hotkey="2" />
-              <AbilityIcon icon="spell.crest_warded_shield" label="Guard" passive />
+              <AbilityIcon icon="spell.hunt_frost_bolt" label="Frost" cooldown={3} badge="2" />
+              <AbilityIcon icon="spell.crest_warded_shield" label="Guard" passive badge="P" />
               <AbilityIcon
                 icon="spell.rune_radiance"
                 label="Selected"
                 selected
                 onClick={() => undefined}
-                hotkey="3"
+                badge="3"
               />
             </Row>
           </Section>

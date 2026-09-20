@@ -10,6 +10,21 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.4.1] — 2026-09-20
+
+### Fixed
+
+- **Ability icons were eggs.** The icon is round and sized in px, but it sat in a flex row with no
+  `flex: none`, so a row short of width took the width out of the icon: 56 px tall, 47 wide, with
+  the art stretched to match. Every ability list drew them that way — the Index's champion page,
+  the bestiary's, the champion detail's.
+- **A list labels its rows, the icon carries no chip.** `A1`–`A4` on a 56 px circle covered the
+  art they were badging and hung past the bottom edge into the row's divider. The slot is a chip
+  beside the ability's name now, where the cooldown tag already was, and the passive's `P` is the
+  word PASSIVE the row already carried. `AbilityIcon` has one `badge` for the rim instead of a
+  `hotkey` and an implicit `P`, and only the fight's bar — where the chip is the key you press —
+  asks for it.
+
 ## [0.4.0] — 2026-09-20 — The owner's fourth batch
 
 Six things drawn or wired wrong, and a rule about names.

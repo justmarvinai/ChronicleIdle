@@ -77,7 +77,7 @@ export function AbilityBar({ unit, request, selectedAbilityId, onSelect }: Abili
                   cooldown={cooldown}
                   disabled={!ready}
                   selected={selectedAbilityId === ability.id}
-                  hotkey={hotkey}
+                  badge={hotkey}
                   onClick={() => onSelect(ability.id)}
                 />
               </span>
@@ -94,7 +94,13 @@ export function AbilityBar({ unit, request, selectedAbilityId, onSelect }: Abili
             }
           >
             <span className={styles.abilitySlot} data-testid="ability-passive">
-              <AbilityIcon icon={def.passive.icon} label={translate(def.passive.name)} size={72} passive />
+              <AbilityIcon
+                icon={def.passive.icon}
+                label={translate(def.passive.name)}
+                size={72}
+                passive
+                badge="P"
+              />
             </span>
           </Tooltip>
         ) : null}

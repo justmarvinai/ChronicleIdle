@@ -183,14 +183,10 @@ function AbilityRow({ ability, steps }: { ability: AbilityDef; steps: number }) 
   const total = ability.upgrades.length;
   return (
     <div className={styles.ability} data-testid={`ability-${ability.id}`}>
-      <AbilityIcon
-        icon={ability.icon}
-        label={translate(ability.name)}
-        size={64}
-        hotkey={ability.slot.toUpperCase()}
-      />
+      <AbilityIcon icon={ability.icon} label={translate(ability.name)} size={64} />
       <div className={styles.abilityText}>
         <div className={styles.abilityHead}>
+          <span className={`num ${styles.slotTag}`}>{ability.slot.toUpperCase()}</span>
           <span className={`display ${styles.abilityName}`}>{translate(ability.name)}</span>
           <span className={`num ${styles.cooldown}`}>
             {numbers.cooldown > 0

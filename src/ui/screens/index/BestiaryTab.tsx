@@ -127,14 +127,10 @@ function BeastPage({ enemy }: { enemy: EnemyDef }) {
           const numbers = abilityNumbers(ability, 0);
           return (
             <div key={ability.id} className={styles.ability}>
-              <AbilityIcon
-                icon={ability.icon}
-                label={translate(ability.name)}
-                size={56}
-                hotkey={ability.slot.toUpperCase()}
-              />
+              <AbilityIcon icon={ability.icon} label={translate(ability.name)} size={56} />
               <div>
                 <div className={styles.abilityHead}>
+                  <span className={`num ${styles.slotTag}`}>{ability.slot.toUpperCase()}</span>
                   <span className={`display ${styles.abilityName}`}>{translate(ability.name)}</span>
                   <span className={`num ${styles.tag}`}>
                     {numbers.cooldown > 0
