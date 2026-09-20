@@ -29,6 +29,13 @@ const SOUND: Record<BattleSound, SoundKey> = {
   'boss.phase': 'battle.boss.phase',
 };
 
+/**
+ * How long the fight waits for the stage before playing without it. Long enough for a software
+ * renderer on a loaded machine to finish building its context, short enough that a stage which
+ * never arrives costs a few seconds rather than the fight.
+ */
+const STAGE_TIMEOUT_MS = 20_000;
+
 export interface BattleStageMountProps {
   backdrop: BackdropKey;
   initialView: BattleView;
@@ -49,6 +56,18 @@ export function BattleStageMount({ backdrop, initialView, onCutIn, onStage }: Ba
     let live = true;
     let handle: BattleStageHandle | null = null;
     const reduced = document.documentElement.dataset['reducedMotion'] === 'true';
+    /*
+     * The controller holds the first turn until a presenter attaches, so nothing is resolved
+     * off-screen. That is right while the stage is coming up and wrong if it never does: a WebGL
+     * context that hangs rather than fails leaves the fight frozen on a battle screen that never
+     * does anything. After this long the fight plays through the HUD instead, which is the same
+     * fallback a failed stage already takes.
+     */
+    const fallback = window.setTimeout(() => {
+      if (!live || handle) return;
+      console.warn('[battle] stage is still coming up; playing without animation');
+      battleController.attachPresenter(instantPresenter);
+    }, STAGE_TIMEOUT_MS);
     void createBattleStage(node, {
       backdrop,
       view: initialView,
@@ -59,6 +78,7 @@ export function BattleStageMount({ backdrop, initialView, onCutIn, onStage }: Ba
       },
     })
       .then((created) => {
+        window.clearTimeout(fallback);
         if (!live) {
           created.destroy();
           return;
@@ -69,6 +89,7 @@ export function BattleStageMount({ backdrop, initialView, onCutIn, onStage }: Ba
       })
       .catch((error: unknown) => {
         // No stage (WebGL unavailable, asset failure): the fight still plays through the HUD.
+        window.clearTimeout(fallback);
         console.error('[battle] stage failed to start; playing without animation', error);
         if (live) battleController.attachPresenter(instantPresenter);
       });
@@ -77,6 +98,7 @@ export function BattleStageMount({ backdrop, initialView, onCutIn, onStage }: Ba
     document.addEventListener('visibilitychange', onVisibility);
     return () => {
       live = false;
+      window.clearTimeout(fallback);
       document.removeEventListener('visibilitychange', onVisibility);
       battleController.attachPresenter(null);
       onStage?.(null);

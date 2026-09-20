@@ -51,12 +51,14 @@ async function enterSettlement(page: Page): Promise<void> {
 }
 
 /**
- * One stand, fought on auto from the stand list — and watched at the fastest speed the chronicle
- * has. A fresh chronicle caps at ×2 (`CAMPAIGN.md` §1), and the stand plays out event by event
- * through a software renderer, so the speed is most of what this costs. The wait matches every
- * other one in the suite for the same event.
+ * One stand, cleared from the stand list. Auto is asked for and the fastest speed a fresh
+ * chronicle has is set (×2, `CAMPAIGN.md` §1), but the loop answers a turn itself whenever one
+ * opens: what this test needs is the stand to fall so the lesson can move on, and whether the
+ * policy steers it is `battle.spec.ts`'s subject, not this one's. A wait that only watches for the
+ * result cannot tell a slow fight from a fight nobody is playing, and on CI that difference cost
+ * the whole budget three runs running.
  */
-async function fightOnAuto(page: Page, stage: string): Promise<void> {
+async function clearStand(page: Page, stage: string): Promise<void> {
   await page.getByTestId(stage).click();
   await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
   await settle(page);
@@ -67,8 +69,16 @@ async function fightOnAuto(page: Page, stage: string): Promise<void> {
   const speed = page.getByTestId('battle-speed');
   // The setting is remembered, so only the first of these fights has to press it.
   if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
-  await expect(speed).toContainText('2');
-  await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 300_000 });
+
+  const result = page.getByTestId('screen-battle-result');
+  const open = page.locator('[data-testid="ability-a1"][data-ready="true"]');
+  const deadline = Date.now() + 240_000;
+  while (Date.now() < deadline) {
+    if ((await result.count()) > 0) break;
+    if ((await open.count()) > 0) await spendAnyTurn(page);
+    else await page.waitForTimeout(500);
+  }
+  await expect(result).toBeVisible({ timeout: 60_000 });
 }
 
 /** An enemy the reticle will actually take — a fallen one is no longer a target. */
@@ -132,12 +142,12 @@ test.describe('the tutorial', () => {
    * screens, a battle played turn by turn to a victory, and then two whole stands more, because
    * the lesson that teaches free play only ends when the third stand falls.
    *
-   * Ten minutes was the other full-flow specs' budget and twice not enough here, and the budget
-   * was never the whole story: under load a refused press could leave a lesson waiting forever
-   * (see `playUntilLesson`), which reads as a slow test and is really a stuck one. With that
-   * fixed the walk takes 2.8 minutes in this container and 4.4 with six busy loops on its four
-   * cores, so fifteen minutes is room for a runner having a much worse day than that. The two
-   * trailing stands are also watched at ×2, the cap a fresh chronicle has.
+   * The budget was never the whole story here. Twice the walk ran out of it while something was
+   * quietly stuck rather than slow: a lesson waiting for a press that was refused once and never
+   * offered again (`playUntilLesson`), and a stand nobody was playing (`clearStand`). Both now
+   * end by doing the thing rather than by waiting for it. The walk takes 2.8 minutes in this
+   * container and 4.4 with six busy loops on its four cores, so fifteen minutes is room for a
+   * runner having a much worse day than that.
    */
   test.setTimeout(900_000);
 
@@ -203,10 +213,10 @@ test.describe('the tutorial', () => {
     await expect(page.getByTestId('tutorial-hint')).toBeVisible();
 
     // Two more stands, fought on auto — the lesson waits them out.
-    await fightOnAuto(page, 'battle-stage-01-02');
+    await clearStand(page, 'battle-stage-01-02');
     await backToMap(page);
     await enterSettlement(page);
-    await fightOnAuto(page, 'battle-stage-01-03');
+    await clearStand(page, 'battle-stage-01-03');
     await backToMap(page);
 
     // 1.11 — five hundred measures of energy, counted up on the pill while he names them.

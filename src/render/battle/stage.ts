@@ -4,7 +4,7 @@
  * numbers, a camera for shakes and pushes, and GSAP timelines that play `BattleEvent[]` at
  * the selected speed. Nothing here reads game state; the controller feeds it events.
  */
-import { gsap } from 'gsap';
+import { gsap } from '@render/gsap';
 import { Application, Assets, Container, Graphics, Sprite, type Texture } from 'pixi.js';
 import { backdrop as backdropEntry } from '@assets/manifest';
 import type { BackdropKey, ModelKey } from '@assets/manifest.generated';

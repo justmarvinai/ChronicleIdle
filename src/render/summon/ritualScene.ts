@@ -7,7 +7,7 @@
  * Presentation only: it is told a rarity and plays it. Nothing here reads game state, and the
  * cues it fires are sounds the caller owns.
  */
-import { gsap } from 'gsap';
+import { gsap } from '@render/gsap';
 import { Application, Assets, Container, Graphics, Sprite, type Texture } from 'pixi.js';
 import type { Rarity } from '@content/champions/types';
 import { createRng } from '@engine/rng/rng';

@@ -3,7 +3,7 @@
  * green, shield = azure. Text objects are pooled so ×4 battles never allocate per hit.
  */
 import { Container, Text, TextStyle } from 'pixi.js';
-import { gsap } from 'gsap';
+import { gsap } from '@render/gsap';
 import { createRng } from '@engine/rng/rng';
 
 /** Presentation-only jitter so stacked numbers do not overlap; seeded to keep runs reproducible. */
