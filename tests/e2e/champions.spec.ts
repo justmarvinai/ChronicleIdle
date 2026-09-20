@@ -50,7 +50,7 @@ test.describe('starter choice', () => {
 });
 
 test.describe('champion detail', () => {
-  test('tabs show live ability numbers, lore, the locked gear panel and placeholder art', async ({
+  test('tabs show live ability numbers, lore, the locked gear panel and who is still drawn', async ({
     page,
   }) => {
     test.slow();
@@ -59,7 +59,8 @@ test.describe('champion detail', () => {
     await openChampions(page);
     await expect(page.getByTestId('hero-name')).toHaveText('Corvin');
     await expect(page.getByTestId('hero-level')).toContainText('1 / 30');
-    await expect(page.getByTestId('hero-placeholder')).toBeVisible();
+    // Corvin has his own art (0.5.1), so nothing on his page says it is pending.
+    await expect(page.getByTestId('hero-placeholder')).toHaveCount(0);
     await expect(page.getByTestId('champion-power')).not.toHaveText('0');
     await expect(page.getByTestId('stat-hp')).toContainText('3,010');
 
@@ -75,9 +76,13 @@ test.describe('champion detail', () => {
     await page.getByTestId('tab-gear').click();
     await expect(page.getByTestId('panel-gear')).toBeVisible();
 
-    // Companions come with the starter; Bran borrows the lizard model and says so.
+    // The companions come with the starter. Bran is drawn; Gil still borrows the lizard model,
+    // and a champion waiting for art says so on his own page (`CLAUDE.md` §2.7).
     await page.getByTestId('roster-card-bran_militia-2').click();
     await expect(page.getByTestId('hero-name')).toHaveText('Bran');
+    await expect(page.getByTestId('hero-placeholder')).toHaveCount(0);
+    await page.getByTestId('roster-card-gil_scrapper-4').click();
+    await expect(page.getByTestId('hero-name')).toHaveText('Gil');
     await expect(page.getByTestId('hero-placeholder')).toBeVisible();
     expect(problems).toEqual([]);
   });

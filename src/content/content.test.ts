@@ -121,7 +121,17 @@ describe('content registry', () => {
       mythic: 1,
     });
     for (const id of STARTER_IDS) expect(content.championById(id)?.rarity).toBe('rare');
-    expect(content.champions.filter((c) => !c.art.placeholder)).toHaveLength(7);
+    // Art lands champion by champion, so the count is not fixed — but every finished sheet in
+    // `/game` must be worn by exactly one champion. A sheet nobody wears is art that was added
+    // and never wired up, and the champion goes on fighting as the placeholder lizard.
+    const finished = content.champions.filter((c) => !c.art.placeholder);
+    expect(finished.map((c) => c.art.model).sort()).toEqual(
+      Object.keys(MODEL_FACING)
+        .filter((model) => model !== PLACEHOLDER_MODEL)
+        .sort(),
+    );
+    for (const champion of content.champions)
+      expect(champion.art.placeholder, champion.id).toBe(champion.art.model === PLACEHOLDER_MODEL);
   });
 
   it('faces every unit the way its sheet is drawn, so an ally looks at the enemy', () => {

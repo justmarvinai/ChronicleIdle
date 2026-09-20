@@ -22,10 +22,14 @@ export type Facing = 'left' | 'right';
 
 export const MODEL_FACING = {
   'model.anuria': 'right',
+  'model.bran': 'right',
+  'model.corvin': 'right',
   'model.darius': 'right',
   'model.khazgor': 'right',
+  'model.maelis': 'right',
   'model.maruan': 'right',
   'model.rattledagger': 'right',
+  'model.reva': 'right',
   'model.sethlurias': 'right',
   'model.teritorial_lizard': 'left',
   'model.thordakk': 'right',

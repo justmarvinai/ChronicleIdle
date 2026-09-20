@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'valor',
   role: 'attack',
   stats: [12_400, 1_330, 820, 102, 15, 60, 20, 0],
-  art: { placeholderTint: '#e0602a' },
+  art: { model: 'model.reva', avatar: 'avatar.reva' },
   obtain: ['starter', 'summon'],
   abilities: [
     {

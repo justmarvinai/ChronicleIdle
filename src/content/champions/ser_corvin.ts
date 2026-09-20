@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'justice',
   role: 'defense',
   stats: [15_200, 860, 1_290, 96, 15, 50, 30, 0],
-  art: { placeholderTint: '#c7ccd6' },
+  art: { model: 'model.corvin', avatar: 'avatar.corvin' },
   obtain: ['starter', 'summon'],
   abilities: [
     {

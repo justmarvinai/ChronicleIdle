@@ -10,6 +10,25 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.5.1] — 2026-09-20 — Four faces
+
+### Added
+
+- **Art for Bran, Maelis, Reva and Corvin** (owner-provided, `/game/assets/champions/{common_bran,
+  rare_maelis,rare_reva,rare_corvin}`): 1254² avatars, 64² stills and nine-frame idle loops. They
+  are the four champions a new chronicle meets first — the three Rare starters and the militiaman
+  who fights the opening stand — and they were the four most visible placeholders in the game.
+  **11 of 23 champions** are drawn now.
+- Each sheet's facing is declared in `src/content/champions/models.ts` and was **checked against
+  the art, not assumed**: all four are drawn facing right, and all four were seen facing the enemy
+  in a real fight before this shipped (`ASSETS.md` §Models).
+
+### Changed
+
+- The champion-art test no longer counts to a fixed number. It asserts that the champions with
+  finished art are **exactly** the sheets `/game` ships — so a sheet added and never wired up fails
+  the suite instead of quietly leaving its champion as the lizard.
+
 ## [0.5.0] — 2026-09-20 — The Chronicle of Changes
 
 The game tells the player what changed in it, and from now on every version does.

@@ -11,7 +11,7 @@ recorded in `CREDITS.md`.
 
 | Group | Path | Count | Format / size | Notes |
 | --- | --- | --- | --- | --- |
-| Champion models | `assets/champions/epic_{anuria,darius,khazgor,maruan,rattledagger,sethlurias,thordakk}/` | 7 | avatar 1254² PNG (1.3–2.3 MB); `still/` 64² PNG; `idle/` 9 × 88² PNG + GIF (200 ms/frame, loop) | all seven are Epic-rarity art |
+| Champion models | `assets/champions/{common_bran,rare_corvin,rare_maelis,rare_reva,epic_anuria,epic_darius,epic_khazgor,epic_maruan,epic_rattledagger,epic_sethlurias,epic_thordakk}/` | 11 | avatar 1254² PNG (1.3–2.3 MB); `still/` 64² PNG; `idle/` 9 × 84–88² PNG + GIF (200 ms/frame, loop) | the folder's rarity prefix is not part of the model id |
 | Enemy / placeholder model | `assets/enemies/teritorial_lizard/` | 1 | avatar 1254²; still 64²; idle 9 × 84² + GIF | placeholder for every model-less champion and all enemies |
 | Tutorial NPC | `assets/ui/misc_avatars/tutorial_npc_avatar.jpg` | 1 | painted portrait (dwarven king) | Eldric Lorekeeper |
 | Logo | `assets/logos/chronicle_idle.{svg,png}` | 2 | white on transparent; PNG 6848×2975 | title, loading, about, app icons |
@@ -112,22 +112,27 @@ Status effects (`docs/design/BATTLE.md` §5), role icons (attack `glyph-crossed-
 See `UI_DESIGN.md` §4.
 
 ### Models
-Facing verified against the art in `0.1.2`; the values live in `src/content/champions/models.ts`.
+Facing verified against the art in `0.1.2`, and again for each sheet as it arrives; the values
+live in `src/content/champions/models.ts`.
 
 | Model | Facing | Users |
 | --- | --- | --- |
 | anuria | right | Anuria |
+| bran | right | Bran |
+| corvin | right | Corvin |
 | darius | right | Darius |
 | khazgor | right | Khazgor |
+| maelis | right | Maelis |
 | maruan | right | Maruan |
 | rattledagger | right | Rattledagger |
+| reva | right | Reva |
 | sethlurias | right | Sethlurias |
 | thordakk | right | Thordakk |
 | teritorial_lizard | left | every other champion (tinted), every enemy (faction tint, boss scale), boss placeholders |
 
 The presenter flips sprites so allies face right and enemies face left. Which way a sheet is
-*drawn* is declared once, in `src/content/champions/models.ts`: all seven finished champion sheets
-face right, the placeholder lizard faces left. That table is the only place it is written down —
+*drawn* is declared once, in `src/content/champions/models.ts`: every finished champion sheet so
+far faces right, the placeholder lizard faces left. That table is the only place it is written down —
 the asset pipeline stamps it into the manifest (for `SpriteView`) and the content DSLs resolve it
 (for the battle stage), and `satisfies Record<ModelKey, …>` fails the build when new art arrives
 without an answer. Five sheets were wrong while the pipeline kept its own guess, and every screen

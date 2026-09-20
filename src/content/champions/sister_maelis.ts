@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'faith',
   role: 'support',
   stats: [13_900, 960, 1_000, 104, 15, 50, 30, 10],
-  art: { placeholderTint: '#f0e6cc' },
+  art: { model: 'model.maelis', avatar: 'avatar.maelis' },
   obtain: ['starter', 'summon'],
   abilities: [
     {

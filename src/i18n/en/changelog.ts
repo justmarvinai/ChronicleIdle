@@ -20,6 +20,12 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_5_1.name': 'Four Faces',
+  'release.0_5_1.four_champions':
+    'Bran, Maelis, Reva and Corvin have their own art — portraits, battle sprites and idle animations. Eleven of the twenty-three champions are drawn now; the rest still stand in as the lizard until their art is done.',
+  'release.0_5_1.first_hours':
+    'All four are champions you meet in your first hour: the three you can bind first, and the militiaman who fights beside you at Thornwood Crossing.',
+
   'release.0_5_0.name': 'The Chronicle of Changes',
   'release.0_5_0.chronicle_of_changes':
     'The title screen now keeps a chronicle of everything that changes in the game — what is new, what improved, what was fixed — sorted newest first and filtered by what you care to read.',

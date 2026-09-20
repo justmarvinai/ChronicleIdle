@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'justice',
   role: 'defense',
   stats: [11_600, 660, 980, 92, 15, 50, 25, 0],
-  art: { placeholderTint: '#c9932e' },
+  art: { model: 'model.bran', avatar: 'avatar.bran' },
   obtain: ['summon', 'starter', 'campaign_drop'],
   abilities: [
     {
