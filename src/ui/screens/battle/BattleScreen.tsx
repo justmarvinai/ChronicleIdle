@@ -185,36 +185,36 @@ export default function BattleScreen({ route }: ScreenProps) {
     [setSelectedAbility, setTarget],
   );
 
+  /**
+   * The ability is what spends the turn (BATTLE.md §8): it is cast on whoever the player picked,
+   * whenever this ability can reach them, and on the policy's answer when it cannot — an ally-only
+   * heal does not want the enemy the player marked for the attackers.
+   */
   const onSelectAbility = (abilityId: string): void => {
     const picked = request?.abilities.find((a) => a.abilityId === abilityId);
     if (!picked?.ready) return;
-    const chosenTarget =
-      validTargets.has(target ?? '') && selectedAbility === abilityId ? target : picked.autoTarget;
+    const chosenTarget = target && picked.validTargets.includes(target) ? target : picked.autoTarget;
     cast(abilityId, chosenTarget);
   };
   /**
-   * A press on an enemy marks it: every ally attacks it while it stands, in manual mode and in
-   * auto (BATTLE.md §7.1). When a decision is open and the chosen ability can reach that unit the
-   * same press also spends the turn on it — which is what the fight did before there was a mark at
-   * all — so attacking the marked enemy again keeps the mark rather than lifting it. A press that
-   * only marks toggles: pressing the marked enemy hands the choice back to the policy.
+   * A press on a unit **picks** it and nothing else: the ability comes after, from the bar or its
+   * number key. Casting on the press meant only the ability already selected — the basic attack,
+   * every time — could ever be aimed by hand (the owner's fourth batch).
+   *
+   * On an enemy the press also sets the mark: while it stands it is the target every ally takes,
+   * in manual mode as the preselection a turn opens with and in auto as the policy's answer
+   * (BATTLE.md §7.1). Pressing the marked enemy again lifts the mark.
    */
   const onPickUnit = (unitId: string): void => {
     const unit = view?.units.find((u) => u.id === unitId);
-    const attacks = selectedAbility !== null && validTargets.has(unitId);
-    if (unit?.side === 'enemy' && unit.alive) {
-      const next = attacks || focusId !== unitId ? unitId : null;
-      battleController.setFocus(next);
-      // An attack brings its own sound with it; a bare mark needs one. The simulation runs a turn
-      // ahead of what the stage is showing, so it can refuse a mark for an enemy the plate still
-      // draws standing — the sound follows what the fight did, not what the press asked for.
-      if (!attacks) {
-        playSfx(battleController.store.getState().view?.focusId === unitId ? 'ui.tab' : 'ui.cancel');
-      }
-    }
-    if (!selectedAbility || !validTargets.has(unitId)) return;
-    setTarget(unitId);
-    cast(selectedAbility, unitId);
+    if (!unit || !unit.alive) return;
+    if (unit.side === 'enemy') {
+      battleController.setFocus(focusId === unitId ? null : unitId);
+      // The simulation runs a turn ahead of what the stage is showing, so it can refuse a mark for
+      // an enemy the plate still draws standing: the sound follows what the fight did.
+      playSfx(battleController.store.getState().view?.focusId === unitId ? 'ui.tab' : 'ui.cancel');
+    } else playSfx('ui.tab');
+    if (validTargets.has(unitId)) setTarget(unitId);
   };
 
   const cycleSpeed = useCallback((): void => {
@@ -270,12 +270,8 @@ export default function BattleScreen({ route }: ScreenProps) {
         const picked = pending.abilities.find((a) => a.slot === slot);
         if (picked?.ready) {
           setSelectedAbility(picked.abilityId);
-          cast(
-            picked.abilityId,
-            selectedAbility === picked.abilityId && validTargets.has(target ?? '')
-              ? target
-              : picked.autoTarget,
-          );
+          // The same rule the bar follows: the picked target when this ability can reach it.
+          cast(picked.abilityId, target && picked.validTargets.includes(target) ? target : picked.autoTarget);
         } else playSfx('ui.error');
         return;
       }
