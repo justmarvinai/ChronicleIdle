@@ -72,6 +72,7 @@ export function ScrollArea({ children, height = '100%', className, style, ...res
           <div
             className={styles.thumb}
             style={{ height: thumb.size, transform: `translateY(${thumb.offset}px)` }}
+            data-no-drag-scroll
             onPointerDown={onThumbPointerDown}
             onPointerMove={onThumbPointerMove}
             onPointerUp={onThumbPointerUp}

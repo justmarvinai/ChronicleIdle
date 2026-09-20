@@ -15,6 +15,7 @@ import { systemClock } from '@platform/clock';
 import { registerPwa } from '@platform/pwa';
 import { createStorage } from '@platform/storage';
 import { prefersReducedMotion } from '@platform/window';
+import { installDragScroll } from './dragScroll';
 import { installInputGuards } from './inputGuards';
 
 export type ProgressReporter = (fraction: number, label?: string) => void;
@@ -33,6 +34,7 @@ async function run(report: ProgressReporter): Promise<void> {
   const store = useGameStore;
   const actions = store.getState().actions;
   installInputGuards();
+  installDragScroll();
 
   await loadManifest();
   report(0.15);

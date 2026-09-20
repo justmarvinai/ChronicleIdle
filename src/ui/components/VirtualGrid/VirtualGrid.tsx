@@ -189,6 +189,7 @@ export function VirtualGrid<T>({
           <div
             ref={thumbEl}
             className={styles.thumb}
+            data-no-drag-scroll
             onPointerDown={onThumbPointerDown}
             onPointerMove={onThumbPointerMove}
             onPointerUp={onThumbPointerUp}
