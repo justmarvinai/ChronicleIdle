@@ -22,6 +22,31 @@ export function hasKey(key: string): key is I18nKey {
   return key in dictionary;
 }
 
+/** A literal run of a string, or one of its `{param}` slots. */
+export type TemplatePart = { kind: 'text'; text: string } | { kind: 'slot'; name: string };
+
+/**
+ * A string split into its literal runs and its slots, so a caller can draw a slot as something
+ * other than text — a name in its rarity's colour, a number in its own weight, an icon. The
+ * sentence stays one translatable string; only its rendering changes.
+ */
+export function templateParts(key: string): TemplatePart[] {
+  const template = dictionary[key];
+  if (template === undefined) return [{ kind: 'text', text: key }];
+  const parts: TemplatePart[] = [];
+  let at = 0;
+  for (const match of template.matchAll(/\{(\w+)\}/g)) {
+    const name = match[1];
+    if (name === undefined) continue;
+    const start = match.index;
+    if (start > at) parts.push({ kind: 'text', text: template.slice(at, start) });
+    parts.push({ kind: 'slot', name });
+    at = start + match[0].length;
+  }
+  if (at < template.length) parts.push({ kind: 'text', text: template.slice(at) });
+  return parts;
+}
+
 export function t(key: I18nKey, params?: I18nParams): string {
   return translate(key, params);
 }

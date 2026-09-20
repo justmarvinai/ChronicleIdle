@@ -326,49 +326,153 @@
   font-size: 22px;
   color: var(--gold-3);
 }
+/*
+ * The log is read by shape before it is read as words: a glyph column on the left, names in their
+ * rarity's or element's colour, numbers in their own weight. Line numbers are gone — a fight's
+ * record is not a spreadsheet, and the gutter they needed is the glyph column's now.
+ */
 .logList {
   flex: 1;
   /* A flex item's default `min-height: auto` refuses to shrink below its content, and then there is
      nothing for `overflow-y` to scroll. */
   min-height: 0;
   margin: 0;
-  /* Markers sit in this padding: three digits of a 120-line log need the room, or they are cut off
-     against the frame. */
-  padding: 0 0 0 42px;
+  padding: 0 4px 0 0;
+  list-style: none;
   overflow-y: auto;
   font-size: 15px;
-  line-height: 1.4;
+  line-height: 1.35;
   color: var(--text-2);
   scrollbar-width: thin;
+  /* Softens the row the scroll cuts in half at the top, so the list reads as a window onto a
+     longer record rather than a block chopped off under the title. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14px);
+  mask-image: linear-gradient(to bottom, transparent, #000 14px);
 }
 .logEmpty {
-  list-style: none;
   color: var(--text-3);
 }
 .logLine {
-  margin-bottom: 2px;
-  /* The log is read as a column of events; a wrapped line must not run under its own number. */
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 6px;
+  border-left: 2px solid transparent;
+  /* The log is read as a column of events; a wrapped line stays out of the glyph's column. */
   overflow-wrap: anywhere;
 }
-.logLine::marker,
-.logEmpty::marker {
-  color: var(--text-3);
+.logGlyph {
+  flex: none;
+  /* A glyph is a block; this keeps it on the first line's baseline rather than above it. */
+  transform: translateY(2px);
+  opacity: 0.85;
+}
+.logText {
+  flex: 1;
+  min-width: 0;
+}
+.logName {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+.logBoss {
+  text-shadow: 0 0 10px rgba(216, 85, 47, 0.55);
+}
+.logAmount {
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.tone_ally {
-  color: var(--text-1);
+.amountDamage {
+  color: var(--ember-3);
 }
-.tone_enemy {
-  color: #e6b3b3;
-}
-.tone_good {
+.amountHeal {
   color: var(--buff);
 }
-.tone_bad {
+.amountShield {
+  color: var(--el-justice);
+}
+/*
+ * A status rides the words it names: an inline glyph nudged onto their baseline, tinted by the
+ * kind. An inline-flex box would have handed the row its baseline from the icon instead, and the
+ * name would sit off the line it belongs to.
+ */
+.logStatus {
+  white-space: nowrap;
+}
+.logStatusGlyph {
+  margin-right: 3px;
+  vertical-align: -0.16em;
+}
+.logBuff {
+  color: var(--buff);
+}
+.logDebuff {
   color: var(--debuff);
 }
-.tone_system {
-  color: var(--gold-2);
+.logPlain {
+  color: var(--text-1);
+}
+
+/*
+ * Each kind carries its own accent on the rail at the left of the row. The names are camel case
+ * because the bundler only exposes CSS module classes that way (vite.config.ts `css.modules`).
+ */
+.rowTurn {
+  margin-top: 6px;
+  border-left-color: var(--gold-1);
+  background: linear-gradient(to right, rgba(201, 162, 74, 0.12), transparent 60%);
+  color: var(--text-1);
+}
+.rowCast {
+  border-left-color: rgba(201, 162, 74, 0.45);
+  color: var(--text-1);
+}
+.rowHit,
+.rowDot {
+  border-left-color: rgba(216, 85, 47, 0.5);
+}
+.rowCrit {
+  border-left-color: var(--ember-3);
+  background: linear-gradient(to right, rgba(216, 85, 47, 0.16), transparent 70%);
+}
+/* The one number in a fight worth looking up for. */
+.rowCrit .logAmount {
+  text-shadow: 0 0 10px rgba(216, 85, 47, 0.6);
+}
+.rowHeal,
+.rowRevive {
+  border-left-color: var(--buff);
+}
+.rowShield {
+  border-left-color: var(--el-justice);
+}
+.rowBuff {
+  border-left-color: rgba(106, 190, 120, 0.5);
+}
+.rowDebuff {
+  border-left-color: rgba(200, 96, 110, 0.5);
+}
+.rowRefused {
+  color: var(--text-3);
+}
+.rowRefused .logGlyph {
+  opacity: 0.5;
+}
+.rowDeath {
+  border-left-color: var(--debuff);
+  color: var(--text-3);
+}
+.rowBoss {
+  border-left-color: var(--ember-3);
+  color: var(--ember-3);
+}
+.rowSystem {
+  margin: 6px 0;
+  border-left-color: var(--gold-2);
+  background: linear-gradient(to right, rgba(240, 213, 122, 0.14), transparent 70%);
+  color: var(--gold-3);
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
 }
 .hotkeys {
   margin: 8px 0 0;

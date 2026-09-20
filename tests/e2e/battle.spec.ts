@@ -89,17 +89,25 @@ test.describe('battle', () => {
       if (!panel || !list) return null;
       const p = panel.getBoundingClientRect();
       const l = list.getBoundingClientRect();
-      const lines = [...list.querySelectorAll('li')].map((li) => li.getBoundingClientRect());
+      const rows = [...list.querySelectorAll('li')];
+      const lines = rows.map((li) => li.getBoundingClientRect());
+      const transparent = ['rgba(0, 0, 0, 0)', 'transparent'];
       return {
         inside: l.top >= p.top - 1 && l.bottom <= p.bottom + 1,
-        // Markers live in the list's padding; too little of it cut the line numbers off.
+        // No row starts on the frame itself; the panel's own padding holds them off it.
         marginLeft: Math.min(...lines.map((r) => r.left - p.left)),
         lastLineInside: lines.length > 0 && (lines.at(-1)?.bottom ?? 0) <= l.bottom + 1,
+        kinds: [...new Set(rows.map((li) => li.dataset.kind ?? ''))],
+        // The accent rail each kind carries (UI_DESIGN.md §5.9). It is how the log is scanned, and
+        // it renders only if the kind reached a class at all — which a bundler rename can undo.
+        railed: rows.filter((li) => !transparent.includes(getComputedStyle(li).borderLeftColor)).length,
       };
     });
     expect(logBox?.inside, 'the log is inside the panel').toBe(true);
     expect(logBox?.lastLineInside, 'the newest line is inside the log').toBe(true);
     expect(logBox?.marginLeft ?? -1).toBeGreaterThan(0);
+    expect(logBox?.kinds ?? [], 'every row says which kind of event it is').not.toContain('');
+    expect(logBox?.railed ?? 0, 'rows carry the accent rail of their kind').toBeGreaterThan(0);
     await page.getByTestId('battle-info-toggle').click();
 
     // Pause and resume from the menu.

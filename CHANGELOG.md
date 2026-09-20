@@ -10,6 +10,31 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.4.2] — 2026-09-20
+
+### Changed
+
+- **The battle log is read, not deciphered.** It was 120 numbered grey sentences in one column.
+  Now each line is drawn as what it is: a glyph opens the row (sword, potion, skull, hourglass),
+  the kind's accent rail runs down its left edge — gold for a turn, ember for a crit, green for a
+  heal, red for a fall — champions are named in their **rarity** colour and enemies in their
+  **element** colour (a boss in the ember, with a glow), damage, heals and absorbed shields are
+  bold tabular numerals in their own tones, and a buff or debuff carries its own icon beside its
+  name. The line numbers are gone; the gutter they needed is the glyph's.
+- A line is no longer a finished string. `battle-log.ts` hands the panel a template key and a
+  value per slot — unit, amount, status — and the panel decides how each is drawn; `templateParts`
+  in `@i18n` splits the English. The sentence stays one translatable string, and the whole of it
+  rides the row as its `aria-label`, so a screen reader and a test still read it as a sentence.
+
+### Fixed
+
+- **The log's colours never rendered at all.** Its tone classes were asked for as `tone_ally`,
+  `tone_good` and so on, but the bundler exposes CSS module locals in camel case only
+  (`localsConvention: 'camelCaseOnly'`), so every one of them resolved to nothing and the whole
+  log drew in one grey. The classes are camel case now, and a unit test holds `InfoPanel.tsx` and
+  its stylesheet to each other while the e2e battle walk checks a rendered row really carries its
+  rail.
+
 ## [0.4.1] — 2026-09-20
 
 ### Fixed

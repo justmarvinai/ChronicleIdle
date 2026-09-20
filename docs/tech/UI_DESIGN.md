@@ -262,11 +262,27 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   "2/3", turn counter, timer; top-centre (boss): boss HP bar with phase pips and boss status row;
   bottom-left: *Info*, *Auto*, *×N speed*; bottom-right: ability bar (A1–A4 `AbilityIcon`,
   passive tag), current champion mini-portrait; target reticle on hover.
-- *Info* opens the **battle log**: a 460 × 640 ember panel of numbered events, newest pinned to the
-  bottom, capped at the last 120 lines, with the hotkey legend under it. The list scrolls inside
-  the frame — the flex column belongs to the panel's *content box*, and the list needs
-  `min-height: 0` to shrink below its content, or it grows as tall as the fight and spills off the
-  screen. Markers sit in the list's own padding, wide enough for three digits.
+- *Info* opens the **battle log**: a 460 × 640 ember panel of events, newest pinned to the bottom,
+  capped at the last 120 lines, with the hotkey legend under it. The list scrolls inside the frame
+  — the flex column belongs to the panel's *content box*, and the list needs `min-height: 0` to
+  shrink below its content, or it grows as tall as the fight and spills off the screen. A soft
+  mask at the top edge fades the row the scroll cuts in half.
+- **A line is a sentence's parts, not a sentence.** `battle-log.ts` turns each event into a
+  template key plus a value per slot, each saying what it is — a unit, an amount, a status — and
+  the panel draws each one as what it is. The English stays one translatable string
+  (`templateParts` in `@i18n`), and the whole line is on the row as its `aria-label`, so a screen
+  reader and a test read the plain sentence. A row is scanned before it is read: a glyph opens it
+  (sword, potion, skull), its kind sits on `data-kind`, and the kind's accent rail runs down its
+  left edge — gold for a turn, ember for a crit, green for a heal, red for a fall.
+- **What is highlighted.** Ally names take their champion's **rarity** colour and enemy names
+  their **element** colour (a boss takes the ember and a glow); damage, heals and absorbed shields
+  are bold tabular numerals in ember, green and justice-blue, a crit's number wearing an ember
+  glow; a status is its own glyph, tinted green or red, riding the baseline beside its name.
+- The row classes are **camel case**, and so is every other class this screen asks for by name:
+  the bundler exposes CSS module locals that way only (`localsConvention: 'camelCaseOnly'` in
+  `vite.config.ts`), so a rule written `.log_turn` reaches the DOM as nothing at all and the rails
+  and tints silently vanish. A unit test holds `InfoPanel.tsx` and its stylesheet to that, and the
+  e2e battle walk checks a rendered row really carries its rail.
 - **Who, then what** (`BATTLE.md` §8): a press on a plate picks that unit and spends nothing, and
   the ability is what takes the turn. An enemy plate takes the pointer at all times, not only
   while a turn is open, because marking one is something a player does between turns and in auto
