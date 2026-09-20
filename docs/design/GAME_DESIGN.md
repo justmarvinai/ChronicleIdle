@@ -120,9 +120,8 @@ after the first stand.
 
 | Player level | Unlock |
 | --- | --- |
-| 1 | Campaign (Intro), Champions, **The Chronicler's Path (missions)**, battle speeds ×1/×2 |
+| 1 | Campaign (Intro), Champions, **The Chronicler's Path (missions)**, **Gear (equip/upgrade)**, battle speeds ×1/×2 |
 | 2 | Tavern (level up) |
-| 3 | Gear (equip/upgrade) |
 | 4 | Summoning Portal |
 | 5 | Daily Quests, Idle Chest |
 | 7 | Tavern: Rank up |
@@ -140,6 +139,10 @@ after the first stand.
 | — | ×3 speed: Normal complete; ×4 speed: Hard complete |
 
 Idle-chest capacity bands are level driven (`ECONOMY.md` §5).
+
+Gear opens with the chronicle rather than at level 3 (the owner's third batch): the first stands
+drop a piece, and a chronicle that may not wear what it has just found is holding a reward it
+cannot use.
 
 Three unlocks are gated on **progress** rather than on a level, and they are the ones that mark the
 end of a stretch of the game: Normal, Hard, and the Eternal Tower. A player who has cleared Intro

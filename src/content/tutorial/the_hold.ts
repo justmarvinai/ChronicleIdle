@@ -1,6 +1,7 @@
 /**
- * Chapter 3 — The Hold (docs/design/TUTORIAL.md §2): the Tavern at level 2, gear at level 3. Two
- * lessons in one chapter, each waiting on the unlock that makes it true.
+ * Chapter 3 — The Hold (docs/design/TUTORIAL.md §2): the Tavern, then the gear it can wear. Two
+ * lessons in one chapter, each waiting on the unlock that makes it true — and gear's opens at
+ * level 1, so it follows the Tavern's straight away.
  */
 import { chapter, provision, step } from './dsl';
 
@@ -34,7 +35,7 @@ export default chapter({
       spotlight: ['tavern.upgrade'],
       complete: { type: 'counter', key: 'tavern.levelUps', count: 1 },
     }),
-    // 2.5 — gear opens at level 3: the Champions hall, then the champion himself.
+    // 2.5 — the gear itself: the Champions hall, then the champion who will wear it.
     step({
       when: {
         type: 'all',

@@ -30,7 +30,12 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
   campaign: 1,
   champions: 1,
   tavern_level: 2,
-  gear: 3,
+  /**
+   * Gear is equippable from the first hour (the owner's third batch). A piece drops in the
+   * campaign's opening stands, and a chronicle that may not wear what it has just found is
+   * holding a reward it cannot use.
+   */
+  gear: 1,
   summoning: 4,
   quests_daily: 5,
   idle_chest: 5,

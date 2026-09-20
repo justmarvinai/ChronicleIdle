@@ -54,7 +54,7 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | 2.2 | Tavern | Starter in roster rail | "Choose the champion to raise." | starter selected |
 | 2.3 | Tavern | Brew slots | "Brews are distilled experience. A brew of the champion's own element runs stronger." | brew placed |
 | 2.4 | Tavern | Upgrade button | "Now — raise them." | level-up animation done |
-| 2.5 | Level 3 reached, on hub | Champions building → champion detail | "Steel wins wars. Let us arm your champion." | champion detail opened |
+| 2.5 | Gear unlocked (level 1), on hub | Champions building → champion detail | "Steel wins wars. Let us arm your champion." | champion detail opened |
 | 2.6 | Champion detail | Empty weapon slot | "Every champion wears six pieces. Begin with the weapon." | slot opened |
 | 2.7 | Gear list | The dropped weapon | "This one fell at Thornwood. Compare, then equip." | equipped |
 | 2.8 | Gear panel | Upgrade (+1) button | "Gold sharpens steel. Raise it once." (**grants 250 Energy** on completion) | gear leveled |

@@ -135,9 +135,9 @@ describe('the tutorial script', () => {
     expect(activeStep(CHAPTERS, afterPath, ctx({ playerLevel: 1, screen: 'hub' }))).toBeNull();
     expect(chapterStatus(chapter(3), afterPath, ctx({ playerLevel: 2 }))).toBe('open');
     expect(activeStep(CHAPTERS, afterPath, ctx({ playerLevel: 2, screen: 'hub' }))?.id).toBe('tut.3.1');
-    // The Hold's gear lesson waits for gear at level 3, even at the Tavern's own level.
-    expect(activeStep(CHAPTERS, upTo('tut.3.5'), ctx({ playerLevel: 2, screen: 'hub' }))).toBeNull();
-    expect(activeStep(CHAPTERS, upTo('tut.3.5'), ctx({ playerLevel: 3, screen: 'hub' }))?.id).toBe('tut.3.5');
+    // The Hold's gear lesson follows the Tavern's with no wait of its own: gear is equippable
+    // from level 1 (the owner's third batch), so the chapter teaches both in one sitting.
+    expect(activeStep(CHAPTERS, upTo('tut.3.5'), ctx({ playerLevel: 2, screen: 'hub' }))?.id).toBe('tut.3.5');
   });
 
   it('teaches one thing at a time: an unfinished chapter holds the ones behind it', () => {
