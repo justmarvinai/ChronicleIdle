@@ -64,6 +64,9 @@ test.describe('battle', () => {
     const targets = page.locator('[data-targetable="true"]');
     await expect(targets.first()).toBeVisible();
     await targets.first().click();
+    // The press picks and nothing else: the ability is what spends the turn (BATTLE.md §8).
+    await expect(targets.first()).toHaveAttribute('data-targeted', 'true');
+    await expect(turns).toHaveText(before ?? '');
     await page.getByTestId('ability-a1').click();
     await expect(turns).not.toHaveText(before ?? '', { timeout: 90_000 });
 

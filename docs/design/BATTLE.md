@@ -217,11 +217,9 @@ open, and Tab does the same thing from the keyboard. While it stands, it is the 
 picks: in manual mode it is the preselection a decision opens with, in auto it is what the policy
 returns.
 
-A press that can also **spend the turn** on that enemy — a decision is open and the chosen ability
-reaches it — is an attack first: it sets the mark and casts, which is what a press on an enemy did
-before there was a mark at all. Only a press that cannot cast toggles, so pressing the marked enemy
-in auto, or between turns, hands targeting back to the policy. Attacking the enemy you marked is
-the ordinary case in manual mode, and it must not quietly undo the mark.
+A press marks and **nothing else** — it never casts. Pressing the marked enemy again lifts the
+mark and hands targeting back to the policy. What spends the turn is the ability (§8), which is
+why the press can be unambiguous: one gesture chooses who, another chooses what.
 
 The mark is one line in the state (`focusId`) read by `pickTarget`, so both modes and the
 preselection are the same rule rather than three. It sits above everything in the table above,
@@ -251,12 +249,22 @@ Enemy AI uses the same evaluator with the enemy's `ai` block; campaign enemies a
 
 ## 8. Manual mode UX rules
 
-- Ability buttons (bottom-right) show cooldown counters, "P" for passive, disabled state; hover
-  shows the full description with current numbers (after upgrades).
-- Target selection: click an enemy/ally; valid targets glow; AoE highlights all; auto-target is
-  preselected so a single click on the ability is enough.
-- Hotkeys: `1–4` abilities, `Tab` cycle targets, `Space` confirm, `A` toggle auto, `+/−` speed,
-  `Esc` pause menu.
+**Who, then what.** A press on a plate picks that unit and spends nothing; the ability is chosen
+after it, from the bar or its number key, and that is what takes the turn. The other way round —
+a press on an enemy casting whatever ability happened to be selected — means only the preselected
+ability, the basic attack, can ever be aimed by hand.
+
+- Ability buttons (bottom-right) show the turns left on a cooldown **on the icon**, greyed and
+  darkened under the number, "P" for passive, disabled state; hover shows the full description
+  with current numbers (after upgrades). The count comes with the turn being played, not with the
+  ability's authored cooldown.
+- Target selection: click an enemy/ally; valid targets glow; AoE highlights all; the mark (§7.1)
+  or the policy's answer is preselected, so a single click on the ability is enough when the
+  preselection is already right.
+- An ability casts on the picked target whenever it can reach it, and on the policy's answer when
+  it cannot: a heal does not go to the enemy the attackers are marked on.
+- Hotkeys: `1–4` abilities, `Tab` cycle targets (and mark, on an enemy), `Space` confirm,
+  `A` toggle auto, `+/−` speed, `Esc` pause menu.
 
 ## 9. Battle result
 

@@ -10,6 +10,59 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.4.0] — 2026-09-20 — The owner's fourth batch
+
+Six things drawn or wired wrong, and a rule about names.
+
+### Changed
+
+- **Champions have one name.** Common through Epic are a single word — Bran, Gil, Wenna, Orla,
+  Tobbe, Mirestalker, Maelis, Corvin, Reva, Anuria, Darius, Khazgor, Maruan, Sethlurias, Thordakk
+  — and only a Legendary or a Mythic earns a second, with no "the" and no comma in it: Eldric
+  Lorekeeper joins Aurelia Dawnwarden and Kaelith Stormcaller, and the Mythic is **Varkos
+  Sunderking**. The ids do not move: a save names its roster by id, and a tidier string is not
+  worth a chronicle's champions. The rule is in `docs/design/CHAMPIONS.md` §1.
+- **Pick the target, then the ability** (`BATTLE.md` §8). A press on an enemy cast at it with
+  whatever ability was already selected, which in practice is the basic attack — the only way to
+  aim anything else by hand was to hope the policy had preselected the right enemy. A press on a
+  unit now picks it and spends nothing; the ability is chosen after, from the bar or its number
+  key, and casts on the picked target whenever it can reach it. On an enemy the press still sets
+  the mark, and pressing it again lifts it, which is unambiguous now that no press casts.
+- **The Chronicle Index reads as a sorted catalogue**: a heading per element in the element's
+  colour, a caption per role inside it, and the cards of that group on one row.
+- **The gear rack says what it holds.** A worn piece wears a ring in its rarity's colour and the
+  rarity named under it, and *Take off* / *Upgrade* are chips with a gold hairline rather than two
+  underlined words in the dimmest text colour.
+
+### Fixed
+
+- **A panel told to be as tall as its parent was taller than it by its own padding.** `Frame`'s
+  content box was `content-box`, so the frame drew at the right height and the content ran past
+  it — which is why the Index's champion page had its lore off the bottom of the screen and no
+  scrollbar to say so. The Index's split also needed an explicit `minmax(0, 1fr)` row: an implicit
+  `auto` row grows to whatever its tallest child wants.
+- **The cooldown never reached the icon.** The HUD's view is built from events and no event
+  carried a cooldown, so the ability bar read the snapshot the fight started from for the whole
+  fight: every ability ready, every time, with the number only in the tooltip — and that was the
+  ability's authored cooldown, not what was left of it. `turn.started` carries the acting unit's
+  cooldowns now, announced after the turn's tick.
+- **Ability icons draw the same at every size.** The keyboard chip and the passive tag were 22 px
+  whatever the icon was, so on the 56 px icons a page prints beside an ability they swallowed a
+  third of the art. Both chips and the cooldown number are fractions of the icon now.
+- **What slides in is centred by margin.** The summon's Continue / Summon again / View champion row
+  sat off to the right of the gate: it was centred with `left: 50%` + `translateX(-50%)` and
+  animated in, and the animation writes its own `transform`, taking the centring half of that pair
+  with it. The PWA update banner had the same pair, the same slide and the same half-window offset.
+- **The gear rack fits its panel.** Three 128 px slots and their gaps came to 408 px inside a
+  398 px column, so the shield and the boots hung through the right edge.
+- **A fight is never hostage to its stage, and never plays in slow motion.** The controller holds
+  the first turn until a presenter attaches; a WebGL context that hangs rather than fails held it
+  for ever, and after twenty seconds the fight now plays through the HUD instead. GSAP's lag
+  smoothing treated a frame longer than half a second as a stall and advanced by 33 ms rather than
+  by the time that really passed, so a machine that could not hold the frame rate played the fight
+  in slow motion instead of dropping frames (a stand took 26.2 s under a 20× CPU throttle with it
+  and 19.5 s without, against 11.7 s unthrottled). `CLAUDE.md` §5.6 asks for frames to be dropped.
+
 ## [0.3.0] — 2026-09-20 — The owner's third batch
 
 Seven asks: two things drawn wrong in a fight, two the fight was missing, one screen that was

@@ -34,10 +34,15 @@
   z-index: var(--z-scene);
 }
 
-/* A catalogue reads as a list beside the page it opens. */
+/*
+ * A catalogue reads as a list beside the page it opens. The row is sized explicitly: an implicit
+ * `auto` row grows to whatever its tallest child wants, so `height: 100%` on the page inside it
+ * resolves against the page's own content and the panel runs off the bottom of the screen.
+ */
 .split {
   display: grid;
   grid-template-columns: 1fr 620px;
+  grid-template-rows: minmax(0, 1fr);
   gap: 18px;
   height: 100%;
 }
@@ -99,6 +104,7 @@
 
 .page {
   height: 100%;
+  min-height: 0;
 }
 .pageBody {
   height: 100%;

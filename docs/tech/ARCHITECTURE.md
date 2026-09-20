@@ -120,6 +120,18 @@ fight; `end()` tears the session down after the result screen.
 Ultimate (A4) casts trigger a **cut-in**: the champion's avatar slides across a dark slash with
 speed lines and the ability name — the only place the 1254² avatars are shown large.
 
+**The ticker is configured once** (`render/gsap.ts`, which every timeline imports instead of the
+package). GSAP's lag smoothing treats a frame longer than half a second as a stall and advances by
+33 ms rather than by the time that really passed, which turns a machine that cannot hold the frame
+rate into one that plays the fight in slow motion — §5.6 of `CLAUDE.md` asks for frames to be
+dropped instead. It is off; the gap a hidden tab leaves is never played back because the stage and
+the ritual both pause their timelines on `visibilitychange`.
+
+**The fight is never hostage to the stage.** The controller holds the first turn until a presenter
+attaches, so nothing resolves off-screen, but a WebGL context that hangs rather than fails would
+hold it for ever; after twenty seconds `BattleStageMount` attaches the instant presenter and the
+fight plays through the HUD, which is what a *failed* stage already did.
+
 Shipped shape (Phase 2): `createBattleStage(host, { backdrop, view, hooks, embers })` mounts a
 Pixi application on the 1920 × 1080 stage grid (`render/battle/layout.ts`, shared with the HUD's
 plate anchors) and returns `{ presenter, setPaused, frameStats, destroy }`. Effects come from

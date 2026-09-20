@@ -22,6 +22,17 @@ Every champion definition has:
 | `lore` | 2–4 sentences (i18n key) |
 | `obtain` | list of sources: `summon`, `mission`, `starter`, `campaign_drop` |
 
+### Names
+
+A champion has **one word**. Only a Legendary or a Mythic earns a second, and it is a surname or
+an epithet welded into one — *Aurelia Dawnwarden*, *Kaelith Stormcaller*, *Varkos Sunderking* —
+never a title with a `the` or a comma in it. A name is what a player calls a champion in a team
+list; the job it does is in the role and the kit, not in the name.
+
+Ids do not follow names. A save names the champions it holds by id, so `champ.ser_corvin` stays
+`champ.ser_corvin` however its bearer is introduced: the id is the file's name, the name is the
+player's.
+
 ### Rarity table
 
 | Rarity | Base★ | Max★ | Level cap at max★ | Abilities | Passive | Aura | Stat budget |

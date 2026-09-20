@@ -183,8 +183,11 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Reference: `champions_gearing_info_screen_alternative_2.png` (right attribute list + gear column),
   `champions_gearing_info_screen.png` (gear grid + total stats).
 - **Info**: as 5.3, with a second stat column carrying what the gear and its complete sets add.
-  **Gear**: the power with everything worn, then a 3×2 slot grid (`Slot`) — each slot shows the
-  piece's crest, its `+level` badge, its main stat and its stars, with *Take off* under it — then
+  **Gear**: the power with everything worn, then a 3×2 slot grid of the small stone `Slot` on
+  `minmax(0, 1fr)` tracks, so a cell can never push the row wider than the panel — each slot shows
+  the piece's crest inside a ring in its **rarity's colour**, its `+level` badge, its main stat,
+  the rarity named under it in that same colour and its stars, with *Take off* and *Upgrade* below
+  as dark chips with a gold hairline rather than as underlined small print — then
   the set-bonus rows (a complete group shows how many copies it grants, an incomplete one how
   many pieces it still needs), then *Open the Armoury*. A slot opens the **gear picker**
   (`dialog-gear-picker`): the racks filtered to that slot on the left, and a compare panel on the
@@ -262,15 +265,17 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   the frame — the flex column belongs to the panel's *content box*, and the list needs
   `min-height: 0` to shrink below its content, or it grows as tall as the fight and spills off the
   screen. Markers sit in the list's own padding, wide enough for three digits.
-- **The marked enemy** (`BATTLE.md` §7.1): an enemy plate takes the pointer at all times, not only
+- **Who, then what** (`BATTLE.md` §8): a press on a plate picks that unit and spends nothing, and
+  the ability is what takes the turn. An enemy plate takes the pointer at all times, not only
   while a turn is open, because marking one is something a player does between turns and in auto
-  mode. The marked plate wears a gold frame and a ◆ beside its name. When a turn *is* open and the
-  chosen ability can reach that enemy, the press attacks and keeps the mark, which is what a press
-  did before the mark existed; a press that cannot cast toggles, so pressing the marked plate in
-  auto or between turns lifts the mark.
+  mode; the marked plate wears a gold frame and a ◆ beside its name, and pressing it again lifts
+  the mark (`BATTLE.md` §7.1).
 - Ability icons: the round button clips nothing (the art clips itself), so the keyboard number and
-  the passive tag sit whole on the rim wearing the same dark chip with a gold hairline. An ability
-  on cooldown greys and darkens under the turns remaining, in gold.
+  the passive tag sit whole on the rim wearing the same dark chip with a gold hairline. Both chips,
+  and the cooldown number, are fractions of the icon's own size, so the same component reads right
+  on the fight's 96 px buttons and on the 56 px icons a page prints beside an ability. An ability
+  on cooldown greys and darkens under the turns remaining, in gold — the count arrives with the
+  turn being played (`turn.started` carries it), not from the ability's authored cooldown.
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
 
 ### 5.10 Battle result
@@ -537,11 +542,14 @@ Rules the overlay holds to:
 - Reached from the hub's bottom bar (**Index**), open from level 1 — it is a reference, not a
   reward. Backdrop `bg.bg5` with the interior ambience, like every other reading room.
 - Four tabs across the head, a one-line blurb, and — on the champions tab only — the tally
-  (`12 of 23 champions found`) in gold on the right.
-- **Champions**: the whole roster of definitions, found or not, richest rarity first and
-  alphabetical inside it. Six columns of `ChampionCard` in a `VirtualGrid`, compact (no level
-  badge, no stars on the card), **dimmed when unfound**, wearing `×N` when the chronicle holds
-  more than one. Rarity / element / role dropdowns and a *Found only* switch. The page beside it:
+  (`12 of 23 champions found`) in gold on the right. Both halves are bounded by the screen and
+  scroll on their own: the split is a grid with an explicit `minmax(0, 1fr)` row, or the page
+  beside the list grows to whatever it holds and runs off the bottom with the lore unreachable.
+- **Champions**: the whole roster of definitions, found or not, in **sections**: a heading per
+  element in the element's colour, and inside it a small caption per role, which are the two axes
+  a player sorts a roster by. Compact `ChampionCard`s (no level badge, no stars on the card) wrap
+  along each role's row, **dimmed when unfound**, wearing `×N` when the chronicle holds more than
+  one. Rarity / element / role dropdowns and a *Found only* switch narrow what the sections hold. The page beside it:
   portrait framed in the rarity's colour, base→max stars, rarity · element · role, whether it is
   in the chronicle, the authored stats (6★ level 60, before gear), every ability with its cooldown
   and live numbers, the passive, the aura, the lore and where it comes from.
