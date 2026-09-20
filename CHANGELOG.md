@@ -10,6 +10,57 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.3.0] — 2026-09-20 — The owner's third batch
+
+Seven asks: two things drawn wrong in a fight, two the fight was missing, one screen that was
+never built, one that had furniture pasted on it, and a gate that arrived too late.
+
+### Added
+
+- **The Chronicle Index** (`docs/tech/UI_DESIGN.md` §5.20). The hub's Index button pushed a Locked
+  screen saying the feature "arrives in a later chapter of development" — the last unbuilt thing in
+  the game. It is four catalogues now, all of them reads of the content registry, so the Index
+  grows by itself every time the content does: every **champion** the game has (found or not,
+  dimmed until the chronicle holds one, with its stats, kit, lore and where it comes from), the
+  **bestiary** of all twelve settlements (each faction's six and the boss that holds its last
+  stand), the fourteen **gear sets**, and every **status** a fight can carry.
+- **Mark the enemy every champion attacks** (`docs/design/BATTLE.md` §7.1). A press on an enemy
+  marks it: while it stands, it is the target every ally takes — in manual mode as the
+  preselection a turn opens with, in auto as the policy's answer. Pressing it again lifts the mark,
+  Tab marks from the keyboard, and the kill that takes the enemy clears it. One line of state
+  (`focusId`) read in one place (`pickTarget`), which is why both modes and the preselection are
+  the same rule rather than three that drift. It sits above a kit's declared `prefer` — that is
+  the champion's opinion, this is the player's — and below only a Provoke.
+- **Drag to scroll**, everywhere the wheel scrolls: hold the left button and move. One
+  document-level handler finds the nearest scrollable ancestor of whatever the pointer went down
+  on, so it covers every scroller the game has and every one it will have. It takes only the
+  primary mouse button, starts only past 5 px, and swallows the click that ends a real drag so
+  dragging across a card does not open it.
+
+### Changed
+
+- **Gear is equippable from level 1.** The opening stands drop gear and the gate stood at level 3,
+  so the first pieces a player saw were a reward they could not use.
+- **The bosses left the hub.** Two rectangular cards floated over Emberhold's sky saying a boss
+  unlocks at level 10 — web furniture pasted on a painting, which is the one thing `CLAUDE.md`
+  §7.1 forbids. Everything they said is one press away on Game Modes; what the hub keeps is a
+  counted dot on **Battle** when a boss chest is waiting.
+
+### Fixed
+
+- **The keyboard number on an ability was being clipped, not hidden.** `overflow: hidden` with
+  `border-radius: 50%` on the round button cuts anything near a corner to the circle, and a badge
+  at the bottom-left of a 96 px circle is two thirds outside it — so a sliver of the "1" showed and
+  read as art bleeding over the number. The art clips itself now and the button clips nothing, so
+  the number and the passive tag sit whole on the rim wearing the same dark chip with a gold
+  hairline.
+- **An ability on cooldown reads as spent**: its art goes grey and dark under the turns remaining,
+  in gold at 40 px, instead of a thin scrim the eye slid over. The engine was already sending the
+  number; only the drawing changed.
+- A gear set printed its own description and then its passives, which said the same sentence twice
+  — three times for a set with two passives. The status glossary leaked the `{value}` placeholder
+  out of text written for a single cast; it prints `X`, because a glossary has no cast to read.
+
 ## [0.2.0] — 2026-09-18 — The Eternal Tower
 
 The first mode that outlasts the campaign. A chronicle that has cleared Intro has run out of first

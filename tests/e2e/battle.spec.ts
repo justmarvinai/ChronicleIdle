@@ -166,6 +166,35 @@ test.describe('battle', () => {
     await expect(page.getByTestId('screen-battle-setup')).toBeVisible();
   });
 
+  test('marking an enemy holds through the fight, in manual and in auto', async ({ page }) => {
+    await freshChronicle(page);
+    await openStageSetup(page, 1);
+    await setAuto(page, false);
+    await startBattle(page);
+    await waitForDecision(page);
+
+    // A press on an enemy marks it — no ability chosen, no turn spent (BATTLE.md §7.1).
+    const enemies = page.locator('[data-testid^="plate-w0e"]');
+    const first = enemies.first();
+    await first.click();
+    await expect(first).toHaveAttribute('data-focused', 'true');
+    // Pressing the marked one again lifts the mark.
+    await first.click();
+    await expect(first).toHaveAttribute('data-focused', 'false');
+    await first.click();
+    await expect(first).toHaveAttribute('data-focused', 'true');
+
+    // Auto has no decisions to open, and the mark is still the player's to set.
+    await page.getByTestId('battle-auto').click();
+    await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'true');
+    await expect(first).toHaveAttribute('data-focused', 'true');
+
+    await page.getByTestId('battle-pause').click();
+    await page.getByTestId('pause-retreat').click();
+    await page.getByTestId('pause-retreat-confirm').click();
+    await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 120_000 });
+  });
+
   test('team presets save and load on the setup screen', async ({ page }) => {
     await freshChronicle(page);
     await openStageSetup(page, 1);

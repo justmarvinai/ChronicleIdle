@@ -381,6 +381,7 @@ the running game, to the same Definition of Done as a phase (`AGENTS.md` §3).
 
 | Version | Feature | What it covered |
 | --- | --- | --- |
+| `0.3.0` | **The Chronicle Index**, and the fight the player steers | The Index finished: four catalogues (champions found and unfound, the bestiary of all twelve factions, the gear sets, the statuses). Marking the enemy every champion attacks, in manual and in auto. Drag-to-scroll everywhere the wheel scrolls. Gear equippable from level 1; the boss cards off the hub; the ability bar's keyboard numbers and cooldowns drawn properly |
 | `0.2.0` | **The Eternal Tower** (`docs/design/ETERNAL_TOWER.md`) | A hundred floors climbed in order, opened by clearing the whole Intro campaign; every tenth floor a boss floor that rolls for Ancient and Sacred Shards on the owner's own table; the Eternal Key (cap 10, one every 15 minutes, spent won or lost); gold, 1–5 energy, brews and XP per floor; ordinary floors one-time, boss floors farmable; a thirty-day season that resets the climb and keeps the best floor. Plus **Account Power** in the header — every owned champion's power summed, under the experience bar. Save v14 |
 
 ---
