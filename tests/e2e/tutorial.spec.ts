@@ -155,8 +155,12 @@ test.describe('the tutorial', () => {
     await readLesson(page, 'tut.1.8');
     await page.getByTestId('battle-auto').click();
 
-    // 1.9 — the spoils, read on the victory panel.
-    await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 60_000 });
+    // 1.9 — the spoils, read on the victory panel. Handing a fight to auto and waiting for its
+    // result is the suite's slowest single wait: the rest of the stand plays out at ×1, event by
+    // event, through a software renderer. Every other spec budgets 300 s for it (`battle.spec.ts`,
+    // `progression`, `tower`, `walkthrough`) and this file's own `clearStage` helper 120 s; 60 s
+    // was the outlier, and on a slow runner the fight was still going when it ran out.
+    await expect(page.getByTestId('screen-battle-result')).toBeVisible({ timeout: 300_000 });
     await expect(page.getByTestId('result-title')).toContainText('Victory');
     await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.1.9', {
       timeout: 30_000,
