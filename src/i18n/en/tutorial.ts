@@ -1,11 +1,11 @@
 /**
- * Eldric the Chronicler (docs/design/TUTORIAL.md). One line per step, keyed by where the step sits
+ * Eldric Lorekeeper (docs/design/TUTORIAL.md). One line per step, keyed by where the step sits
  * in the script, so this file reads in the order the game teaches itself. The lines of chapters 1
  * to 5 are the ones the design bible sets down; chapter 6's are written in the same voice.
  */
 export const tutorial = {
   // The overlay's own chrome (`UI_DESIGN.md` §5.18).
-  'tut.speaker': 'Eldric the Chronicler',
+  'tut.speaker': 'Eldric Lorekeeper',
   'tut.continue': 'Continue',
   'tut.skip': 'Skip this lesson',
   'tut.skipped': 'Lesson skipped. Eldric will speak again at the next chapter.',

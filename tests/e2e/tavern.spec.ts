@@ -14,7 +14,7 @@ test.describe('the Tavern', () => {
     await page.getByTestId('hotspot-tavern').click();
     await expect(page.getByTestId('screen-tavern')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    // The rail opens on whoever sorts first; put Ser Corvin on the stool.
+    // The rail opens on whoever sorts first; put Corvin on the stool.
     await page.getByTestId('tavern-card-ser_corvin-1').click();
     await expect(page.getByTestId('tavern-portrait')).toHaveAttribute('data-champion', 'champ.ser_corvin');
     await expect(page.getByTestId('tavern-champion-level')).toContainText('1');
@@ -22,7 +22,7 @@ test.describe('the Tavern', () => {
     // Level: pour the champion's own brew, then seat a companion from the picker.
     await page.getByTestId('brew-plus-brew_justice').click();
     await expect(page.getByTestId('brew-count-brew_justice')).toHaveText('1');
-    // Justice is Ser Corvin's element, so the brew pours 2,250 rather than 1,500.
+    // Justice is Corvin's element, so the brew pours 2,250 rather than 1,500.
     await expect(page.getByTestId('tavern-xp')).toContainText('2,250');
     await page.getByTestId('seat-empty-0').click();
     await expect(page.getByTestId('dialog-food-picker')).toBeVisible();

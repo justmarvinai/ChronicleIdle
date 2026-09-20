@@ -98,7 +98,7 @@ Chests: 25 → 20k Gold; 50 → 1 Ancient Shard; 75 → 60 Gems + 1 Epic Tome; 1
 Eldric's guided mission chain: **10 chapters × 12 missions = 120 missions**, sequential within a
 chapter, chapters sequential. Missions mix easy "do the thing you just unlocked" steps with harder
 long-term goals, exactly like the reference "Progress Missions" screen. Each chapter ends with a
-chapter chest; the final mission grants **Eldric the Chronicler** (Legendary) plus a 6★ Legendary
+chapter chest; the final mission grants **Eldric Lorekeeper** (Legendary) plus a 6★ Legendary
 gear piece of choice and 500 Gems.
 
 Abbreviations: G = Gold, Gm = Gems, Br = Brews, AS/SS/PS = Ancient/Sacred/Primordial Shard,
@@ -262,7 +262,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 10.9 | Earn all 360 stars in Hard | 1 PS |
 | 10.10 | Reach player level 75 | 1,000 E |
 | 10.11 | Defeat Nyxara (Nightmare, 100 %) | 1 MT, 500 Gm |
-| 10.12 | Complete every previous mission | **Eldric the Chronicler**, 6★ Legendary gear (choice), 500 Gm |
+| 10.12 | Complete every previous mission | **Eldric Lorekeeper**, 6★ Legendary gear (choice), 500 Gm |
 
 Chapter chests (on finishing a chapter): 1 → 1 AS; 2 → 1 AS + 50 Gm; 3 → 1 SS; 4 → 1 SS + 100 Gm;
 5 → 1 SS + 1 GS; 6 → 1 PS; 7 → 1 PS + 200 Gm; 8 → 2 SS + 1 LT; 9 → 1 PS + 1 LT; 10 → the final

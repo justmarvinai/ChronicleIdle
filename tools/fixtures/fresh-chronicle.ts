@@ -22,7 +22,7 @@ const OUT = join(REPO_ROOT, 'tests', 'fixtures', 'saves', 'fresh.chronicle');
 const NOW = new Date(2026, 8, 12, 12, 0).getTime();
 const SEED = 'fixture.fresh';
 
-/** What `chooseStarter` seeds: Ser Corvin and the three companions of TUTORIAL.md 1.5. */
+/** What `chooseStarter` seeds: Corvin and the three companions of TUTORIAL.md 1.5. */
 const PARTY: readonly ChampionId[] = ['champ.ser_corvin', ...STARTING_COMPANION_IDS];
 
 async function main(): Promise<void> {

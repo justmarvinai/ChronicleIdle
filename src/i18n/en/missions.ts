@@ -23,7 +23,7 @@ export const missions = {
   'missions.lockedScreen': 'The Path opens at chronicle level {level}.',
   'missions.claimedToast': 'Mission claimed.',
   'missions.chestToast': 'Chapter {index} chest is yours.',
-  'missions.eldricJoined': 'Eldric the Chronicler joins the roster.',
+  'missions.eldricJoined': 'Eldric Lorekeeper joins the roster.',
   'missions.gearChoice.title': 'Eldric’s parting gift',
   'missions.gearChoice.body':
     'A 6★ Legendary piece, made to your word: name the slot and the set and the Forge will strike it.',

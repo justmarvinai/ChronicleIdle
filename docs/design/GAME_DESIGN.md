@@ -72,7 +72,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Eternal Tower | 100 floors climbed in order, every 10th a boss floor, keys on a 15-minute clock, a 30-day season | `ETERNAL_TOWER.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
-| Tutorial | Interactive scripted onboarding with Eldric the Chronicler | `TUTORIAL.md` |
+| Tutorial | Interactive scripted onboarding with Eldric Lorekeeper | `TUTORIAL.md` |
 | Player level | XP from battles; unlocks features and raises energy cap | `ECONOMY.md` §4 |
 
 ## 4. World and naming canon
@@ -81,7 +81,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | --- | --- |
 | World | Veyrath |
 | Player home / hub | Emberhold |
-| Guide NPC | Eldric the Chronicler (uses `ui/misc_avatars/tutorial_npc_avatar.jpg`); also the final mission-line reward champion |
+| Guide NPC | Eldric Lorekeeper (uses `ui/misc_avatars/tutorial_npc_avatar.jpg`); also the final mission-line reward champion |
 | Antagonist force | The Eclipse (a spreading un-light; its cult, its gate) |
 | Elements | Justice (gold), Valor (crimson), Faith (azure), Eclipse (violet) |
 | Element cycle | Justice → beats → Valor → beats → Faith → beats → Justice; Eclipse neutral both ways |

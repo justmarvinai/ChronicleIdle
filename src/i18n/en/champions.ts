@@ -5,27 +5,27 @@
  */
 export const champions = {
   // ---- Common -------------------------------------------------------------------------------
-  'champ.gil_scrapper.name': 'Gil the Scrapper',
+  'champ.gil_scrapper.name': 'Gil',
   'champ.gil_scrapper.lore':
     'Gil fought for coin in the Greyhaven docks until the Eclipse took the harbour. He still swings the same rusted cleaver, and still expects to be paid.',
   'ab.gil_scrapper.rusty_cleave.name': 'Rusty Cleave',
   'ab.gil_scrapper.rusty_cleave.description': 'Attacks one enemy for {dmg}% of ATK.',
 
-  'champ.wenna_novice.name': 'Wenna, Novice Acolyte',
+  'champ.wenna_novice.name': 'Wenna',
   'champ.wenna_novice.lore':
     'A first-year acolyte of the Faith who fled the burning chapter house with a prayer book and a bruised knuckle. She heals herself before she thinks of anyone else — for now.',
   'ab.wenna_novice.prayer_strike.name': 'Prayer Strike',
   'ab.wenna_novice.prayer_strike.description':
     'Attacks one enemy for {dmg}% of ATK and heals Wenna for {heal}% of her max HP.',
 
-  'champ.bran_militia.name': 'Bran of the Militia',
+  'champ.bran_militia.name': 'Bran',
   'champ.bran_militia.lore':
     'Bran held the Thornwood bridge with a kite shield and a borrowed spear until the militia broke around him. He does not talk about the bridge.',
   'ab.bran_militia.shield_jab.name': 'Shield Jab',
   'ab.bran_militia.shield_jab.description': 'Attacks one enemy for {dmg}% of DEF.',
 
   // ---- Uncommon -----------------------------------------------------------------------------
-  'champ.orla_hedge_witch.name': 'Orla the Hedge Witch',
+  'champ.orla_hedge_witch.name': 'Orla',
   'champ.orla_hedge_witch.lore':
     'Orla brews poultices from marsh herbs and threatens people with a thorned whip when they laugh at the smell. Nobody laughs twice.',
   'ab.orla_hedge_witch.thorn_whip.name': 'Thorn Whip',
@@ -35,7 +35,7 @@ export const champions = {
   'ab.orla_hedge_witch.poultice.description':
     "Heals the ally with the lowest HP for {heal}% of Orla's max HP. Cooldown {cooldown} turns.",
 
-  'champ.tobbe_pikeman.name': 'Tobbe Pikeman',
+  'champ.tobbe_pikeman.name': 'Tobbe',
   'champ.tobbe_pikeman.lore':
     'Third rank, second file of the Kingsroad pike wall. Tobbe learned that a line of points beats a single hero, and he has been trying to be a line ever since.',
   'ab.tobbe_pikeman.pike_thrust.name': 'Pike Thrust',
@@ -44,7 +44,7 @@ export const champions = {
   'ab.tobbe_pikeman.line_charge.description':
     'Attacks all enemies for {dmg}% of ATK. Cooldown {cooldown} turns.',
 
-  'champ.mire_stalker.name': 'Mire Stalker',
+  'champ.mire_stalker.name': 'Mirestalker',
   'champ.mire_stalker.lore':
     'A lizardfolk hunter of the Duskmere marsh who follows prey for days before striking once. The Eclipse drowned its clutch; it hunts the cult now.',
   'ab.mire_stalker.venom_bite.name': 'Venom Bite',
@@ -55,7 +55,7 @@ export const champions = {
     'Attacks one enemy for {dmg}% of ATK with +20% critical rate on this hit. Cooldown {cooldown} turns.',
 
   // ---- Rare (starters) ----------------------------------------------------------------------
-  'champ.sister_maelis.name': 'Sister Maelis',
+  'champ.sister_maelis.name': 'Maelis',
   'champ.sister_maelis.lore':
     'The last sister of a chapter house the Eclipse emptied in one night. Maelis keeps the vigil for whoever is weakest in the room, and swings a censer heavy enough to crack bone.',
   'ab.sister_maelis.censer_swing.name': 'Censer Swing',
@@ -67,7 +67,7 @@ export const champions = {
   'ab.sister_maelis.vigil.description':
     'At the start of her turn, the ally with the lowest HP gains [Continuous Heal] for {turns} turn.',
 
-  'champ.ser_corvin.name': 'Ser Corvin',
+  'champ.ser_corvin.name': 'Corvin',
   'champ.ser_corvin.lore':
     'A knight of the Old Kingsroad who swore an oath to a king the Eclipse has since unmade. The oath outlived the king; Corvin keeps it for whoever stands behind him.',
   'ab.ser_corvin.shield_bash.name': 'Shield Bash',
@@ -79,7 +79,7 @@ export const champions = {
   'ab.ser_corvin.oathbound.name': 'Oathbound',
   'ab.ser_corvin.oathbound.description': 'Takes 10% less damage while any ally is below 50% HP.',
 
-  'champ.reva_ashblade.name': 'Reva Ashblade',
+  'champ.reva_ashblade.name': 'Reva',
   'champ.reva_ashblade.lore':
     'Reva learned the sword in the Ashfall pits, where a fight ends when one fighter stops moving. She strikes twice because once was never enough there.',
   'ab.reva_ashblade.quick_cut.name': 'Quick Cut',
@@ -92,7 +92,7 @@ export const champions = {
   'ab.reva_ashblade.kindled.description': 'Deals 5% more damage per debuff on the target, up to 15%.',
 
   // ---- Epic ---------------------------------------------------------------------------------
-  'champ.anuria.name': 'Anuria, Silverwood Ranger',
+  'champ.anuria.name': 'Anuria',
   'champ.anuria.lore':
     'The Silverwood rangers marked their arrows with a sliver of moonsteel so the wood would remember every shot. Anuria is the last who still fletches them that way.',
   'ab.anuria.silver_arrow.name': 'Silver Arrow',
@@ -108,7 +108,7 @@ export const champions = {
   'ab.anuria.rangers_focus.description':
     'Critical hits deal 15% more damage against enemies with [DEF Down].',
 
-  'champ.darius.name': 'Darius the Wayfarer',
+  'champ.darius.name': 'Darius',
   'champ.darius.lore':
     'Darius walked out of the Eclipse Gate carrying an hourglass that runs backwards. He will not say what he traded for it, only that the sand is not sand.',
   'ab.darius.wayfarers_bolt.name': 'Wayfarer’s Bolt',
@@ -123,7 +123,7 @@ export const champions = {
   'ab.darius.threads_of_fate.name': 'Threads of Fate',
   'ab.darius.threads_of_fate.description': 'When Darius stuns an enemy, he fills his own turn meter by 10%.',
 
-  'champ.khazgor.name': 'Khazgor the Unburied',
+  'champ.khazgor.name': 'Khazgor',
   'champ.khazgor.lore':
     'Khazgor was buried with honours at Barrowdeep and dug himself out three winters later, furious that the war had gone on without him. He has not stopped since.',
   'ab.khazgor.grave_slash.name': 'Grave Slash',
@@ -139,7 +139,7 @@ export const champions = {
   'ab.khazgor.unburied.description':
     'Once per battle, when Khazgor would die he survives at 1 HP and heals 20% of his max HP at the start of his next turn.',
 
-  'champ.maruan.name': 'Maruan, Starlight Adept',
+  'champ.maruan.name': 'Maruan',
   'champ.maruan.lore':
     'Maruan reads the sky over Sunspire the way others read ledgers. Every constellation is a promise, and Maruan keeps them all.',
   'ab.maruan.starlight.name': 'Starlight',
@@ -170,7 +170,7 @@ export const champions = {
   'ab.rattledagger.between_the_ribs.description':
     '[Poison] placed by Rattledagger deals 6% of max HP per turn instead of 5%.',
 
-  'champ.sethlurias.name': 'Sethlurias, Bonecaller',
+  'champ.sethlurias.name': 'Sethlurias',
   'champ.sethlurias.lore':
     'A skeletal priest of the old Justice who found that the dead make attentive congregations. His war chants raise the living as readily as the fallen.',
   'ab.sethlurias.splinter_hex.name': 'Splinter Hex',
@@ -186,7 +186,7 @@ export const champions = {
   'ab.sethlurias.old_bones.description':
     'At the start of each wave, all allies fill their turn meters by 10%.',
 
-  'champ.thordakk.name': 'Thordakk Skullsplitter',
+  'champ.thordakk.name': 'Thordakk',
   'champ.thordakk.lore':
     'Thordakk once split a Frostvein warlord from crown to collarbone and asked who was next. The axe has been asking ever since.',
   'ab.thordakk.cleave.name': 'Cleave',
@@ -308,7 +308,7 @@ export const champions = {
   'ab.kaelith_stormcaller.storm_aura.description':
     'Increases the critical rate of all allies by 20% when Kaelith leads.',
 
-  'champ.eldric_chronicler.name': 'Eldric the Chronicler',
+  'champ.eldric_chronicler.name': 'Eldric Lorekeeper',
   'champ.eldric_chronicler.lore':
     'Eldric keeps the book of Emberhold, and the book keeps him. Every page he turns is a moment given back; the last page, he says, is still unwritten.',
   'ab.eldric_chronicler.quill_strike.name': 'Quill Strike',
@@ -331,7 +331,7 @@ export const champions = {
     'Increases the HP of all allies by 12% and their SPD by 8 when Eldric leads.',
 
   // ---- Mythic -------------------------------------------------------------------------------
-  'champ.varkos_sundered_king.name': 'Varkos, the Sundered King',
+  'champ.varkos_sundered_king.name': 'Varkos Sunderking',
   'champ.varkos_sundered_king.lore':
     'Varkos ruled the kingdom the Eclipse swallowed first. Half of him came back through the gate; the other half is still down there, wearing the crown.',
   'ab.varkos_sundered_king.sundering_blow.name': 'Sundering Blow',

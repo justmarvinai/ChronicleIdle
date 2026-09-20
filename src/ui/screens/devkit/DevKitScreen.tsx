@@ -257,7 +257,7 @@ export default function DevKitScreen(_props: ScreenProps) {
                 />
               ))}
               <ChampionCard
-                name="Khazgor the Unburied"
+                name="Khazgor"
                 rarity="epic"
                 element="valor"
                 role="defense"

@@ -13,7 +13,7 @@ recorded in `CREDITS.md`.
 | --- | --- | --- | --- | --- |
 | Champion models | `assets/champions/epic_{anuria,darius,khazgor,maruan,rattledagger,sethlurias,thordakk}/` | 7 | avatar 1254² PNG (1.3–2.3 MB); `still/` 64² PNG; `idle/` 9 × 88² PNG + GIF (200 ms/frame, loop) | all seven are Epic-rarity art |
 | Enemy / placeholder model | `assets/enemies/teritorial_lizard/` | 1 | avatar 1254²; still 64²; idle 9 × 84² + GIF | placeholder for every model-less champion and all enemies |
-| Tutorial NPC | `assets/ui/misc_avatars/tutorial_npc_avatar.jpg` | 1 | painted portrait (dwarven king) | Eldric the Chronicler |
+| Tutorial NPC | `assets/ui/misc_avatars/tutorial_npc_avatar.jpg` | 1 | painted portrait (dwarven king) | Eldric Lorekeeper |
 | Logo | `assets/logos/chronicle_idle.{svg,png}` | 2 | white on transparent; PNG 6848×2975 | title, loading, about, app icons |
 | Wallpapers | `assets/wallpapers/bg1–bg9` | 9 | JPG/PNG ~1672×941 – 1774×887 | see usage map |
 | UI kit: dark-ember | `assets/ui/dark-ember/` | 42 | PNG 64²–1024×1536 | ember buttons, frames, banners, bars, ornate panels, 4 skill icons, 3 item icons, 2 silhouettes |

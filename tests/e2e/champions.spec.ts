@@ -37,7 +37,7 @@ test.describe('starter choice', () => {
     await openChampions(page);
     await expect(page.locator('[data-testid^="roster-card-"]')).toHaveCount(4);
     await expect(page.getByTestId('roster-count')).toHaveText('4 of 4');
-    await expect(page.getByTestId('hero-name')).toHaveText('Reva Ashblade');
+    await expect(page.getByTestId('hero-name')).toHaveText('Reva');
 
     // Continue after a reload lands on the hub, not on the starter screen again.
     await page.reload();
@@ -57,7 +57,7 @@ test.describe('champion detail', () => {
     const problems = collectConsole(page);
     await startChronicle(page, 'Marvin', 'ser_corvin');
     await openChampions(page);
-    await expect(page.getByTestId('hero-name')).toHaveText('Ser Corvin');
+    await expect(page.getByTestId('hero-name')).toHaveText('Corvin');
     await expect(page.getByTestId('hero-level')).toContainText('1 / 30');
     await expect(page.getByTestId('hero-placeholder')).toBeVisible();
     await expect(page.getByTestId('champion-power')).not.toHaveText('0');
@@ -87,7 +87,7 @@ test.describe('champion detail', () => {
     await startChronicle(page, 'Marvin', 'ser_corvin');
     await openChampions(page);
     await page.getByTestId('roster-card-gil_scrapper-4').click();
-    await expect(page.getByTestId('hero-name')).toHaveText('Gil the Scrapper');
+    await expect(page.getByTestId('hero-name')).toHaveText('Gil');
     await page.getByTestId('champion-lock').click();
     await page.getByTestId('champion-favourite').click();
     await expect(page.getByTestId('champion-lock')).toHaveAttribute('aria-pressed', 'true');

@@ -3,7 +3,7 @@
 Related: `GAME_DESIGN.md` §6 (unlock levels), `docs/tech/UI_DESIGN.md` §5.18 (tutorial overlay).
 
 The tutorial is an **interactive, scripted overlay** driven by data (`src/content/tutorial/*.ts`):
-Eldric the Chronicler (portrait `tutorial_npc_avatar.jpg`) speaks in a dialogue panel; the rest of
+Eldric Lorekeeper (portrait `tutorial_npc_avatar.jpg`) speaks in a dialogue panel; the rest of
 the screen is dimmed except a **spotlight** cut-out around the element the player must use; a
 pointer hand pulses on it. Each step declares: `when` (trigger), `spotlight` (element id),
 `dialogue`, `allow` (which interactions are enabled), `complete` (event that finishes the step),
@@ -23,7 +23,7 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | Step | Trigger | Spotlight / action | Dialogue (Eldric) | Completes when |
 | --- | --- | --- | --- | --- |
 | 1.1 | New Chronicle | Name input | "Every chronicle begins with a name. What shall the world call you, Chronicler?" | name confirmed |
-| 1.2 | after 1.1 | Starter cards (Sister Maelis / Ser Corvin / Reva Ashblade) | "Three pages remain legible in the book of Emberhold. Choose the champion you bind first — the others will find their way to you later." | starter chosen (card flip + binding FX) |
+| 1.2 | after 1.1 | Starter cards (Maelis / Corvin / Reva) | "Three pages remain legible in the book of Emberhold. Choose the champion you bind first — the others will find their way to you later." | starter chosen (card flip + binding FX) |
 | 1.3 | after 1.2 | Hub → Campaign gate | "The Eclipse took Thornwood first. Let us take it back. To the crossing!" | campaign map opened |
 | 1.4 | Campaign map | Settlement 1 → stage 1-1 | "Each settlement holds ten stands. Clear them, and the next one opens." | stage 1-1 selected |
 | 1.5 | Battle setup | Team slots (3: starter + Bran + Wenna pre-placed; Gil waits in the roster) | "Your starter leads. Bran holds the line, Wenna keeps you standing — for now. Begin." | Start pressed |
