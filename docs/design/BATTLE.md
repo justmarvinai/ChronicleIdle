@@ -231,8 +231,12 @@ below exactly one thing: a **Provoke**, which is not a choice anybody has.
 A marked enemy that turns untargetable — a Veil, say — is simply not in the pool, so the policy
 reads the field again on its own without the mark going away. A marked enemy that **dies** clears
 the mark outright: unit ids belong to their wave, so a mark left on a corpse could never match
-anything again and would only sit on the HUD saying nothing. The mark never survives the fight —
-it is an input to the simulation, like the control mode, not something the save remembers.
+anything again and would only sit on the HUD saying nothing. For the same reason **only a living
+enemy can be marked**: the stage plays a turn out over a second or so while the simulation already
+holds its result, so a press can name an enemy the player still sees standing and the state has
+already buried, and a mark set after the kill event went by is one nothing would ever clear. The
+mark never survives the fight — it is an input to the simulation, like the control mode, not
+something the save remembers.
 
 `prefer` overrides the default for enemy-targeting abilities, whoever casts it — one of
 `lowest_hp`, `lowest_hp_percent` (the Marksman archetype's shot, which picks off the champion

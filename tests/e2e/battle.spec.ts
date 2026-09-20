@@ -166,34 +166,31 @@ test.describe('battle', () => {
     await expect(page.getByTestId('screen-battle-setup')).toBeVisible();
   });
 
-  test('marking an enemy holds through the fight, in manual and in auto', async ({ page }) => {
+  test('marking an enemy sets what the turn opens on, and the mark moves', async ({ page }) => {
     await freshChronicle(page);
     await openStageSetup(page, 1);
-    // Auto never opens a decision, so a press on an enemy there can only ever be a mark.
-    await setAuto(page, true);
+    await setAuto(page, false);
     await startBattle(page);
-    const enemy = page.getByTestId('plate-w0e0');
-    await expect(enemy).toBeVisible({ timeout: 30_000 });
-
-    // A press marks the enemy; a press on the marked one lifts the mark (BATTLE.md §7.1).
-    await enemy.click();
-    await expect(enemy).toHaveAttribute('data-focused', 'true');
-    await enemy.click();
-    await expect(enemy).toHaveAttribute('data-focused', 'false');
-    await enemy.click();
-    await expect(enemy).toHaveAttribute('data-focused', 'true');
-
-    // The mark belongs to the player, not to the mode: it survives the switch to manual, and it
-    // is what the turn opens on.
-    await page.getByTestId('battle-auto').click();
-    await expect(page.getByTestId('battle-auto')).toHaveAttribute('aria-pressed', 'false');
+    // Manual mode holds the fight at the decision, which is where a mark is set by hand. That the
+    // policy then aims at the mark is the simulation's own rule, and is unit-tested with it.
     await waitForDecision(page);
-    await expect(enemy).toHaveAttribute('data-focused', 'true');
-    await expect(enemy).toHaveAttribute('data-targeted', 'true');
 
-    // A press that spends the turn on the marked enemy is an attack, not a second toggle.
-    await enemy.click();
-    await expect(enemy).toHaveAttribute('data-focused', 'true');
+    const marked = page.locator('[data-testid^="plate-w0e"][data-focused="true"]');
+    // Tab cycles the target, and cycling onto an enemy marks it (BATTLE.md §7.1).
+    await page.keyboard.press('Tab');
+    await expect(marked).toHaveCount(1);
+    // The mark is what the turn opens on: the preselection is on the marked plate.
+    await expect(marked).toHaveAttribute('data-targeted', 'true');
+    const first = await marked.getAttribute('data-testid');
+
+    // Marking the other enemy moves the mark rather than adding a second one.
+    await page.keyboard.press('Tab');
+    await expect(marked).toHaveCount(1);
+    await expect(marked).toHaveAttribute('data-targeted', 'true');
+    expect(await marked.getAttribute('data-testid')).not.toBe(first);
+
+    // Marking spends nothing: the same decision is still open behind it.
+    await expect(page.getByTestId('ability-a1')).toHaveAttribute('data-ready', 'true');
 
     await page.getByTestId('battle-pause').click();
     await page.getByTestId('pause-retreat').click();

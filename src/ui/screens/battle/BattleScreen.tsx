@@ -205,8 +205,12 @@ export default function BattleScreen({ route }: ScreenProps) {
     if (unit?.side === 'enemy' && unit.alive) {
       const next = attacks || focusId !== unitId ? unitId : null;
       battleController.setFocus(next);
-      // An attack brings its own sound with it; a bare mark needs one.
-      if (!attacks) playSfx(next ? 'ui.tab' : 'ui.cancel');
+      // An attack brings its own sound with it; a bare mark needs one. The simulation runs a turn
+      // ahead of what the stage is showing, so it can refuse a mark for an enemy the plate still
+      // draws standing — the sound follows what the fight did, not what the press asked for.
+      if (!attacks) {
+        playSfx(battleController.store.getState().view?.focusId === unitId ? 'ui.tab' : 'ui.cancel');
+      }
     }
     if (!selectedAbility || !validTargets.has(unitId)) return;
     setTarget(unitId);

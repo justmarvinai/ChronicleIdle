@@ -418,10 +418,15 @@ export function setControl(state: BattleState, control: 'manual' | 'auto'): void
  * `null`. An input like `setControl`, not a recorded decision: it steers what the policy picks
  * rather than answering an open request, and a decision already pending keeps the preselection it
  * was built with until the player changes it or the next request is built.
+ *
+ * Only a living enemy can be marked. The presenter plays a turn out over a second or so while the
+ * simulation already holds its result, so a press can arrive for an enemy the player still sees
+ * standing and the state has already buried — and a mark set after the kill event has gone by is
+ * one nothing would ever clear.
  */
 export function setFocus(state: BattleState, unitId: string | null): void {
   const unit = unitId ? state.units[unitId] : null;
-  state.focusId = unit && unit.side === 'enemy' ? unit.id : null;
+  state.focusId = unit && unit.side === 'enemy' && unit.alive ? unit.id : null;
 }
 
 /** Runs the battle to its end with the AI deciding for every ally; returns every event. */

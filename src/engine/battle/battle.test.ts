@@ -174,4 +174,26 @@ describe('a mark on a standing enemy', () => {
     expect(state.units['w0e0']?.alive).toBe(false);
     expect(state.focusId).toBe(null);
   });
+
+  it('is refused for an enemy the simulation has already buried', () => {
+    const state = battle({
+      party: [
+        champion({
+          abilities: [ability('a1', [{ kind: 'damage', target: 'single_enemy', mult: 40, stat: 'ATK' }])],
+        }),
+      ],
+      waves: [[enemy({ stats: { spd: 1, hp: 10 } }), enemy({ stats: { spd: 1, hp: 10_000 } })]],
+    });
+    untilTurnOf(state, 'a0');
+    const request = state.pending;
+    if (!request) throw new Error('no request');
+    step(state, { unitId: 'a0', abilityId: request.abilities[0]!.abilityId, targetId: 'w0e0' });
+    expect(state.units['w0e0']?.alive).toBe(false);
+    // The presenter is still animating the killing blow, so a press can name the corpse. Nothing
+    // would ever clear a mark set after the kill, so the mark is simply not set.
+    setFocus(state, 'w0e0');
+    expect(state.focusId).toBe(null);
+    setFocus(state, 'w0e1');
+    expect(state.focusId).toBe('w0e1');
+  });
 });

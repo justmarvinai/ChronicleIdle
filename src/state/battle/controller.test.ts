@@ -113,6 +113,42 @@ describe('battle controller', () => {
     expect(controller.store.getState().outcome?.kind).toBe('victory');
   });
 
+  it('marks an enemy for the policy, moves the mark and lifts it', async () => {
+    const controller = createBattleController();
+    const roster = rosterOf(STARTERS);
+    controller.start({
+      encounterId: 'encounter.stage.01.01.intro',
+      instanceIds: Object.keys(roster),
+      roster,
+      control: 'manual',
+      speed: 1,
+      seed: 'mark',
+    });
+    await settle(() => controller.store.getState().request !== null);
+
+    // The mark has to reach the HUD the moment it is set, not with the next event (BATTLE.md §7.1).
+    controller.setFocus('w0e1');
+    expect(controller.simulation()?.focusId).toBe('w0e1');
+    expect(controller.store.getState().view?.focusId).toBe('w0e1');
+
+    // Every request built from here opens on the marked enemy, whoever is casting. This turn is
+    // aimed at the other one on purpose: the mark has to steer the turn after it, not this one.
+    const request = controller.store.getState().request;
+    const a1 = request!.abilities[0]!;
+    expect(controller.decide({ unitId: request!.unitId, abilityId: a1.abilityId, targetId: 'w0e0' }).ok).toBe(
+      true,
+    );
+    await settle(() => controller.store.getState().request !== null);
+    expect(controller.store.getState().request?.abilities[0]?.autoTarget).toBe('w0e1');
+
+    // Marking another moves the mark; clearing it hands targeting back to the policy.
+    controller.setFocus('w0e0');
+    expect(controller.store.getState().view?.focusId).toBe('w0e0');
+    controller.setFocus(null);
+    expect(controller.simulation()?.focusId).toBe(null);
+    expect(controller.store.getState().view?.focusId).toBe(null);
+  });
+
   it('retreats immediately and refuses invalid teams', async () => {
     const controller = createBattleController();
     const roster = rosterOf(STARTERS);
