@@ -77,7 +77,7 @@ test.describe('champion detail', () => {
 
     // Companions come with the starter; Bran borrows the lizard model and says so.
     await page.getByTestId('roster-card-bran_militia-2').click();
-    await expect(page.getByTestId('hero-name')).toHaveText('Bran of the Militia');
+    await expect(page.getByTestId('hero-name')).toHaveText('Bran');
     await expect(page.getByTestId('hero-placeholder')).toBeVisible();
     expect(problems).toEqual([]);
   });

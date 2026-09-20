@@ -15,8 +15,8 @@ numbers live in `src/content/balance/summon.ts`, the rules in `src/engine/summon
 | Sacred | Epic, Legendary | E 92 / L 8 | 900 Gems |
 | Primordial | Epic, Legendary, Mythic | E 40 / L 55 / M 5 | not sold |
 
-Within a rarity, every champion in the pool is equally likely unless featured (§3). Eldric the
-Chronicler is never in any pool. Champions are never "exclusive" to a shard type.
+Within a rarity, every champion in the pool is equally likely unless featured (§3). Eldric
+Lorekeeper is never in any pool. Champions are never "exclusive" to a shard type.
 
 ## 2. Pity ("Mercy")
 
