@@ -13,6 +13,7 @@ import { Slot } from '@ui/components/Slot/Slot';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
 import { mainStatLine, pieceIcon, pieceName, setLines } from '@ui/gear/gear-view';
+import { rarityLabel } from '@ui/screens/champions/roster-view';
 import styles from './GearTab.module.css';
 
 const selectGearUnlocked = selectFeatureUnlocked('gear');
@@ -52,7 +53,7 @@ export function GearTab({ entry }: GearTabProps) {
           return (
             <div key={slot} className={styles.gearSlot} data-testid={`gear-slot-${slot}`}>
               <Slot
-                size="md"
+                size="sm"
                 locked={!unlocked}
                 emptyGlyph={SLOT_GLYPH[slot]}
                 label={label}
@@ -74,6 +75,13 @@ export function GearTab({ entry }: GearTabProps) {
                   <span className={`num ${styles.slotMain}`} data-testid={`gear-main-${slot}`}>
                     {mainStatLine(piece)}
                   </span>
+                  <span
+                    className={`display ${styles.slotRarity}`}
+                    style={{ color: RARITY_HEX[piece.rarity] }}
+                    data-testid={`gear-rarity-${slot}`}
+                  >
+                    {rarityLabel(piece.rarity)}
+                  </span>
                   <StarRow
                     stars={piece.stars}
                     max={6}
@@ -81,36 +89,38 @@ export function GearTab({ entry }: GearTabProps) {
                     tone="rarity"
                     tint={RARITY_HEX[piece.rarity]}
                   />
-                  <button
-                    type="button"
-                    className={styles.remove}
-                    data-testid={`gear-remove-${slot}`}
-                    onMouseEnter={() => playSfx('ui.hover')}
-                    onClick={() => {
-                      playSfx('ui.cancel');
-                      const result = actions.unequipGear(instance.instanceId, slot);
-                      if (result.ok)
-                        actions.toast('info', 'armoury.unequipped', {
-                          piece: pieceName(result.value),
-                        });
-                    }}
-                  >
-                    {t('champions.gear.remove')}
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.remove}
-                    data-testid={`gear-upgrade-${slot}`}
-                    onMouseEnter={() => playSfx('ui.hover')}
-                    onClick={() => {
-                      // Worn gear is not in the armoury any more, so its bench is reached from
-                      // here — from the champion it is being upgraded for.
-                      playSfx('ui.open');
-                      actions.push({ name: 'armoury', pieceId: piece.instanceId });
-                    }}
-                  >
-                    {t('champions.gear.upgrade')}
-                  </button>
+                  <div className={styles.slotActions}>
+                    <button
+                      type="button"
+                      className={styles.action}
+                      data-testid={`gear-remove-${slot}`}
+                      onMouseEnter={() => playSfx('ui.hover')}
+                      onClick={() => {
+                        playSfx('ui.cancel');
+                        const result = actions.unequipGear(instance.instanceId, slot);
+                        if (result.ok)
+                          actions.toast('info', 'armoury.unequipped', {
+                            piece: pieceName(result.value),
+                          });
+                      }}
+                    >
+                      {t('champions.gear.remove')}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.action}
+                      data-testid={`gear-upgrade-${slot}`}
+                      onMouseEnter={() => playSfx('ui.hover')}
+                      onClick={() => {
+                        // Worn gear is not in the armoury any more, so its bench is reached from
+                        // here — from the champion it is being upgraded for.
+                        playSfx('ui.open');
+                        actions.push({ name: 'armoury', pieceId: piece.instanceId });
+                      }}
+                    >
+                      {t('champions.gear.upgrade')}
+                    </button>
+                  </div>
                 </>
               ) : (
                 <span className={styles.slotEmpty}>{t('champions.gear.empty')}</span>
