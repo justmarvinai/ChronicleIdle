@@ -71,10 +71,16 @@ async function spendKeyUntil(page: Page, damage: number): Promise<void> {
   await settle(page);
 }
 
-/** The bosses live behind Battle now, not on the hub (the owner's third batch). */
+/**
+ * The bosses live behind Battle, and behind a Bosses menu of their own since 0.7.1: one card on
+ * Game Modes cannot carry two gates that open on different clocks.
+ */
 async function openBossGate(page: Page, mode: 'daily' | 'weekly'): Promise<void> {
   await page.getByTestId('nav-battle').click();
   await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
+  await settle(page);
+  await page.getByTestId('enter-bosses').click();
+  await expect(page.getByTestId('screen-boss-menu')).toBeVisible({ timeout: 20_000 });
   await settle(page);
   await page.getByTestId(`enter-${mode}`).click();
   await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
