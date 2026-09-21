@@ -81,7 +81,7 @@ export type Target =
 export type Condition =
   | { targetHas: StatusId }
   | { targetHasAnyDebuff: true }
-  /** Fewer than `n` *distinct* debuffs have landed on me this fight (Gravemaw's Tyrant's Hide). */
+  /** Fewer than `n` *distinct* debuffs have landed on me this fight (Gargoyle's Weathered Stone). */
   | { selfDistinctDebuffsBelow: number }
   | { targetHpBelow: number }
   | { killedThisAction: true }
@@ -90,7 +90,7 @@ export type Condition =
   | { alliesBelowTm: { percent: number; count: number } }
   | { enemiesAlive: { gte?: number; lte?: number } }
   | { waveStart: true }
-  /** The caster's boss phase has reached `n` (BOSSES.md §3: Nyxara's Un-light in phase III). */
+  /** The caster's boss phase has reached `n` (BOSSES.md §3: Titan's Un-light in phase III). */
   | { selfPhaseAtLeast: number }
   | { attackerElement: Element };
 
@@ -119,7 +119,7 @@ export type Effect =
       target: Target;
       mult: number;
       stat: HealStat;
-      /** Multiplies the heal by the debuffs on the action's target (Gravemaw's Devour). */
+      /** Multiplies the heal by the debuffs on the action's target (Gargoyle's Devour). */
       per?: 'target_debuff';
     }
   | {
@@ -129,14 +129,14 @@ export type Effect =
       value?: number;
       turns: number;
       chance: number;
-      /** Most targets it may land on, however many it was aimed at (Gravemaw's Grave Quake). */
+      /** Most targets it may land on, however many it was aimed at (Gargoyle's Stonequake). */
       maxTargets?: number;
     }
   | { kind: 'remove_status'; target: Target; which: 'debuffs' | 'buffs'; count: number | 'all' }
   | { kind: 'tm'; target: Target; delta: number; chance?: number }
   | { kind: 'revive'; target: Target; hpPercent: number }
   /**
-   * Takes buffs off the target and wears them: same status, same turns, same value. Nyxara's
+   * Takes buffs off the target and wears them: same status, same turns, same value. Titan's
    * Dirge takes one from every champion (BOSSES.md §3).
    */
   | { kind: 'steal_buff'; target: Target; count: number }
@@ -168,7 +168,7 @@ export type PassiveEffect =
   | { kind: 'shield_ally_below'; hpPercent: number; shield: number; turns: number; oncePerAllyPerWave: true }
   | { kind: 'on_heal_grant'; status: StatusId; value?: number; turns: number }
   | { kind: 'on_stun_gain_tm'; delta: number }
-  /** Healing on this unit's *enemies* is reduced while the condition holds (Nyxara's Un-light). */
+  /** Healing on this unit's *enemies* is reduced while the condition holds (Titan's Un-light). */
   | { kind: 'enemy_heal_reduction'; value: number; if?: Condition }
   | Effect;
 

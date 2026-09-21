@@ -23,7 +23,7 @@ export interface HitMeta {
 
 /**
  * Who takes a share of this hit instead (BATTLE.md §5 Ally Protection): the buff's caster, or an
- * add still standing between the party and its master (BOSSES.md §3, Nyxara's Choristers). The
+ * add still standing between the party and its master (BOSSES.md §3, Titan's Choristers). The
  * buff wins when both apply, because a champion's play should not be undone by the fight's own
  * furniture.
  */
@@ -46,7 +46,7 @@ function protectorOf(
 
 /**
  * Σ `damage_reduction` passive values that apply to `target` against `attacker` right now. A
- * reduction scoped to crits (Gravemaw's hide) only counts when the incoming hit is one.
+ * reduction scoped to crits (Gargoyle's hide) only counts when the incoming hit is one.
  */
 export function damageReduction(
   ctx: ActionContext,

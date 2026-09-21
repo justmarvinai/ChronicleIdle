@@ -272,9 +272,11 @@ piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), 
 `idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`), v11 (Phase 13: `missions`), v12
 (Phase 14: `tutorial`), v13 (0.1.1: the tutorial's step ids rotate when the Path moves to chapter 2), v14
 (0.2.0: `tower`, plus the `key_eternal` wallet row), v15 (0.6.0: `palace`, whose migration also
-back-pays a skill point for every settlement boss stand the chronicle had already cleared) and v16
-(0.7.0: `brewery`, whose migration writes an empty day because there is nothing to back-pay).
-Fields
+back-pays a skill point for every settlement boss stand the chronicle had already cleared) v16
+(0.7.0: `brewery`, whose migration writes an empty day because there is nothing to back-pay) and
+v17 (0.7.1: no new shape at all — the version the boss rename hangs on, so a chronicle's keys,
+damage, chests, records, Palace payments and counters move to the new ids instead of reading as a
+chronicle that never fought either of them). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 

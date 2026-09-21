@@ -36,7 +36,7 @@ describe('a fight only settles as its own kind', () => {
   it('a campaign run clears the race a previous key left behind', () => {
     const team = chronicle().slice(0, 3);
     // What "Emberhold" instead of "Back to the gate" used to leave in place after a boss fight.
-    beginBossFight({ bossId: 'boss.gravemaw', tierId: 'easy', team, control: 'auto' });
+    beginBossFight({ bossId: 'boss.gargoyle', tierId: 'easy', team, control: 'auto' });
 
     const started = launchCampaignRun({ pointer: THORNWOOD_1, instanceIds: team, control: 'auto' });
     expect(started.ok).toBe(true);
@@ -57,7 +57,7 @@ describe('a fight only settles as its own kind', () => {
     const team = chronicle().slice(0, 3);
     beginCampaignBatch({ pointer: THORNWOOD_1, team, control: 'auto', requested: 10 });
     // The gate refuses the key at level 1 — the batch is cleared either way, before anything else.
-    launchBossFight({ bossId: 'boss.gravemaw', tierId: 'easy', instanceIds: team, control: 'auto' });
+    launchBossFight({ bossId: 'boss.gargoyle', tierId: 'easy', instanceIds: team, control: 'auto' });
     expect(campaignSession.getState().requested).toBe(1);
     expect(campaignSession.getState().pointer).toBeNull();
   });

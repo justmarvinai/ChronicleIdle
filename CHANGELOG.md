@@ -10,6 +10,36 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.7.1] — 2026-09-21 — The Gargoyle and the Titan
+
+The two period bosses get names of their own and a menu of their own. `docs/design/BOSSES.md`.
+
+### Changed
+
+- **Gravemaw, the Bone Tyrant is now Gargoyle, the Waking Stone**, and **Nyxara, Mother of Shadows
+  is now Titan, the Sunless** — everywhere: the gate, the battle plates, the mechanics sheet, the
+  Index, the quest and mission lines, the key currencies (Gargoyle Key, Titan Key), the Palace's
+  point sources and the Chronicle of Changes. Each keeps its kit and its numbers; the three
+  abilities whose names carried the old flavour follow the new one (Bone Crush → **Granite Fist**,
+  Grave Quake → **Stonequake**, Tyrant's Hide → **Weathered Stone**, Mother's Embrace →
+  **Titan's Embrace**), and both are written as *it* rather than *he* or *she*.
+- **Nothing a player reads says "Daily Boss" or "Weekly Boss" any more.** The cadence is unchanged
+  and still said plainly — two keys every day, three every week — but it is a line on a card, not
+  a name. The gate's tabs carry the bosses' names as well.
+- **One Bosses card on Game Modes, opening a menu of its own** (`UI_DESIGN.md` §5.13). Two gates
+  that open on different clocks do not fit one card: the card now carries both gates' keys
+  (`Gargoyle 2/2 · Titan 3/3`) and leads to a menu with a tall card each — name, lore, arena art,
+  cadence, keys and its own level gate. The Gargoyle's card opens at level 10 and the Titan's at
+  15, so the menu can hold one open card and one shut one.
+- The tall mode card is now one shared component (`ui/components/ModeCard`), used by Game Modes and
+  the Bosses menu alike, so the second menu is the same furniture one level down.
+- **Save v17.** No new shape: it is the version the rename hangs on. The 16 → 17 migration moves
+  every id a save holds for the two bosses — the `bosses` slice and, inside it, the period's damage,
+  the chests already claimed and every personal best; the Palace's record of which period each one
+  last paid a skill point for; the lifetime counters; and the quest and mission **baselines** that
+  are snapshots of those counters. A chronicle that fought them yesterday finds all of it where it
+  left it.
+
 ## [0.7.0] — 2026-09-21 — The Brewery
 
 Where brews come from. `docs/design/BREWERY.md`; owner's answers Q54–Q55.

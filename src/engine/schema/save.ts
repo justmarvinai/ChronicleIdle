@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 16 as const;
+export const SAVE_VERSION = 17 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -358,11 +358,19 @@ export const saveSchemaV16 = saveSchemaV15.extend({
   brewery: brewerySchema,
 });
 
+/**
+ * v17 changes no shape at all: it is the version the boss rename (0.7.1) hangs on, so the ids a
+ * save stores for the two period bosses can be moved by a migration rather than read as a
+ * chronicle that never fought them.
+ */
+export const saveSchemaV17 = saveSchemaV16.extend({ saveVersion: z.literal(17) });
+
 export type SaveGameV13 = z.infer<typeof saveSchemaV13>;
 export type SaveGameV14 = z.infer<typeof saveSchemaV14>;
 export type SaveGameV15 = z.infer<typeof saveSchemaV15>;
 export type SaveGameV16 = z.infer<typeof saveSchemaV16>;
-export type SaveGame = SaveGameV16;
+export type SaveGameV17 = z.infer<typeof saveSchemaV17>;
+export type SaveGame = SaveGameV17;
 export type PalaceSave = z.infer<typeof palaceSchema>;
 export type BrewerySave = z.infer<typeof brewerySchema>;
 export type TowerSaveData = z.infer<typeof towerSchema>;
@@ -376,7 +384,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV16;
+export const saveSchema = saveSchemaV17;
 
 /** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
 export function emptyPalace(): PalaceSave {

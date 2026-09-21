@@ -124,7 +124,7 @@ chest already taken is never taken back — only the points needed for one that 
 move. Say the word and the composition freezes with the period's baseline instead (one call in
 `state/quests.ts`).
 
-### Q41 — Nyxara's phase thresholds, and how far out of reach her tiers start
+### Q41 — Titan's phase thresholds, and how far out of reach her tiers start
 
 **Why it matters.** `BOSSES.md` §3 first printed her phases at 70 % and 35 % of her HP. Measured
 against the roster the fight is written for — four 6★ champions in full Legendary gear,
@@ -137,7 +137,7 @@ fires is not shipped.
 **The default in use.** The thresholds are now **90 % / 75 %**: phase II lands inside an ordinary
 key, phase III on a good one, and a roster that can finish her in a week meets every gear she has.
 Everything else the table prints — pools, stats, chests, XP — is untouched. Say the word and the
-deeper 70/35 comes back (one line in `src/content/bosses/nyxara.ts`).
+deeper 70/35 comes back (one line in `src/content/bosses/titan.ts`).
 
 The same measurement sets the chorus: a Chorister holds 2 % of the pool. At a tenth of that the
 party deletes both on the turn they appear and the split barely happens — six split hits in a whole
@@ -161,7 +161,7 @@ but if you want her reachable the week she unlocks, the fix is a fourth tier bel
 | Q3 | Reset time | Daily 00:00 local device time; weekly in the night from Sunday to Monday at 00:00 local | `ECONOMY.md` §9, `QUESTS_MISSIONS.md`, `SUMMONING.md` epoch, `ARCHITECTURE.md` §3.6, ROADMAP acceptance criteria |
 | Q4 | Tutorial skipping | As recommended | Chapter 1 mandatory; later chapters skippable (`TUTORIAL.md`) |
 | Q5 | Market in EA-0.1 | As recommended | Not in EA-0.1; Portal Exchange tab provides gem sinks; Market stays in the backlog |
-| Q6 | Naming canon | As recommended | Veyrath, Emberhold, Eldric, Gravemaw, Nyxara, settlement and champion names kept |
+| Q6 | Naming canon | As recommended | Veyrath, Emberhold, Eldric, Gargoyle, Titan, settlement and champion names kept |
 | Q7 | Gear slots | Six now, accessories post-EA-0.1 | Unchanged; accessories in backlog |
 | Q8 | Skill upgrades | Tomes only (Rare/Epic/Legendary/Mythic Tomes) | Duplicates are ordinary copies (rank-up food); ADR-016 (`CHAMPIONS.md` §3/§5, `ECONOMY.md` §3.3, `SUMMONING.md` §5, ROADMAP Phases 5/8) |
 | Q9 | Ascension / Awakening | As recommended | Backlog |
@@ -203,3 +203,4 @@ but if you want her reachable the week she unlocks, the fix is a fourth tier bel
 | Q53 | Where the Palace is entered from | A new building on the hub, open once the first settlement falls | The lit keep on the Emberhold artwork, gated on progress rather than on a player level the way the tower is (`GLORIOUS_PALACE.md` §5) |
 | Q54 | Whether a Brewery run costs energy as well as one of the day's twenty | No — the twenty runs are the whole price | The brief names one cost and only one, and a second would make a day in the Brewery compete with the campaign for the same bar. `applyBreweryRunStart` charges the run and nothing else; adding a cost later is one line in the same reducer (`BREWERY.md` §5) |
 | Q55 | Whether any hall other than Eclipse keeps a calendar | No — the other three brew every day | `BREWERY_OPEN_DAYS` holds one row per element, so giving the Gilded Cask a calendar is a data edit and needs no code. Only the Waning Cellar has one today, exactly as the brief asks (`BREWERY.md` §2) |
+| Q56 | How far the boss rename should go — the menu labels, or the characters | Full rename: Gravemaw → Gargoyle and Nyxara → Titan everywhere, with new titles and lore to match | The owner chose the full rename. Both keep their kit and their numbers; the three abilities whose names carried the old flavour follow the new one, and both are written as *it*. Save v17 moves every id a chronicle stored for them, so nothing a player had done to either is lost (`BOSSES.md`) |

@@ -27,9 +27,9 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 4, stage: 10, difficulty: 'normal' }, [
       { currency: 'shard_ancient', amount: 1 },
     ]),
-    // 7.6 Reach 12 % on Nyxara (Normal)
+    // 7.6 Reach 12 % on Titan (Normal)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'normal', pct: 12 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'normal', pct: 12 },
       [{ currency: 'gems', amount: 100 }],
       'glyph.cursed_eye',
     ),

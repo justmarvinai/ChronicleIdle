@@ -47,7 +47,7 @@ export function statusValue(source: BattleUnit, id: StatusId, value: number | un
 
 /**
  * Remembers that a *kind* of debuff has landed on a unit, and says so once a passive that counts
- * them can no longer hold (Gravemaw's hide breaks on the fifth distinct debuff). The count only
+ * them can no longer hold (Gargoyle's hide breaks on the fifth distinct debuff). The count only
  * ever grows, so a broken passive stays broken for the fight.
  */
 function noteDebuffKind(ctx: ActionContext, target: BattleUnit, id: StatusId): void {
@@ -172,7 +172,7 @@ export function removeStatuses(
 }
 
 /**
- * Takes buffs off `from` and wears them (BOSSES.md §3, Nyxara's Dirge): newest first, same turns
+ * Takes buffs off `from` and wears them (BOSSES.md §3, Titan's Dirge): newest first, same turns
  * and same value, so a steal is a strip the thief profits from. A shield stays where it is — its
  * value is the HP it still absorbs, which cannot move to another unit's pool.
  */

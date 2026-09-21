@@ -19,8 +19,8 @@ Status legend: `⬜ not started` · `🟨 in progress` · `✅ shipped in x.y.z`
 | 7 | The Forge — Crafting | 0.0.7 | ✅ shipped in 0.0.7 |
 | 8 | Summoning Portal | 0.0.8 | ✅ shipped in 0.0.8 |
 | 9 | Idle Chest | 0.0.9 | ✅ shipped in 0.0.9 (rebalanced in 0.0.9.1) |
-| 10 | Daily Boss | 0.0.10 | ✅ shipped in 0.0.10 |
-| 11 | Weekly Boss | 0.0.11 | ✅ shipped in 0.0.11 |
+| 10 | The Gargoyle | 0.0.10 | ✅ shipped in 0.0.10 |
+| 11 | The Titan | 0.0.11 | ✅ shipped in 0.0.11 |
 | 12 | Daily & Weekly Quests | 0.0.12 | ✅ shipped in 0.0.12 |
 | 13 | The Chronicler's Path (missions) | 0.0.13 | ✅ shipped in 0.0.13 |
 | 14 | Tutorial & Onboarding | 0.0.14 | ✅ shipped in 0.0.14 |
@@ -265,7 +265,7 @@ offline computation, hub presence and claim dialog.
 **Acceptance criteria**: accrual matches table to the minute; overflow capped; rolls seeded by
 `lastClaimAt` (reload-safe); offline scenario tests (1 h, 26 h, clock moved back).
 
-## Phase 10 — Daily Boss (`0.0.10`)
+## Phase 10 — The Gargoyle, the daily gate (`0.0.10`)
 
 **Status.** ✅ shipped in 0.0.10 (2026-09-15). See `CHANGELOG.md` for what landed. The period a
 boss's numbers belong to is stored rather than a reset timer, so keys, damage and claims turn over
@@ -273,13 +273,13 @@ on their own and a spent period's unclaimed chests are paid as tribute on the ne
 enrage became the boss's own cadence, because the shared one could never have fired inside a race
 (ADR-036), and placeholder art gained `art.desaturate` so the Bone Tyrant reads as bone.
 
-**Goal.** Gravemaw with four tiers, 4-champion parties, keys, damage accumulation, threshold chests, records panel,
+**Goal.** Gargoyle with four tiers, 4-champion parties, keys, damage accumulation, threshold chests, records panel,
 enrage, immunities, boss HUD and arena presentation.
 
 **Acceptance criteria**: keys reset at 00:00 local (test with FixedClock across DST); damage
 persists across two fights; chests claim once; records store team; boss rotation deterministic.
 
-## Phase 11 — Weekly Boss (`0.0.11`)
+## Phase 11 — The Titan, the weekly gate (`0.0.11`)
 
 **Status.** ✅ shipped in 0.0.11 (2026-09-16). See `CHANGELOG.md` for what landed. The phase
 thresholds and the chorus's size were set by measurement rather than by the first draft's numbers
@@ -287,7 +287,7 @@ thresholds and the chorus's size were set by measurement rather than by the firs
 design printed would have meant her last two gears never fired at all, and a chorus a tenth of its
 shipped size would have died on the turn it appeared.
 
-**Goal.** Nyxara with three tiers, phases, Choristers (adds with revive), weekly keys and
+**Goal.** Titan with three tiers, phases, Choristers (adds with revive), weekly keys and
 chests, phase-driven kit, weekly reset.
 
 **Acceptance criteria**: phase transitions at HP thresholds; adds revive on schedule; Ally

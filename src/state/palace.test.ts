@@ -65,10 +65,10 @@ const victory = (): BattleOutcome => ({
   decisions: [],
 });
 
-/** Gravemaw's Easy pool (`BOSSES.md` §1), which a kill has to empty. */
+/** Gargoyle's Easy pool (`BOSSES.md` §1), which a kill has to empty. */
 const GRAVEMAW_EASY_HP = 250_000;
 
-/** A finished boss fight that did `damage` to Gravemaw. */
+/** A finished boss fight that did `damage` to Gargoyle. */
 function bossFight(damage: number, kind: BattleOutcome['kind'] = 'timeout'): BattleOutcome {
   return {
     kind,
@@ -79,7 +79,7 @@ function bossFight(damage: number, kind: BattleOutcome['kind'] = 'timeout'): Bat
     units: [
       {
         unitId: 'w0e0',
-        defId: 'enemy.gravemaw_easy',
+        defId: 'enemy.gargoyle_easy',
         instanceId: null,
         side: 'enemy',
         alive: kind !== 'victory',
@@ -175,9 +175,9 @@ describe('what pays a skill point', () => {
     const { store, actions } = fixture;
 
     // A fight short of the pool pays nothing: the point is for the kill, not the attempt.
-    actions.startBossFight('boss.gravemaw', 'easy');
+    actions.startBossFight('boss.gargoyle', 'easy');
     const scratched = actions.finishBossFight({
-      bossId: 'boss.gravemaw',
+      bossId: 'boss.gargoyle',
       tierId: 'easy',
       outcome: bossFight(30_000),
       team: ['champ.ser_corvin'],
@@ -186,9 +186,9 @@ describe('what pays a skill point', () => {
     expect(scratched.value.percent).toBeLessThan(100);
     expect(scratched.value.palacePoints).toBe(0);
 
-    actions.startBossFight('boss.gravemaw', 'easy');
+    actions.startBossFight('boss.gargoyle', 'easy');
     const killed = actions.finishBossFight({
-      bossId: 'boss.gravemaw',
+      bossId: 'boss.gargoyle',
       tierId: 'easy',
       outcome: bossFight(GRAVEMAW_EASY_HP, 'victory'),
       team: ['champ.ser_corvin'],
@@ -199,9 +199,9 @@ describe('what pays a skill point', () => {
     expect(save(store).palace.earned).toBe(1);
 
     // The same day, emptied again on another tier: the day is already paid.
-    actions.startBossFight('boss.gravemaw', 'normal');
+    actions.startBossFight('boss.gargoyle', 'normal');
     const again = actions.finishBossFight({
-      bossId: 'boss.gravemaw',
+      bossId: 'boss.gargoyle',
       tierId: 'normal',
       outcome: bossFight(5_000_000, 'victory'),
       team: ['champ.ser_corvin'],

@@ -1,13 +1,13 @@
 /**
- * Nyxara, Mother of Shadows — the weekly boss (docs/design/BOSSES.md §3).
+ * Titan, the Sunless — the weekly boss (docs/design/BOSSES.md §3).
  *
- * Three keys a week against a fight that changes gear twice. Two Choristers sing beside her, and
- * while one of them stands it takes half of every hit meant for her — so the week's damage is a
- * choice: clear the chorus first and lose the turns, or accept the split. They come back at every
- * phase change and every twelve of her own turns, at half health.
+ * Three keys a week against a fight that changes gear twice. Two Choristers sing beside it, and
+ * while one of them stands it takes half of every hit meant for the Titan — so the week's damage is
+ * a choice: clear the chorus first and lose the turns, or accept the split. They come back at every
+ * phase change and every twelve of its own turns, at half health.
  *
- * Phase II opens the Eclipse Hymn (Fear and a stolen turn meter); phase III opens Mother's Embrace
- * and turns her Un-light on, which dims every heal the party can pay for. She is Unshakeable like
+ * Phase II opens the Eclipse Hymn (Fear and a stolen turn meter); phase III opens Titan's Embrace
+ * and turns the Un-light on, which dims every heal the party can pay for. It is Unshakeable like
  * every period boss (BOSSES.md §1), so the answer is damage over time, DEF Down and Weaken.
  */
 import { hit, heal, status, tm } from '@content/champions/dsl';
@@ -22,7 +22,7 @@ const chest = (
 ): BossChestDef => (gear ? { pct, currencies, gear } : { pct, currencies });
 
 export default defineBoss({
-  slug: 'nyxara',
+  slug: 'titan',
   period: 'weekly',
   keysPerPeriod: 3,
   unlockLevel: 15,
@@ -36,14 +36,14 @@ export default defineBoss({
   backdrop: 'bg.bg9',
   surface: 'stone',
   immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],
-  // A weekly race runs long, so the steps come every third own turn from her 24th.
+  // A weekly race runs long, so the steps come every third own turn from its 24th.
   enrageEvery: 3,
   /*
    * Phase I above 90 %, II between 90 and 75 %, III below 75 % (BOSSES.md §3). The thresholds are
    * shallow on purpose: this is a damage race, not a kill fight, and what matters is where a key
    * actually lands. Measured against a finished roster (`tests/fixtures/saves/weekly-boss`), a key
    * takes an eighth of the pool with the chorus taxing half of every hit — so the 70/35 the first
-   * draft printed meant nobody ever saw her last two gears at all (USER_QUESTIONS.md Q41).
+   * draft printed meant nobody ever saw its last two gears at all (USER_QUESTIONS.md Q41).
    */
   phases: [0.9, 0.75],
   adds: {
@@ -53,7 +53,7 @@ export default defineBoss({
     role: 'support',
     art: { tint: '#6f5bb0', scale: 1.2, desaturate: true },
     count: 2,
-    // Half of every hit meant for her lands on whichever Chorister still stands.
+    // Half of every hit meant for it lands on whichever Chorister still stands.
     guardPercent: 50,
     reviveEvery: 12,
     revivedHpPercent: 50,
@@ -69,7 +69,7 @@ export default defineBoss({
         key: 'antiphon',
         icon: 'spell.rune_sealed_ring',
         cooldown: 4,
-        // Two per cent of her pool is small, but across a long race it is the chorus's real job.
+        // Two per cent of its pool is small, but across a long race it is the chorus's real job.
         effects: [heal(0.02, 'single_ally', 'TARGET_MAX_HP')],
       },
     ],
@@ -92,7 +92,7 @@ export default defineBoss({
       cooldown: 3,
       effects: [
         hit(2.6, 'all_enemies'),
-        // She does not strip the party's buffs, she wears them.
+        // It does not strip the party's buffs, it wears them.
         { kind: 'steal_buff', target: 'all_enemies', count: 1 },
       ],
     },
@@ -106,7 +106,7 @@ export default defineBoss({
     },
     {
       slot: 'a4',
-      key: 'mothers_embrace',
+      key: 'titans_embrace',
       icon: 'spell.blood_crimson_moon',
       cooldown: 6,
       minPhase: 3,
@@ -122,7 +122,7 @@ export default defineBoss({
       key: 'unlight',
       icon: 'spell.orb_voidspiral',
       trigger: 'static',
-      // Only in her last phase: the fight gets harder to heal through exactly when it needs it.
+      // Only in its last phase: the fight gets harder to heal through exactly when it needs it.
       effects: [{ kind: 'enemy_heal_reduction', value: 30, if: { selfPhaseAtLeast: 3 } }],
     },
   ],

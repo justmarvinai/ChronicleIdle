@@ -6,7 +6,7 @@ import { collectConsole, importChronicleFile, settle } from './helpers';
  * The weekly boss (docs/design/BOSSES.md §3). The fixture is a level-30 chronicle with four 6★
  * champions in full Legendary gear (`tools/fixtures/weekly-chronicle.ts`) — the roster the fight is
  * written for, and the one that makes its mechanics visible in a production build: a chorus that
- * takes half of every hit meant for Nyxara, and a fight that changes gear as her health falls.
+ * takes half of every hit meant for Titan, and a fight that changes gear as her health falls.
  *
  * The race itself is a hundred turns; what this spec proves is the wiring around it (the gate, the
  * arena's chips, the damage that banks and the chest it earns), so it banks the first chest's worth
@@ -47,15 +47,21 @@ test.describe('the weekly boss', () => {
   // A race with seven units on a software-rendered stage; a shared runner needs the room.
   test.setTimeout(600_000);
 
-  test('spends a key on Nyxara, past her chorus, and takes the chest it earns', async ({ page }) => {
+  test('spends a key on Titan, past her chorus, and takes the chest it earns', async ({ page }) => {
     const problems = collectConsole(page);
     await importChronicleFile(page, SAVE);
 
-    // Battle leads to the gate, and the mode card wears its state: three keys this week, unspent.
+    // Battle leads to the Bosses menu, and that to the Titan's own card: three keys this week,
+    // unspent.
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    await expect(page.getByTestId('note-weekly')).toHaveText('Keys 3/3');
+    await page.getByTestId('enter-bosses').click();
+    await expect(page.getByTestId('screen-boss-menu')).toBeVisible({ timeout: 20_000 });
+    await settle(page);
+    await expect(page.getByTestId('mode-weekly')).toContainText('Titan');
+    await expect(page.getByTestId('mode-weekly')).toContainText('Three keys every week');
+    await expect(page.getByTestId('note-weekly')).toContainText('3 of 3 keys left');
     await page.getByTestId('enter-weekly').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
     await settle(page);
@@ -65,7 +71,7 @@ test.describe('the weekly boss', () => {
     await expect(page.getByTestId('boss-tier-normal')).toContainText('0 of 5,000,000');
     await expect(page.getByTestId('boss-chest-normal-2')).toBeDisabled();
     await expect(page.getByTestId('boss-chest-normal-100')).toBeDisabled();
-    await expect(page.getByTestId('boss-record-normal')).toContainText('Nobody here has faced Nyxara');
+    await expect(page.getByTestId('boss-record-normal')).toContainText('Nobody here has faced Titan');
 
     // The sheet says how the fight changes and what stands in front of her (BOSSES.md §4).
     await page.getByTestId('bosses-sheet').click();

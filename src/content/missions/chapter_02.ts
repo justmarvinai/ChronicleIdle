@@ -31,8 +31,8 @@ export default chapter({
     ]),
     // 2.7 Craft a gear piece
     mission({ type: 'craft', count: 1 }, [{ currency: 'mat_ember_alloy', amount: 10 }]),
-    // 2.8 Spend a key on Gravemaw (Easy)
-    mission({ type: 'boss_fights', boss: 'boss.gravemaw', tier: 'easy', count: 1 }, [
+    // 2.8 Spend a key on Gargoyle (Easy)
+    mission({ type: 'boss_fights', boss: 'boss.gargoyle', tier: 'easy', count: 1 }, [
       { currency: 'tome_rare', amount: 1 },
     ]),
     // 2.9 Equip a full 2-piece set

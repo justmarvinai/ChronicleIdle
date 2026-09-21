@@ -13,8 +13,8 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 4, stage: 5, difficulty: 'intro' }, [
       { currency: 'gold', amount: 6_000 },
     ]),
-    // 3.2 Deal 250,000 damage to Gravemaw (Easy) in a day
-    mission({ type: 'boss_damage', boss: 'boss.gravemaw', tier: 'easy', amount: 250_000 }, [
+    // 3.2 Deal 250,000 damage to Gargoyle (Easy) in a day
+    mission({ type: 'boss_damage', boss: 'boss.gargoyle', tier: 'easy', amount: 250_000 }, [
       { currency: 'gems', amount: 20 },
     ]),
     // 3.3 Upgrade a gear piece to +8

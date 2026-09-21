@@ -7,7 +7,7 @@ engine or UI changes unless a genuinely new mechanic is required.
 ## 1. Conventions
 
 - Ids: `type.snake_case` — `champ.anuria`, `enemy.thornwood_cutpurse`, `stage.01.07`,
-  `gear_set.ember_guard`, `boss.gravemaw`, `banner.featured`, `dq.login`, `m.3.4`, `tut.1.6`.
+  `gear_set.ember_guard`, `boss.gargoyle`, `banner.featured`, `dq.login`, `m.3.4`, `tut.1.6`.
 - One object per file; file name = id without the type prefix. Each folder lists its objects in
   an explicit `index.ts` (`CHAMPIONS`, `CURRENCIES`, …) that `registry.ts` assembles — no glob, so
   the same modules load identically in Vite, Vitest and the `tools/` scripts.
@@ -170,7 +170,7 @@ the stats the table prints (`fixedStats`: no difficulty multiplier, no stage cur
 
 ```ts
 export default defineBoss({
-  slug: 'gravemaw',
+  slug: 'gargoyle',
   period: 'daily', keysPerPeriod: 2, unlockLevel: 10,
   feature: 'daily_boss', keyCurrency: 'key_daily',
   element: 'eclipse', role: 'health',
@@ -179,8 +179,8 @@ export default defineBoss({
   immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],   // shown as "Unshakeable"
   enrageEvery: 2,                                                // own turns between +10 % ATK steps
   rotation: ['a1', 'a1', 'a2', 'a1', 'a3'],
-  abilities: [{ slot: 'a1', key: 'bone_crush', icon: 'spell.earth_boulder_fist', prefer: 'highest_atk', effects: [...] }, …],
-  passives: [{ key: 'tyrants_hide', icon: 'spell.earth_monolith', trigger: 'static', effects: [...] }],
+  abilities: [{ slot: 'a1', key: 'granite_fist', icon: 'spell.earth_boulder_fist', prefer: 'highest_atk', effects: [...] }, …],
+  passives: [{ key: 'weathered_stone', icon: 'spell.earth_monolith', trigger: 'static', effects: [...] }],
   tiers: [
     {
       id: 'easy',
@@ -211,12 +211,12 @@ A boss that changes gear adds two fields, and nothing in the engine or the UI ne
 Each tier then carries an `addStats` row beside its own (same order), and `defineBoss` fields the
 escort at `enemy.<addSlug>_<tier>` in the wave the key buys (ADR-038). `minPhase` on an ability
 makes the rotation pass it over until the fight gets there, and a passive can read the phase with
-`if: { selfPhaseAtLeast: 3 }` — that is how Nyxara's Un-light dims the party's healing only at the
+`if: { selfPhaseAtLeast: 3 }` — that is how Titan's Un-light dims the party's healing only at the
 end. Set both from measurement, not from intuition: the validator rejects a `minPhase` past the
 last phase and an escort holding more than a tenth of the tier's pool, and Q41/ADR-039 record how
 the shipped numbers were measured.
 
-Ids and strings derive from the slug (`ab.gravemaw.devour.name`, `boss.gravemaw.tier.easy`) and
+Ids and strings derive from the slug (`ab.gargoyle.devour.name`, `boss.gargoyle.tier.easy`) and
 live in `src/i18n/en/bosses.ts`; register the file in `src/content/bosses/index.ts`. The validator
 holds the promises the design makes: chest thresholds climb and end at the kill, each tier is a
 bigger pool and pays more chronicle XP than the one below it, the tier enemy carries the tier's
@@ -419,8 +419,8 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 4, stage: 5, difficulty: 'intro' }, [
       { currency: 'gold', amount: 6_000 },
     ]),
-    // 3.2 Deal 250,000 damage to Gravemaw (Easy) in a day
-    mission({ type: 'boss_damage', boss: 'boss.gravemaw', tier: 'easy', amount: 250_000 }, [
+    // 3.2 Deal 250,000 damage to Gargoyle (Easy) in a day
+    mission({ type: 'boss_damage', boss: 'boss.gargoyle', tier: 'easy', amount: 250_000 }, [
       { currency: 'gems', amount: 20 },
     ]),
     …
@@ -431,7 +431,7 @@ export default chapter({
 
 - Position is everything: the id (`mission.03.02`), the i18n key (`mission.03.02.name`, in
   `src/i18n/en/missions.ts`) and the chapter a mission belongs to all follow from where it sits.
-  The glyph follows from the goal's family, and a mission may override it (the Nyxara rows wear her
+  The glyph follows from the goal's family, and a mission may override it (the Titan rows wear its
   eye) — nothing else is authored twice.
 - The line is walked in order, so a mission is only ever *the next one*: counter goals measure from
   the moment it opens, state predicates are read live (`QUESTS_MISSIONS.md` §1). Prefer a state

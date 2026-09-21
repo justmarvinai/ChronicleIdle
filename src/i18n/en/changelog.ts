@@ -20,6 +20,18 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_7_1.name': 'The Gargoyle and the Titan',
+  'release.0_7_1.names':
+    'The two bosses have names now. The one you fight every day is the Gargoyle, the Waking Stone; the one you fight every week is the Titan, the Sunless. Nothing calls them "the daily boss" and "the weekly boss" any more — though that is still exactly how often each of them opens.',
+  'release.0_7_1.bosses_menu':
+    'Both of them live behind one Bosses card on the Battle menu, which opens a menu of their own: a card each, with what it is, how often it opens and how many keys are waiting at it.',
+  'release.0_7_1.kit_names':
+    'Their abilities were renamed to match: the Gargoyle throws a Granite Fist and a Stonequake and wears Weathered Stone, and the Titan gathers its chorus with Titan’s Embrace.',
+  'release.0_7_1.keys':
+    'Their keys took the new names with them — Gargoyle Keys and Titan Keys — and so did every quest that asks you to spend one.',
+  'release.0_7_1.nothing_lost':
+    'Everything you had already done to them came with the new names: this period’s damage, the chests you have taken, and every personal best you have ever set.',
+
   'release.0_7_0.name': 'The Brewery',
   'release.0_7_0.brewery':
     'Four brew halls have opened, one for each element, and they are where brews come from now. The Gilded Cask, the Ember Vats, the Frostwell Cellar and the Waning Cellar are on the Battle menu from level 3 — so you can finally farm the brews your own champions need instead of the ones the map happens to drop.',
@@ -36,7 +48,7 @@ export const changelog = {
   'release.0_6_0.palace':
     'A palace has opened on the hill above Emberhold, and inside it a tree of 133 nodes. Its heart gives every champion you own a little more health; its four branches — one for each element — give every champion of that element a little more of everything, for good. Nothing in it is large. All of it is permanent.',
   'release.0_6_0.points':
-    'Skill points come from finishing things: one for every settlement you beat on every difficulty, one for every fifth floor of the Eternal Tower and again each season, one for emptying the daily boss’s pool and three for the weekly’s.',
+    'Skill points come from finishing things: one for every settlement you beat on every difficulty, one for every fifth floor of the Eternal Tower and again each season, one for emptying the Gargoyle’s pool and three for the Titan’s.',
   'release.0_6_0.purple_line':
     'A champion’s stats now show what the Palace gives them in purple, beside what their gear gives them in green — so you can always see which of the two is carrying them.',
   'release.0_6_0.free_reset':
@@ -144,17 +156,17 @@ export const changelog = {
   'release.0_0_12.points_track':
     'Each board has a points track with chests along it, so a partly finished day still pays.',
 
-  'release.0_0_11.name': 'The Weekly Boss',
+  'release.0_0_11.name': 'The Titan',
   'release.0_0_11.weekly_boss':
-    'Nyxara, over three tiers, with a chorus that shields her and a health pool that takes a week of attempts to empty.',
+    'Titan, over three tiers, with a chorus that shields it and a health pool that takes a week of attempts to empty.',
   'release.0_0_11.phases':
     'Bosses change as they fall: new abilities, new immunities, an escort that must go first.',
-  'release.0_0_11.nyxara_phases':
-    'Nyxara turns at 90 % and 75 % of her pool rather than far down it, so a single key gets to see her second face.',
+  'release.0_0_11.titan_phases':
+    'Titan turns at 90 % and 75 % of its pool rather than far down it, so a single key gets to see its second face.',
 
-  'release.0_0_10.name': 'The Daily Boss',
+  'release.0_0_10.name': 'The Gargoyle',
   'release.0_0_10.daily_boss':
-    'Gravemaw, over four tiers: spend a key, do as much damage as you can, and take the chest your total earns.',
+    'Gargoyle, over four tiers: spend a key, do as much damage as you can, and take the chest your total earns.',
   'release.0_0_10.boss_records':
     'Every boss keeps your best damage per tier, so there is always a number to beat.',
   'release.0_0_10.mechanics_sheet':

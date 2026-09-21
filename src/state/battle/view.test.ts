@@ -51,7 +51,7 @@ describe('presented battle view', () => {
   });
 
   it("keeps the boss HUD's facts in step with the fight", () => {
-    const encounter = content.encounterById(bossEncounterId('boss.gravemaw', 'easy'));
+    const encounter = content.encounterById(bossEncounterId('boss.gargoyle', 'easy'));
     if (!encounter) throw new Error('missing boss encounter');
     const state = createBattle({ ...setup(), encounter }, 'view-boss');
     let view = snapshot(state);
@@ -93,7 +93,7 @@ describe('presented battle view', () => {
 describe('the cooldowns the bar draws', () => {
   it('come with the turn that is about to be played, not with the snapshot it started from', () => {
     // A boss stands long enough for an ability with a cooldown to be spent and to come back.
-    const encounter = content.encounterById(bossEncounterId('boss.gravemaw', 'easy'));
+    const encounter = content.encounterById(bossEncounterId('boss.gargoyle', 'easy'));
     if (!encounter) throw new Error('missing boss encounter');
     const state = createBattle({ ...setup(), encounter }, 'view-cooldowns');
     let view = snapshot(state);

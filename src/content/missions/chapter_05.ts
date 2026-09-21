@@ -1,5 +1,5 @@
 /**
- * Chapter 5 — The Cold and the Arena: the pass and the colosseum, and the first dent in Nyxara.
+ * Chapter 5 — The Cold and the Arena: the pass and the colosseum, and the first dent in Titan.
  *
  * The table this file prints is `docs/design/QUESTS_MISSIONS.md` §4; the lines themselves live in
  * `src/i18n/en/missions.ts`, keyed by where each mission sits.
@@ -31,9 +31,9 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 9, stage: 5, difficulty: 'intro' }, [
       { currency: 'gold', amount: 18_000 },
     ]),
-    // 5.7 Reach 2 % on Nyxara (Normal)
+    // 5.7 Reach 2 % on Titan (Normal)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'normal', pct: 2 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'normal', pct: 2 },
       [{ currency: 'gems', amount: 60 }],
       'glyph.cursed_eye',
     ),

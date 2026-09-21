@@ -13,9 +13,9 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 6, stage: 5, difficulty: 'intro' }, [
       { currency: 'gold', amount: 10_000 },
     ]),
-    // 4.2 Spend a key on Nyxara
+    // 4.2 Spend a key on Titan
     mission(
-      { type: 'boss_fights', boss: 'boss.nyxara', count: 1 },
+      { type: 'boss_fights', boss: 'boss.titan', count: 1 },
       [{ currency: 'mat_glyph_sigil', amount: 1 }],
       'glyph.cursed_eye',
     ),
@@ -33,8 +33,8 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 7, stage: 5, difficulty: 'intro' }, [
       { currency: 'gold', amount: 12_000 },
     ]),
-    // 4.8 Deal 1,000,000 damage to Gravemaw (Normal) in a day
-    mission({ type: 'boss_damage', boss: 'boss.gravemaw', tier: 'normal', amount: 1_000_000 }, [
+    // 4.8 Deal 1,000,000 damage to Gargoyle (Normal) in a day
+    mission({ type: 'boss_damage', boss: 'boss.gargoyle', tier: 'normal', amount: 1_000_000 }, [
       { currency: 'gems', amount: 40 },
     ]),
     // 4.9 Level a champion to 30

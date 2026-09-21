@@ -62,7 +62,7 @@ Ten quests; each completes for points and a small reward; points unlock five che
 | 4 | Spend 60 energy | `spend_energy 60` | 10 | 40 Energy |
 | 5 | Level up champions 3 times | `level_champion_times 3` | 10 | 3,000 Gold |
 | 6 | Upgrade gear 5 levels | `gear_levels 5` | 10 | 5 Arcane Dust |
-| 7 | Fight the Daily Boss twice | `boss_fights gravemaw 2` | 10 | 1 Rare Tome |
+| 7 | Fight the Gargoyle twice | `boss_fights gargoyle 2` | 10 | 1 Rare Tome |
 | 8 | Summon a champion | `summon 1` | 10 | 2,000 Gold |
 | 9 | Win a battle in Manual mode | `win_manual 1` | 10 | 1 Universal Brew |
 | 10 | Craft or dismantle 1 gear piece | `craft 1` or `dismantle 1` (either) | 10 | 10 Scrap Iron |
@@ -84,8 +84,8 @@ finished is still counted once for the weekly quest that counts days (Q42).
 | --- | --- | --- | --- | --- |
 | 1 | Complete daily quests on 5 days | `complete_daily_quests_days 5` | 20 | 50 Gems |
 | 2 | Clear 60 campaign stages | `clear_stages 60` | 15 | 5 Universal Brews |
-| 3 | Use 10 Daily Boss keys | `boss_fights gravemaw 10` | 15 | 2 Epic Tomes |
-| 4 | Use 3 Weekly Boss keys | `boss_fights nyxara 3` | 15 | 1 Glyph Sigil |
+| 3 | Use 10 Gargoyle keys | `boss_fights gargoyle 10` | 15 | 2 Epic Tomes |
+| 4 | Use 3 Titan keys | `boss_fights titan 3` | 15 | 1 Glyph Sigil |
 | 5 | Summon 10 champions | `summon 10` | 10 | 1 Ancient Shard |
 | 6 | Rank up a champion | `rank_up_times 1` | 10 | 20,000 Gold |
 | 7 | Bring a gear piece to +12 | `gear_reach_level 12 1` | 10 | 10 Refining Cores |
@@ -130,7 +130,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 2.5 | Rank up a champion to 3★ | 8,000 G |
 | 2.6 | Defeat The Sow of Millbrook (2-10) | 1 AS |
 | 2.7 | Craft a gear piece | 10 Ember Alloy |
-| 2.8 | Fight the Daily Boss (Easy) once | 1 RT |
+| 2.8 | Fight the Gargoyle (Easy) once | 1 RT |
 | 2.9 | Equip a full 2-piece set | 5,000 G |
 | 2.10 | Clear Greyhaven Harbor 3-5 | 20 Gm |
 | 2.11 | Reach player level 10 | 250 E |
@@ -140,7 +140,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | # | Mission | Reward |
 | --- | --- | --- |
 | 3.1 | Clear Sunspire Bazaar 4-5 | 6,000 G |
-| 3.2 | Deal 250,000 damage to Gravemaw (Easy) in a day | 20 Gm |
+| 3.2 | Deal 250,000 damage to Gargoyle (Easy) in a day | 20 Gm |
 | 3.3 | Upgrade a gear piece to +8 | 5 RC |
 | 3.4 | Upgrade a skill | 1 RT |
 | 3.5 | Own an Epic champion | 4 Br |
@@ -156,13 +156,13 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | # | Mission | Reward |
 | --- | --- | --- |
 | 4.1 | Clear Barrowdeep 6-5 | 10,000 G |
-| 4.2 | Fight the Weekly Boss once | 1 GS |
+| 4.2 | Fight the Titan once | 1 GS |
 | 4.3 | Rank up a champion to 4★ | 15,000 G |
 | 4.4 | Equip a full 4-piece set | 10 RC |
 | 4.5 | Craft a Tier II gear piece | 15 Ember Alloy |
 | 4.6 | Defeat The Barrow Wight (6-10) | 1 AS |
 | 4.7 | Clear Ashfall Plains 7-5 | 12,000 G |
-| 4.8 | Deal 1,000,000 damage to Gravemaw (Normal) in a day | 40 Gm |
+| 4.8 | Deal 1,000,000 damage to Gargoyle (Normal) in a day | 40 Gm |
 | 4.9 | Level a champion to 30 | 6 Br |
 | 4.10 | Complete 5 daily quests on 5 different days | 40 Gm |
 | 4.11 | Own 12 champions | 1 ET |
@@ -177,7 +177,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 5.4 | Defeat Matriarch Yrsa Frostmaw (8-10) | 1 AS |
 | 5.5 | Earn 30 stars in Greyhaven Harbor (Intro) | 30 Gm |
 | 5.6 | Clear The Sunken Colosseum 9-5 | 18,000 G |
-| 5.7 | Reach 2 % on Nyxara (Normal) | 60 Gm |
+| 5.7 | Reach 2 % on Titan (Normal) | 60 Gm |
 | 5.8 | Rank up a champion to 5★ | 30,000 G |
 | 5.9 | Level a champion to 40 | 8 Br |
 | 5.10 | Upgrade 5 skills | 2 ET |
@@ -191,7 +191,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 6.2 | Craft 5 gear pieces | 20 Ember Alloy |
 | 6.3 | Refine a gear piece | 10 RC |
 | 6.4 | Defeat Old Grandmother Mire (10-10) | 1 AS |
-| 6.5 | Deal 5,000,000 damage to Gravemaw (Hard) in a day | 80 Gm |
+| 6.5 | Deal 5,000,000 damage to Gargoyle (Hard) in a day | 80 Gm |
 | 6.6 | Clear Ironcrag Citadel 11-5 | 25,000 G |
 | 6.7 | Bring a champion to 6★ | 100,000 G |
 | 6.8 | Defeat Castellan Vaughn (11-10) | 1 SS |
@@ -208,7 +208,7 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 7.3 | Level a champion to 50 | 10 Br |
 | 7.4 | Equip 6 gear pieces of 4★ or higher on one champion | 15 RC |
 | 7.5 | Clear Sunspire Bazaar 4-10 (Normal) | 1 AS |
-| 7.6 | Reach 12 % on Nyxara (Normal) | 100 Gm |
+| 7.6 | Reach 12 % on Titan (Normal) | 100 Gm |
 | 7.7 | Craft a Tier III gear piece | 10 Starsteel |
 | 7.8 | Clear Barrowdeep 6-10 (Normal) | 1 SS |
 | 7.9 | Upgrade a gear piece to +16 | 20 RC |
@@ -220,10 +220,10 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | # | Mission | Reward |
 | --- | --- | --- |
 | 8.1 | Clear Frostvein Pass 8-10 (Normal) | 40,000 G |
-| 8.2 | Deal 20,000,000 damage to Gravemaw (Brutal) in a day | 150 Gm |
+| 8.2 | Deal 20,000,000 damage to Gargoyle (Brutal) in a day | 150 Gm |
 | 8.3 | Level a champion to 60 | 15 Br |
 | 8.4 | Clear The Sunken Colosseum 9-10 (Normal) | 1 SS |
-| 8.5 | Reach 25 % on Nyxara (Hard) | 1 GS, 100 Gm |
+| 8.5 | Reach 25 % on Titan (Hard) | 1 GS, 100 Gm |
 | 8.6 | Clear Duskmere Marsh 10-10 (Normal) | 1 AS |
 | 8.7 | Own 20 champions | 2 LT |
 | 8.8 | Clear Ironcrag Citadel 11-10 (Normal) | 1 SS |
@@ -238,11 +238,11 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | 9.1 | Clear Thornwood Crossing 1-10 (Hard) | 60,000 G |
 | 9.2 | Earn all 360 stars in Intro | 1 SS |
 | 9.3 | Clear Sunspire Bazaar 4-10 (Hard) | 1 SS |
-| 9.4 | Reach 50 % on Nyxara (Hard) | 250 Gm |
+| 9.4 | Reach 50 % on Titan (Hard) | 250 Gm |
 | 9.5 | Have 6 gear pieces at +16 on one champion | 30 RC |
 | 9.6 | Clear Ashfall Plains 7-10 (Hard) | 1 LT |
 | 9.7 | Own 4 Legendary champions | 1 LT |
-| 9.8 | Defeat Gravemaw (Brutal, 100 %) | 300 Gm |
+| 9.8 | Defeat Gargoyle (Brutal, 100 %) | 300 Gm |
 | 9.9 | Clear Duskmere Marsh 10-10 (Hard) | 1 SS |
 | 9.10 | Earn all 360 stars in Normal | 1 PS |
 | 9.11 | Reach player level 60 | 800 E |
@@ -252,16 +252,16 @@ RT/ET/LT/MT = Rare/Epic/Legendary/Mythic Tome, RC = Refining Cores, GS = Glyph S
 | # | Mission | Reward |
 | --- | --- | --- |
 | 10.1 | Have 5 champions at 6★ level 60 | 200,000 G |
-| 10.2 | Reach 12 % on Nyxara (Nightmare) | 300 Gm |
+| 10.2 | Reach 12 % on Titan (Nightmare) | 300 Gm |
 | 10.3 | Own a Mythic champion | 1 MT |
 | 10.4 | Earn 200 stars in Hard | 1 SS |
 | 10.5 | Fully upgrade all skills of a Legendary champion | 1 LT |
 | 10.6 | Craft 20 Tier III gear pieces | 30 Starsteel |
-| 10.7 | Reach 25 % on Nyxara (Nightmare) | 1 PS |
+| 10.7 | Reach 25 % on Titan (Nightmare) | 1 PS |
 | 10.8 | Team power 150,000 | 400 Gm |
 | 10.9 | Earn all 360 stars in Hard | 1 PS |
 | 10.10 | Reach player level 75 | 1,000 E |
-| 10.11 | Defeat Nyxara (Nightmare, 100 %) | 1 MT, 500 Gm |
+| 10.11 | Defeat Titan (Nightmare, 100 %) | 1 MT, 500 Gm |
 | 10.12 | Complete every previous mission | **Eldric Lorekeeper**, 6★ Legendary gear (choice), 500 Gm |
 
 Chapter chests (on finishing a chapter): 1 → 1 AS; 2 → 1 AS + 50 Gm; 3 → 1 SS; 4 → 1 SS + 100 Gm;

@@ -45,20 +45,20 @@ describe('the Path', () => {
     expect(goalOf('mission.01.12')).toMatchObject({ type: 'clear_stage', settlement: 1, stage: 10 });
     expect(goalOf('mission.02.08')).toEqual({
       type: 'boss_fights',
-      boss: 'boss.gravemaw',
+      boss: 'boss.gargoyle',
       tier: 'easy',
       count: 1,
     });
     expect(goalOf('mission.03.02')).toEqual({
       type: 'boss_damage',
-      boss: 'boss.gravemaw',
+      boss: 'boss.gargoyle',
       tier: 'easy',
       amount: 250_000,
     });
-    expect(goalOf('mission.04.02')).toEqual({ type: 'boss_fights', boss: 'boss.nyxara', count: 1 });
+    expect(goalOf('mission.04.02')).toEqual({ type: 'boss_fights', boss: 'boss.titan', count: 1 });
     expect(goalOf('mission.05.07')).toEqual({
       type: 'boss_percent',
-      boss: 'boss.nyxara',
+      boss: 'boss.titan',
       tier: 'normal',
       pct: 2,
     });

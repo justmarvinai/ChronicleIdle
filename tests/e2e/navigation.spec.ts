@@ -21,9 +21,10 @@ test.describe('navigation', () => {
     await settle(page);
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible();
-    // Campaign, both bosses, the Brewery (0.7.0) and the tower. The tower's card is there from the
-    // start and says what opens it, because it is gated on clearing Intro rather than on a level.
-    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(5);
+    // Campaign, the Bosses menu (0.7.1), the Brewery (0.7.0) and the tower. The tower's card is
+    // there from the start and says what opens it, because it is gated on clearing Intro rather
+    // than on a level.
+    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(4);
     await expect(page.getByTestId('mode-tower')).toContainText(/Intro/);
     // A fresh chronicle is level 1, so the Brewery's card says what it is waiting for.
     await expect(page.getByTestId('mode-brewery')).toContainText('Unlocks at level 3');
@@ -98,9 +99,10 @@ test.describe('navigation', () => {
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible();
     await settle(page);
-    await expect(page.getByTestId('mode-daily')).toContainText('Unlocks at level 10');
-    await expect(page.getByTestId('mode-weekly')).toContainText('Unlocks at level 15');
-    await page.getByTestId('mode-daily').getByRole('button').click();
+    // The Bosses card opens with the first of the two gates behind it; the Titan's own level is
+    // on its card in the menu, which a chronicle this young cannot reach yet.
+    await expect(page.getByTestId('mode-bosses')).toContainText('Unlocks at level 10');
+    await page.getByTestId('mode-bosses').getByRole('button').click();
     await expect(page.getByTestId('screen-locked')).toContainText('level 10');
   });
 

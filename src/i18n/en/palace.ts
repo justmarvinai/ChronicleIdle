@@ -51,8 +51,8 @@ export const palace = {
   'palace.earned.title': 'Where points come from',
   'palace.earned.settlement': 'One for each settlement you finish, on each difficulty — 36 in all.',
   'palace.earned.tower': 'One for every fifth floor of the Eternal Tower, again each season.',
-  'palace.earned.dailyBoss': 'One for emptying the daily boss’s pool.',
-  'palace.earned.weeklyBoss': 'Three for emptying the weekly boss’s pool.',
+  'palace.earned.dailyBoss': 'One for emptying the Gargoyle’s pool.',
+  'palace.earned.weeklyBoss': 'Three for emptying the Titan’s pool.',
 
   /** The eleven node names. */
   'palace.node.heart': 'Heart of the Palace',

@@ -93,7 +93,7 @@ export interface ContentRegistry {
   /** The summoning banners (SUMMONING.md §3): the standard portal and the featured cycle. */
   banners: readonly BannerDef[];
   bannerById(id: string): BannerDef | undefined;
-  /** The period bosses (BOSSES.md): Gravemaw daily, Nyxara weekly. */
+  /** The period bosses (BOSSES.md): Gargoyle daily, Titan weekly. */
   bosses: readonly BossDef[];
   bossById(id: string): BossDef | undefined;
   /** The quest boards (QUESTS_MISSIONS.md §2–§3): one a day, one a week. */

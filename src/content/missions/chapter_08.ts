@@ -13,8 +13,8 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 8, stage: 10, difficulty: 'normal' }, [
       { currency: 'gold', amount: 40_000 },
     ]),
-    // 8.2 Deal 20,000,000 damage to Gravemaw (Brutal) in a day
-    mission({ type: 'boss_damage', boss: 'boss.gravemaw', tier: 'brutal', amount: 20_000_000 }, [
+    // 8.2 Deal 20,000,000 damage to Gargoyle (Brutal) in a day
+    mission({ type: 'boss_damage', boss: 'boss.gargoyle', tier: 'brutal', amount: 20_000_000 }, [
       { currency: 'gems', amount: 150 },
     ]),
     // 8.3 Level a champion to 60
@@ -25,9 +25,9 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 9, stage: 10, difficulty: 'normal' }, [
       { currency: 'shard_sacred', amount: 1 },
     ]),
-    // 8.5 Reach 25 % on Nyxara (Hard)
+    // 8.5 Reach 25 % on Titan (Hard)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'hard', pct: 25 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'hard', pct: 25 },
       [
         { currency: 'mat_glyph_sigil', amount: 1 },
         { currency: 'gems', amount: 100 },

@@ -32,6 +32,13 @@ function release(version: string, date: string, lines: readonly Line[]): Release
 }
 
 export const RELEASES: readonly ReleaseDef[] = [
+  release('0.7.1', '2026-09-21', [
+    { kind: 'changed', slug: 'names', lead: true },
+    { kind: 'changed', slug: 'bosses_menu', lead: true },
+    { kind: 'changed', slug: 'kit_names' },
+    { kind: 'changed', slug: 'keys' },
+    { kind: 'fixed', slug: 'nothing_lost' },
+  ]),
   release('0.7.0', '2026-09-21', [
     { kind: 'added', slug: 'brewery', lead: true },
     { kind: 'added', slug: 'twenty_runs', lead: true },
@@ -117,7 +124,7 @@ export const RELEASES: readonly ReleaseDef[] = [
   release('0.0.11', '2026-09-16', [
     { kind: 'added', slug: 'weekly_boss', lead: true },
     { kind: 'added', slug: 'phases' },
-    { kind: 'balance', slug: 'nyxara_phases' },
+    { kind: 'balance', slug: 'titan_phases' },
   ]),
   release('0.0.10', '2026-09-15', [
     { kind: 'added', slug: 'daily_boss', lead: true },

@@ -166,8 +166,8 @@ describe('each goal type reads the counter it names', () => {
   }
 
   it('counts a boss by its own id, so one gate does not feed the other', () => {
-    const goal: Goal = { type: 'boss_fights', boss: 'boss.nyxara', count: 3 };
-    const stats = { 'boss.fights': 12, 'boss.fights.boss.gravemaw': 10, 'boss.fights.boss.nyxara': 2 };
+    const goal: Goal = { type: 'boss_fights', boss: 'boss.titan', count: 3 };
+    const stats = { 'boss.fights': 12, 'boss.fights.boss.gargoyle': 10, 'boss.fights.boss.titan': 2 };
     expect(evaluateGoal(goal, ctx(stats))).toEqual({ progress: 2, target: 3, done: false });
   });
 });
@@ -392,7 +392,7 @@ describe('the bosses', () => {
 
   /** A boss record in the save: this period's damage, and the best a tier ever took. */
   const banked = (save: SaveGame, damage: number, best: number): void => {
-    save.bosses['boss.gravemaw'] = {
+    save.bosses['boss.gargoyle'] = {
       periodKey: '2026-09-15',
       keysUsed: 1,
       damage: { easy: damage },
@@ -402,7 +402,7 @@ describe('the bosses', () => {
   };
 
   it('boss_damage counts this period, and reads zero once the period turns over', () => {
-    const goal: Goal = { type: 'boss_damage', boss: 'boss.gravemaw', tier: 'easy', amount: 250_000 };
+    const goal: Goal = { type: 'boss_damage', boss: 'boss.gargoyle', tier: 'easy', amount: 250_000 };
     const today = withSave((save) => banked(save, 120_000, 120_000));
     expect(evaluateGoal(goal, today)).toEqual({ progress: 120_000, target: 250_000, done: false });
     // A day later the pool is empty again: the mission asks for the damage "in a day".
@@ -410,7 +410,7 @@ describe('the bosses', () => {
   });
 
   it('boss_percent reads the record, so it outlives every reset', () => {
-    const goal: Goal = { type: 'boss_percent', boss: 'boss.gravemaw', tier: 'easy', pct: 30 };
+    const goal: Goal = { type: 'boss_percent', boss: 'boss.gargoyle', tier: 'easy', pct: 30 };
     const record = withSave((save) => banked(save, 0, GRAVEMAW_EASY * 0.3));
     expect(evaluateGoal(goal, record)).toEqual({ progress: 30, target: 30, done: true });
     // Tomorrow, with nothing banked, the record still counts.
@@ -421,10 +421,10 @@ describe('the bosses', () => {
   });
 
   it('counts a tier’s keys apart from the boss’s own', () => {
-    const goal: Goal = { type: 'boss_fights', boss: 'boss.gravemaw', tier: 'easy', count: 1 };
-    const stats = { 'boss.fights.boss.gravemaw': 9, 'boss.fights.boss.gravemaw.easy': 0 };
+    const goal: Goal = { type: 'boss_fights', boss: 'boss.gargoyle', tier: 'easy', count: 1 };
+    const stats = { 'boss.fights.boss.gargoyle': 9, 'boss.fights.boss.gargoyle.easy': 0 };
     expect(evaluateGoal(goal, ctx(stats)).done).toBe(false);
-    expect(evaluateGoal(goal, ctx({ ...stats, 'boss.fights.boss.gravemaw.easy': 1 })).done).toBe(true);
+    expect(evaluateGoal(goal, ctx({ ...stats, 'boss.fights.boss.gargoyle.easy': 1 })).done).toBe(true);
   });
 });
 
@@ -493,7 +493,7 @@ describe('the counters a period has to snapshot', () => {
     const goals: Goal[] = [
       { type: 'login' },
       { type: 'clear_stages', count: 5 },
-      { type: 'boss_fights', boss: 'boss.gravemaw', count: 2 },
+      { type: 'boss_fights', boss: 'boss.gargoyle', count: 2 },
       { type: 'gear_reach_level', level: 12, count: 1 },
       {
         type: 'any',
@@ -504,7 +504,7 @@ describe('the counters a period has to snapshot', () => {
       },
     ];
     expect(goalCounterKeys(goals)).toEqual([
-      'boss.fights.boss.gravemaw',
+      'boss.fights.boss.gargoyle',
       'campaign.cleared',
       'forge.crafts',
       'forge.dismantles',

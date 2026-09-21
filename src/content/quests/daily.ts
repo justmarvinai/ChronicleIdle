@@ -76,7 +76,7 @@ export default board({
     quest({
       slug: 'daily_boss',
       icon: 'glyph.flaming_skull',
-      goal: { type: 'boss_fights', boss: 'boss.gravemaw', count: 2 },
+      goal: { type: 'boss_fights', boss: 'boss.gargoyle', count: 2 },
       points: 10,
       rewards: [{ currency: 'tome_rare', amount: 1 }],
       feature: 'daily_boss',

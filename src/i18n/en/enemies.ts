@@ -1,4 +1,4 @@
-/** Authored encounters (the perf bench; the daily and weekly bosses arrive with their phases). */
+/** Authored encounters (the perf bench; the Gargoyle and the Titan arrive with their phases). */
 export const enemies = {
   'encounter.bench.stress.name': 'Stress Bench',
   'encounter.bench.stress.description':

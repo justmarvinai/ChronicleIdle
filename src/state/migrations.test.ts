@@ -222,19 +222,19 @@ describe('migrateSave', () => {
     expect(result.save.saveVersion).toBe(SAVE_VERSION);
     // What Phases 10 and 11 wrote survives: the keys spent, the damage, the chests taken, the
     // records of both gates.
-    expect(result.save.bosses['boss.gravemaw']?.keysUsed).toBe(2);
-    expect(result.save.bosses['boss.gravemaw']?.claimed).toEqual([
-      'tier.gravemaw.1|15',
-      'tier.gravemaw.1|30',
+    expect(result.save.bosses['boss.gargoyle']?.keysUsed).toBe(2);
+    expect(result.save.bosses['boss.gargoyle']?.claimed).toEqual([
+      'tier.gargoyle.1|15',
+      'tier.gargoyle.1|30',
     ]);
-    expect(result.save.bosses['boss.nyxara']?.damage['tier.nyxara.1']).toBe(1_250_000);
-    expect(result.save.bosses['boss.nyxara']?.records['tier.nyxara.1']?.damage).toBe(1_250_000);
+    expect(result.save.bosses['boss.titan']?.damage['tier.titan.1']).toBe(1_250_000);
+    expect(result.save.bosses['boss.titan']?.records['tier.titan.1']?.damage).toBe(1_250_000);
     // …and both boards open on the period the save was last in, baselined against the counters it
     // has already earned — so a hundred hours of play does not hand over a finished board.
     expect(result.save.quests.daily.periodKey).toBe('2026-09-13');
     expect(result.save.quests.weekly.periodKey).toBe('2026-09-07');
     expect(result.save.quests.daily.baseline['campaign.cleared']).toBe(57);
-    expect(result.save.quests.weekly.baseline['boss.fights.boss.nyxara']).toBe(1);
+    expect(result.save.quests.weekly.baseline['boss.fights.boss.titan']).toBe(1);
     expect(result.save.quests.daily.baseline).toEqual(result.save.stats);
     for (const period of ['daily', 'weekly'] as const) {
       expect(result.save.quests[period].claimed).toEqual([]);
@@ -308,6 +308,41 @@ describe('migrateSave', () => {
       'tutorial.the_binding',
       'tutorial.routine',
     ]);
+  });
+
+  it('moves everything the boss rename touches, and loses none of it (16 → 17)', () => {
+    // A v16 chronicle mid-period: a key spent on the daily boss, two chests taken, a personal
+    // best, a skill point already paid for this period, and the counters a quest measures.
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v16.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    interface StoredBoss {
+      keysUsed: number;
+      damage: Record<string, number>;
+      claimed: string[];
+      records: Record<string, { damage: number }>;
+    }
+    const before = fixture['bosses'] as Record<string, StoredBoss>;
+    const old = before['boss.gravemaw'];
+    expect(old, 'the v16 fixture must still carry the old spelling').toBeDefined();
+
+    const { save } = migrateSave(fixture);
+    const moved = save.bosses['boss.gargoyle'];
+    expect(save.bosses['boss.gravemaw' as 'boss.gargoyle']).toBeUndefined();
+    // The period's damage, the chests taken and the record all move with the boss.
+    expect(moved?.damage['boss.gargoyle.normal']).toBe(old?.damage['boss.gravemaw.normal']);
+    expect(moved?.claimed).toEqual(['boss.gargoyle.normal.1', 'boss.gargoyle.normal.2']);
+    expect(moved?.records['boss.gargoyle.normal']?.damage).toBe(old?.records['boss.gravemaw.normal']?.damage);
+    expect(moved?.keysUsed).toBe(old?.keysUsed);
+    // So do the counters, and the baselines that are snapshots of them — a board whose baseline
+    // kept the old key would read a lifetime of boss fights as fought this period.
+    const stats = fixture['stats'] as Record<string, number>;
+    expect(save.stats['boss.fights.boss.gargoyle']).toBe(stats['boss.fights.boss.gravemaw']);
+    expect(save.stats['boss.fights.boss.gravemaw']).toBeUndefined();
+    for (const period of ['daily', 'weekly'] as const)
+      expect(save.quests[period].baseline['boss.fights.boss.gravemaw']).toBeUndefined();
+    expect(save.missions.baseline['boss.fights.boss.gravemaw']).toBeUndefined();
   });
 
   it('runs migration steps in order', () => {

@@ -21,8 +21,8 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 10, stage: 10, difficulty: 'intro' }, [
       { currency: 'shard_ancient', amount: 1 },
     ]),
-    // 6.5 Deal 5,000,000 damage to Gravemaw (Hard) in a day
-    mission({ type: 'boss_damage', boss: 'boss.gravemaw', tier: 'hard', amount: 5_000_000 }, [
+    // 6.5 Deal 5,000,000 damage to Gargoyle (Hard) in a day
+    mission({ type: 'boss_damage', boss: 'boss.gargoyle', tier: 'hard', amount: 5_000_000 }, [
       { currency: 'gems', amount: 80 },
     ]),
     // 6.6 Clear Ironcrag Citadel 11-5

@@ -28,7 +28,7 @@ function healStat(
 
 /**
  * Heal Reduction on the target as a fraction (0.5 / 1): the debuff it carries, and any enemy
- * passive that dims healing while its condition holds — Nyxara's Un-light in her last phase
+ * passive that dims healing while its condition holds — Titan's Un-light in its last phase
  * (BOSSES.md §3). The strongest source wins rather than stacking, as elsewhere in §5.
  */
 export function healReduction(state: BattleState, target: BattleUnit): number {
@@ -49,7 +49,7 @@ export function healReduction(state: BattleState, target: BattleUnit): number {
 }
 
 /**
- * `per: 'target_debuff'` multiplies the heal by the debuffs on the action's target — Gravemaw
+ * `per: 'target_debuff'` multiplies the heal by the debuffs on the action's target — Gargoyle
  * eats the curses off a champion. With none on them the heal is worth nothing at all.
  */
 function perMultiplier(ctx: ActionContext, effect: HealEffect): number {

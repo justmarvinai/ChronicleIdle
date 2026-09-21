@@ -13,43 +13,43 @@ import { levelCap } from '@engine/champions/stats';
 import type { PartyMember } from '@engine/battle/create';
 import { BOSS_BY_ID } from './index';
 
-const gravemaw = BOSS_BY_ID['boss.gravemaw'];
-const nyxara = BOSS_BY_ID['boss.nyxara'];
+const gargoyle = BOSS_BY_ID['boss.gargoyle'];
+const titan = BOSS_BY_ID['boss.titan'];
 
-describe('Gravemaw, the Bone Tyrant', () => {
+describe('Gargoyle, the Waking Stone', () => {
   it('is the daily boss, two keys a day, from chronicle level 10', () => {
-    expect(gravemaw?.period).toBe('daily');
-    expect(gravemaw?.keysPerPeriod).toBe(2);
-    expect(gravemaw?.unlockLevel).toBe(10);
-    expect(gravemaw?.tiers.map((tier) => tier.id)).toEqual(['easy', 'normal', 'hard', 'brutal']);
+    expect(gargoyle?.period).toBe('daily');
+    expect(gargoyle?.keysPerPeriod).toBe(2);
+    expect(gargoyle?.unlockLevel).toBe(10);
+    expect(gargoyle?.tiers.map((tier) => tier.id)).toEqual(['easy', 'normal', 'hard', 'brutal']);
   });
 
   it('is Unshakeable: no stun, freeze, sleep, provoke or fear', () => {
-    expect(gravemaw?.immunities).toEqual(['stun', 'freeze', 'sleep', 'provoke', 'fear']);
-    for (const tier of gravemaw?.tiers ?? [])
-      expect(tier.enemy.boss?.immunities).toEqual(gravemaw?.immunities);
+    expect(gargoyle?.immunities).toEqual(['stun', 'freeze', 'sleep', 'provoke', 'fear']);
+    for (const tier of gargoyle?.tiers ?? [])
+      expect(tier.enemy.boss?.immunities).toEqual(gargoyle?.immunities);
   });
 
   it('shares one kit across all four tiers', () => {
-    const ids = (gravemaw?.tiers ?? []).map((tier) => tier.enemy.abilities.map((a) => a.id).join(','));
+    const ids = (gargoyle?.tiers ?? []).map((tier) => tier.enemy.abilities.map((a) => a.id).join(','));
     expect(new Set(ids).size).toBe(1);
-    expect(gravemaw?.tiers[0]?.enemy.abilities.map((a) => a.id)).toEqual([
-      'ab.gravemaw.bone_crush',
-      'ab.gravemaw.grave_quake',
-      'ab.gravemaw.devour',
+    expect(gargoyle?.tiers[0]?.enemy.abilities.map((a) => a.id)).toEqual([
+      'ab.gargoyle.granite_fist',
+      'ab.gargoyle.stonequake',
+      'ab.gargoyle.devour',
     ]);
-    expect(gravemaw?.tiers[0]?.enemy.passives.map((p) => p.id)).toEqual(['ab.gravemaw.tyrants_hide']);
+    expect(gargoyle?.tiers[0]?.enemy.passives.map((p) => p.id)).toEqual(['ab.gargoyle.weathered_stone']);
   });
 
   it('fights at the pools the table prints, not a scaled version of them', () => {
     const champ = content.championById('champ.ser_corvin');
-    if (!champ || !gravemaw) throw new Error('missing content');
+    if (!champ || !gargoyle) throw new Error('missing content');
     const party: PartyMember[] = [
       { def: champ, instance: createInstance(champ, { instanceId: 'x', now: 0, source: 'starter' }) },
     ];
     const pools = [250_000, 2_000_000, 12_000_000, 60_000_000];
-    gravemaw.tiers.forEach((tier, index) => {
-      const encounter = content.bossEncounter(gravemaw.id, tier.id);
+    gargoyle.tiers.forEach((tier, index) => {
+      const encounter = content.bossEncounter(gargoyle.id, tier.id);
       if (!encounter) throw new Error(`no encounter for ${tier.id}`);
       const state = createBattle(
         {
@@ -74,8 +74,8 @@ describe('Gravemaw, the Bone Tyrant', () => {
   });
 
   it('casts its kit in the printed order, the same way on the same seed', () => {
-    const encounter = content.bossEncounter('boss.gravemaw', 'easy');
-    if (!encounter || !gravemaw) throw new Error('missing content');
+    const encounter = content.bossEncounter('boss.gargoyle', 'easy');
+    if (!encounter || !gargoyle) throw new Error('missing content');
     // A party that survives long enough for the rotation to come round twice.
     const party: PartyMember[] = ['champ.khazgor', 'champ.anuria', 'champ.maruan'].map((id, index) => {
       const def = content.championById(id as 'champ.khazgor');
@@ -98,69 +98,69 @@ describe('Gravemaw, the Bone Tyrant', () => {
     expect(casts()).toEqual(first);
     expect(first.length).toBeGreaterThan(6);
     // `A1 A1 A2 A1 A3` with Devour starting on cooldown: the bite cannot open the fight.
-    expect(first[0]).toBe('ab.gravemaw.bone_crush');
-    expect(first[1]).toBe('ab.gravemaw.bone_crush');
-    expect(first.slice(0, 3)).not.toContain('ab.gravemaw.devour');
-    expect(first).toContain('ab.gravemaw.grave_quake');
-    expect(first).toContain('ab.gravemaw.devour');
+    expect(first[0]).toBe('ab.gargoyle.granite_fist');
+    expect(first[1]).toBe('ab.gargoyle.granite_fist');
+    expect(first.slice(0, 3)).not.toContain('ab.gargoyle.devour');
+    expect(first).toContain('ab.gargoyle.stonequake');
+    expect(first).toContain('ab.gargoyle.devour');
     expect(new Set(first).size).toBe(3);
   });
 
   it('pays a ladder of chests that ends in the kill', () => {
-    for (const tier of gravemaw?.tiers ?? []) {
+    for (const tier of gargoyle?.tiers ?? []) {
       expect(tier.chests.map((chest) => chest.pct)).toEqual([5, 15, 30, 60, 100]);
       expect(tier.chests[tier.chests.length - 1]?.gear).toBeDefined();
     }
     // The hardest tier's kill is the only Legendary 6★ piece on the ladder.
-    expect(gravemaw?.tiers[3]?.chests[4]?.gear).toEqual({ rarity: 'legendary', stars: 6 });
+    expect(gargoyle?.tiers[3]?.chests[4]?.gear).toEqual({ rarity: 'legendary', stars: 6 });
   });
 
   it('is reachable through the registry by id and by tier', () => {
-    expect(content.bossById('boss.gravemaw')?.name).toBe('boss.gravemaw.name');
-    expect(content.bossTier('boss.gravemaw', 'hard')?.stats.hp).toBe(12_000_000);
-    expect(content.bossTier('boss.gravemaw', 'nope')).toBeUndefined();
-    expect(content.encounterById('encounter.boss.gravemaw.easy')?.kind).toBe('boss');
-    expect(content.enemyById('enemy.gravemaw_brutal')?.stats.atk).toBe(4_000);
+    expect(content.bossById('boss.gargoyle')?.name).toBe('boss.gargoyle.name');
+    expect(content.bossTier('boss.gargoyle', 'hard')?.stats.hp).toBe(12_000_000);
+    expect(content.bossTier('boss.gargoyle', 'nope')).toBeUndefined();
+    expect(content.encounterById('encounter.boss.gargoyle.easy')?.kind).toBe('boss');
+    expect(content.enemyById('enemy.gargoyle_brutal')?.stats.atk).toBe(4_000);
   });
 });
 
-describe('Nyxara, Mother of Shadows', () => {
+describe('Titan, the Sunless', () => {
   it('is the weekly boss, three keys a week, from chronicle level 15', () => {
-    expect(nyxara?.period).toBe('weekly');
-    expect(nyxara?.keysPerPeriod).toBe(3);
-    expect(nyxara?.unlockLevel).toBe(15);
-    expect(nyxara?.keyCurrency).toBe('key_weekly');
-    expect(nyxara?.tiers.map((tier) => tier.id)).toEqual(['normal', 'hard', 'nightmare']);
+    expect(titan?.period).toBe('weekly');
+    expect(titan?.keysPerPeriod).toBe(3);
+    expect(titan?.unlockLevel).toBe(15);
+    expect(titan?.keyCurrency).toBe('key_weekly');
+    expect(titan?.tiers.map((tier) => tier.id)).toEqual(['normal', 'hard', 'nightmare']);
   });
 
   it('fights in three phases, and every tier knows where they are', () => {
-    expect(nyxara?.phases).toEqual([0.9, 0.75]);
-    for (const tier of nyxara?.tiers ?? []) expect(tier.enemy.boss?.phases).toEqual([0.9, 0.75]);
+    expect(titan?.phases).toEqual([0.9, 0.75]);
+    for (const tier of titan?.tiers ?? []) expect(tier.enemy.boss?.phases).toEqual([0.9, 0.75]);
   });
 
   it('opens the Hymn in phase II and the Embrace in phase III', () => {
-    const byId = new Map((nyxara?.tiers[0]?.enemy.abilities ?? []).map((a) => [a.id, a]));
-    expect(byId.get('ab.nyxara.shadow_verse')?.minPhase).toBeUndefined();
-    expect(byId.get('ab.nyxara.dirge')?.minPhase).toBeUndefined();
-    expect(byId.get('ab.nyxara.eclipse_hymn')?.minPhase).toBe(2);
-    expect(byId.get('ab.nyxara.mothers_embrace')?.minPhase).toBe(3);
-    // Un-light only bites in her last phase.
-    expect(nyxara?.tiers[0]?.enemy.passives[0]?.effects[0]).toEqual({
+    const byId = new Map((titan?.tiers[0]?.enemy.abilities ?? []).map((a) => [a.id, a]));
+    expect(byId.get('ab.titan.shadow_verse')?.minPhase).toBeUndefined();
+    expect(byId.get('ab.titan.dirge')?.minPhase).toBeUndefined();
+    expect(byId.get('ab.titan.eclipse_hymn')?.minPhase).toBe(2);
+    expect(byId.get('ab.titan.titans_embrace')?.minPhase).toBe(3);
+    // Un-light only bites in its last phase.
+    expect(titan?.tiers[0]?.enemy.passives[0]?.effects[0]).toEqual({
       kind: 'enemy_heal_reduction',
       value: 30,
       if: { selfPhaseAtLeast: 3 },
     });
   });
 
-  it('brings two Choristers that take half of every hit meant for her', () => {
-    expect(nyxara?.adds).toMatchObject({
+  it('brings two Choristers that take half of every hit meant for it', () => {
+    expect(titan?.adds).toMatchObject({
       name: 'enemy.chorister.name',
       count: 2,
       guardPercent: 50,
       reviveEvery: 12,
       revivedHpPercent: 50,
     });
-    for (const tier of nyxara?.tiers ?? []) {
+    for (const tier of titan?.tiers ?? []) {
       expect(tier.adds?.id).toBe(`enemy.chorister_${tier.id}`);
       expect(tier.enemy.boss?.adds).toEqual({
         enemyId: tier.adds?.id,
@@ -177,21 +177,20 @@ describe('Nyxara, Mother of Shadows', () => {
   });
 
   it('stands with its chorus in the wave a key buys', () => {
-    const encounter = content.bossEncounter('boss.nyxara', 'normal');
+    const encounter = content.bossEncounter('boss.titan', 'normal');
     expect(encounter?.waves[0]?.enemies.map((e) => e.enemyId)).toEqual([
-      'enemy.nyxara_normal',
+      'enemy.titan_normal',
       'enemy.chorister_normal',
       'enemy.chorister_normal',
     ]);
     expect(encounter?.turnLimit).toBe(100);
     expect(encounter?.timeUpIsDefeat).toBe(false);
     // Two per cent of the tier's pool, on every tier (BOSSES.md §3).
-    for (const tier of nyxara?.tiers ?? [])
-      expect(tier.adds?.stats.hp).toBe(Math.round(tier.stats.hp * 0.02));
+    for (const tier of titan?.tiers ?? []) expect(tier.adds?.stats.hp).toBe(Math.round(tier.stats.hp * 0.02));
   });
 
   it('is linked to its chorus the moment the wave spawns', () => {
-    const encounter = content.bossEncounter('boss.nyxara', 'normal');
+    const encounter = content.bossEncounter('boss.titan', 'normal');
     const champ = content.championById('champ.ser_corvin');
     if (!encounter || !champ) throw new Error('missing content');
     const party: PartyMember[] = [
@@ -199,7 +198,7 @@ describe('Nyxara, Mother of Shadows', () => {
     ];
     const state = createBattle(
       { encounter, party, enemyById: (id) => content.enemyById(id), control: 'auto' },
-      'nyxara-test',
+      'titan-test',
     );
     const boss = state.units['w0e0'];
     expect(boss?.maxHp).toBe(5_000_000);
@@ -211,12 +210,12 @@ describe('Nyxara, Mother of Shadows', () => {
   });
 
   it('changes gear twice against the damage a finished roster does', () => {
-    const encounter = content.bossEncounter('boss.nyxara', 'normal');
-    const tier = content.bossTier('boss.nyxara', 'normal');
+    const encounter = content.bossEncounter('boss.titan', 'normal');
+    const tier = content.bossTier('boss.titan', 'normal');
     if (!encounter || !tier) throw new Error('missing content');
     // Four champions with the gear a finished roster wears, modelled the way `tools/sim` does it
     // (GEAR.md §5 is roughly +120 % on a full set; ×8 stands in for that plus rank-up and sets).
-    // At that damage the race is 40 % of her pool in one key, which is where phase III lives.
+    // At that damage the race is 40 % of its pool in one key, which is where phase III lives.
     const party: PartyMember[] = [
       'champ.aurelia_dawnwarden',
       'champ.varkos_sundered_king',
@@ -240,7 +239,7 @@ describe('Nyxara, Mother of Shadows', () => {
 
     const state = createBattle(
       { encounter, party, enemyById: (id) => content.enemyById(id), control: 'auto' },
-      'nyxara-race',
+      'titan-race',
     );
     const { events } = runAuto(state, 100_000);
     const casts = events
@@ -251,28 +250,28 @@ describe('Nyxara, Mother of Shadows', () => {
     expect(
       events.filter((e) => e.type === 'phase.changed').map((e) => (e.type === 'phase.changed' ? e.phase : 0)),
     ).toEqual([2, 3]);
-    const hymn = casts.indexOf('ab.nyxara.eclipse_hymn');
-    const embrace = casts.indexOf('ab.nyxara.mothers_embrace');
+    const hymn = casts.indexOf('ab.titan.eclipse_hymn');
+    const embrace = casts.indexOf('ab.titan.titans_embrace');
     expect(hymn).toBeGreaterThanOrEqual(0);
     expect(embrace).toBeGreaterThanOrEqual(0);
     // Her chorus falls to the party and comes back to sing again.
     expect(events.some((e) => e.type === 'unit.died' && e.unitId !== 'w0e0')).toBe(true);
     expect(events.some((e) => e.type === 'unit.revived' && e.unitId.startsWith('w0e'))).toBe(true);
-    // And while one of them stood, it took its half of a hit meant for her.
+    // And while one of them stood, it took its half of a hit meant for the Titan.
     expect(events.some((e) => e.type === 'hit' && e.redirectedFrom === 'w0e0')).toBe(true);
   });
 
   it('pays six chests a tier, from a sliver of the pool to the kill', () => {
-    for (const tier of nyxara?.tiers ?? [])
+    for (const tier of titan?.tiers ?? [])
       expect(tier.chests.map((chest) => chest.pct)).toEqual([2, 5, 12, 25, 50, 100]);
-    expect(nyxara?.tiers[2]?.chests[5]?.gear).toEqual({ rarity: 'mythic', stars: 6 });
-    expect(nyxara?.tiers.map((tier) => tier.playerXp)).toEqual([800, 1_600, 3_200]);
+    expect(titan?.tiers[2]?.chests[5]?.gear).toEqual({ rarity: 'mythic', stars: 6 });
+    expect(titan?.tiers.map((tier) => tier.playerXp)).toEqual([800, 1_600, 3_200]);
   });
 });
 
 describe('what the arena is handed for a phased boss', () => {
   it('names the escort on the boss view and the master on each add', () => {
-    const encounter = content.bossEncounter('boss.nyxara', 'normal');
+    const encounter = content.bossEncounter('boss.titan', 'normal');
     const champ = content.championById('champ.ser_corvin');
     if (!encounter || !champ) throw new Error('missing content');
     const party: PartyMember[] = [
@@ -280,7 +279,7 @@ describe('what the arena is handed for a phased boss', () => {
     ];
     const state = createBattle(
       { encounter, party, enemyById: (id) => content.enemyById(id), control: 'auto' },
-      'nyxara-view',
+      'titan-view',
     );
     const view = snapshot(state);
     const boss = view.units.find((u) => u.isBoss);

@@ -178,7 +178,7 @@ describe('claiming', () => {
   });
 
   it('pays the replacement quest that stands in for what is still locked', () => {
-    // At level 5 the board has just opened; the Forge (8) and the Daily Boss (10) are still to
+    // At level 5 the board has just opened; the Forge (8) and the Gargoyle (10) are still to
     // come, so the replacement quest carries their twenty points (QUESTS_MISSIONS.md §2).
     const c = chronicle({ level: 5 });
     const replacement = board(c).quests.find((row) => row.quest.id === 'quest.daily.win_battles');
@@ -249,7 +249,7 @@ describe('the points track', () => {
 
 describe('a chronicle that levels up mid-period', () => {
   it('counts the finished day once, even when a new quest appears on it', () => {
-    // Level 5: the Forge (8) and the Daily Boss (10) are hidden, so nine rows make the hundred.
+    // Level 5: the Forge (8) and the Gargoyle (10) are hidden, so nine rows make the hundred.
     const c = chronicle({ level: 5 });
     playTheWholeBoard(c);
     played(c, 'battles.victory', 3);

@@ -29,14 +29,14 @@ const SCENARIOS = [
   { id: 'stress', encounterId: 'encounter.bench.stress', testId: 'perf-run', label: 'perf.run' },
   {
     id: 'boss',
-    encounterId: bossEncounterId('boss.gravemaw', 'easy'),
+    encounterId: bossEncounterId('boss.gargoyle', 'easy'),
     testId: 'perf-run-boss',
     label: 'perf.runBoss',
   },
   {
     // The heaviest fight the game has: a ×2.4 washed sprite, its escort, and the phase beats.
     id: 'weekly',
-    encounterId: bossEncounterId('boss.nyxara', 'normal'),
+    encounterId: bossEncounterId('boss.titan', 'normal'),
     testId: 'perf-run-weekly',
     label: 'perf.runWeekly',
   },

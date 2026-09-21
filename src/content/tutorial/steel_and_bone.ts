@@ -75,7 +75,7 @@ export default chapter({
       spotlight: ['quests.track'],
       complete: { type: 'acknowledged' },
     }),
-    // 6.6 — the weekly boss (15): read her sheet before you spend a key on her.
+    // 6.6 — the Titan (15): read its sheet before you spend a key on it.
     step({
       when: {
         type: 'all',

@@ -165,16 +165,16 @@ describe('where the points come from', () => {
 
   it('pays each boss once a period, whatever the boss costs in keys', () => {
     const palace = emptySave();
-    const daily = awardBossKill(palace, 'boss.gravemaw', '2026-09-21', 'daily');
+    const daily = awardBossKill(palace, 'boss.gargoyle', '2026-09-21', 'daily');
     expect(daily.points).toBe(PALACE_POINT_SOURCES.dailyBoss);
-    expect(daily.paid.bossesPaid).toEqual({ 'boss.gravemaw': '2026-09-21' });
+    expect(daily.paid.bossesPaid).toEqual({ 'boss.gargoyle': '2026-09-21' });
 
-    const paid = { ...palace, bossesPaid: { 'boss.gravemaw': '2026-09-21' } };
-    expect(awardBossKill(paid, 'boss.gravemaw', '2026-09-21', 'daily').points).toBe(0);
-    expect(awardBossKill(paid, 'boss.gravemaw', '2026-09-22', 'daily').points).toBe(1);
+    const paid = { ...palace, bossesPaid: { 'boss.gargoyle': '2026-09-21' } };
+    expect(awardBossKill(paid, 'boss.gargoyle', '2026-09-21', 'daily').points).toBe(0);
+    expect(awardBossKill(paid, 'boss.gargoyle', '2026-09-22', 'daily').points).toBe(1);
     // The weekly boss is worth three, and keeps its own mark.
-    const weekly = awardBossKill(paid, 'boss.nyxara', '2026-W39', 'weekly');
+    const weekly = awardBossKill(paid, 'boss.titan', '2026-W39', 'weekly');
     expect(weekly.points).toBe(PALACE_POINT_SOURCES.weeklyBoss);
-    expect(weekly.paid.bossesPaid).toEqual({ 'boss.gravemaw': '2026-09-21', 'boss.nyxara': '2026-W39' });
+    expect(weekly.paid.bossesPaid).toEqual({ 'boss.gargoyle': '2026-09-21', 'boss.titan': '2026-W39' });
   });
 });

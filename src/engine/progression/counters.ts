@@ -91,7 +91,7 @@ export type CounterKey = (typeof COUNTER_KEYS)[number];
 
 /**
  * Families whose keys carry a caller's id (`battles.fought.stage.01.01`, `summon.pulls.faded`,
- * `boss.fights.boss.nyxara`). They are counted the same way; the prefix is what makes them
+ * `boss.fights.boss.titan`). They are counted the same way; the prefix is what makes them
  * recognisable to the validator and to anyone reading a save.
  */
 export const COUNTER_PREFIXES = [

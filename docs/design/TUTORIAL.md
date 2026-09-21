@@ -78,8 +78,8 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 ## Chapter 6 — Steel and Bone (levels 7–15: Rank-up, Forge, Skills, Bosses)
 
 Short, single-step lessons triggered on first visit: Rank-up (7), Forge (8), Skill upgrade (9),
-Daily Boss (10, includes the "damage accumulates, chests at thresholds, keys reset" explanation),
-Weekly Quests (12), Weekly Boss (15), Refine (18), Auto-repeat (5/20/30). Each is one dialogue +
+the Gargoyle (10, includes the "damage accumulates, chests at thresholds, keys reset" explanation),
+Weekly Quests (12), the Titan (15), Refine (18), Auto-repeat (5/20/30). Each is one dialogue +
 one spotlighted action.
 
 ## Data shape

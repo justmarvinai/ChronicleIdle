@@ -171,9 +171,12 @@ test.describe('the EA-0.1 walkthrough', () => {
     }
     await toHub(page);
 
-    // ── The bosses: the daily gate and the weekly one, their tiers and their records.
+    // ── The bosses: the Gargoyle's gate and the Titan's, their tiers and their records.
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible();
+    await settle(page);
+    await page.getByTestId('enter-bosses').click();
+    await expect(page.getByTestId('screen-boss-menu')).toBeVisible();
     await settle(page);
     await page.getByTestId('enter-daily').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible();
@@ -182,6 +185,9 @@ test.describe('the EA-0.1 walkthrough', () => {
     await settle(page);
     await toHub(page);
     await page.getByTestId('nav-battle').click();
+    await settle(page);
+    await page.getByTestId('enter-bosses').click();
+    await expect(page.getByTestId('screen-boss-menu')).toBeVisible();
     await settle(page);
     await page.getByTestId('enter-weekly').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible();

@@ -72,11 +72,11 @@ export const tutorial = {
   'tut.6.3.text':
     'Tomes teach nothing new — they sharpen what a champion already knows. Four ranks to an ability, and the last one is always the dearest.',
   'tut.6.4.text':
-    'Gravemaw cannot be killed, only worn down. Your keys buy attempts; the damage of each one is written together, and the chests open as the total passes each mark. Keys return with the day.',
+    'Gargoyle cannot be killed, only worn down. Your keys buy attempts; the damage of each one is written together, and the chests open as the total passes each mark. Keys return with the day.',
   'tut.6.5.text':
     'The week keeps its own ledger, and it is slower and heavier than the day’s. Seven days of small duties fill it.',
   'tut.6.6.text':
-    'Nyxara answers only once a week, and she answers differently in every phase. Read her sheet before you spend a key on her — what never lands on her is written there.',
+    'Titan answers only once a week, and she answers differently in every phase. Read her sheet before you spend a key on her — what never lands on her is written there.',
   'tut.6.7.text':
     'Refining spends a twin piece to move one line on the piece you keep. It is the last polish, not the first.',
   'tut.6.8.text':

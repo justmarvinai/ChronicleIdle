@@ -51,8 +51,8 @@ export default function HubScreen(_props: ScreenProps) {
   // their damage has already earned (BOSSES.md §4).
   const bossChests = !save
     ? 0
-    : (dailyBoss ? (bossView(save, 'boss.gravemaw', now)?.claimable ?? 0) : 0) +
-      (weeklyBoss ? (bossView(save, 'boss.nyxara', now)?.claimable ?? 0) : 0);
+    : (dailyBoss ? (bossView(save, 'boss.gargoyle', now)?.claimable ?? 0) : 0) +
+      (weeklyBoss ? (bossView(save, 'boss.titan', now)?.claimable ?? 0) : 0);
   // The ledger's own badge: quests finished and chests earned, across both boards.
   const ledger = save ? questsClaimable(save, now) : 0;
   // The Path's: the mission it is on, if it is finished, and any chapter chest still waiting.

@@ -40,7 +40,7 @@ export default board({
     quest({
       slug: 'daily_boss_keys',
       icon: 'glyph.flaming_skull',
-      goal: { type: 'boss_fights', boss: 'boss.gravemaw', count: 10 },
+      goal: { type: 'boss_fights', boss: 'boss.gargoyle', count: 10 },
       points: 15,
       rewards: [{ currency: 'tome_epic', amount: 2 }],
       feature: 'daily_boss',
@@ -48,7 +48,7 @@ export default board({
     quest({
       slug: 'weekly_boss_keys',
       icon: 'glyph.cursed_eye',
-      goal: { type: 'boss_fights', boss: 'boss.nyxara', count: 3 },
+      goal: { type: 'boss_fights', boss: 'boss.titan', count: 3 },
       points: 15,
       rewards: [{ currency: 'mat_glyph_sigil', amount: 1 }],
       feature: 'weekly_boss',

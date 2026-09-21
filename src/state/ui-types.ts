@@ -25,6 +25,8 @@ export type Route =
   /** The Summoning Portal; `banner` opens on a banner tab (`SUMMONING.md` §3). */
   | { name: 'portal'; banner?: string }
   /** The boss gate; `boss` opens on one of its tabs and `tier` selects a card (`BOSSES.md` §4). */
+  /** The menu of period bosses; `bosses` is one of them, at its own gate. */
+  | { name: 'boss-menu' }
   | { name: 'bosses'; boss?: string; tier?: string }
   /** The Chronicler's Ledger; `period` opens on one of its boards (`QUESTS_MISSIONS.md` §2–§3). */
   | { name: 'quests'; period?: QuestPeriod }

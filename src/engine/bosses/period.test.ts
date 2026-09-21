@@ -34,10 +34,10 @@ function fight(
   return withDamageBanked(withKeySpent(state), input);
 }
 
-const gravemaw = BOSS_BY_ID['boss.gravemaw'];
-if (!gravemaw) throw new Error('no daily boss');
-const easy = gravemaw.tiers[0];
-const normal = gravemaw.tiers[1];
+const gargoyle = BOSS_BY_ID['boss.gargoyle'];
+if (!gargoyle) throw new Error('no daily boss');
+const easy = gargoyle.tiers[0];
+const normal = gargoyle.tiers[1];
 if (!easy || !normal) throw new Error('no tiers');
 
 /** Noon, so a few hours either way stays inside the same day. */
@@ -69,10 +69,10 @@ describe('the period boundary', () => {
       team: ['champ.ser_corvin'],
       now: NOON,
     });
-    expect(keysLeft(gravemaw, spent)).toBe(1);
+    expect(keysLeft(gargoyle, spent)).toBe(1);
 
     const tomorrow = currentPeriod(spent, 'daily', NOON + 24 * MS_PER_HOUR);
-    expect(keysLeft(gravemaw, tomorrow)).toBe(2);
+    expect(keysLeft(gargoyle, tomorrow)).toBe(2);
     expect(tierDamage(tomorrow, easy.id)).toBe(0);
     expect(tomorrow.claimed).toEqual([]);
     // History survives: the best damage and the team that did it stay.
@@ -91,7 +91,7 @@ describe('banking a fight', () => {
     state = fight(state, { tierId: easy.id, damage: 30_000, team: ['b'], now: NOON + 1 });
     expect(tierDamage(state, easy.id)).toBe(50_000);
     expect(state.keysUsed).toBe(2);
-    expect(keysLeft(gravemaw, state)).toBe(0);
+    expect(keysLeft(gargoyle, state)).toBe(0);
     // The record is the period's running total, not one fight's share.
     expect(state.records[easy.id]?.damage).toBe(50_000);
     expect(state.records[easy.id]?.team).toEqual(['b']);
@@ -172,12 +172,12 @@ describe('the chest ladder', () => {
     });
     state = withChestClaimed(state, easy.id, 5);
     state = fight(state, { tierId: normal.id, damage: 150_000, team: ['a'], now: NOON });
-    expect(unclaimedAtReset(gravemaw, state)).toEqual([
+    expect(unclaimedAtReset(gargoyle, state)).toEqual([
       { tierId: easy.id, pct: 15 },
       { tierId: normal.id, pct: 5 },
     ]);
     // Nothing is owed on a period with no damage in it.
-    expect(unclaimedAtReset(gravemaw, period(NOON))).toEqual([]);
+    expect(unclaimedAtReset(gargoyle, period(NOON))).toEqual([]);
   });
 });
 
@@ -195,7 +195,7 @@ describe('the damage a fight did', () => {
   });
   const report = (over: Partial<BattleOutcome['units'][number]>): BattleOutcome['units'][number] => ({
     unitId: 'w0e0',
-    defId: 'enemy.gravemaw_easy',
+    defId: 'enemy.gargoyle_easy',
     instanceId: null,
     side: 'enemy',
     alive: true,
@@ -214,7 +214,7 @@ describe('the damage a fight did', () => {
       report({ unitId: 'w0e1', defId: 'enemy.chorister', damageTaken: 9_000 }),
       report({ unitId: 'a0', defId: 'champ.ser_corvin', side: 'ally', damageTaken: 30_000 }),
     ]);
-    expect(damageToBoss(state, 'enemy.gravemaw_easy')).toBe(42_000);
-    expect(damageToBoss(state, 'enemy.gravemaw_brutal')).toBe(0);
+    expect(damageToBoss(state, 'enemy.gargoyle_easy')).toBe(42_000);
+    expect(damageToBoss(state, 'enemy.gargoyle_brutal')).toBe(0);
   });
 });

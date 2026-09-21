@@ -1,10 +1,10 @@
 /**
- * Gravemaw, the Bone Tyrant — the daily boss (docs/design/BOSSES.md §2).
+ * Gargoyle, the Waking Stone — the daily boss (docs/design/BOSSES.md §2).
  *
- * A damage race against a wall of bone: he is Unshakeable (no Stun, Freeze, Sleep, Provoke or
- * Fear), takes every damage-over-time at full value, and eats the curses off whoever he bites, so
- * the answer is Poison/Bleed/Burn, DEF Down and Weaken rather than crowd control. His hide softens
- * crits until five *different* debuffs have landed on him — the fight's one puzzle.
+ * A damage race against a wall of stone: it is Unshakeable (no Stun, Freeze, Sleep, Provoke or
+ * Fear), takes every damage-over-time at full value, and eats the curses off whoever it bites, so
+ * the answer is Poison/Bleed/Burn, DEF Down and Weaken rather than crowd control. Its weathering
+ * softens crits until five *different* debuffs have landed on it — the fight's one puzzle.
  */
 import { hit, heal, status } from '@content/champions/dsl';
 import { defineBoss } from './dsl';
@@ -18,7 +18,7 @@ const chest = (
 ): BossChestDef => (gear ? { pct, currencies, gear } : { pct, currencies });
 
 export default defineBoss({
-  slug: 'gravemaw',
+  slug: 'gargoyle',
   period: 'daily',
   keysPerPeriod: 2,
   unlockLevel: 10,
@@ -26,27 +26,27 @@ export default defineBoss({
   keyCurrency: 'key_daily',
   element: 'eclipse',
   role: 'health',
-  // Bone over the placeholder model, twice a champion's size (CLAUDE.md §2.7): the lizard's own
-  // greens are washed out first, or a pale multiply tint would do nothing at all.
+  // Weathered limestone over the placeholder model, twice a champion's size (CLAUDE.md §2.7): the
+  // lizard's own greens are washed out first, or a pale multiply tint would do nothing at all.
   art: { tint: '#efe6d2', scale: 2, desaturate: true },
   backdrop: 'bg.bg3',
   surface: 'stone',
   immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],
-  // A race lasts him a dozen own turns or so (tools/sim), so the steps come every other turn.
+  // A race lasts it a dozen own turns or so (tools/sim), so the steps come every other turn.
   enrageEvery: 2,
   rotation: ['a1', 'a1', 'a2', 'a1', 'a3'],
   abilities: [
     {
       slot: 'a1',
-      key: 'bone_crush',
+      key: 'granite_fist',
       icon: 'spell.earth_boulder_fist',
-      // He goes for whoever hits hardest, which is usually the champion you least want down.
+      // It goes for whoever hits hardest, which is usually the champion you least want down.
       prefer: 'highest_atk',
       effects: [hit(4), status('def_down', 2, { chance: 50, value: 30 })],
     },
     {
       slot: 'a2',
-      key: 'grave_quake',
+      key: 'stonequake',
       icon: 'spell.earth_fissure_web',
       cooldown: 3,
       effects: [
@@ -63,7 +63,7 @@ export default defineBoss({
       startsOnCooldown: true,
       effects: [
         hit(6),
-        // Three per cent of his pool for every curse on the champion he bites.
+        // Three per cent of its pool for every curse on the champion it bites.
         heal(0.03, 'self', 'CASTER_MAX_HP', { per: 'target_debuff' }),
         status('heal_reduction', 2, { chance: 100, value: 100 }),
       ],
@@ -71,7 +71,7 @@ export default defineBoss({
   ],
   passives: [
     {
-      key: 'tyrants_hide',
+      key: 'weathered_stone',
       icon: 'spell.earth_monolith',
       trigger: 'static',
       effects: [

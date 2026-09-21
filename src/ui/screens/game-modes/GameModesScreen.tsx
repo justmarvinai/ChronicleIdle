@@ -1,23 +1,18 @@
-import { backdrop } from '@assets/manifest';
 import type { BackdropKey, GlyphKey } from '@assets/manifest.generated';
 import type { FeatureId } from '@content/balance/unlocks';
-import { playSfx } from '@audio/index';
 import { content } from '@content/registry';
 import { t, translate } from '@i18n/index';
 import type { I18nKey } from '@i18n/index';
-import { unlockLevel } from '@engine/progression/unlocks';
-import { bossView } from '@state/bosses';
+import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import { currentPointer } from '@state/campaign';
+import { bossKeysNote } from '@ui/screens/bosses/boss-view';
 import { breweryView } from '@state/brewery';
 import { isTowerUnlocked, towerView } from '@state/tower';
-import { selectActions, selectFeatureUnlocked, selectSave } from '@state/selectors';
+import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
-import { Button } from '@ui/components/Button/Button';
-import { DecoFrame } from '@ui/components/Frame/DecoFrame';
-import { CARD_FRAME, CARD_TINT } from '@ui/styles/display-maps';
-import { Glyph } from '@ui/components/Glyph/Glyph';
+import { ModeCard } from '@ui/components/ModeCard/ModeCard';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
@@ -43,8 +38,6 @@ interface ModeDef {
   gateKey?: I18nKey;
   /** What the Locked screen says instead of counting levels, for the same reason. */
   lockedKey?: I18nKey;
-  /** A boss card reports the keys left this period, the way the campaign card reports the stand. */
-  boss?: string;
 }
 
 const MODES: readonly ModeDef[] = [
@@ -58,24 +51,14 @@ const MODES: readonly ModeDef[] = [
     route: { name: 'campaign' },
   },
   {
-    id: 'daily',
+    id: 'bosses',
+    // The first of the two to open. The Titan's own gate is on its card in the menu behind this.
     feature: 'daily_boss',
-    titleKey: 'gameModes.dailyBoss',
-    bodyKey: 'gameModes.dailyBoss.body',
+    titleKey: 'gameModes.bosses',
+    bodyKey: 'gameModes.bosses.body',
     art: 'bg.bg3',
     glyph: 'glyph.flaming_skull',
-    route: { name: 'bosses', boss: 'boss.gravemaw' },
-    boss: 'boss.gravemaw',
-  },
-  {
-    id: 'weekly',
-    feature: 'weekly_boss',
-    titleKey: 'gameModes.weeklyBoss',
-    bodyKey: 'gameModes.weeklyBoss.body',
-    art: 'bg.bg9',
-    glyph: 'glyph.cursed_eye',
-    route: { name: 'bosses', boss: 'boss.nyxara' },
-    boss: 'boss.nyxara',
+    route: { name: 'boss-menu' },
   },
   {
     id: 'brewery',
@@ -108,6 +91,10 @@ export default function GameModesScreen(_props: ScreenProps) {
   useSceneAudio('hub', 'hub');
   const here = save ? currentPointer(save) : null;
   const settlement = here ? content.settlementByIndex(here.settlement) : null;
+  // The tower asks for a cleared Intro rather than a level, which no level can stand in for.
+  const introDone = save ? isTowerUnlocked(save) : false;
+  const unlockedFor = (mode: ModeDef): boolean =>
+    mode.gate === 'intro' ? introDone : isFeatureUnlocked(mode.feature, save?.profile.level ?? 0);
   /**
    * What a card says under its blurb. The campaign names the stand the chronicle is on; a boss
    * names the keys left this period, which is the number the hub used to carry and the only one
@@ -117,10 +104,8 @@ export default function GameModesScreen(_props: ScreenProps) {
     if (mode.id === 'campaign' && here && settlement)
       return `${t('campaign.stageShort', { settlement: here.settlement, stage: here.stage })} · ${translate(settlement.name)} · ${t(`campaign.difficulty.${here.difficulty}`)}`;
     if (!save) return null;
-    if (mode.boss) {
-      const view = bossView(save, mode.boss, now);
-      return view ? t('gameModes.keys', { left: view.keysLeft, total: view.boss.keysPerPeriod }) : null;
-    }
+    // The Bosses card carries both gates' keys, because the menu behind it holds both bosses.
+    if (mode.id === 'bosses') return bossKeysNote(save, now);
     if (mode.id === 'brewery') {
       const view = breweryView(save, now);
       return t('gameModes.brewery.note', {
@@ -151,8 +136,18 @@ export default function GameModesScreen(_props: ScreenProps) {
           return (
             <ModeCard
               key={mode.id}
-              mode={mode}
+              title={t(mode.titleKey)}
+              body={t(mode.bodyKey)}
+              art={mode.art}
+              glyph={mode.glyph}
+              unlocked={unlockedFor(mode)}
+              lockedLabel={
+                mode.gateKey
+                  ? t(mode.gateKey)
+                  : t('common.unlocksAtLevel', { level: unlockLevel(mode.feature) })
+              }
               index={index}
+              testId={`mode-${mode.id}`}
               {...(note ? { note } : {})}
               // A card that is not open yet says so on the locked screen, route or no route.
               onOpen={(unlocked) =>
@@ -172,72 +167,5 @@ export default function GameModesScreen(_props: ScreenProps) {
         })}
       </div>
     </div>
-  );
-}
-
-function ModeCard({
-  mode,
-  index,
-  note,
-  onOpen,
-}: {
-  mode: ModeDef;
-  index: number;
-  /** Where the player stands in this mode (the campaign's current stand). */
-  note?: string;
-  onOpen: (unlocked: boolean) => void;
-}) {
-  const byLevel = useGameStore(selectFeatureUnlocked(mode.feature));
-  const introDone = useGameStore((state) => (state.save ? isTowerUnlocked(state.save) : false));
-  const unlocked = mode.gate === 'intro' ? introDone : byLevel;
-  const art = backdrop(mode.art);
-  return (
-    <DecoFrame
-      frame={unlocked ? CARD_FRAME.unlocked : CARD_FRAME.locked}
-      tint={unlocked ? CARD_TINT.unlocked : CARD_TINT.locked}
-      thickness={16}
-      className={[styles.card, unlocked ? '' : styles.cardLocked].join(' ')}
-      style={{ animationDelay: `${index * 80}ms` }}
-      data-testid={`mode-${mode.id}`}
-    >
-      <div className={styles.art} style={{ backgroundImage: `url("${art.url}")` }} />
-      <div className={styles.shade} />
-      <div className={styles.head}>
-        <h2 className={`display ${styles.title}`}>{t(mode.titleKey)}</h2>
-      </div>
-      <div className={styles.glyph}>
-        <Glyph
-          glyph={unlocked ? mode.glyph : 'glyph.broken_shackle'}
-          size={120}
-          color={unlocked ? 'rgba(243,236,220,0.9)' : 'rgba(141,133,119,0.8)'}
-        />
-      </div>
-      <div className={styles.foot}>
-        <p className={styles.body}>{t(mode.bodyKey)}</p>
-        {/* A card that is still shut reports nothing live: the button says what it is waiting for. */}
-        {unlocked && note ? (
-          <p className={`num ${styles.note}`} data-testid={`note-${mode.id}`}>
-            {note}
-          </p>
-        ) : null}
-        {unlocked ? (
-          <Button variant="primary" size="md" onClick={() => onOpen(true)} data-testid={`enter-${mode.id}`}>
-            {t('gameModes.enter')}
-          </Button>
-        ) : (
-          <Button
-            variant="secondary"
-            size="md"
-            sound="ui.cancel"
-            onClick={() => (playSfx('ui.error'), onOpen(false))}
-            data-testid={`enter-${mode.id}`}
-          >
-            {mode.gateKey
-              ? t(mode.gateKey)
-              : t('common.unlocksAtLevel', { level: unlockLevel(mode.feature) })}
-          </Button>
-        )}
-      </div>
-    </DecoFrame>
   );
 }

@@ -1,12 +1,12 @@
 /**
- * The bosses the game knows: Gravemaw every day, Nyxara every week
+ * The bosses the game knows: Gargoyle every day, Titan every week
  * (`docs/design/BOSSES.md` §2–§3).
  */
-import gravemaw from './gravemaw';
-import nyxara from './nyxara';
+import gargoyle from './gargoyle';
+import titan from './titan';
 import type { BossDef, BossTierDef } from './types';
 
-export const BOSSES: readonly BossDef[] = [gravemaw, nyxara];
+export const BOSSES: readonly BossDef[] = [gargoyle, titan];
 
 export const BOSS_BY_ID: Readonly<Record<string, BossDef>> = Object.fromEntries(
   BOSSES.map((boss) => [boss.id, boss]),

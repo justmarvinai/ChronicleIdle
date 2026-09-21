@@ -1,6 +1,6 @@
 /**
  * Writes `tests/fixtures/saves/boss.chronicle`: a chronicle past the daily boss's gate with a
- * four-champion party strong enough to put a real dent in Gravemaw's Easy pool, so the e2e suite
+ * four-champion party strong enough to put a real dent in Gargoyle's Easy pool, so the e2e suite
  * can spend both keys, watch the damage add up across them and take a chest in a production
  * build. Deterministic (fixed clock, fixed seed).
  */

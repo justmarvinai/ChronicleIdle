@@ -79,11 +79,11 @@ const COUNTERS: Readonly<Record<string, number>> = {
   'idle.claims': 27,
   'idle.hours': 190,
   'boss.fights': 44,
-  'boss.fights.boss.gravemaw': 36,
-  'boss.fights.boss.gravemaw.easy': 14,
-  'boss.fights.boss.gravemaw.normal': 22,
-  'boss.fights.boss.nyxara': 8,
-  'boss.fights.boss.nyxara.normal': 8,
+  'boss.fights.boss.gargoyle': 36,
+  'boss.fights.boss.gargoyle.easy': 14,
+  'boss.fights.boss.gargoyle.normal': 22,
+  'boss.fights.boss.titan': 8,
+  'boss.fights.boss.titan.normal': 8,
   'boss.damage': 41_000_000,
   'boss.chests': 52,
   'quests.claimed': 128,
@@ -219,22 +219,22 @@ async function main(): Promise<void> {
     },
     idle: { lastClaimAt: NOW - 7_200_000 },
     bosses: {
-      'boss.gravemaw': {
+      'boss.gargoyle': {
         periodKey: base.periods.lastDailyKey,
         keysUsed: 2,
-        damage: { 'boss.gravemaw.normal': 1_420_000 },
-        claimed: ['boss.gravemaw.normal.1', 'boss.gravemaw.normal.2'],
+        damage: { 'boss.gargoyle.normal': 1_420_000 },
+        claimed: ['boss.gargoyle.normal.1', 'boss.gargoyle.normal.2'],
         records: {
-          'boss.gravemaw.normal': { damage: 1_420_000, at: NOW - 10_800_000, team: instanceIds.slice(0, 4) },
+          'boss.gargoyle.normal': { damage: 1_420_000, at: NOW - 10_800_000, team: instanceIds.slice(0, 4) },
         },
       },
-      'boss.nyxara': {
+      'boss.titan': {
         periodKey: base.periods.lastWeeklyKey,
         keysUsed: 1,
-        damage: { 'boss.nyxara.normal': 2_050_000 },
-        claimed: ['boss.nyxara.normal.1'],
+        damage: { 'boss.titan.normal': 2_050_000 },
+        claimed: ['boss.titan.normal.1'],
         records: {
-          'boss.nyxara.normal': { damage: 2_050_000, at: NOW - 86_400_000, team: instanceIds.slice(0, 4) },
+          'boss.titan.normal': { damage: 2_050_000, at: NOW - 86_400_000, team: instanceIds.slice(0, 4) },
         },
       },
     },

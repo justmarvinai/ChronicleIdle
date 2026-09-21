@@ -80,7 +80,7 @@ export interface EnemyDef {
     scale: number;
     /**
      * Wash the model's own colours out before the tint (docs/tech/ASSETS.md §3). A multiply tint
-     * alone cannot lighten a sprite, so a placeholder standing in for something pale — Gravemaw's
+     * alone cannot lighten a sprite, so a placeholder standing in for something pale — Gargoyle's
      * bone — needs the luminance first.
      */
     desaturate?: boolean;

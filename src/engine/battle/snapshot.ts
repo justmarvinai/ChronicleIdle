@@ -16,7 +16,7 @@ export interface BossUnitView {
   /** Steps already applied, and the boss's own turns so far (the countdown). */
   enrageSteps: number;
   turnsTaken: number;
-  /** Ids of counting passives that have broken this fight (Gravemaw's hide). */
+  /** Ids of counting passives that have broken this fight (Gargoyle's hide). */
   brokenPassives: string[];
   /** The phase the fight is in and how many there are (BOSSES.md §3); 1 of 1 for most bosses. */
   phase: number;
@@ -74,7 +74,7 @@ export interface BattleView {
 
 /**
  * Counting passives that can no longer hold: a `damage_reduction` whose `selfDistinctDebuffsBelow`
- * threshold the unit has already passed (BOSSES.md §2, Tyrant's Hide).
+ * threshold the unit has already passed (BOSSES.md §2, Weathered Stone).
  */
 function brokenPassives(u: BattleUnit): string[] {
   const taken = u.flags.debuffKindsTaken.length;

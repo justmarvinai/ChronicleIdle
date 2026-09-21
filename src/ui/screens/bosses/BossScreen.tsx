@@ -81,9 +81,11 @@ export default function BossScreen({ route }: ScreenProps) {
 
       <div className={styles.left}>
         <Tabs
+          // A tab carries the boss's own name: nothing in the game calls them "Daily" and
+          // "Weekly" any more, and the Bosses menu that leads here says which is which.
           items={bosses.map((one) => ({
             key: one.id,
-            label: t(`bosses.tab.${one.period}` as 'bosses.tab.daily'),
+            label: translate(one.name),
             testId: `bosses-tab-${one.period}`,
           }))}
           value={boss.id}
@@ -97,8 +99,8 @@ export default function BossScreen({ route }: ScreenProps) {
 
       <div className={styles.stage}>
         <div className={styles.nameplate}>
-          <h2 className={`display ${styles.name}`}>{t(boss.name as 'boss.gravemaw.name')}</h2>
-          <p className={styles.subtitle}>{t(boss.title as 'boss.gravemaw.title')}</p>
+          <h2 className={`display ${styles.name}`}>{t(boss.name as 'boss.gargoyle.name')}</h2>
+          <p className={styles.subtitle}>{t(boss.title as 'boss.gargoyle.title')}</p>
         </div>
         <div className={styles.art}>
           <SpriteView
@@ -151,7 +153,7 @@ export default function BossScreen({ route }: ScreenProps) {
             ? translate('bosses.locked', { level: boss.unlockLevel })
             : view.keysLeft > 0
               ? translate('bosses.ready', {
-                  tier: t((selected?.tier.name ?? '') as 'boss.gravemaw.tier.easy'),
+                  tier: t((selected?.tier.name ?? '') as 'boss.gargoyle.tier.easy'),
                 })
               : t('bosses.noKeys')}
         </span>

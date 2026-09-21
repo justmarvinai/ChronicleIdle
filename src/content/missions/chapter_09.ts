@@ -21,9 +21,9 @@ export default chapter({
     mission({ type: 'clear_stage', settlement: 4, stage: 10, difficulty: 'hard' }, [
       { currency: 'shard_sacred', amount: 1 },
     ]),
-    // 9.4 Reach 50 % on Nyxara (Hard)
+    // 9.4 Reach 50 % on Titan (Hard)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'hard', pct: 50 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'hard', pct: 50 },
       [{ currency: 'gems', amount: 250 }],
       'glyph.cursed_eye',
     ),
@@ -39,8 +39,8 @@ export default chapter({
     mission({ type: 'own_champions', count: 4, rarity: 'legendary' }, [
       { currency: 'tome_legendary', amount: 1 },
     ]),
-    // 9.8 Defeat Gravemaw (Brutal)
-    mission({ type: 'boss_percent', boss: 'boss.gravemaw', tier: 'brutal', pct: 100 }, [
+    // 9.8 Defeat Gargoyle (Brutal)
+    mission({ type: 'boss_percent', boss: 'boss.gargoyle', tier: 'brutal', pct: 100 }, [
       { currency: 'gems', amount: 300 },
     ]),
     // 9.9 Clear Duskmere Marsh 10-10 (Hard)

@@ -1,7 +1,7 @@
 /**
  * Writes `tests/fixtures/saves/weekly-boss.chronicle`: a chronicle deep enough for the weekly
  * boss's gate, with four 6★ champions in full Legendary gear — the roster BOSSES.md §3 is written
- * for. That is what it takes to see Nyxara's chorus fall, her phases turn and a real dent in her
+ * for. That is what it takes to see Titan's chorus fall, her phases turn and a real dent in her
  * pool, so the e2e suite and the screenshots can watch the whole mechanic in a production build.
  *
  * Deterministic: fixed clock, fixed seed, and every piece rolled from one seeded RNG.

@@ -1,5 +1,5 @@
 /**
- * The four mechanics Gravemaw's kit needed from the battle engine (docs/design/BOSSES.md §2):
+ * The four mechanics Gargoyle's kit needed from the battle engine (docs/design/BOSSES.md §2):
  * a status that may only catch so many of its targets, a heal that counts the curses on its
  * target, a damage reduction that only answers crits, and the distinct-debuff counter that breaks
  * it. Each is driven from the champion's side so the rolls are the test's to control.

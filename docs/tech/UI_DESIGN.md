@@ -375,10 +375,28 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   Emberhold shows a notification dot on the Champions hall while ribbons are outstanding and on the
   Portal while a champion choice is unclaimed.
 
-### 5.13 Bosses — the boss gate
-- Reference: `daily_weekly_boss_screen.png`. Backdrop: the boss's own (`bg3` for Gravemaw) with
+### 5.13 Bosses — the menu and the gate
+
+**The menu.** Behind **Battle → Bosses**, because one card on Game Modes cannot carry two gates
+that open on different clocks.
+- Backdrop `bg3` under a dark violet grade; the same row of
+  tall cards Game Modes uses (the shared `ModeCard`), so the second menu reads as the same
+  furniture one level down rather than as a different screen.
+- One card per period boss, and each card is the boss's own: its **name** as the headline, its own
+  lore as the blurb, its arena art behind it, a glyph apiece (a flaming skull for the Gargoyle, a
+  cursed eye for the Titan), the cadence under the blurb (*Two keys every day* / *Three keys every
+  week*) and, in gold numerals, the keys waiting at it with the reset countdown.
+- **Each gate keeps its own lock.** The Gargoyle opens at chronicle level 10 and the Titan at 15,
+  so the menu can hold one open card and one shut one; a shut card wears the broken shackle, says
+  the level it waits for, and reports no keys — a number nobody can spend is not worth printing.
+- Nothing here says "daily boss" or "weekly boss": the cadence is a line on the card, and the name
+  is the headline.
+
+**The gate**, which a card opens.
+- Reference: `daily_weekly_boss_screen.png`. Backdrop: the boss's own (`bg3` for Gargoyle) with
   the interior ambient preset and two lantern glows on the gate.
-- Layout per `docs/design/BOSSES.md` §4. Left rail (340 px): period tabs *Daily* / *Weekly* over
+- Layout per `docs/design/BOSSES.md` §4. Left rail (340 px): a tab per boss, carrying its **name**
+  rather than its period, over
   the **Records** panel — best damage per tier with the team's avatars and the date, and a footer
   saying how many keys a period holds and that every key feeds the same pool. Centre: the boss's
   nameplate, its sprite on the scene (placeholder art washed to its tint, `ASSETS.md` §3), and a
@@ -556,8 +574,9 @@ Rules the overlay holds to:
 
 ### 5.19 Game Modes
 - Reference: `different_content_battles_screen.png`. Horizontal cards, each reporting its own live
-  state in gold numerals under the blurb: Campaign (the stand the chronicle is on), Daily Boss and
-  Weekly Boss (`Keys n/m` left this period — the number the hub's panels used to carry, §5.2),
+  state in gold numerals under the blurb: Campaign (the stand the chronicle is on), Bosses (the
+  keys left at each gate, named — `Gargoyle 2/2 · Titan 3/3`, the number the hub's panels used to
+  carry, §5.2),
   **The Eternal Tower** (`Floor n · Keys k/c`, the floor a key would open and the ring held). A
   card that is still shut reports nothing live; its button says what opens it — a chronicle level
   for most, and *Clear the Intro campaign* for the tower, which is gated on progress rather than
@@ -672,7 +691,7 @@ recipes). Variants are chosen round-robin with slight pitch jitter.
 
 Ambience (`AmbienceDirector`, per screen, cross-faded): hub → `Town ambience` + `Night ambience`;
 Tavern/Forge → `Interior Night` / `Interior Day`; forest settlements → `Forest Day` / `Forest
-Night`; Greyhaven Harbor → `Sea` / `Beach`; Barrowdeep, Daily Boss → `Cave` / `Dungeon ambience`;
+Night`; Greyhaven Harbor → `Sea` / `Beach`; Barrowdeep, the Gargoyle → `Cave` / `Dungeon ambience`;
 Old Kingsroad → `River Loop` / `Waterfall Loop`; Ironcrag Citadel → `Torch Loop`; rain/storm
 variants are used for Duskmere Marsh and Frostvein Pass.
 

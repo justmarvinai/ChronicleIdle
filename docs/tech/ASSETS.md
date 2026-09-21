@@ -56,13 +56,13 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | --- | --- | --- |
 | bg1 | Drowned colosseum | Settlement 9 backdrop; Game Modes card art |
 | bg2 | Valley road with castle & bridge | Settlement 5; Settlement 8 (cold grade); campaign map base |
-| bg3 | Mossy dungeon gate | Settlement 6; Daily Boss arena; Settlement 10 (green grade) |
+| bg3 | Mossy dungeon gate | Settlement 6; the Gargoyle's arena and the Bosses menu; Settlement 10 (green grade) |
 | bg4 | Desert bazaar | Settlement 4; (Market, backlog) |
 | bg5 | Armory / tavern interior | Tavern; Forge; Settlement 11 interior stages (1–5) |
 | bg6 | Burning battlefield | Settlement 7; Settlement 11 outer stages (6–10) |
 | bg7 | Green plains with rider | Settlement 1; Settlement 2 (dusk grade) |
 | bg8 | Night harbour town | **Hub (Emberhold)**; Settlement 3 |
-| bg9 | Violet gate | Title; Summoning; Settlement 12; Weekly Boss arena |
+| bg9 | Violet gate | Title; Summoning; Settlement 12; the Titan's arena |
 | stone-vine/bg-scene-dark | Dark stone texture | dialog/backdrop fallback, loading |
 
 ### Ambience → screens
@@ -72,11 +72,11 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | Tavern, Forge, Profile | `Interior Night` (WAV) / `Interior Day` (day/night follows device clock) | rain when the hub is "raining" (weekly seeded weather, cosmetic) |
 | Settlements 1, 2, 5, 7 | `Forest Day` / `Forest Night`, `Forest ambience` (MP3) | 2 and 7 use `Storm` |
 | Settlement 3 (harbor) | `Sea` / `Beach` | `Rain` on stages 6–10 |
-| Settlements 6, 10; Daily Boss | `Cave` / `Dungeon ambience` (MP3) | `Rain` for Duskmere Marsh |
+| Settlements 6, 10; the Gargoyle | `Cave` / `Dungeon ambience` (MP3) | `Rain` for Duskmere Marsh |
 | Settlement 5 (Kingsroad) | `River Loop`, `Waterfall Loop` under `Forest Day` | none |
 | Settlement 8 (Frostvein) | `Forest Day Storm` low-passed | none |
 | Settlement 11 (Citadel) | `Torch Loop` + `Interior Night` | none |
-| Settlement 12; Weekly Boss; Summoning; Title | `Cave ambience` (MP3) pitched down + generated void drone | none |
+| Settlement 12; the Titan; Summoning; Title | `Cave ambience` (MP3) pitched down + generated void drone | none |
 
 ### SFX → sound keys
 See `UI_DESIGN.md` §7 for the full key table. Highlights: sword/bow packs drive melee/ranged
@@ -99,7 +99,7 @@ Faith; `midnight`/`phantom`/`vortex`/`felspell` = Eclipse; `PoisonCast`/`PoisonC
   The mapping is in each champion file; the validator ensures uniqueness per champion.
 - Gear set icons: `crest-*` (defensive sets), `weapon-*` (offensive), `rune-*` (utility).
 - Currency icons: see `docs/design/ECONOMY.md` §2. Boss portraits: `hero-demon-lord`
-  (Gravemaw placeholder), `blood-witch` (Nyxara placeholder) until art exists.
+  (Gargoyle placeholder), `blood-witch` (Titan placeholder) until art exists.
 
 ### Line glyphs → UI icons
 Status effects (`docs/design/BATTLE.md` §5), role icons (attack `glyph-crossed-swords`, defense
@@ -144,7 +144,7 @@ Placeholder champions/enemies are the lizard model with a per-definition tint (m
 and, for bosses, a scale (1.35 stage boss, 2.0 daily boss, 2.4 weekly boss) plus a rarity-coloured
 ground ring so units are distinguishable. Names and element sigils do the rest.
 
-A multiply tint can only darken, so a placeholder that has to read *pale* — Gravemaw's bone —
+A multiply tint can only darken, so a placeholder that has to read *pale* — Gargoyle's bone —
 also sets `art.desaturate`. The renderers then take the model's light and shade and paint the tint
 over it: `mix-blend-mode: color` on the DOM sprite's masked tint layer, a `ColorMatrixFilter`
 desaturate under the tint on the Pixi stage. Both give the same result, and the flag is content:

@@ -17,8 +17,8 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle | gear levels, refine, rank-up, tavern, crafting, Faded Shards |
 | `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups | Ancient/Sacred Shards, energy refills |
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
-| `key_daily` | Daily Boss Key | stone-vine/icon-key | daily reset (2) | daily boss |
-| `key_weekly` | Weekly Boss Key | stone-vine/icon-key (violet tint) | weekly reset (3) | weekly boss |
+| `key_daily` | Gargoyle Key | stone-vine/icon-key | daily reset (2) | the Gargoyle |
+| `key_weekly` | Titan Key | stone-vine/icon-key (violet tint) | weekly reset (3) | the Titan |
 | `key_eternal` | Eternal Key | stone-vine/icon-key (gold tint) | 1 per 15 min, capped at 10 | the Eternal Tower (1 a floor) |
 | `shard_faded` | Faded Shard | spell-icons/earth-dark-crystal | gold exchange, drops, quests | summon |
 | `shard_ancient` | Ancient Shard | spell-icons/earth-sapphire-shard | first clears, chests, gems, missions | summon |
@@ -237,8 +237,8 @@ farming Normal in the back half of the map at level 30. `sim:economy` also plays
 | First clears while progressing | ~273 | three new stands a day, first-clear bundles |
 | The daily hundred | ~350 | the 100-point chest, with its every-third-day Ancient Shard |
 | The weekly board and its chest | ~112 | claimed once a week |
-| Gravemaw (daily) | ~420 | the Normal tier's 60-gem chest at 60 %, every day (`BOSSES.md` §2) |
-| Nyxara (weekly) | ~182 | the Normal tier's chests once a week (`BOSSES.md` §3) |
+| Gargoyle (daily) | ~420 | the Normal tier's 60-gem chest at 60 %, every day (`BOSSES.md` §2) |
+| Titan (weekly) | ~182 | the Normal tier's chests once a week (`BOSSES.md` §3) |
 | The Chronicler's Path | ~42 | eight missions a week plus a chapter chest |
 | **Income** | **~1,430** | |
 | Spend: 2 Ancient Shards + 2 refills | ~700 | `SHARD_EXCHANGE`, `ENERGY_REFILL_GEMS` |
@@ -248,7 +248,7 @@ A casual player earns ~850 a week, which still clears an Ancient Shard; a dedica
 because the boss and chest lines do not scale with how often you sit down — only the campaign does.
 
 > **Superseded.** This section used to print ≈ 800 gems a week with "bosses 100", written while the
-> bosses were still a plan. `BOSSES.md`'s tier tables (Phase 10) then gave Gravemaw's Normal tier 60
+> bosses were still a plan. `BOSSES.md`'s tier tables (Phase 10) then gave Gargoyle's Normal tier 60
 > gems a day, so the boss line alone is worth ~600 and the old total was stale by exactly that much.
 > Every other line came in where this section said it would. Whether ~1,430 a week is the intended
 > generosity is `USER_QUESTIONS.md` Q45; the bands hold the shape either way.
@@ -258,7 +258,7 @@ because the boss and chest lines do not scale with how often you sit down — on
 | Gold per day | Active | Where it comes from |
 | --- | --- | --- |
 | Campaign farming | ~155k | ~100 runs of a Normal stand in settlement 9 |
-| Gravemaw's chests | ~80k | once a day at 60 % of the Normal tier |
+| Gargoyle's chests | ~80k | once a day at 60 % of the Normal tier |
 | The idle chest | ~58k | two claims a day at farm tier 20 (§6) |
 | The boards, the bosses' weekly, the Path | ~29k | |
 | **Income** | **~322k** | |

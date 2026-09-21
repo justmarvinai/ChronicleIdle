@@ -36,6 +36,22 @@ function record(raw: Record<string, unknown>, key: string): Record<string, unkno
   return typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
 }
 
+/**
+ * Counters whose key the chain deliberately moves, old → new. A rename is the one honest reason a
+ * counter can arrive under a different name, so it is named here rather than excused in the test:
+ * the boss rename of 0.7.1 (save v17) re-keys `boss.fights.<bossId>` and its per-tier children.
+ */
+const MOVED_COUNTERS: Readonly<Record<string, string>> = {
+  'boss.fights.boss.gravemaw': 'boss.fights.boss.gargoyle',
+  'boss.fights.boss.nyxara': 'boss.fights.boss.titan',
+};
+
+/** Where a counter from an old fixture should be found in a migrated save. */
+function movedKey(key: string): string {
+  const prefix = Object.keys(MOVED_COUNTERS).find((old) => key === old || key.startsWith(`${old}.`));
+  return prefix ? key.replace(prefix, MOVED_COUNTERS[prefix] ?? prefix) : key;
+}
+
 describe('the migration chain', () => {
   it('has exactly one step for every hop, each moving one version', () => {
     const froms = MIGRATIONS.map((step) => step.from);
@@ -82,8 +98,9 @@ describe.each(VERSIONS)('a v%i chronicle', (version) => {
     for (const [stageKey, stars] of Object.entries(record(record(raw, 'campaign'), 'stars')))
       expect(save.campaign.stars[stageKey], `stars.${stageKey}`).toBe(stars);
 
-    // What it has counted is what the quests and the Path are measured against.
+    // What it has counted is what the quests and the Path are measured against — under whatever
+    // name the chain has moved it to.
     for (const [key, value] of Object.entries(record(raw, 'stats')))
-      expect(save.stats[key], `stats.${key}`).toBe(value);
+      expect(save.stats[movedKey(key)], `stats.${movedKey(key)}`).toBe(value);
   });
 });

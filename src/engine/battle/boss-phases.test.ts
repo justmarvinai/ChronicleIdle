@@ -2,7 +2,7 @@
  * What the weekly boss needed from the engine (docs/design/BOSSES.md §3): a fight that changes
  * gear at HP thresholds, abilities that only open in a later phase, a chorus of adds that takes a
  * share of every hit and comes back, a buff steal, and an aura that dims the party's healing.
- * Every mechanic is driven from data here — nothing in the engine knows Nyxara's name.
+ * Every mechanic is driven from data here — nothing in the engine knows Titan's name.
  */
 import { describe, expect, it } from 'vitest';
 import type { AbilityDef, Effect } from '@content/champions/types';
@@ -426,7 +426,7 @@ describe('the whole fight is still a function of its seed', () => {
     ],
   ];
 
-  const run = () => runAuto(battle({ party, waves, seed: 'nyxara', control: 'auto' }));
+  const run = () => runAuto(battle({ party, waves, seed: 'titan', control: 'auto' }));
 
   it('replays event for event from the same seed', () => {
     const first = run();

@@ -92,8 +92,8 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Rarities | Common, Uncommon, Rare, Epic, Legendary, Mythic |
 | Summon items | Faded Shard, Ancient Shard, Sacred Shard, Primordial Shard |
 | Currencies | Gold, Gems (see `ECONOMY.md` for all 24) |
-| Daily boss | Gravemaw, the Bone Tyrant |
-| Weekly boss | Nyxara, Mother of Shadows |
+| Daily boss | Gargoyle, the Bone Tyrant |
+| Weekly boss | Titan, Mother of Shadows |
 | Mission line | The Chronicler's Path |
 | Campaign settlements | Thornwood Crossing, Millbrook Fields, Greyhaven Harbor, Sunspire Bazaar, The Old Kingsroad, Barrowdeep, Ashfall Plains, Frostvein Pass, The Sunken Colosseum, Duskmere Marsh, Ironcrag Citadel, The Eclipse Gate |
 | Difficulties | Intro, Normal, Hard |
@@ -131,9 +131,9 @@ after the first stand.
 | 7 | Tavern: Rank up |
 | 8 | Forge (crafting, dismantle) |
 | 9 | Tavern: Skill upgrades |
-| 10 | Daily Boss |
+| 10 | The Gargoyle |
 | 12 | Weekly Quests |
-| 15 | Weekly Boss |
+| 15 | The Titan |
 | 18 | Gear refine (star-up) |
 | 20 | Auto-repeat ×25 (×10 from level 5) |
 | 30 | Auto-repeat ×50 |

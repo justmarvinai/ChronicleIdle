@@ -331,12 +331,12 @@ table row.
 ## ADR-036 — A boss's enrage is the boss's own cadence
 **Context.** Enrage arrived in Phase 2 as one global constant — ATK +10 % every 8 of a boss's own
 turns, past a per-enemy threshold — which suits a campaign stage boss that takes a dozen turns in a
-fight it is expected to win. BOSSES.md gave Gravemaw a 50 ally-turn limit and an enrage turn of 20.
-Measured with `tools/sim`, a race lasts him 6–16 own turns: at that threshold the first step would
-have landed on his 28th, so the mechanic the design leans on to end a race would never once have
+fight it is expected to win. BOSSES.md gave Gargoyle a 50 ally-turn limit and an enrage turn of 20.
+Measured with `tools/sim`, a race lasts it 6–16 own turns: at that threshold the first step would
+have landed on its 28th, so the mechanic the design leans on to end a race would never once have
 fired in the shipped game.
 **Decision.** The cadence belongs to the boss block (`enrageEvery`, defaulting to the campaign's
-eight), the daily boss enrages from his 12th own turn every 2, and the content validator rejects a
+eight), the daily gate enrages from its 12th own turn every 2, and the content validator rejects a
 tier whose first step could not land inside half the ally-turn limit — the share of the race a boss
 actually gets to act in.
 **Consequences.** A long race now turns lethal as designed (about +60 % ATK by the turn limit) while
@@ -347,7 +347,7 @@ a mechanic that cannot fire is a build error instead of a doc that lies.
 ## ADR-037 — Placeholder art is washed at load, not filtered at render
 **Context.** BOSSES.md asks for the daily boss to stand in as bone-white until it has a model of
 its own, but the tint every placeholder uses is a *multiply*: it can only darken, so a pale tint
-did nothing and Gravemaw was a green lizard with a bone-coloured name. A `ColorMatrixFilter` on the
+did nothing and Gargoyle was a green lizard with a bone-coloured name. A `ColorMatrixFilter` on the
 sprite fixed the look and brought two costs: a filter pass on the stage's hot path — the project
 had none until then, deliberately (CLAUDE.md §5.6) — and a Pixi warning on every boss teardown,
 because the renderer destroys the filter's pooled texture sources while its bind group still holds
@@ -372,7 +372,7 @@ twelfth tier until the first Normal boss goes down. The doc now says so.
 
 ## ADR-038 — A boss's escort is a unit in its own wave, not a spawn mechanic
 **Context.** `BOSSES.md` §3 gives the weekly boss two Choristers that take half of every hit meant
-for her, come back on a schedule and at every phase change, and never count towards the damage
+for it, come back on a schedule and at every phase change, and never count towards the damage
 pool. The obvious reading is a summon mechanic: an ability that spawns units mid-fight, with a new
 spawn path, new ids, a wave whose size changes and a presenter that has to learn to add sprites
 after `wave.started`.
@@ -390,10 +390,10 @@ the ordinary enemy slots. The cost is that a boss cannot grow its escort mid-fig
 boss needs that, it is a new effect type with tests, not a rewrite of this one.
 
 ## ADR-039 — Phase thresholds are set by measurement, not by the design's first draft
-**Context.** The design printed Nyxara's phases at 70 % and 35 % of her HP — the shape a *kill*
+**Context.** The design printed Titan's phases at 70 % and 35 % of its HP — the shape a *kill*
 fight has. Hers is a damage race against a 5,000,000 pool that a finished roster takes an eighth of
-in one key, with her chorus taxing half of every hit. At 70/35 her second gear would have been rare
-and her third would never have fired at all: `minPhase` abilities, an aura and a revive schedule
+in one key, with its chorus taxing half of every hit. At 70/35 its second gear would have been rare
+and its third would never have fired at all: `minPhase` abilities, an aura and a revive schedule
 shipped but never seen.
 **Decision.** The thresholds are 90 % / 75 %, chosen against the roster the fight is written for
 (`tests/fixtures/saves/weekly-boss.chronicle`, four 6★ champions in full Legendary gear): phase II

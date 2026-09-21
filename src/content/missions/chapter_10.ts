@@ -13,9 +13,9 @@ export default chapter({
     mission({ type: 'champion_reach_level', level: 60, count: 5, stars: 6 }, [
       { currency: 'gold', amount: 200_000 },
     ]),
-    // 10.2 Reach 12 % on Nyxara (Nightmare)
+    // 10.2 Reach 12 % on Titan (Nightmare)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'nightmare', pct: 12 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'nightmare', pct: 12 },
       [{ currency: 'gems', amount: 300 }],
       'glyph.cursed_eye',
     ),
@@ -29,9 +29,9 @@ export default chapter({
     mission({ type: 'all_skills_maxed', rarity: 'legendary' }, [{ currency: 'tome_legendary', amount: 1 }]),
     // 10.6 Craft 20 Tier III gear pieces
     mission({ type: 'craft', count: 20, tier: 'star' }, [{ currency: 'mat_starsteel', amount: 30 }]),
-    // 10.7 Reach 25 % on Nyxara (Nightmare)
+    // 10.7 Reach 25 % on Titan (Nightmare)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'nightmare', pct: 25 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'nightmare', pct: 25 },
       [{ currency: 'shard_primordial', amount: 1 }],
       'glyph.cursed_eye',
     ),
@@ -43,9 +43,9 @@ export default chapter({
     ]),
     // 10.10 Reach chronicle level 75
     mission({ type: 'player_level', level: 75 }, [{ currency: 'energy', amount: 1_000 }]),
-    // 10.11 Defeat Nyxara (Nightmare)
+    // 10.11 Defeat Titan (Nightmare)
     mission(
-      { type: 'boss_percent', boss: 'boss.nyxara', tier: 'nightmare', pct: 100 },
+      { type: 'boss_percent', boss: 'boss.titan', tier: 'nightmare', pct: 100 },
       [
         { currency: 'tome_mythic', amount: 1 },
         { currency: 'gems', amount: 500 },

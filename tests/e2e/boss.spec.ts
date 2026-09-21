@@ -4,7 +4,7 @@ import { collectConsole, importChronicleFile, settle } from './helpers';
 
 /**
  * The boss fixture is a level-20 chronicle with a four-champion party at 4★40
- * (`tools/fixtures/boss-chronicle.ts`) — enough to put a fifth of Gravemaw's Easy pool down with
+ * (`tools/fixtures/boss-chronicle.ts`) — enough to put a fifth of Gargoyle's Easy pool down with
  * one key, so the chest ladder and the damage that accumulates across keys are both visible in a
  * production build. (The 8→9 migration itself is covered by `tests/fixtures/saves/v8.json` in the
  * unit suite; this fixture is written at the current save version.)
@@ -89,11 +89,18 @@ test.describe('the daily boss', () => {
     const problems = collectConsole(page);
     await importChronicleFile(page, SAVE);
 
-    // Battle leads to the gate, and the mode card wears the boss's state: two keys, unspent.
+    // Battle leads to the Bosses menu, whose card carries both gates' keys, and that menu leads
+    // to the Gargoyle's own card: two keys, unspent.
     await page.getByTestId('nav-battle').click();
     await expect(page.getByTestId('screen-game-modes')).toBeVisible({ timeout: 20_000 });
     await settle(page);
-    await expect(page.getByTestId('note-daily')).toHaveText('Keys 2/2');
+    await expect(page.getByTestId('note-bosses')).toHaveText('Gargoyle 2/2 · Titan 3/3');
+    await page.getByTestId('enter-bosses').click();
+    await expect(page.getByTestId('screen-boss-menu')).toBeVisible({ timeout: 20_000 });
+    await settle(page);
+    await expect(page.getByTestId('mode-daily')).toContainText('Gargoyle');
+    await expect(page.getByTestId('mode-daily')).toContainText('Two keys every day');
+    await expect(page.getByTestId('note-daily')).toContainText('2 of 2 keys left');
     await page.getByTestId('enter-daily').click();
     await expect(page.getByTestId('screen-bosses')).toBeVisible({ timeout: 20_000 });
     await settle(page);
@@ -102,7 +109,7 @@ test.describe('the daily boss', () => {
     await expect(page.getByTestId('bosses-keys')).toContainText('2/2');
     await expect(page.getByTestId('boss-tier-easy')).toContainText('0 of 250,000');
     await expect(page.getByTestId('boss-chest-easy-5')).toBeDisabled();
-    await expect(page.getByTestId('boss-record-easy')).toContainText('Nobody here has faced Gravemaw');
+    await expect(page.getByTestId('boss-record-easy')).toContainText('Nobody here has faced Gargoyle');
 
     // The mechanics sheet is the fight's rules in writing (BOSSES.md §4).
     await page.getByTestId('bosses-sheet').click();

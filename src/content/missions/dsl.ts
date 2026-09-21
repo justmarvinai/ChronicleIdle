@@ -13,8 +13,8 @@ const pad = (n: number): string => `${n}`.padStart(2, '0');
 
 /**
  * The glyph a mission wears, by the family its goal belongs to: one icon per kind of asking, so a
- * card is recognisable before its line is read. A mission may override it (the Nyxara rows wear
- * her eye rather than a skull).
+ * card is recognisable before its line is read. A mission may override it (the Titan rows wear
+ * its eye rather than a skull).
  */
 const ICONS: Readonly<Record<GoalType, GlyphKey>> = {
   login: 'glyph.hourglass',

@@ -12,8 +12,8 @@ import { BOSS_BY_ID } from '@content/bosses/index';
 import { FixedClock, MS_PER_HOUR } from '@engine/time/clock';
 import { bossPeriodKey, currentPeriod, freshPeriod, msUntilPeriodEnd, withKeySpent } from './period';
 
-const gravemaw = BOSS_BY_ID['boss.gravemaw'];
-if (!gravemaw) throw new Error('no daily boss');
+const gargoyle = BOSS_BY_ID['boss.gargoyle'];
+if (!gargoyle) throw new Error('no daily boss');
 
 const at = (y: number, m: number, d: number, h: number, min = 0): number =>
   new Date(y, m - 1, d, h, min).getTime();
@@ -50,11 +50,11 @@ describe('a boss period across a daylight-saving change', () => {
   it('gives the keys back when the clock passes midnight', () => {
     const clock = new FixedClock(at(SPRING_FORWARD.y, SPRING_FORWARD.m, SPRING_FORWARD.d, 23, 0));
     const spent = withKeySpent(withKeySpent(freshPeriod(bossPeriodKey('daily', clock.now()))));
-    expect(currentPeriod(spent, gravemaw.period, clock.now()).keysUsed).toBe(2);
+    expect(currentPeriod(spent, gargoyle.period, clock.now()).keysUsed).toBe(2);
 
     // An hour later it is the next day: the same stored record reads as a fresh period.
     clock.advance(MS_PER_HOUR);
-    const fresh = currentPeriod(spent, gravemaw.period, clock.now());
+    const fresh = currentPeriod(spent, gargoyle.period, clock.now());
     expect(fresh.keysUsed).toBe(0);
     expect(fresh.periodKey).toBe('2027-03-29');
     // And it is not the *fight* that resets it: the stored record is untouched.

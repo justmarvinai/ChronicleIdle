@@ -97,9 +97,9 @@ try {
   console.log('');
   console.log(
     weekly
-      ? 'Battle perf bench — Nyxara Normal, 4 v 3 weekly race, ×4, auto'
+      ? 'Battle perf bench — Titan Normal, 4 v 3 weekly race, ×4, auto'
       : boss
-        ? 'Battle perf bench — Gravemaw Easy, 4 v 1 boss race, ×4, auto'
+        ? 'Battle perf bench — Gargoyle Easy, 4 v 1 boss race, ×4, auto'
         : 'Battle perf bench — Stress Bench, 4 v 4 × 2 waves, ×4, auto',
   );
   console.log(`renderer: ${renderer}   fight: ${seconds} s, outcome ${outcome}`);

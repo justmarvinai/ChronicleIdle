@@ -323,7 +323,112 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       brewery: { periodKey: '', runs: 0, cleared: {} },
     }),
   },
+  {
+    from: 16,
+    to: 17,
+    /*
+     * The two period bosses were renamed (0.7.1), and a save stores their ids in three places: the
+     * `bosses` slice, the Palace's record of which period each one last paid a skill point for, and
+     * the lifetime counters a quest or a mission can name. Renaming the content without moving
+     * these would read as a chronicle that had never fought either of them — every key spent, every
+     * damage record and every chest taken, silently gone.
+     */
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 17,
+      bosses: renameBossIds(raw['bosses'], renameBossEntry),
+      palace: isRecord(raw['palace'])
+        ? { ...raw['palace'], bossesPaid: renameBossIds(raw['palace']['bossesPaid']) }
+        : raw['palace'],
+      stats: renameKeys(raw['stats']),
+      // A board's baseline is a copy of the counters taken when the period opened, and a mission's
+      // is the same at the Path's first page. Moving the counters without moving their baselines
+      // would read every boss fight the chronicle has ever had as one fought this period.
+      quests: renameBaselines(raw['quests'], ['daily', 'weekly']),
+      missions: withBaseline(raw['missions']),
+    }),
+  },
 ];
+
+/**
+ * What 0.7.1 renamed (`BOSSES.md` §1), old → new. Both spellings a boss's slug has ever appeared
+ * under are listed: `boss.<slug>` is the id itself and the prefix of every tier key a save holds
+ * today, and `tier.<slug>` is what those keys looked like before v10 numbered them. A save is
+ * rewritten by *substring*, because the slug sits inside keys as well as being one.
+ */
+const RENAMED_BOSSES: readonly (readonly [string, string])[] = [
+  ['boss.gravemaw', 'boss.gargoyle'],
+  ['boss.nyxara', 'boss.titan'],
+  ['tier.gravemaw', 'tier.gargoyle'],
+  ['tier.nyxara', 'tier.titan'],
+];
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/** The new spelling of any id, key or claim string the rename touches. */
+function renamed(text: string): string {
+  let out = text;
+  for (const [from, to] of RENAMED_BOSSES) out = out.split(from).join(to);
+  return out;
+}
+
+/** Re-keys a record whose keys carry a boss id, optionally rewriting each value as well. */
+function renameBossIds(value: unknown, entry?: (value: unknown) => unknown): unknown {
+  if (!isRecord(value)) return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([id, held]) => [renamed(id), entry ? entry(held) : held]),
+  );
+}
+
+/**
+ * One boss's own record. Its damage and its records are keyed by tier and its claimed chests are
+ * `<tierKey>.<n>` strings — all three carry the slug, so all three move with it. This is the part
+ * a player would actually notice: the period's damage, the chests already taken, and every
+ * personal best the chronicle has ever set.
+ */
+function renameBossEntry(value: unknown): unknown {
+  if (!isRecord(value)) return value;
+  const claimed = value['claimed'];
+  return {
+    ...value,
+    damage: renameBossIds(value['damage']),
+    records: renameBossIds(value['records']),
+    ...(Array.isArray(claimed)
+      ? { claimed: claimed.map((one) => (typeof one === 'string' ? renamed(one) : one)) }
+      : {}),
+  };
+}
+
+/** A slice that carries its own `baseline` of the counters. */
+function withBaseline(value: unknown): unknown {
+  if (!isRecord(value)) return value;
+  return { ...value, baseline: renameKeys(value['baseline']) };
+}
+
+/** The quest boards: one baseline per period, each a snapshot of the counters. */
+function renameBaselines(value: unknown, periods: readonly string[]): unknown {
+  if (!isRecord(value)) return value;
+  const out = { ...value };
+  for (const period of periods) out[period] = withBaseline(value[period]);
+  return out;
+}
+
+/**
+ * The lifetime counters, which hold the boss id inside keys like `boss.fights.<bossId>.<tierId>`.
+ * A chronicle that somehow held both spellings keeps the sum, which is the only answer that loses
+ * nothing.
+ */
+function renameKeys(value: unknown): unknown {
+  if (!isRecord(value)) return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, count] of Object.entries(value)) {
+    const moved = renamed(key);
+    const before = out[moved];
+    out[moved] = typeof before === 'number' && typeof count === 'number' ? before + count : (before ?? count);
+  }
+  return out;
+}
 
 /** The three difficulties, in order, read off the table that defines them. */
 const DIFFICULTIES = Object.keys(DIFFICULTY_MULT) as (keyof typeof DIFFICULTY_MULT)[];

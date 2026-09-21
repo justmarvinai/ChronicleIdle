@@ -165,7 +165,7 @@ export interface EconomyBand {
  *
  * ECONOMY.md §7–§8 used to print a single composition — "≈ 800 gems a week … bosses 100" — written
  * while the bosses were still a plan. BOSSES.md §2's tier tables, authored in Phase 10, give
- * Gravemaw's Normal tier 60 gems a day and Nyxara's 120 a week, so the boss line alone is worth
+ * Gargoyle's Normal tier 60 gems a day and Titan's 120 a week, so the boss line alone is worth
  * ~600 a week and the old total was stale by exactly that much. Every other line the design named
  * came in where it said (first clears ~273 against 250, the daily hundred ~350 against 280, the
  * weekly chest ~112 against 120, missions ~42 against 50).

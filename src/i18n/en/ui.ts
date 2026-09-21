@@ -78,18 +78,18 @@ export const ui = {
   'gameModes.title': 'Game Modes',
   'gameModes.campaign': 'Campaign',
   'gameModes.campaign.body': 'Twelve settlements, ten stands each. Three difficulties.',
-  'gameModes.dailyBoss': 'Daily Boss',
-  'gameModes.dailyBoss.body': 'Gravemaw, the Bone Tyrant. Two keys a day; damage adds up.',
+  'gameModes.bosses': 'Bosses',
+  'gameModes.bosses.body':
+    'Gargoyle waits every day and the Titan every week. Keys, not energy, and every point of damage counts.',
+  'gameModes.bosses.note': '{gargoyle} · {titan}',
   /** The keys a boss card reports, the number the hub's panels used to carry. */
-  'gameModes.keys': 'Keys {left}/{total}',
   'gameModes.tower.note': 'Floor {floor} · Keys {keys}/{cap}',
   'gameModes.tower': 'The Eternal Tower',
   'gameModes.tower.body':
     'A hundred floors that only get harder. One key an attempt; every tenth floor a boss that may drop shards.',
   'gameModes.tower.locked': 'Finish the Intro campaign — all twelve settlements — and the tower opens.',
   'gameModes.tower.gate': 'Clear the Intro campaign',
-  'gameModes.weeklyBoss': 'Weekly Boss',
-  'gameModes.weeklyBoss.body': 'Nyxara, Mother of Shadows. Three keys a week; three phases.',
+  'gameModes.boss.keys': '{boss} {left}/{total}',
   'gameModes.enter': 'Enter',
 
   'locked.title': 'Not yet written',

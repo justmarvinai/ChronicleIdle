@@ -321,7 +321,7 @@ docs/design/CAMPAIGN.md        12 settlements × 10 stages × 3 difficulties, en
 docs/design/GEAR.md            slots, rarities, stars, main/sub stats, sets, upgrade, crafting
 docs/design/ECONOMY.md         currencies, energy, player level, idle chest, sources & sinks
 docs/design/SUMMONING.md       shards, banners, rates, pity, rotation, reveal ritual
-docs/design/BOSSES.md          daily boss and weekly boss
+docs/design/BOSSES.md          the two period bosses: the Gargoyle and the Titan
 docs/design/ETERNAL_TOWER.md   the endless tower: floors, keys, the season, the shard table
 docs/design/GLORIOUS_PALACE.md the account-wide skill tree: the mandala, the points, the reset
 docs/design/BREWERY.md         the four brew halls: the five stages, the twenty runs, the calendar

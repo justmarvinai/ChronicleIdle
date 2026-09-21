@@ -92,7 +92,7 @@ overlay) to reuse backdrops until unique art exists. Sets refer to `GEAR.md` §5
 | 9 | The Sunken Colosseum | Drowned arena; Gladiator Shades (Justice) | bg1 | The Undefeated | Stunlock, Executioner |
 | 10 | Duskmere Marsh | Swamp; Marsh Horrors (Eclipse) | bg3 green tint | Old Grandmother Mire | Bulwark, Keen Eye |
 | 11 | Ironcrag Citadel | Fortress; Citadel Knights (Justice) | bg5 → bg6 | Castellan Vaughn | Retaliation, Warding |
-| 12 | The Eclipse Gate | The rift; Eclipse Cult (Eclipse) | bg9 | The Gatekeeper (herald of Nyxara) | Relentless, Lifedrinker, + any |
+| 12 | The Eclipse Gate | The rift; Eclipse Cult (Eclipse) | bg9 | The Gatekeeper (herald of Titan) | Relentless, Lifedrinker, + any |
 
 Faction unit names (examples, content decides): Thornwood Bandits → Cutpurse (Raider), Poacher
 (Marksman), Ox-Bandit (Brute), Shieldbearer (Warden), Hedge-Hexer (Hexer), Camp Medic (Mender).

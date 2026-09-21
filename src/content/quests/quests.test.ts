@@ -33,7 +33,7 @@ describe('the daily board', () => {
     expect(goals.get('quest.daily.spend_energy')).toEqual({ type: 'spend_energy', amount: 60 });
     expect(goals.get('quest.daily.daily_boss')).toEqual({
       type: 'boss_fights',
-      boss: 'boss.gravemaw',
+      boss: 'boss.gargoyle',
       count: 2,
     });
     // Either bench of the Forge answers the last one.
@@ -57,8 +57,8 @@ describe('the weekly board', () => {
 
   it('counts each gate’s keys separately', () => {
     const goals = weekly.quests.map((quest) => quest.goal);
-    expect(goals).toContainEqual({ type: 'boss_fights', boss: 'boss.gravemaw', count: 10 });
-    expect(goals).toContainEqual({ type: 'boss_fights', boss: 'boss.nyxara', count: 3 });
+    expect(goals).toContainEqual({ type: 'boss_fights', boss: 'boss.gargoyle', count: 10 });
+    expect(goals).toContainEqual({ type: 'boss_fights', boss: 'boss.titan', count: 3 });
   });
 
   it('asks for a piece at +12 as a state, not as levels spent', () => {
