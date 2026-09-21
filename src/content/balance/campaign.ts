@@ -59,18 +59,30 @@ export const GOLD_BOSS_MULT = 2;
 /**
  * Champion and player XP per point of energy a run costs (CAMPAIGN.md §7). Not to be confused
  * with `balance/xp.ts`'s curve bases: these are what a win pays, those are what a level costs.
+ *
+ * Both were lifted in `0.7.2` after the owner played the campaign end to end and found it paid
+ * too slowly: champion XP by a seventh (30 → 34, so an Intro stand of the first band feeds 136
+ * instead of 120) and chronicle XP by a tenth (10 → 11, so three stands still make level 2).
+ * Raising these shortens every level in the game, so they move a notch at a time.
  */
-export const CHAMPION_XP_PER_ENERGY = 30;
-export const PLAYER_XP_PER_ENERGY = 10;
+export const CHAMPION_XP_PER_ENERGY = 34;
+export const PLAYER_XP_PER_ENERGY = 11;
 export const XP_DIFFICULTY: Readonly<Record<Difficulty, number>> = { intro: 1, normal: 1.5, hard: 2 };
 
-/** Chance that a run leaves a piece of gear behind; the piece itself is rolled by `@engine/gear`. */
+/**
+ * Chance that a run leaves a piece of gear behind; the piece itself is rolled by `@engine/gear`.
+ *
+ * Lifted from 18 % in `0.7.2`, the other half of that pass: `DROP_RARITY_WEIGHTS` in
+ * `balance/gear.ts` now pulls every difficulty's rarities *down*, so the racks fill a little
+ * faster to keep a run's spoils feeling the same size. Roughly one piece every four or five runs
+ * rather than every five or six; raising it further makes the armoury's 400 slots the wall.
+ */
 export const GEAR_DROP_CHANCE: Readonly<Record<Difficulty, number>> = {
-  intro: 0.18,
-  normal: 0.18,
-  hard: 0.18,
+  intro: 0.22,
+  normal: 0.22,
+  hard: 0.22,
 };
-export const GEAR_DROP_CHANCE_BOSS = 0.45;
+export const GEAR_DROP_CHANCE_BOSS = 0.5;
 /** A dropped piece belongs to one of the settlement's own sets this often, else to any set. */
 export const GEAR_SET_FROM_POOL_CHANCE = 0.6;
 

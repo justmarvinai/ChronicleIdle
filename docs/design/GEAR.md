@@ -33,6 +33,13 @@ Variable main stats are rolled at creation with weights (HP% 25, ATK% 25, DEF% 2
 Level-up rolls at +4, +8, +12, +16: if the piece has fewer than 4 substats, a new one is added;
 otherwise a random existing substat is increased by a roll.
 
+**Where each rarity comes from.** A campaign drop's rarity is capped by the difficulty it was won
+on (`CAMPAIGN.md` §7): Intro stops at Rare, Normal opens Epic and a sliver of Legendary, and only
+Hard mints a Mythic. A first playthrough is therefore a Common-to-Rare armoury, and the way past
+that is the Forge (§6: the Ember tier and above craft Epic, Legendary and Mythic) and the two
+bosses' chests (`BOSSES.md` §2) — a top-rarity piece is earned somewhere specific rather than
+waited for.
+
 ## 3. Stars and level
 
 Level 0–16. Main stat grows linearly from `+0` to `+16` values; percent and flat tables:

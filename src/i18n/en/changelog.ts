@@ -20,6 +20,16 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_7_2.name': 'A Kinder Campaign, a Stingier Armoury',
+  'release.0_7_2.campaign_xp':
+    'Campaign stands pay more experience than they did — a little more for you, a bit more for the champions who fought. The same map, climbed faster.',
+  'release.0_7_2.brew_xp':
+    'Every brew is worth more champion experience: 1,700 instead of 1,500, and 2,550 when it matches the champion’s element.',
+  'release.0_7_2.more_drops':
+    'Campaign stands leave gear behind more often — roughly one run in four or five rather than one in five or six, and one boss stand in two.',
+  'release.0_7_2.rarity_ladder':
+    'What falls is more modest, though, and a difficulty now has a ceiling. Intro stands drop nothing better than Rare, Normal opens Epic and the occasional Legendary, and only Hard will ever leave a Mythic on the ground. Epic armour is still there for the taking long before Hard — at the Forge, and in the chests the Gargoyle and the Titan pay.',
+
   'release.0_7_1.name': 'The Gargoyle and the Titan',
   'release.0_7_1.names':
     'The two bosses have names now. The one you fight every day is the Gargoyle, the Waking Stone; the one you fight every week is the Titan, the Sunless. Nothing calls them "the daily boss" and "the weekly boss" any more — though that is still exactly how often each of them opens.',

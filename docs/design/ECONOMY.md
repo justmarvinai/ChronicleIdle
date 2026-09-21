@@ -43,8 +43,8 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 ```
 xpToNext(L) = round(25 × L^1.7)          (L = current level; sum to 60 = 572,463)
 ```
-Sources: battles (`CAMPAIGN.md` §7: `30 × energy × diffMult` per champion per win), brews
-(elemental 1,500 XP, ×1.5 if the element matches → 2,250; universal 1,500), food champions:
+Sources: battles (`CAMPAIGN.md` §7: `34 × energy × diffMult` per champion per win), brews
+(elemental 1,700 XP, ×1.5 if the element matches → 2,550; universal 1,700), food champions:
 `foodXp = 150 × RARITY_FOOD_MULT × (1 + 0.15 × foodLevel)` with `RARITY_FOOD_MULT`
 {C 1, U 2, R 4, E 8, L 16, M 32}. Gold cost per Tavern level-up action: `50 × targetLevel`, where
 the target level is the one the offering *reaches* — so one large offering costs less gold than
@@ -70,7 +70,7 @@ milestones and the top weekly chest. Common/Uncommon champions have no upgrades.
 
 ## 4. Player level
 
-- XP from every battle win (`10 × energyCost × diffMult`), boss battles (fixed per tier), quest
+- XP from every battle win (`11 × energyCost × diffMult`), boss battles (fixed per tier), quest
   chests and missions.
 - `xpToNext(L) = round(100 × L^1.6)` (L 1→2: 100; 10: 3,981; 30: 23,000; 60: 70,000; 99: 157,000).
   Max level 100.
@@ -212,7 +212,7 @@ Rolls are seeded from `lastClaimAt` so reloading cannot reroll. The chest pays *
 (every campaign run drops some) and **no gear** (the campaign and the Forge are where armour comes
 from, and a piece the racks were too full to hold is a reward that vanishes).
 
-Brews are luck rather than an hourly line because one potion is 1,500 champion XP (§3.1): paid by
+Brews are luck rather than an hourly line because one potion is 1,700 champion XP (§3.1): paid by
 the hour the chest out-earned the campaign's own 12 %-per-run drop several times over, which is
 exactly the kind of "too much and too strong" the chest must not be. A full chest is one brew more
 often than not and never more than two.
@@ -322,8 +322,8 @@ Measured by `pnpm sim:economy` for the three scripted players:
 | mid-game, active | 20 | 3 | 60 | ~13 |
 | dedicated | 20 | 4 | 80 | ~24 |
 
-A brew is 1,500 XP, 2,250 on a matching champion (§3.1), and a champion costs 572,463 XP to reach
-60 — so the active player's sixty brews a day are about a quarter of one champion, with the rest
+A brew is 1,700 XP, 2,550 on a matching champion (§3.1), and a champion costs 572,463 XP to reach
+60 — so the active player's sixty brews a day are a bit over a quarter of one champion, with the rest
 coming from food and the campaign's own XP. The Brewery is the strongest single XP line in the game
 and still not the only one, which is the shape §1 asks of every bottleneck.
 

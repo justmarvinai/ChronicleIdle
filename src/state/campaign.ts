@@ -182,6 +182,7 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   for (const drop of rewards.gear) {
     const piece = applyGearDrop(save, {
       settlementIndex: input.pointer.settlement,
+      difficulty: input.pointer.difficulty,
       fromSetPool: drop.fromSetPool,
       source: 'campaign_drop',
       now: input.now,

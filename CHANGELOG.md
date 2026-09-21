@@ -6,9 +6,50 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
+_Nothing pending. Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
-lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
+lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
+Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
+
+## [0.7.2] — 2026-09-21 — A kinder campaign, a stingier armoury
+
+The owner's balance pass after playing the campaign end to end. `docs/design/CAMPAIGN.md` §7,
+`docs/design/GEAR.md` §2, `docs/design/ECONOMY.md` §3.1.
+
+### Balance
+
+- **Campaign XP up a notch.** `CHAMPION_XP_PER_ENERGY` 30 → 34 and `PLAYER_XP_PER_ENERGY` 10 → 11,
+  so an Intro stand of the first band feeds 136 champion XP instead of 120 and pays 44 chronicle XP
+  instead of 40. Three stands are still a level; the whole map is a seventh shorter for a champion.
+- **A brew is worth more.** `BREW_XP` 1,500 → 1,700, so a matched brew is 2,550 rather than 2,250
+  and a champion levels 1 → 60 on 225 matched brews instead of 255. The Brewery pours brews by the
+  dozen, which makes this the single number deciding how fast a roster levels.
+- **More campaign drops.** `GEAR_DROP_CHANCE` 18 % → 22 % on every difficulty and
+  `GEAR_DROP_CHANCE_BOSS` 45 % → 50 %: roughly one piece every four or five runs rather than every
+  five or six.
+- **`DROP_RARITY_WEIGHTS` is now a table per difficulty, with a ceiling.** It was one flat row
+  shared by all three (C 30 / U 28 / R 24 / E 13 / L 4 / M 1), which let a first playthrough mint
+  Legendaries on Intro — the ladder `CAMPAIGN.md` §7 always described but the code never had. Intro
+  now tops out at **Rare** (C 46 / U 33 / R 21), Normal opens Epic and a sliver of Legendary
+  (C 34 / U 30 / R 27 / E 8 / L 1) and only Hard mints a Mythic
+  (C 28 / U 28 / R 28 / E 12 / L 3 / M 1). A rarity above a row's ceiling is absent rather than a
+  zero, so the ceiling is visible in the table. Every row is also leaner at the top than the row it
+  replaced and fatter at the bottom, which with the raised drop chance keeps a run's haul the same
+  size. Stars are unchanged and still come from the **settlement**, so a deep stand pays a big piece
+  whatever difficulty it is farmed on. Epic and better stay reachable long before Hard: the Forge
+  crafts them from the Ember tier up and both bosses pay them by the chest.
+
+### Changed
+
+- `DropInput` carries the run's `difficulty`, so the roll can read its own row; the campaign passes
+  the pointer's and `debugGrantGear` defaults to Hard, a debug grant existing to mint every rarity.
+- `dropRarityEntries(difficulty)` turns a row into the weighted entries the roll takes, lowest
+  rarity first — one place the ceiling is expressed, and the thing the new tests hold.
+
+### Fixed
+
+- `tools/sim/economy-script.ts` carried the two Brewery bands three times over from a paste, so
+  `pnpm sim:economy --strict` printed six identical rows. Deduplicated; the checks are unchanged.
 
 ## [0.7.1] — 2026-09-21 — The Gargoyle and the Titan
 

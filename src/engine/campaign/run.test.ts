@@ -122,7 +122,7 @@ describe('settling a run', () => {
     expect(settled.record.firstClear).toBe(true);
     expect(starsOf(settled.record.progress, 'stage.01.01', 'intro')).toBe(3);
     expect(settled.rewards?.firstClear).not.toBeNull();
-    expect(settled.rewards?.championXp).toBe(120);
+    expect(settled.rewards?.championXp).toBe(136);
   });
 
   it('pays nothing for a defeat but still records the attempt as uncleared', () => {

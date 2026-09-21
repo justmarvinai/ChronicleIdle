@@ -5,6 +5,25 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q57 — "No Epic or Legendary in the Intro Campaign": the difficulty, or the early settlements?
+
+**Why it matters.** Your balance note said *no Legendary or Epic item drops in for example the
+Intro Campaign*. "Intro" is the name of a difficulty here **and** a fair description of the first
+few settlements, and the two readings cap very different things: one says a whole first
+playthrough is a Common-to-Rare armoury, the other says only Thornwood and its neighbours are, on
+every difficulty.
+
+**The default in use.** The **difficulty**. `DROP_RARITY_WEIGHTS` in
+`src/content/balance/gear.ts` is one row per difficulty and Intro's row stops at Rare, which is
+also the ladder `CAMPAIGN.md` §7 has described since Phase 3 without the code ever having it. It
+reads as the cleaner rule — *stars* already come from the settlement, so the settlement decides how
+big a piece is and the difficulty how good it is — and it keeps the Forge and the two bosses as the
+places a top-rarity piece is actually earned.
+
+Switching to the other reading is a data edit in the same file: key the rows by settlement band
+instead of difficulty and pass `settlementIndex` where `difficulty` goes today. Or say the word and
+Intro can keep a sliver of Epic (the row `CAMPAIGN.md` used to print gave it 3 %).
+
 ### Q49 — Nothing grants Eternal Keys, so 16/10 is unreachable
 
 **Why it matters.** You asked for a cap that the count may exceed — "you can go above it for

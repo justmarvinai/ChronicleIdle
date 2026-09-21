@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import type { Difficulty } from '@content/balance/battle';
 import {
+  DROP_RARITY_WEIGHTS,
   GEAR_MAX_LEVEL,
   GEAR_STATS,
   MAIN_STAT_TABLE,
   SUBSTATS_AT_ZERO,
   SUB_ROLL_MULT,
   SUB_STAT_TABLE,
+  dropRarityEntries,
   starBand,
   type GearStat,
 } from '@content/balance/gear';
@@ -222,5 +225,83 @@ describe('contributions', () => {
     expect(MAIN_STAT_TABLE.pct[0]).toEqual([7, 13]);
     expect(MAIN_STAT_TABLE.pct[5]).toEqual([32, 60]);
     expect(MAIN_STAT_TABLE.resAcc[5]).toEqual([32, 96]);
+  });
+});
+
+describe('the campaign drop ladder (GEAR.md §2)', () => {
+  const DIFFICULTIES: readonly Difficulty[] = ['intro', 'normal', 'hard'];
+  /** The best piece each difficulty may ever mint. The owner's rule: Intro stops at Rare. */
+  const CEILING: Readonly<Record<Difficulty, Rarity>> = {
+    intro: 'rare',
+    normal: 'legendary',
+    hard: 'mythic',
+  };
+  /** The one flat table all three difficulties shared before `0.7.2`. */
+  const BEFORE: Readonly<Record<Rarity, number>> = {
+    common: 30,
+    uncommon: 28,
+    rare: 24,
+    epic: 13,
+    legendary: 4,
+    mythic: 1,
+  };
+  const share = (difficulty: Difficulty, rarity: Rarity): number =>
+    DROP_RARITY_WEIGHTS[difficulty][rarity] ?? 0;
+
+  it('offers nothing above a difficulty’s ceiling, and no dead weights', () => {
+    for (const difficulty of DIFFICULTIES) {
+      const offered = dropRarityEntries(difficulty);
+      const ceiling = RARITIES.indexOf(CEILING[difficulty]);
+      expect(offered.length, difficulty).toBe(ceiling + 1);
+      for (const entry of offered) {
+        expect(RARITIES.indexOf(entry.item), `${difficulty} ${entry.item}`).toBeLessThanOrEqual(ceiling);
+        expect(entry.weight, `${difficulty} ${entry.item}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('reads a row lowest first, and a row’s weights are percentages', () => {
+    for (const difficulty of DIFFICULTIES) {
+      const offered = dropRarityEntries(difficulty);
+      const order = offered.map((entry) => RARITIES.indexOf(entry.item));
+      expect(order, difficulty).toEqual([...order].sort((a, b) => a - b));
+      expect(
+        offered.reduce((sum, entry) => sum + entry.weight, 0),
+        difficulty,
+      ).toBe(100);
+    }
+  });
+
+  it('never makes a good piece likelier on an easier difficulty, or likelier than it used to be', () => {
+    for (const rarity of ['epic', 'legendary', 'mythic'] as const) {
+      expect(share('intro', rarity), rarity).toBeLessThanOrEqual(share('normal', rarity));
+      expect(share('normal', rarity), rarity).toBeLessThanOrEqual(share('hard', rarity));
+      // The owner's rule for the 0.7.2 pass: every top rarity is rarer than it was, everywhere.
+      for (const difficulty of DIFFICULTIES)
+        expect(share(difficulty, rarity), `${difficulty} ${rarity}`).toBeLessThanOrEqual(BEFORE[rarity]);
+    }
+    // And the weight those three gave up went to the three lowest, which is the other half of it.
+    for (const difficulty of DIFFICULTIES) {
+      const low = share(difficulty, 'common') + share(difficulty, 'uncommon') + share(difficulty, 'rare');
+      expect(low, difficulty).toBeGreaterThan(BEFORE.common + BEFORE.uncommon + BEFORE.rare);
+    }
+  });
+
+  it('rolls inside its row over 6,000 draws', () => {
+    for (const difficulty of DIFFICULTIES) {
+      const entries = dropRarityEntries(difficulty);
+      const rng = createRng(`drop-ladder:${difficulty}`);
+      const rolled = new Map<Rarity, number>();
+      const DRAWS = 6_000;
+      for (let i = 0; i < DRAWS; i += 1) {
+        const rarity = rng.weighted(entries);
+        rolled.set(rarity, (rolled.get(rarity) ?? 0) + 1);
+      }
+      for (const rarity of RARITIES) {
+        const measured = ((rolled.get(rarity) ?? 0) / DRAWS) * 100;
+        // Within 1.5 points of the declared share — tight enough to catch a swapped row.
+        expect(Math.abs(measured - share(difficulty, rarity)), `${difficulty} ${rarity}`).toBeLessThan(1.5);
+      }
+    }
   });
 });

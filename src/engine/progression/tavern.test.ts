@@ -92,9 +92,9 @@ function lookupOf(instances: ChampionInstance[]): TavernLookup {
 
 describe('brews and food', () => {
   it('pays 1.5× for the champion’s own element', () => {
-    expect(brewXp('brew_valor', 'valor')).toBe(2_250);
-    expect(brewXp('brew_justice', 'valor')).toBe(1_500);
-    expect(brewXp('brew_universal', 'valor')).toBe(1_500);
+    expect(brewXp('brew_valor', 'valor')).toBe(2_550);
+    expect(brewXp('brew_justice', 'valor')).toBe(1_700);
+    expect(brewXp('brew_universal', 'valor')).toBe(1_700);
     expect(brewXp('gold', 'valor')).toBe(0);
   });
 
@@ -118,7 +118,7 @@ describe('previewFeed', () => {
     const food = instance({ instanceId: 'food-1', defId: 'champ.common' as ChampionId, level: 1 });
     const preview = previewFeed(hero, { brews: { brew_valor: 2 }, food: ['food-1'] }, lookupOf([hero, food]));
     if (!preview.ok) throw new Error(preview.error.message);
-    expect(preview.value.xp).toBe(2 * 2_250 + 173);
+    expect(preview.value.xp).toBe(2 * 2_550 + 173);
     expect(preview.value.level).toBeGreaterThan(1);
     expect(preview.value.gold).toBe(levelUpGold(preview.value.level));
     expect(preview.value.food.map((f) => f.instanceId)).toEqual(['food-1']);
@@ -147,7 +147,7 @@ describe('previewFeed', () => {
     if (!preview.ok) throw new Error('preview');
     expect(preview.value.atCap).toBe(true);
     expect(preview.value.levelsGained).toBe(0);
-    expect(preview.value.wasted).toBe(2_250);
+    expect(preview.value.wasted).toBe(2_550);
     expect(applyFeed(capped, preview.value).level).toBe(levelCap(1));
   });
 

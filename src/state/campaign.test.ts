@@ -88,13 +88,13 @@ describe('campaign runs through the store', () => {
     expect(save.wallet.gold).toBeGreaterThan(before.wallet.gold);
     expect(save.wallet.gems).toBe(before.wallet.gems + 5);
     expect(save.energy.value).toBe(56 + 15);
-    // Champions that fought took the run's 120 XP: level 1 → 3 with 14 left over.
+    // Champions that fought took the run's 136 XP: level 1 → 3 with 30 left over.
     for (const id of party) {
       expect(save.roster[id]?.level, id).toBe(3);
-      expect(save.roster[id]?.xp, id).toBe(14);
+      expect(save.roster[id]?.xp, id).toBe(30);
     }
-    // The player's 40 XP is not yet a level (the first costs 100).
-    expect(save.profile).toMatchObject({ level: 1, xp: 40 });
+    // The player's 44 XP is not yet a level (the first costs 100).
+    expect(save.profile).toMatchObject({ level: 1, xp: 44 });
     expect(seen).toContain('campaign.runFinished');
     expect(saveSchema.safeParse(save).success).toBe(true);
     // Stage 2 is now open and the campaign points at it.

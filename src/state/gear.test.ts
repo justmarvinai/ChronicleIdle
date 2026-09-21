@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { NO_PALACE } from '@engine/palace/index';
+import type { Difficulty } from '@content/balance/battle';
 import { INVENTORY_CAPACITY, INVENTORY_OVERFLOW } from '@content/balance/gear';
+import { RARITIES, type Rarity } from '@content/champions/types';
 import { content } from '@content/registry';
 import { totalPower, totalStats } from '@engine/gear/champion-stats';
 import { wornBy } from '@engine/gear/equip';
@@ -144,6 +146,28 @@ describe('the armoury', () => {
     expect(Object.values(stats).every((v) => Number.isFinite(v))).toBe(true);
   });
 
+  it('mints nothing above the difficulty’s ceiling (GEAR.md §2)', () => {
+    const { actions } = chronicle();
+    const rarityOf = (difficulty: Difficulty, count: number): Rarity[] => {
+      const out: Rarity[] = [];
+      for (let i = 0; i < count; i += 1) {
+        const piece = actions.debugGrantGear(12, difficulty);
+        if (!piece) throw new Error('no drop');
+        out.push(piece.rarity);
+      }
+      return out;
+    };
+    const rank = (rarity: Rarity): number => RARITIES.indexOf(rarity);
+    // The last settlement, so the star band is the best in the game and only rarity is at stake.
+    const intro = rarityOf('intro', 120);
+    expect(Math.max(...intro.map(rank)), 'intro tops out at Rare').toBe(rank('rare'));
+    // …while the same settlement on Hard still mints Epics, so the difficulty reaches the roll.
+    const hard = rarityOf('hard', 120);
+    expect(Math.max(...hard.map(rank)), 'hard opens the top of the table').toBeGreaterThanOrEqual(
+      rank('epic'),
+    );
+  });
+
   it('locks a piece and keeps the lock in the save', () => {
     const { store, actions } = chronicle();
     const piece = actions.debugGrantGear(2);
@@ -215,6 +239,8 @@ describe('a campaign run', () => {
         // Thornwood's own sets, or the wider catalogue when the roll went wide.
         expect(content.gearSetById(piece.setId)).toBeDefined();
         expect(piece.source).toBe('campaign_drop');
+        // The run was on Intro, and the pointer's difficulty caps what its spoils can be.
+        expect(RARITIES.indexOf(piece.rarity), piece.rarity).toBeLessThanOrEqual(RARITIES.indexOf('rare'));
       }
     }
     expect(drops).toBeGreaterThan(0);

@@ -4,7 +4,8 @@
  * tables are keyed by star and stated in the doc's own units.
  */
 import type { GearSlot, StatId } from '@content/champions/types';
-import type { Rarity } from '@content/champions/types';
+import { RARITIES, type Rarity } from '@content/champions/types';
+import type { Difficulty } from './battle';
 
 /**
  * Gear's own stat space: champions have eight stats, but gear can carry HP/ATK/DEF as a flat
@@ -283,17 +284,50 @@ export const INVENTORY_WARN_AT = 0.9;
 export const INVENTORY_OVERFLOW = 20;
 
 /**
- * How a campaign drop picks its rarity and stars. The settlement index decides the band, so late
- * settlements drop better gear; `CAMPAIGN.md` §7 decides *whether* a piece drops at all.
+ * How a campaign drop picks its rarity, per difficulty. The settlement index decides the *stars*
+ * (`dropStarRange` below), so late settlements drop big pieces wherever they are farmed; the
+ * difficulty decides how good the piece is, which is the ladder `CAMPAIGN.md` §7 always described.
+ * `CAMPAIGN.md` §7 also decides *whether* a piece drops at all.
+ *
+ * Re-cut in `0.7.2` (owner's balance pass) from one table shared by all three difficulties —
+ * C 30 / U 28 / R 24 / E 13 / L 4 / M 1 — which let the Intro campaign mint Legendaries on a first
+ * playthrough. Two rules shape the rows:
+ *
+ * 1. **A difficulty has a ceiling.** Intro tops out at Rare, Normal opens Epic and a sliver of
+ *    Legendary, and only Hard can mint a Mythic. A rarity above a row's ceiling is absent rather
+ *    than written as a zero, so the ceiling is visible at a glance and a stray zero cannot be
+ *    mistaken for a rate.
+ * 2. **Every row leans lower than the old one.** Epic, Legendary and Mythic are each rarer on the
+ *    difficulty that still rolls them, and the weight goes to Common, Uncommon and Rare — more
+ *    pieces, more modest ones, which with the raised `GEAR_DROP_CHANCE` keeps a run's haul the
+ *    same size.
+ *
+ * Epic and better are not gated out of a chronicle by this: the Forge crafts them from the Ember
+ * tier up (`balance/forge.ts`) and both bosses pay them by the chest (`BOSSES.md` §2), which is
+ * where a top-rarity piece is supposed to come from.
+ *
+ * Weights are read as shares of their own row and need not sum to a round number; these do, at
+ * 100, so a weight reads as a percentage.
  */
-export const DROP_RARITY_WEIGHTS: Readonly<Record<Rarity, number>> = {
-  common: 30,
-  uncommon: 28,
-  rare: 24,
-  epic: 13,
-  legendary: 4,
-  mythic: 1,
+export const DROP_RARITY_WEIGHTS: Readonly<Record<Difficulty, Readonly<Partial<Record<Rarity, number>>>>> = {
+  intro: { common: 46, uncommon: 33, rare: 21 },
+  normal: { common: 34, uncommon: 30, rare: 27, epic: 8, legendary: 1 },
+  hard: { common: 28, uncommon: 28, rare: 28, epic: 12, legendary: 3, mythic: 1 },
 };
+
+/**
+ * A difficulty's row as the weighted entries the drop roll takes, lowest rarity first. Rarities
+ * the row leaves out are above its ceiling and are simply not offered, which is what keeps an
+ * Intro drop from ever being an Epic.
+ */
+export function dropRarityEntries(difficulty: Difficulty): readonly { item: Rarity; weight: number }[] {
+  const row = DROP_RARITY_WEIGHTS[difficulty];
+  return RARITIES.flatMap((rarity) => {
+    const weight = row[rarity];
+    return weight === undefined ? [] : [{ item: rarity, weight }];
+  });
+}
+
 /** Stars a drop can have at a settlement index (1..12), as `[min, max]`. */
 export function dropStarRange(settlementIndex: number): readonly [number, number] {
   const index = Math.max(1, Math.min(12, Math.round(settlementIndex)));

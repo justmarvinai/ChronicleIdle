@@ -104,14 +104,22 @@ Faction unit names (examples, content decides): Thornwood Bandits → Cutpurse (
 | Reward | Formula / table |
 | --- | --- |
 | Gold | `GOLD_BASE(120) × (1 + 0.06 × g) × DIFF_GOLD{intro 1, normal 2.2, hard 4}`; boss stage ×2 |
-| Champion XP (each champion in party) | `CHAMP_XP_BASE(30) × energyCost × DIFF_XP{1, 1.5, 2}` |
-| Player XP | `10 × energyCost × DIFF_XP{1, 1.5, 2}` |
-| Gear drop chance | 18 % (boss 45 %), set chosen from the settlement's set list (60 %) or any (40 %) |
-| Gear rarity at drop | Intro: C 45 / U 35 / R 17 / E 3; Normal: U 30 / R 45 / E 22 / L 3; Hard: R 30 / E 45 / L 22 / M 3 |
-| Gear stars at drop | Intro 1–3★, Normal 3–5★, Hard 4–6★ (weighted to the middle) |
+| Champion XP (each champion in party) | `CHAMP_XP_BASE(34) × energyCost × DIFF_XP{1, 1.5, 2}` |
+| Player XP | `11 × energyCost × DIFF_XP{1, 1.5, 2}` |
+| Gear drop chance | 22 % (boss 50 %), set chosen from the settlement's set list (60 %) or any (40 %) |
+| Gear rarity at drop | Intro: C 46 / U 33 / R 21; Normal: C 34 / U 30 / R 27 / E 8 / L 1; Hard: C 28 / U 28 / R 28 / E 12 / L 3 / M 1 |
+| Gear stars at drop | by **settlement**, not difficulty: `[⌈s/3⌉, ⌈s/2⌉+1]` clamped to 1–6★, so Thornwood drops 1–2★ and the twelfth settlement 4–6★ |
 | Materials | Intro: Scrap Iron 2–4; Normal: Scrap 3–5 + Ember Alloy 1–2; Hard: Ember 2–3 + Starsteel 0–1; Arcane Dust 1–3 always |
 | Faded Shard | 3 % (Intro), 4 % (Normal), 5 % (Hard) |
 | Brews | 12 % chance of 1 brew matching the settlement's dominant element |
+
+**A difficulty has a rarity ceiling.** Intro tops out at Rare, Normal opens Epic and a sliver of
+Legendary, and only Hard mints a Mythic — a rarity above a row's ceiling is not a small number, it
+is absent. The *stars* come from the settlement instead, so a stand deep in the map pays a big
+piece wherever it is farmed and the difficulty decides only how good that piece is. Epic and better
+are still reachable long before Hard: the Forge crafts them from the Ember tier up (`GEAR.md` §6)
+and both bosses pay them by the chest (`BOSSES.md` §2), which is where a top-rarity piece is meant
+to come from. Numbers live in `src/content/balance/gear.ts`.
 
 ### First clear (per stage, per difficulty)
 

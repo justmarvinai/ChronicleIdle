@@ -102,8 +102,8 @@ describe('the Tavern levels a champion', () => {
     render(stage(<TavernScreen route={TAVERN} />));
     await user.click(screen.getByTestId('brew-plus-brew_valor'));
     expect(screen.getByTestId('brew-count-brew_valor')).toHaveTextContent('1');
-    // Corvin is Justice, so a Valor brew pours the plain 1,500.
-    expect(screen.getByTestId('tavern-xp')).toHaveTextContent('1,500');
+    // Corvin is Justice, so a Valor brew pours the plain 1,700.
+    expect(screen.getByTestId('tavern-xp')).toHaveTextContent('1,700');
     await user.click(screen.getByTestId('tavern-upgrade'));
     expect(save().wallet.brew_valor).toBe(3);
     expect(save().roster[starter()]?.level).toBeGreaterThan(1);

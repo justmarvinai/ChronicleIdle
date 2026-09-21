@@ -5,7 +5,7 @@ Related: `ECONOMY.md` §3.1 (what a brew is worth), `CHAMPIONS.md` §1 (the elem
 `docs/tech/UI_DESIGN.md` §5.23 (the screen).
 
 The Brewery is where **brews** come from. A brew is a champion's experience (`ECONOMY.md` §3.1:
-1,500 XP, ×1.5 when its element matches), and until the Brewery there was no way to farm the one
+1,700 XP, ×1.5 when its element matches), and until the Brewery there was no way to farm the one
 your roster actually needed — the campaign drops the brew of the settlement you happen to be
 standing in, and the boards and bosses pay a trickle of whatever they pay.
 

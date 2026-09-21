@@ -47,9 +47,9 @@ describe('per-victory rewards (CAMPAIGN.md §7)', () => {
   });
 
   it('pays XP for the energy the run cost', () => {
-    expect(runXp({ difficulty: 'intro', energySpent: 4 })).toEqual({ championXp: 120, playerXp: 40 });
-    expect(runXp({ difficulty: 'normal', energySpent: 6 })).toEqual({ championXp: 270, playerXp: 90 });
-    expect(runXp({ difficulty: 'hard', energySpent: 11 })).toEqual({ championXp: 660, playerXp: 220 });
+    expect(runXp({ difficulty: 'intro', energySpent: 4 })).toEqual({ championXp: 136, playerXp: 44 });
+    expect(runXp({ difficulty: 'normal', energySpent: 6 })).toEqual({ championXp: 306, playerXp: 99 });
+    expect(runXp({ difficulty: 'hard', energySpent: 11 })).toEqual({ championXp: 748, playerXp: 242 });
   });
 
   it('always drops the difficulty’s materials, inside their declared range', () => {

@@ -102,7 +102,7 @@ describe('the Tavern levels a champion', () => {
     const result = actions.feedChampion(hero, { brews: { brew_universal: 1 }, food: [] });
     if (!result.ok) throw new Error(result.error.message);
     expect(result.value.levelsGained).toBe(0);
-    expect(result.value.wasted).toBe(1_500);
+    expect(result.value.wasted).toBe(1_700);
     expect(save(store).roster[hero]?.level).toBe(levelCap(save(store).roster[hero]!.stars));
   });
 });

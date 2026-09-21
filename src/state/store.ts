@@ -313,8 +313,11 @@ export interface GameActions {
   claimChapterChest(chapter: number): Result<ChapterChestClaim>;
   /** Names the slot and set of the 6★ Legendary piece the Path's last chest owes. */
   takeMissionGift(slot: GearSlot, setId: string): Result<GearInstance>;
-  /** Dev/debug: a seeded piece straight into the armoury. */
-  debugGrantGear(settlementIndex: number): GearInstance | null;
+  /**
+   * Dev/debug: a seeded piece straight into the armoury. Rolls on Hard by default, because a
+   * debug grant exists to produce every rarity the game has (`GEAR.md` §7 caps the others).
+   */
+  debugGrantGear(settlementIndex: number, difficulty?: Difficulty): GearInstance | null;
   /** Dev/debug: `count` seeded random copies (perf tests, the Chronicle Debug panel). */
   generateDebugRoster(count: number, seed: string): Result<void>;
   setRosterView(patch: Partial<RosterView>): void;
@@ -1412,7 +1415,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               return result;
             },
 
-            debugGrantGear(settlementIndex) {
+            debugGrantGear(settlementIndex, difficulty = 'hard') {
               const current = get().save;
               if (!current) return null;
               const now = clock.now();
@@ -1421,6 +1424,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 if (!state.save) return;
                 piece = applyGearDrop(state.save, {
                   settlementIndex,
+                  difficulty,
                   fromSetPool: false,
                   source: 'campaign_drop',
                   now,

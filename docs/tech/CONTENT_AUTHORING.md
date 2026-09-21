@@ -504,7 +504,7 @@ immediately by every chronicle that already qualifies.
 | `element.ts` | strong/weak modifiers |
 | `campaign.ts` | energy per band, star and defeat limits, star-chest thresholds, plate levels, gold/XP/drop rates, material ranges, first-clear, star-chest and all-3★ milestone bundles, auto-repeat tiers |
 | `enemies/archetypes.ts` | the six archetype bases and their shared kits (content, not balance) |
-| `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers |
+| `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers, the campaign drop's rarity table per difficulty (`DROP_RARITY_WEIGHTS`) and its star range per settlement |
 | `summon.ts` | shard rates, pity, exchange prices, featured weight, rotation epoch |
 | `idle.ts` | capacity bands, hourly yields, chance rolls |
 | `tower.ts` | floor count, the scale curve, enemy levels, the faction cycle, key cap/regen, season length, gold/energy/brew/XP per floor, `TOWER_SHARD_ODDS` |

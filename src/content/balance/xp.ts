@@ -8,8 +8,13 @@ import type { Rarity } from '@content/champions/types';
 export const CHAMPION_XP_BASE = 25;
 export const CHAMPION_XP_EXPONENT = 1.7;
 
-/** XP of one elemental brew; ×BREW_MATCH_MULT when the element matches the champion. */
-export const BREW_XP = 1_500;
+/**
+ * XP of one elemental brew; ×BREW_MATCH_MULT when the element matches the champion. Lifted from
+ * 1,500 in `0.7.2`: a matched brew is 2,550 rather than 2,250, so a champion levels 1 → 60 on 225
+ * matched brews instead of 255. The Brewery pours brews by the dozen (`BREWERY.md` §4), which
+ * makes this the single number deciding how fast a roster levels.
+ */
+export const BREW_XP = 1_700;
 export const BREW_MATCH_MULT = 1.5;
 
 /** `foodXp = FOOD_XP_BASE × RARITY_FOOD_MULT[rarity] × (1 + FOOD_LEVEL_BONUS × foodLevel)`. */

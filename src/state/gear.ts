@@ -5,17 +5,18 @@
  * equip, an upgrade or a drop changes, and in what order. Every action is all-or-nothing — a
  * refusal leaves the save exactly as it was.
  */
+import type { Difficulty } from '@content/balance/battle';
 import {
-  DROP_RARITY_WEIGHTS,
   type GearSource,
   INVENTORY_CAPACITY,
   INVENTORY_OVERFLOW,
   LEVEL_COST_BASE,
   LEVEL_COST_GROWTH,
+  dropRarityEntries,
   dropStarRange,
 } from '@content/balance/gear';
 import type { CurrencyAmount } from '@content/currencies/types';
-import type { GearSlot, Rarity } from '@content/champions/types';
+import type { GearSlot } from '@content/champions/types';
 import { content } from '@content/registry';
 import { GEAR_SLOTS } from '@content/champions/types';
 import { spend, type CurrencyChange } from '@engine/economy/wallet';
@@ -167,6 +168,8 @@ export function applyGearLock(
 export interface DropInput {
   /** The settlement the run was in: it decides the star band and the set pool. */
   settlementIndex: number;
+  /** The difficulty the run was on: it decides the rarity, and its ceiling (`GEAR.md` §2). */
+  difficulty: Difficulty;
   /** The drop rolled from the settlement's own sets rather than the whole catalogue. */
   fromSetPool: boolean;
   source: GearSource;
@@ -191,12 +194,7 @@ export function applyGearDrop(save: SaveGame, input: DropInput): GearInstance | 
       serial,
       slot: input.rng.pick(GEAR_SLOTS) as GearSlot,
       setId,
-      rarity: input.rng.weighted(
-        Object.entries(DROP_RARITY_WEIGHTS).map(([rarity, weight]) => ({
-          item: rarity as Rarity,
-          weight,
-        })),
-      ),
+      rarity: input.rng.weighted(dropRarityEntries(input.difficulty)),
       stars: input.rng.int(minStars, maxStars),
       source: input.source,
       now: input.now,
