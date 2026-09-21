@@ -619,3 +619,40 @@ After any change, `pnpm content:validate` checks that every node's `requires` ex
 node walks back to the Heart, that only the Heart carries a percentage, and that each branch still
 costs `PALACE_BRANCH_COST` and adds up to `PALACE_BRANCH_TOTALS` — so a node changed here and not
 in `balance/palace.ts` fails the build rather than the balance.
+
+## 15. The Brewery
+
+The four halls live in `src/content/brewery/index.ts` and, like the Palace, are authored **once**:
+one five-stage ladder is stamped out per element, with only two tables differing per hall.
+
+```ts
+/** Which settlement's faction holds each of the five stages, per element. */
+const HALL_FACTIONS: Readonly<Record<Element, readonly number[]>> = {
+  justice: [3, 3, 9, 9, 11],
+  …
+};
+```
+
+- A hall is ~12 lines: its id, its name and blurb (i18n keys), its element, the brew it pays, its
+  open days and the five stages stamped from `balance/brewery.ts`.
+- **A stage's fight is derived, never authored** (`@engine/brewery/encounter`): the faction holding
+  it supplies the guards and its settlement the backdrop, music and surface. So the only per-stage
+  decision is *who holds it* — the row in `HALL_FACTIONS` — and everything else follows.
+- Every number a stage has (its scale, its brews, its guards, its plate level, its turn limit) comes
+  from `src/content/balance/brewery.ts`. Nothing about difficulty or reward is written here.
+- `BREWERY_OPEN_DAYS` in that balance file holds each hall's calendar as weekdays, `0` = Sunday.
+  Only the Eclipse hall keeps one today (`[3, 6, 0]`); giving another hall a calendar is one row
+  there and needs no code (`USER_QUESTIONS.md` Q55).
+
+To add a hall: give its element a row in `HALL_FACTIONS`, a brew in `BREW_BY_ELEMENT`, a calendar in
+`BREWERY_OPEN_DAYS`, and a name and blurb in `src/i18n/en/brewery.ts`. `BREWERIES` maps out of
+`BREWERY_BY_ELEMENT`, so nothing else has to be told.
+
+After any change, `pnpm content:validate` checks that a hall's stages are numbered 1..5 in order,
+that stage *n* pays *n* brews, that the scale ladder strictly increases, that only the last stage
+carries the captain, and that **every stage's holding faction shares the hall's element** — the rule
+that keeps the mode a lesson in the element wheel rather than a lottery.
+
+Retuning the ladder is `pnpm sim:balance --brewery` (the five tiers against the five reference
+teams, with bands that fail `--strict`) and `--brewery --scan` (how much room each stage has left).
+`BREWERY.md` §7 is the current fit.

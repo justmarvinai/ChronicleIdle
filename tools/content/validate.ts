@@ -39,7 +39,8 @@ async function main(): Promise<void> {
       `${content.questBoards.length} quest boards (${content.quests.length} quests), ` +
       `${content.missionChapters.length} chapters (${content.missions.length} missions), ` +
       `${content.tutorialChapters.length} tutorial chapters (${content.tutorialSteps.length} steps), ` +
-      `${content.releases.length} releases, ${content.palace.nodes.length} Palace nodes and ` +
+      `${content.releases.length} releases, ${content.palace.nodes.length} Palace nodes, ` +
+      `${content.breweries.length} brewery halls (${content.breweries.reduce((n, h) => n + h.stages.length, 0)} stages) and ` +
       `${content.summonPool.length} summonable champions validated against ${assetKeys.size} assets and ` +
       `${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );

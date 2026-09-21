@@ -1,5 +1,5 @@
 import type { FeatureId } from '@content/balance/unlocks';
-import type { GearSlot } from '@content/champions/types';
+import type { Element, GearSlot } from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { QuestPeriod } from '@content/quests/types';
 import type { I18nKey, I18nParams } from '@i18n/index';
@@ -34,6 +34,8 @@ export type Route =
   | { name: 'tower'; floor?: number }
   /** The Glorious Palace, the account-wide skill tree (`GLORIOUS_PALACE.md`). */
   | { name: 'palace' }
+  /** The Brewery; `hall` opens on one of its four halls (`BREWERY.md`). */
+  | { name: 'brewery'; hall?: Element }
   /** The Chronicle Index; `tab` opens one of its four catalogues (`UI_DESIGN.md` §5.20). */
   | { name: 'index'; tab?: IndexTab }
   | { name: 'game-modes' }

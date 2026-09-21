@@ -8,6 +8,7 @@ import type { I18nKey } from '@i18n/index';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { bossView } from '@state/bosses';
 import { currentPointer } from '@state/campaign';
+import { breweryView } from '@state/brewery';
 import { isTowerUnlocked, towerView } from '@state/tower';
 import { selectActions, selectFeatureUnlocked, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -77,6 +78,15 @@ const MODES: readonly ModeDef[] = [
     boss: 'boss.nyxara',
   },
   {
+    id: 'brewery',
+    feature: 'brewery',
+    titleKey: 'gameModes.brewery',
+    bodyKey: 'gameModes.brewery.body',
+    art: 'bg.bg4',
+    glyph: 'glyph.health_potion',
+    route: { name: 'brewery' },
+  },
+  {
     id: 'tower',
     feature: 'eternal_tower',
     titleKey: 'gameModes.tower',
@@ -110,6 +120,14 @@ export default function GameModesScreen(_props: ScreenProps) {
     if (mode.boss) {
       const view = bossView(save, mode.boss, now);
       return view ? t('gameModes.keys', { left: view.keysLeft, total: view.boss.keysPerPeriod }) : null;
+    }
+    if (mode.id === 'brewery') {
+      const view = breweryView(save, now);
+      return t('gameModes.brewery.note', {
+        left: view.runsLeft,
+        total: view.runsTotal,
+        halls: view.openHalls,
+      });
     }
     if (mode.id === 'tower') {
       const view = towerView(save, now);

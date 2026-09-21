@@ -7,7 +7,7 @@ import { PALACE } from '@content/palace/index';
 import type { PalaceTree } from '@content/palace/types';
 import type { ReleaseDef } from '@content/changelog/types';
 import { CHAMPIONS, CHAMPION_BY_ID } from '@content/champions/index';
-import type { ChampionDef, ChampionId } from '@content/champions/types';
+import type { ChampionDef, ChampionId, Element } from '@content/champions/types';
 import { CURRENCIES, CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyDef, CurrencyId } from '@content/currencies/types';
 import { ENCOUNTERS, ENCOUNTER_BY_ID } from '@content/encounters/index';
@@ -28,6 +28,8 @@ import {
 import type { SettlementDef, StageDef } from '@content/stages/types';
 import { BANNERS, BANNER_BY_ID } from '@content/banners/index';
 import type { BannerDef } from '@content/banners/types';
+import { BREWERIES, BREWERY_BY_ELEMENT, BREWERY_BY_ID } from '@content/brewery/index';
+import type { BreweryDef } from '@content/brewery/types';
 import { BOSSES, BOSS_BY_ID, bossTier } from '@content/bosses/index';
 import type { BossDef, BossTierDef } from '@content/bosses/types';
 import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
@@ -44,6 +46,7 @@ import type { Difficulty } from '@content/balance/battle';
 import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounter';
 import { bossEncounter, parseBossEncounterId } from '@engine/bosses/encounter';
 import { parseTowerEncounterId, towerEncounter, towerEncounterId } from '@engine/tower/encounter';
+import { breweryEncounter, breweryEncounterId, parseBreweryEncounterId } from '@engine/brewery/encounter';
 
 export interface ContentRegistry {
   currencies: readonly CurrencyDef[];
@@ -78,6 +81,12 @@ export interface ContentRegistry {
   latestRelease: ReleaseDef | undefined;
   /** The Glorious Palace's node tree (GLORIOUS_PALACE.md). */
   palace: PalaceTree;
+  /** The Brewery's four halls, in element order (BREWERY.md). */
+  breweries: readonly BreweryDef[];
+  breweryById(id: string): BreweryDef | undefined;
+  breweryByElement(element: Element): BreweryDef;
+  /** The fight a hall's stage is, derived from the faction holding it. */
+  breweryEncounter(element: Element, stage: number): EncounterDef | undefined;
   /** The fourteen gear sets (GEAR.md §5); two-piece sets first. */
   gearSets: readonly GearSetDef[];
   gearSetById(id: string): GearSetDef | undefined;
@@ -148,6 +157,20 @@ export function buildContentRegistry(): ContentRegistry {
     derived.set(id, encounter);
     return encounter;
   };
+  /** A brewery stage's encounter: derived from the stage and the faction holding it. */
+  const breweryEncounterOf = (element: Element, stage: number): EncounterDef | undefined => {
+    const id = breweryEncounterId(element, stage);
+    const cached = derived.get(id);
+    if (cached) return cached;
+    const hall = BREWERY_BY_ELEMENT[element];
+    const def = hall.stages.find((entry) => entry.number === stage);
+    const settlement = def ? SETTLEMENT_BY_INDEX[def.settlement] : undefined;
+    const faction = settlement ? FACTION_BY_ID[settlement.faction] : undefined;
+    if (!def || !settlement || !faction) return undefined;
+    const encounter = breweryEncounter(hall, def, faction, settlement);
+    derived.set(id, encounter);
+    return encounter;
+  };
   return {
     currencies: CURRENCIES,
     currencyById: CURRENCY_BY_ID,
@@ -163,6 +186,8 @@ export function buildContentRegistry(): ContentRegistry {
       if (stage) return stageEncounterOf(stage.stageId, stage.difficulty);
       const boss = parseBossEncounterId(id);
       if (boss) return bossEncounterOf(boss.bossId, boss.tierId);
+      const hall = parseBreweryEncounterId(id);
+      if (hall) return breweryEncounterOf(hall.element, hall.stage);
       const floor = parseTowerEncounterId(id);
       return floor === null ? undefined : towerEncounterOf(floor);
     },
@@ -181,6 +206,10 @@ export function buildContentRegistry(): ContentRegistry {
     releaseById: (id) => RELEASE_BY_ID[id],
     latestRelease: LATEST_RELEASE,
     palace: PALACE,
+    breweries: BREWERIES,
+    breweryById: (id) => BREWERY_BY_ID[id],
+    breweryByElement: (element) => BREWERY_BY_ELEMENT[element],
+    breweryEncounter: breweryEncounterOf,
     gearSets: GEAR_SETS,
     gearSetById: (id) => GEAR_SET_BY_ID[id],
     banners: BANNERS,

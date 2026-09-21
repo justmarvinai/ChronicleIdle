@@ -19,6 +19,7 @@ import { content } from '@content/registry';
 import { rollRunRewards } from '@engine/campaign/rewards';
 import { energyCap } from '@engine/economy/energy';
 import { farmTier, idleCapacityHours, idleHaul } from '@engine/economy/idle';
+import { breweryRewards, opensOn } from '@engine/brewery/index';
 import { craftCost } from '@engine/forge/craft';
 import { flatMissions } from '@engine/missions/path';
 import { levelUpGold } from '@engine/progression/tavern-level';
@@ -157,6 +158,9 @@ function playDay(script: EconomyScript, day: number, ledger: Ledger, rng: Rng): 
     ledger.earnAll('idle chest', haul.currencies);
   }
 
+  // ── The Brewery: the day's runs, spread over the halls whose doors are open this weekday.
+  brewDay(script, day, ledger);
+
   // ── The boards: every quest the level shows, and the chests the points earn.
   claimBoard('daily', day, ledger, script);
   if (endOfWeek) claimBoard('weekly', day, ledger, script);
@@ -196,6 +200,23 @@ function playDay(script: EconomyScript, day: number, ledger: Ledger, rng: Rng): 
     ledger.payAll('crafting', craftCost(script.craftTier, true), script.craftsPerWeek);
     const ancient = SHARD_EXCHANGE.ancient;
     if (ancient) ledger.pay('ancient shards', ancient.currency, script.ancientShardsPerWeek * ancient.amount);
+  }
+}
+
+/**
+ * The day in the Brewery: the script's runs dealt round-robin to the halls that brew today. A run
+ * is a run whichever hall takes it — twenty a day, all four halls together — so what the calendar
+ * changes is *which* brew the day pays, which is exactly the choice the mode is about.
+ */
+function brewDay(script: EconomyScript, day: number, ledger: Ledger): void {
+  // Day 0 of a simulated month is a Monday, the same day the weekly reset falls on.
+  const weekday = (1 + day) % DAYS_PER_WEEK;
+  const open = content.breweries.filter((hall) => opensOn(hall, weekday));
+  if (!open.length) return;
+  for (let run = 0; run < script.breweryRunsPerDay; run += 1) {
+    const hall = open[run % open.length];
+    const stage = hall?.stages.find((entry) => entry.number === script.breweryStage);
+    if (hall && stage) ledger.earnAll('brewery', breweryRewards(hall, stage));
   }
 }
 

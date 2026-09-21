@@ -24,7 +24,7 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | `shard_ancient` | Ancient Shard | spell-icons/earth-sapphire-shard | first clears, chests, gems, missions | summon |
 | `shard_sacred` | Sacred Shard | spell-icons/earth-citrine-shard | Hard clears, weekly boss, missions, gems | summon |
 | `shard_primordial` | Primordial Shard | spell-icons/earth-amethyst-cluster | milestones, weekly boss top chests, missions | summon |
-| `brew_justice` / `brew_valor` / `brew_faith` / `brew_eclipse` | Elemental Brew | stone-vine/icon-potion (tinted) | campaign, idle chest, quests, bosses | champion XP (1.5× when element matches) |
+| `brew_justice` / `brew_valor` / `brew_faith` / `brew_eclipse` | Elemental Brew | stone-vine/icon-potion (tinted) | **the Brewery**, campaign, idle chest, quests, bosses | champion XP (1.5× when element matches) |
 | `brew_universal` | Universal Brew | stone-vine/icon-potion (white) | star chests, quests, missions | champion XP (1×) |
 | `tome_rare` / `tome_epic` / `tome_legendary` / `tome_mythic` | Skill Tome | stone-vine/icon-scroll (tinted) | bosses, missions, weekly quests, first clears | skill upgrades |
 | `mat_scrap_iron` | Scrap Iron | spell-icons/earth-fractured-block | Intro/Normal campaign, dismantle | Forge I |
@@ -306,3 +306,30 @@ applies to champions the player has not pulled yet.
 
 Nothing else in the economy is touched by it. The Palace costs no gold, no gems and no energy;
 reclaiming every point is free and can be done any time (Q52).
+
+## 11. Brews (the Brewery)
+
+The Brewery (`BREWERY.md`) is the main source of elemental brews, and the only source at volume for
+the element the player's own stand does not drop. Twenty runs a day across four halls, stage *n*
+paying *n* brews, so a day is worth between 20 brews (all twenty runs on stage 1) and 100 (all
+twenty on a stage 5 the roster can hold).
+
+Measured by `pnpm sim:economy` for the three scripted players:
+
+| Script | Brewery runs | On stage | Brews a day, Brewery | Brews a day, everything else |
+| --- | --- | --- | --- | --- |
+| casual | 6 | 2 | 12 | ~7 |
+| mid-game, active | 20 | 3 | 60 | ~13 |
+| dedicated | 20 | 4 | 80 | ~24 |
+
+A brew is 1,500 XP, 2,250 on a matching champion (§3.1), and a champion costs 572,463 XP to reach
+60 — so the active player's sixty brews a day are about a quarter of one champion, with the rest
+coming from food and the campaign's own XP. The Brewery is the strongest single XP line in the game
+and still not the only one, which is the shape §1 asks of every bottleneck.
+
+Two bands in `tools/sim/economy-script.ts` hold that: `brew_valor` ≥ 12 a day for the active player
+(the Brewery pays every element, not only the one the map is standing in) and `brew_eclipse` ≥ 4 a
+day (the Waning Cellar's three days a week must still be enough to rank an Eclipse champion).
+
+The Brewery costs **no energy and no gold** — the twenty runs are the whole price (Q54), which is
+what keeps the campaign's energy the thing that paces a sitting.

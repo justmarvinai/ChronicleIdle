@@ -7,6 +7,7 @@ import {
   emptyCampaign,
   emptySummon,
   emptyTeams,
+  emptyBrewery,
   emptyPalace,
   type SaveGame,
   type Settings,
@@ -71,5 +72,6 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     // The tower waits on the whole Intro campaign; its season starts on the first floor attempted.
     tower: emptyTower(now),
     palace: emptyPalace(),
+    brewery: emptyBrewery(),
   };
 }

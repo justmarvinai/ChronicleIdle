@@ -4,7 +4,7 @@
  */
 import type { Difficulty } from '@content/balance/battle';
 import type { ShardId } from '@content/balance/summon';
-import type { ChampionId, Rarity } from '@content/champions/types';
+import type { ChampionId, Element, Rarity } from '@content/champions/types';
 import type { QuestPeriod } from '@content/quests/types';
 import type { CurrencyChange } from '@engine/economy/wallet';
 
@@ -66,6 +66,14 @@ export type DomainEvent =
   /** A tutorial lesson was taught, or a chapter waved off (`TUTORIAL.md`). */
   | { type: 'tutorial.step'; stepId: string; chapter: number }
   | { type: 'tutorial.chapterSkipped'; chapterId: string }
+  /** A brewery run ended; `brews` is what came out of the cellar (BREWERY.md). */
+  | {
+      type: 'brewery.runFinished';
+      element: Element;
+      stage: number;
+      cleared: boolean;
+      brews: number;
+    }
   /** One node of the Glorious Palace was lit, or the whole tree darkened (GLORIOUS_PALACE.md). */
   | { type: 'palace.nodeUnlocked'; nodeId: string; cost: number }
   | { type: 'palace.reset'; points: number }

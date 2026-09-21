@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 15 as const;
+export const SAVE_VERSION = 16 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -270,6 +270,21 @@ export const palaceSchema = z.object({
   bossesPaid: z.record(z.string(), z.string()),
 });
 
+/**
+ * The Brewery (BREWERY.md §2). The day's allowance and how deep each hall has been taken: a record
+ * stamped with an older day reads as a fresh one, so the twenty runs come back at the door rather
+ * than at midnight. Which stages are behind the player follows from the deepest clear, because
+ * stages are taken in order — there is no per-stage list to fall out of step.
+ */
+export const brewerySchema = z.object({
+  /** The game day the count belongs to; `''` before the first run. */
+  periodKey: z.string(),
+  /** Runs spent today, across every hall together. */
+  runs: z.number().int().min(0),
+  /** Hall id → the deepest stage cleared in it. */
+  cleared: z.record(z.string(), z.number().int().min(0)),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -337,11 +352,19 @@ export const saveSchemaV15 = saveSchemaV14.extend({
   palace: palaceSchema,
 });
 
+/** v16 adds the Brewery; everything else is v15's. */
+export const saveSchemaV16 = saveSchemaV15.extend({
+  saveVersion: z.literal(16),
+  brewery: brewerySchema,
+});
+
 export type SaveGameV13 = z.infer<typeof saveSchemaV13>;
 export type SaveGameV14 = z.infer<typeof saveSchemaV14>;
 export type SaveGameV15 = z.infer<typeof saveSchemaV15>;
-export type SaveGame = SaveGameV15;
+export type SaveGameV16 = z.infer<typeof saveSchemaV16>;
+export type SaveGame = SaveGameV16;
 export type PalaceSave = z.infer<typeof palaceSchema>;
+export type BrewerySave = z.infer<typeof brewerySchema>;
 export type TowerSaveData = z.infer<typeof towerSchema>;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type MissionsSave = z.infer<typeof missionsSchema>;
@@ -353,11 +376,16 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV15;
+export const saveSchema = saveSchemaV16;
 
 /** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
 export function emptyPalace(): PalaceSave {
   return { nodes: [], earned: 0, settlementsPaid: [], tower: { season: 0, floorPaid: 0 }, bossesPaid: {} };
+}
+
+/** A Brewery nobody has walked into: no day, no runs spent, no hall taken. */
+export function emptyBrewery(): BrewerySave {
+  return { periodKey: '', runs: 0, cleared: {} };
 }
 
 export function emptyCampaign(): CampaignSave {

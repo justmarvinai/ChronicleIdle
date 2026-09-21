@@ -4,6 +4,7 @@
  */
 import { STAR3_TURN_LIMIT, STAR3_TURN_LIMIT_BOSS } from '@content/balance/campaign';
 import type { Difficulty } from '@content/balance/battle';
+import type { Element } from '@content/champions/types';
 import { content } from '@content/registry';
 import type { EncounterDef } from '@content/encounters/types';
 import { createBattle } from '@engine/battle/create';
@@ -148,6 +149,93 @@ export function requiredScale(
   for (let i = 0; i < steps; i += 1) {
     const mid = Math.sqrt(low * high);
     if (simulateStage(stageId, difficulty, team, runs, mid).rate >= target) low = mid;
+    else high = mid;
+  }
+  return low;
+}
+
+/** What a brewery stage costs a team, measured the same way a campaign stand is (BREWERY.md §7). */
+export interface BreweryResult {
+  element: Element;
+  stage: number;
+  team: string;
+  runs: number;
+  wins: number;
+  rate: number;
+  /** Mean ally turns of the won runs, and mean turns of the lost ones. */
+  avgTurns: number;
+  /** Mean share of enemy HP still standing when a run was lost — how far off the team was. */
+  avgHpLeft: number;
+}
+
+/**
+ * Runs one brewery stage `runs` times on fixed seeds. A hall's stages all share one ladder, so
+ * Justice is measured and the other three follow — except where a band names a hall of its own.
+ */
+export function simulateBrewery(
+  element: Element,
+  stage: number,
+  team: SimTeam,
+  runs: number,
+  scale = 1,
+): BreweryResult {
+  const base = content.breweryEncounter(element, stage);
+  if (!base) throw new Error(`unknown brewery stage ${element}.${stage}`);
+  const encounter = scale === 1 ? base : scaled(base, scale);
+  let wins = 0;
+  let turns = 0;
+  let hpLeft = 0;
+  let losses = 0;
+  for (let i = 0; i < runs; i += 1) {
+    const state = createBattle(
+      {
+        encounter,
+        party: buildParty(team),
+        enemyById: (id) => content.enemyById(id),
+        control: 'auto',
+        // No Palace, for the reason `simulateStage` gives: the bands measure the ladder, not a tree.
+      },
+      `sim:brewery:${team.id}:${element}:${stage}:${i}`,
+    );
+    const { outcome } = runAuto(state);
+    if (outcome.kind === 'victory') {
+      wins += 1;
+      turns += outcome.allyTurns;
+    } else {
+      losses += 1;
+      hpLeft += outcome.enemyHpLeft;
+    }
+  }
+  return {
+    element,
+    stage,
+    team: team.id,
+    runs,
+    wins,
+    rate: wins / runs,
+    avgTurns: wins ? turns / wins : 0,
+    avgHpLeft: losses ? hpLeft / losses : 0,
+  };
+}
+
+/**
+ * How much harder a brewery stage could be and still be won `target` of the time — a factor
+ * *relative to the shipped `BREWERY_STAGE_SCALE`*, so 1.0 means the stage sits exactly on that
+ * win rate and 2.0 means it has twice the headroom. Same binary search as `requiredScale`.
+ */
+export function requiredBreweryScale(
+  element: Element,
+  stage: number,
+  team: SimTeam,
+  target = 0.85,
+  runs = 12,
+  steps = 10,
+): number {
+  let low = 0.02;
+  let high = 64;
+  for (let i = 0; i < steps; i += 1) {
+    const mid = Math.sqrt(low * high);
+    if (simulateBrewery(element, stage, team, runs, mid).rate >= target) low = mid;
     else high = mid;
   }
   return low;

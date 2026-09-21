@@ -10,6 +10,58 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.7.0] — 2026-09-21 — The Brewery
+
+Where brews come from. `docs/design/BREWERY.md`; owner's answers Q54–Q55.
+
+### Added
+
+- **The Brewery** (`src/content/brewery/`): four halls, one per element — The Gilded Cask
+  (Justice), The Ember Vats (Valor), The Frostwell Cellar (Faith) and The Waning Cellar (Eclipse) —
+  on the Game Modes menu from **player level 3**. Its card reports the day's runs and how many
+  halls are brewing, the way the boss cards report their keys.
+- **Twenty runs a day, shared by all four halls** (`BREWERY_DAILY_RUNS`), resetting at 00:00 like
+  every other daily thing. A run is charged **before** the fight, so a reload cannot buy a free
+  attempt and a defeat costs one — which is what makes choosing a stage a decision. A run costs no
+  energy and no gold (Q54).
+- **Five stages a hall**, pitched at starting out, early, mid, late and endgame, paying **their own
+  number in brews** (1 → 5). Stage *n* opens when *n−1* is cleared, per hall, and a stage already
+  cleared pays in full every time.
+- **A stage's fight is derived, not authored** (`@engine/brewery/encounter`): the faction of the
+  settlement holding it supplies the guards through a window that walks by one per stage, its
+  captain leads stage 5, and its settlement supplies the backdrop, music and surface. So a hall is
+  twelve lines of content and its five fights follow.
+- **The Waning Cellar's calendar** (`BREWERY_OPEN_DAYS`): the Eclipse hall brews **Wednesday,
+  Saturday and Sunday** and is barred the other four days, on the player's own weekday (shifted by
+  the daily reset hour like every period key). A barred hall takes no run — the button is dead and
+  the screen says when it opens. The other three halls brew every day (Q55).
+- **The Brewery screen** (`UI_DESIGN.md` §5.23): the day's runs and the four halls on the left over
+  **Your brews** — what the player holds of each — and the chosen hall on the right, wearing its
+  own settlement's art under a grade in its element. Each stage row says what it is pitched at, what
+  it fields, who holds it and what it pays; a planning line under the ladder says what a whole day
+  spent in this hall would pour.
+- **A Brewery panel on the battle result**, beside the boss's and the tower's: the hall and stage,
+  one cask per brew filling in sequence, the first clear that opened the next stage, and the runs
+  left today. Its primary button goes back to the hall the run was spent in.
+
+### Changed
+
+- **The element wheel is taught here.** Every stage's holding faction shares its hall's element — a
+  validator rule, not a convention — so each hall names the element that has the advantage inside
+  it, and the Waning Cellar says that nothing counters Eclipse.
+- The Game Modes cards shrink evenly to fit five in the row instead of four.
+- `pnpm sim:balance` now reports the Brewery's ladder and checks nine bands of its own; `--brewery`
+  narrows it to that, and `--brewery --scan` prints how much room each stage has left per hall. A
+  fifth reference team (`late_game`, 5★50 half-geared) joins the four, because "late game" is the
+  tier stage 4 is pitched at.
+- `pnpm sim:economy` counts the Brewery's brews and prints where every brew came from; two bands
+  hold the mode to being the main source of them at every activity level.
+- **Save v16.** The `brewery` slice (`periodKey`, `runs`, `cleared`), with the 15 → 16 migration and
+  a `v16.json` fixture. The migration writes an **empty day** rather than back-paying anything: a
+  chronicle's campaign says nothing about which cellar doors it has been through, so a migrated
+  chronicle walks in with all twenty runs in hand and stage 1 of every hall open — which is where a
+  new one starts too.
+
 ## [0.6.0] — 2026-09-21 — The Glorious Palace
 
 An account-wide skill tree, and the first progression system that lifts champions the player has

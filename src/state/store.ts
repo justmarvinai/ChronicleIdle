@@ -9,7 +9,13 @@ import { PLAYER_NAME_MAX_LENGTH, PLAYER_NAME_MIN_LENGTH } from '@content/balance
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { TUTORIAL_SUMMON_RARITY } from '@content/balance/tutorial';
 import type { Difficulty } from '@content/balance/battle';
-import { CHAMPION_IDS, type ChampionId, type GearSlot, type ObtainSource } from '@content/champions/types';
+import {
+  CHAMPION_IDS,
+  type ChampionId,
+  type Element,
+  type GearSlot,
+  type ObtainSource,
+} from '@content/champions/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { QuestPeriod } from '@content/quests/types';
 import { content } from '@content/registry';
@@ -71,6 +77,12 @@ import type { CraftTier } from '@content/balance/forge';
 import type { ShardId } from '@content/balance/summon';
 import { applyIdleClaim, type IdleClaimSummary } from './idle';
 import { applyPalaceReset, applyPalaceUnlock, type PalaceUnlock } from './palace';
+import {
+  applyBreweryRunFinish,
+  applyBreweryRunStart,
+  type BreweryRunStarted,
+  type BreweryRunSummary,
+} from './brewery';
 import {
   applyBossChestClaim,
   applyBossFightFinish,
@@ -260,6 +272,14 @@ export interface GameActions {
   resetPalace(): Result<number>;
   /** Spends a boss key on a tier and hands back the fight it bought (`BOSSES.md` §1). */
   startBossFight(bossId: string, tierId: string): Result<BossFightStarted>;
+  /** Spends one of the day's twenty brewery runs and hands back the stage it bought. */
+  startBreweryRun(element: Element, stage: number): Result<BreweryRunStarted>;
+  /** Banks a finished brewery run: a clear hands over the stage's brews. */
+  finishBreweryRun(input: {
+    element: Element;
+    stage: number;
+    outcome: BattleOutcome;
+  }): Result<BreweryRunSummary>;
   /** Spends an Eternal Key and points the save at the tower floor it bought. */
   startTowerFloor(floor: number): Result<TowerFloorStarted>;
   /** Banks a finished tower floor: the climb, the rewards and the XP. */
@@ -1141,6 +1161,40 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               events.emit({ type: 'idle.claimed', hours: result.value.hours, tier: result.value.tier });
               // The chest can carry a chronicle over a level; the celebration is the shared one.
               noteLevelUp(result.value.levelUp, 'idle');
+              return result;
+            },
+
+            startBreweryRun(element, stage) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<BreweryRunStarted> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyBreweryRunStart(state.save, { element, stage, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              return result;
+            },
+
+            finishBreweryRun(input) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<BreweryRunSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyBreweryRunFinish(state.save, { ...input, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              if (result.value.changes.length > 0)
+                events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'brewery' });
+              events.emit({
+                type: 'brewery.runFinished',
+                element: input.element,
+                stage: input.stage,
+                cleared: result.value.cleared,
+                brews: result.value.brews.reduce((sum, entry) => sum + entry.amount, 0),
+              });
               return result;
             },
 

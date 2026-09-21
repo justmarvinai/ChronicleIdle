@@ -308,6 +308,21 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       };
     },
   },
+  {
+    from: 15,
+    to: 16,
+    /*
+     * The Brewery. Nothing is back-paid and nothing can be: a chronicle's campaign says nothing
+     * about which cellar doors it has been through, and the day's twenty runs belong to today. A
+     * migrated chronicle walks in with all twenty in hand and stage 1 of every hall open, which is
+     * where a new one starts too.
+     */
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 16,
+      brewery: { periodKey: '', runs: 0, cleared: {} },
+    }),
+  },
 ];
 
 /** The three difficulties, in order, read off the table that defines them. */

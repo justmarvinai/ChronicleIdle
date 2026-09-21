@@ -30,6 +30,13 @@ export interface EconomyScript {
   /** Keys spent on the daily boss, and on the weekly one on its day. */
   dailyBossKeys: number;
   weeklyBossKeys: number;
+  /**
+   * Brewery runs a day, of the twenty the mode allows across all four halls, and the stage they
+   * are spent on. The runs are spread over whichever halls are open that weekday, so the Eclipse
+   * hall's calendar shows up in the ledger the way it does in a player's week (BREWERY.md §4).
+   */
+  breweryRunsPerDay: number;
+  breweryStage: number;
   /** The tier they fight, and the share of its pool they take down — which chests that earns. */
   bossTier: string;
   bossDamagePct: number;
@@ -73,6 +80,9 @@ export const MID_GAME: EconomyScript = {
   idleClaims: 2,
   dailyBossKeys: 3,
   weeklyBossKeys: 3,
+  // Every run, on the mid-game stage: brews are the reason to open the mode at all.
+  breweryRunsPerDay: 20,
+  breweryStage: 3,
   bossTier: 'normal',
   bossDamagePct: 60,
   missionsPerWeek: 8,
@@ -98,6 +108,8 @@ export const CASUAL: EconomyScript = {
   idleClaims: 1,
   dailyBossKeys: 1,
   weeklyBossKeys: 1,
+  breweryRunsPerDay: 6,
+  breweryStage: 2,
   bossDamagePct: 30,
   missionsPerWeek: 3,
   firstClearsPerDay: 2,
@@ -120,6 +132,9 @@ export const DEDICATED: EconomyScript = {
   label: 'mid-game, dedicated: four sittings a day, every drop of the regen spent',
   logins: 4,
   idleClaims: 3,
+  // The ceiling: the day's twenty runs on the deepest stage a finished roster farms.
+  breweryRunsPerDay: 20,
+  breweryStage: 4,
   firstClearsPerDay: 6,
   missionsPerWeek: 12,
   gearLevelsPerDay: 40,
@@ -197,6 +212,22 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     why: '§8: gold should feel tight but never blocking, so a day must not end in the red',
   },
   {
+    script: 'mid_active',
+    currency: 'brew_valor',
+    per: 'day',
+    side: 'income',
+    min: 12,
+    why: "BREWERY.md §7: the Brewery is the main source of every element's brews, not only the one the player's own stand happens to drop",
+  },
+  {
+    script: 'mid_active',
+    currency: 'brew_eclipse',
+    per: 'day',
+    side: 'income',
+    min: 4,
+    why: 'BREWERY.md §4: the Waning Cellar opens three days a week, which must still be enough to rank an Eclipse champion',
+  },
+  {
     script: 'casual',
     currency: 'gold',
     per: 'day',
@@ -205,12 +236,44 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     why: 'one sitting a day must still pay for what that day spends',
   },
   {
+    script: 'mid_active',
+    currency: 'brew_valor',
+    per: 'day',
+    side: 'income',
+    min: 12,
+    why: "BREWERY.md §7: the Brewery is the main source of every element's brews, not only the one the player's own stand happens to drop",
+  },
+  {
+    script: 'mid_active',
+    currency: 'brew_eclipse',
+    per: 'day',
+    side: 'income',
+    min: 4,
+    why: 'BREWERY.md §4: the Waning Cellar opens three days a week, which must still be enough to rank an Eclipse champion',
+  },
+  {
     script: 'casual',
     currency: 'gems',
     per: 'week',
     side: 'income',
     min: 500,
     why: 'a light player must still reach an Ancient Shard most weeks (300 gems)',
+  },
+  {
+    script: 'mid_active',
+    currency: 'brew_valor',
+    per: 'day',
+    side: 'income',
+    min: 12,
+    why: "BREWERY.md §7: the Brewery is the main source of every element's brews, not only the one the player's own stand happens to drop",
+  },
+  {
+    script: 'mid_active',
+    currency: 'brew_eclipse',
+    per: 'day',
+    side: 'income',
+    min: 4,
+    why: 'BREWERY.md §4: the Waning Cellar opens three days a week, which must still be enough to rank an Eclipse champion',
   },
   {
     script: 'casual',

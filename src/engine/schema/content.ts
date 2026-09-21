@@ -12,6 +12,8 @@ import type { TitleDef } from '@content/titles/types';
 import type { ReleaseDef } from '@content/changelog/types';
 import type { PalaceNodeDef } from '@content/palace/types';
 import { PALACE_BRANCH_COST, PALACE_BRANCH_TOTALS, PALACE_CORE_HP_PCT } from '@content/balance/palace';
+import { BREWERY_BOSS_STAGE, BREWERY_STAGES } from '@content/balance/brewery';
+import { brewerySchema } from './brewery';
 import { ELEMENTS, STAT_IDS } from '@content/champions/types';
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
@@ -99,6 +101,7 @@ export function validateContentRegistry(
     gearSets: readonly unknown[];
     banners: readonly unknown[];
     bosses: readonly unknown[];
+    breweries: readonly unknown[];
     questBoards: readonly unknown[];
     missionChapters: readonly unknown[];
     tutorialChapters: readonly unknown[];
@@ -120,6 +123,13 @@ export function validateContentRegistry(
     ...validateTitles(registry.titles, refs),
     ...validateReleases(registry.releases, refs),
     ...validatePalace(registry.palace.nodes, refs),
+    ...validateBrewery(
+      registry.breweries,
+      registry.settlements as SettlementDef[],
+      registry.factions as FactionDef[],
+      new Set(registry.currencies.map((c) => (c as { id: string }).id)),
+      refs,
+    ),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
@@ -697,6 +707,64 @@ function validateTitles(titles: readonly unknown[], refs: ContentRefs): Validati
       error(`${path}.condition`, `level ${def.condition.level} is past the cap`);
     if (def.condition.kind === 'settlement_boss' && def.condition.settlement > SETTLEMENT_COUNT)
       error(`${path}.condition`, `settlement ${def.condition.settlement} does not exist`);
+  });
+  return issues;
+}
+
+/**
+ * The Brewery (BREWERY.md). Five things a careless edit breaks, none of which typecheck: a hall
+ * whose stages stop being 1..5 in order, a stage that stops paying its own number in brews, a
+ * ladder that stops getting harder, a hall guarded by a faction of the wrong element — which is
+ * the whole reason the mode teaches the element wheel — and a hall with no open days at all,
+ * which no player could ever enter.
+ */
+function validateBrewery(
+  halls: readonly unknown[],
+  settlements: readonly SettlementDef[],
+  factions: readonly FactionDef[],
+  currencies: ReadonlySet<string>,
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const elementOf = new Map(settlements.map((s) => [s.index, s.faction]));
+  const factionElement = new Map(factions.map((f) => [f.id, f.element]));
+
+  const seen = new Set<string>();
+  halls.forEach((raw, index) => {
+    const result = brewerySchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`brewery[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const hall = result.data;
+    if (seen.has(hall.id)) error(hall.id, 'duplicate id');
+    seen.add(hall.id);
+    for (const key of [hall.name, hall.description])
+      if (!refs.i18nKeys.has(key)) error(hall.id, `missing i18n key ${key}`);
+    if (!currencies.has(hall.brew)) error(hall.id, `pays unknown currency ${hall.brew}`);
+    if (new Set(hall.openDays).size !== hall.openDays.length) error(hall.id, 'repeats an open day');
+
+    if (hall.stages.length !== BREWERY_STAGES)
+      error(hall.id, `has ${hall.stages.length} stages, not the ${BREWERY_STAGES} balance names`);
+    let hardest = 0;
+    hall.stages.forEach((stage, at) => {
+      const path = `${hall.id}.${stage.number}`;
+      if (stage.number !== at + 1) error(path, `is stage ${stage.number} in position ${at + 1}`);
+      if (stage.brews !== stage.number)
+        error(path, `pays ${stage.brews} brews, not its own number (the owner's rule)`);
+      if (stage.scale <= hardest) error(path, `is no harder than the stage before it (×${stage.scale})`);
+      hardest = stage.scale;
+      if (stage.boss && stage.number !== BREWERY_BOSS_STAGE)
+        error(path, `fields the captain, who belongs on stage ${BREWERY_BOSS_STAGE}`);
+      const factionId = elementOf.get(stage.settlement);
+      const element = factionId ? factionElement.get(factionId) : undefined;
+      if (!factionId) error(path, `is held by unknown settlement ${stage.settlement}`);
+      else if (element !== hall.element)
+        error(path, `is held by a ${element ?? 'nameless'} faction, not a ${hall.element} one`);
+    });
   });
   return issues;
 }

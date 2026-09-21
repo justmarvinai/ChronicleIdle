@@ -69,6 +69,12 @@ export const COUNTER_KEYS = [
   // The Chronicler's Path
   'missions.claimed',
   'missions.chests',
+  // The Brewery
+  'brewery.runs',
+  /** Stages cleared for the first time, across all four halls. */
+  'brewery.cleared',
+  /** Brews the halls have handed over, whichever element they were. */
+  'brewery.brews',
   // The Eternal Tower
   'tower.attempts',
   'tower.cleared',
@@ -93,6 +99,8 @@ export const COUNTER_PREFIXES = [
   'battles.won.',
   /** `boss.fights.<bossId>` and `boss.fights.<bossId>.<tierId>`, for the missions that name a tier. */
   'boss.fights.',
+  /** `brewery.runs.<hallId>`, so a quest can ask for runs in one element's hall. */
+  'brewery.runs.',
   /** `forge.crafts.<tier>`, for the missions that name a bench. */
   'forge.crafts.',
   'summon.pulls.',

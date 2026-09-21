@@ -7,12 +7,15 @@
  *   pnpm sim:balance --difficulty hard --team endgame     narrow the report
  *   pnpm sim:balance --scan          the enemy scale each band's team can actually take, the
  *                                    table a tuning pass fits the balance constants to
+ *   pnpm sim:balance --brewery       only the Brewery's five-stage ladder and its bands
  */
 import { DIFFICULTY_MULT, stageScale, type Difficulty } from '@content/balance/battle';
+import { BREWERY_STAGE_SCALE, BREWERY_STAGES } from '@content/balance/brewery';
 import { globalStageIndex } from '@content/balance/campaign';
+import { ELEMENTS } from '@content/champions/types';
 import { content } from '@content/registry';
-import { BANDS, SIM_TEAMS, TEAM_BY_ID, type SimTeam } from './teams';
-import { requiredScale, simulateSettlement } from './run';
+import { BANDS, BREWERY_BANDS, SIM_TEAMS, TEAM_BY_ID, type SimTeam } from './teams';
+import { requiredBreweryScale, requiredScale, simulateBrewery, simulateSettlement } from './run';
 
 const argv = process.argv.slice(2);
 const flag = (name: string): boolean => argv.includes(`--${name}`);
@@ -80,6 +83,67 @@ function bands(): boolean {
   return ok;
 }
 
+const STAGES = Array.from({ length: BREWERY_STAGES }, (_, i) => i + 1);
+
+/**
+ * The Brewery's ladder: one row per hall and stage (BREWERY.md §7). Four halls share one scale
+ * ladder but are held by four different factions, so the rows say where a stage is hardest.
+ */
+function breweryCurve(): void {
+  console.log(`\nBrewery ladder — ${RUNS} runs per stage, auto battles`);
+  console.log(`  hall      stage  scale  ${TEAMS.map((t) => t.id.padEnd(15)).join('')}`);
+  for (const element of ELEMENTS) {
+    for (const stage of STAGES) {
+      const cells = TEAMS.map((team) => {
+        const result = simulateBrewery(element, stage, team, RUNS);
+        return `${pct(result.rate)} ${result.avgTurns ? `${result.avgTurns.toFixed(0)}t` : '  —'}    `;
+      });
+      const encounter = content.breweryEncounter(element, stage);
+      const scale = (BREWERY_STAGE_SCALE[stage - 1] ?? 1).toFixed(1);
+      const guards = encounter?.waves[0]?.enemies.length ?? 0;
+      console.log(
+        `  ${element.padEnd(9)} ${stage}      ${scale.padStart(4)}   ${cells.join('')} lv${String(
+          encounter?.enemyLevel ?? 0,
+        ).padStart(2)} ${guards}u`,
+      );
+    }
+  }
+}
+
+/** The bands from `BREWERY_BANDS`: a `min` against the hardest hall, a `max` against the easiest. */
+function breweryBands(): boolean {
+  console.log('\nBrewery bands (BREWERY.md §7 — min = hardest hall, max = easiest hall)');
+  let ok = true;
+  for (const band of BREWERY_BANDS) {
+    const team = TEAM_BY_ID[band.team];
+    if (!team) throw new Error(`brewery band names unknown team ${band.team}`);
+    const rates = ELEMENTS.map((element) => ({
+      element,
+      rate: simulateBrewery(element, band.stage, team, RUNS).rate,
+    }));
+    // A promise of clearability has to hold in the hall where it is hardest to keep, and a promise
+    // of a wall in the hall where it is easiest to walk through.
+    const worst = rates.reduce((a, b) => (b.rate < a.rate ? b : a));
+    const best = rates.reduce((a, b) => (b.rate > a.rate ? b : a));
+    const measured = band.min !== undefined ? worst : best;
+    const low = band.min !== undefined && measured.rate < band.min;
+    const high = band.max !== undefined && measured.rate > band.max;
+    const want = [
+      band.min !== undefined ? `≥ ${pct(band.min)}` : '',
+      band.max !== undefined ? `≤ ${pct(band.max)}` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    if (low || high) ok = false;
+    console.log(
+      `  ${low || high ? '✗' : '✓'} ${band.team.padEnd(15)} stage ${band.stage}  ${pct(
+        measured.rate,
+      )} in ${measured.element.padEnd(8)} (want ${want})  — ${band.why}`,
+    );
+  }
+  return ok;
+}
+
 /** What each band's team can actually take, as an enemy stat multiplier, stage by stage. */
 function scan(): void {
   console.log('\nScale a team survives at an 85 % win rate (fit the balance constants to this)');
@@ -101,13 +165,46 @@ function scan(): void {
   }
 }
 
+/**
+ * How much room each brewery stage has left: the factor on the shipped `BREWERY_STAGE_SCALE` at
+ * which a team still wins 85 % of its runs. ×1 means the stage sits exactly on that line for that
+ * team, so the ladder is fitted by reading down a column for the team each stage is pitched at.
+ */
+function breweryHeadroom(): void {
+  console.log('\nBrewery headroom: × the shipped scale a team still wins 85 % of the time at');
+  const runs = Math.max(8, Math.round(RUNS / 2));
+  for (const team of TEAMS) {
+    console.log(`\n  ${team.id} — ${team.label}`);
+    console.log(`    hall      ${STAGES.map((stage) => `stage ${stage}`.padEnd(9)).join('')}`);
+    for (const element of ELEMENTS) {
+      const cells = STAGES.map((stage) =>
+        `×${requiredBreweryScale(element, stage, team, 0.85, runs).toFixed(2)}`.padEnd(9),
+      );
+      console.log(`    ${element.padEnd(9)} ${cells.join('')}`);
+    }
+  }
+}
+
 const started = Date.now();
-if (flag('scan')) scan();
-else {
-  curve();
-  const ok = bands();
+if (flag('scan')) {
+  // `--scan --brewery` narrows the fit to the Brewery's own ladder.
+  if (!flag('brewery')) scan();
+  breweryHeadroom();
+} else if (flag('brewery')) {
+  breweryCurve();
+  const ok = breweryBands();
   console.log(`\n${((Date.now() - started) / 1000).toFixed(1)} s`);
   if (!ok && flag('strict')) {
+    console.error('[sim] a brewery band is out of range — retune before shipping.');
+    process.exit(1);
+  }
+} else {
+  curve();
+  const campaignOk = bands();
+  breweryCurve();
+  const breweryOk = breweryBands();
+  console.log(`\n${((Date.now() - started) / 1000).toFixed(1)} s`);
+  if (!(campaignOk && breweryOk) && flag('strict')) {
     console.error('[sim] a band is out of range — retune before shipping.');
     process.exit(1);
   }

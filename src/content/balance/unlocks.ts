@@ -20,6 +20,7 @@ export const FEATURE_IDS = [
   'gear_refine',
   'eternal_tower',
   'glorious_palace',
+  'brewery',
   'auto_repeat_10',
   'auto_repeat_25',
   'auto_repeat_50',
@@ -59,6 +60,8 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
    * (`isPalaceUnlocked`). Level 1 so the level gate never speaks for it.
    */
   glorious_palace: 1,
+  /** The Brewery: brews are what a champion levels on, so it opens early (owner's brief). */
+  brewery: 3,
   auto_repeat_10: 5,
   auto_repeat_25: 20,
   auto_repeat_50: 30,

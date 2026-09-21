@@ -743,3 +743,34 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   brief, and the only place the two sources are seen side by side.
 - **Earning one is told where it happens.** The battle result screen (§5.10) carries a violet plate
   when a clear paid skill points; pressing it goes to the Palace.
+
+### 5.23 The Brewery (`docs/design/BREWERY.md`)
+- **Two columns, and the number that governs the mode over both.** A 420 px rail on the left holds
+  the day's runs — a 40 px numeral over a stamina bar, the sentence that bar is too slim to carry
+  ("20 of 20 runs left today", in warn amber when there are none), the reset countdown and the line
+  that says every hall draws on the same twenty. Then the four hall tabs, then **Your brews**: the
+  four elemental brews with what the player holds, which is the whole basis of choosing a hall
+  today. The right panel is the chosen hall.
+- **A hall wears its own place.** The backdrop is the settlement its deepest cellar is cut under,
+  under a grade in the hall's element (amber, ember, ice, violet), so walking from the Ember Vats
+  to the Waning Cellar is walking somewhere else. The hall's name takes its element's colour; the
+  tabs take it as a left rail and a wash when selected.
+- **The doors.** A badge at the head of the panel reads *Open today* in `--ok` or *Closed today* in
+  `--warn`, with the hall's days under its name ("Open Wed, Sat, Sun", ordered from the game's own
+  week start rather than `getDay`'s Sunday). A barred hall adds one amber banner saying when it
+  opens and how long that is, and every Brew button in it is disabled — a closed door never costs a
+  run.
+- **A stage row says the four things a player decides on**: its number, what it is pitched at
+  ("Mid game"), what it fields ("4 guards · level 34", or the captain on stage 5) and who holds it
+  ("Held by the Ashen Legion"). What it pays sits in its own column at 30 px — a cask in the brew's
+  tint and `×3` in gold — big enough to compare five rows at a glance, because the brews are the
+  point. Rows stagger in on open (Framer Motion, skipped under reduced motion); `data-state` styles
+  them: *cleared* keeps its element's rail, *next* takes a gold rail and an element wash, *locked*
+  drops to 55 % and shows a shackle where its button would be.
+- **The planning line** under the ladder: "Your deepest cellar here is stage 3 — all 20 runs on it
+  would pour 60 brews", or, before anything is cleared, that stage 1 is open and pays one a run.
+  Twenty runs are a choice; this is what this hall pays for them.
+- **What a run says.** The battle result (§5.10) carries a Brewery panel beside the boss's and the
+  tower's: the hall and stage, one cask per brew filling in sequence, the first clear that opened
+  the next stage, and the runs left today. Its primary button goes back to the hall the run was
+  spent in.

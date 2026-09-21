@@ -20,6 +20,18 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_7_0.name': 'The Brewery',
+  'release.0_7_0.brewery':
+    'Four brew halls have opened, one for each element, and they are where brews come from now. The Gilded Cask, the Ember Vats, the Frostwell Cellar and the Waning Cellar are on the Battle menu from level 3 — so you can finally farm the brews your own champions need instead of the ones the map happens to drop.',
+  'release.0_7_0.twenty_runs':
+    'You get twenty runs a day, and all four halls draw on the same twenty. Which element needs brews most today is yours to decide — and the runs come back at midnight.',
+  'release.0_7_0.five_stages':
+    'Every hall has five stages. The first falls on your first day; the fifth is for a finished roster. The deeper you go the more brews a run pours — one at the first stage, five at the last.',
+  'release.0_7_0.waning_cellar':
+    'The Waning Cellar keeps the old calendar: the cult brews on Wednesday, Saturday and Sunday, and bars its doors the rest of the week. A barred door never costs you a run.',
+  'release.0_7_0.element_wheel':
+    'Each hall is held by the factions of its own element, and tells you which champions have the advantage inside it. Eclipse is the one nothing counters, so the Waning Cellar says to bring your strongest.',
+
   'release.0_6_0.name': 'The Glorious Palace',
   'release.0_6_0.palace':
     'A palace has opened on the hill above Emberhold, and inside it a tree of 133 nodes. Its heart gives every champion you own a little more health; its four branches — one for each element — give every champion of that element a little more of everything, for good. Nothing in it is large. All of it is permanent.',

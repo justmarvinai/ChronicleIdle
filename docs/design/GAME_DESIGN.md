@@ -34,8 +34,9 @@ short sessions of decisions, long tails of accumulation.
   gear, first level-ups, see the idle chest and the mission line. Energy is deliberately abundant:
   the tutorial, early missions and first clears hand out roughly 3,000 energy over the first days
   so the opening weeks feel generous (`ECONOMY.md` §5.1).
-- **Daily session (15–25 min):** claim idle chest, daily boss ×2 keys, daily quests, spend energy
-  farming a target stage/set on auto-repeat, tavern upgrades, summon if shards.
+- **Daily session (15–25 min):** claim idle chest, daily boss ×2 keys, daily quests, place the
+  Brewery's twenty runs on whichever element needs brews, spend energy farming a target stage/set on
+  auto-repeat, tavern upgrades, summon if shards.
 - **Weekly:** weekly boss ×3 keys, weekly quests, featured banner rotation, push a new
   difficulty/settlement.
 - **Monthly (once Intro is behind you):** climb the Eternal Tower for as long as the keys hold, then
@@ -70,6 +71,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Summoning | 4 shard types, standard portal + featured banner, pity, deterministic rotation | `SUMMONING.md` |
 | Bosses | Daily boss (4 tiers, 2 keys/day) and weekly boss (3 tiers, 3 keys/week), damage-threshold rewards | `BOSSES.md` |
 | Eternal Tower | 100 floors climbed in order, every 10th a boss floor, keys on a 15-minute clock, a 30-day season | `ETERNAL_TOWER.md` |
+| Brewery | Four halls, one per element, five stages each; 20 runs a day across all four, stage *n* pays *n* brews | `BREWERY.md` |
 | Glorious Palace | An account-wide skill tree: 237 points from finished content, spent on small permanent stats for a whole element | `GLORIOUS_PALACE.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
@@ -123,6 +125,7 @@ after the first stand.
 | --- | --- |
 | 1 | Campaign (Intro), Champions, **The Chronicler's Path (missions)**, **Gear (equip/upgrade)**, battle speeds ×1/×2 |
 | 2 | Tavern (level up) |
+| 3 | The Brewery |
 | 4 | Summoning Portal |
 | 5 | Daily Quests, Idle Chest |
 | 7 | Tavern: Rank up |

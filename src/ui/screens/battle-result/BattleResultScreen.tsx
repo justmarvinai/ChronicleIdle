@@ -5,10 +5,12 @@ import { playSfx } from '@audio/index';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { battleController } from '@state/battle/index';
 import { bossSession, clearBossSession } from '@state/boss-session';
+import { brewerySession, clearBrewerySession } from '@state/brewery-session';
 import { clearTowerSession, towerSession } from '@state/tower-session';
 import { batchRewards, batchStars, campaignSession, clearCampaignSession } from '@state/campaign-session';
 import { currentRunView, launchCampaignRun, nextPointerAfter } from '@ui/flows/campaign';
 import { BossOutcomePanel } from './BossOutcomePanel';
+import { BreweryOutcomePanel } from './BreweryOutcomePanel';
 import { TowerOutcomePanel } from './TowerOutcomePanel';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { t, translate } from '@i18n/index';
@@ -44,15 +46,21 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const boss = useStore(bossSession);
   // A tower floor banks a climb; its own panel says what the floor paid (ETERNAL_TOWER.md §4).
   const tower = useStore(towerSession);
+  // A brewery run banks brews and one of the day's twenty runs (BREWERY.md §6).
+  const brewery = useStore(brewerySession);
   const outcome = session.outcome;
   const encounter = session.encounter;
   const victory = outcome?.kind === 'victory';
   useSceneAudio(victory ? 'hub' : 'battle', 'none');
   const cued = useRef(false);
-  const hasRewards = campaign.summaries.some((summary) => summary.rewards !== null);
+  // A brewery run's brews are its whole reward, so they cue the spoils sound the same way a
+  // stand's do — and a first clear, which opens the next stage, cues the big one.
+  const brewed = brewery.summary?.cleared ?? false;
+  const hasRewards = campaign.summaries.some((summary) => summary.rewards !== null) || brewed;
   const bigReward =
     campaign.summaries.some((summary) => summary.firstClear || summary.chestThresholds.length > 0) ||
-    campaign.requested > 1;
+    campaign.requested > 1 ||
+    (brewery.summary?.firstClear ?? false);
   // A chronicle level-up brings its own dialog and stinger; this is the champions' cue.
   const championLevelUp = campaign.summaries.some((summary) => summary.levelUps.length > 0);
   const chronicleLevelUp = campaign.summaries.some((summary) => summary.playerLevelsGained > 0);
@@ -81,6 +89,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const gearLost = campaign.summaries.reduce((sum, summary) => sum + summary.gearLost, 0);
   // Mastering a difficulty owes a champion of the player's choosing; it is claimed at the Portal.
   const owedChoice = save ? openChampionChoices(save).length > 0 : false;
+  const sideMode = Boolean(boss.summary || tower.summary || brewery.summary);
   const allies = outcome.units.filter((u) => u.side === 'ally');
   const teamIds = allies.map((u) => u.instanceId).filter((id): id is string => !!id);
   const enemyTurns = outcome.turns - outcome.allyTurns;
@@ -111,6 +120,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
     clearCampaignSession();
     clearBossSession();
     clearTowerSession();
+    clearBrewerySession();
     actions.resetStack({ name: 'hub' });
     if (route === 'hub') return;
     actions.push({ name: 'campaign' });
@@ -239,6 +249,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
                 clearCampaignSession();
                 clearBossSession();
                 clearTowerSession();
+                clearBrewerySession();
                 actions.resetStack({ name: 'hub' });
                 actions.push({ name: 'palace' });
               }}
@@ -257,6 +268,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
             <BossOutcomePanel summary={boss.summary} />
           ) : tower.summary ? (
             <TowerOutcomePanel summary={tower.summary} />
+          ) : brewery.summary ? (
+            <BreweryOutcomePanel summary={brewery.summary} />
           ) : rewards ? (
             <div className={styles.rewards} data-testid="result-rewards">
               <h3 className={`display ${styles.rewardTitle}`}>{t('battleResult.rewards')}</h3>
@@ -337,7 +350,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
                 </p>
               ) : null}
             </div>
-          ) : tower.summary ? null : (
+          ) : (
             <p className={styles.noRewards}>{t('battleResult.noRewards')}</p>
           )}
           <p className={`num ${styles.seed}`}>{t('battleResult.seed', { seed: outcome.seed })}</p>
@@ -419,7 +432,24 @@ export default function BattleResultScreen(_props: ScreenProps) {
             {t('tower.result.back')}
           </Button>
         ) : null}
-        {boss.summary || tower.summary ? null : (
+        {brewery.summary ? (
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => {
+              battleController.end();
+              const hall = brewery.summary?.element;
+              clearBrewerySession();
+              actions.resetStack({ name: 'hub' });
+              // Back into the hall the run was spent in, so the next of the day's runs is one click.
+              actions.push(hall ? { name: 'brewery', hall } : { name: 'brewery' });
+            }}
+            data-testid="result-brewery"
+          >
+            {t('brewery.result.back')}
+          </Button>
+        ) : null}
+        {sideMode ? null : (
           <Button
             variant="secondary"
             size="md"
@@ -442,7 +472,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
             {t('battleResult.replay')}
           </Button>
         ) : null}
-        {boss.summary || tower.summary ? null : victory && next ? (
+        {sideMode ? null : victory && next ? (
           <Button variant="primary" size="lg" onClick={goNext} data-testid="result-next">
             {t('battleResult.nextStage')}
           </Button>

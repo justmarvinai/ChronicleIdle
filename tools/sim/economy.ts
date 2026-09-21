@@ -86,7 +86,12 @@ function report(script: EconomyScript, computed: Rates): void {
   const headline: CurrencyId[] = ['gold', 'gems', 'energy'];
   console.log('\n  per day                        ' + headline.map((c) => c.padStart(10)).join(''));
   for (const side of ['income', 'spend'] as const) {
-    for (const row of computed.lines.filter((one) => one.side === side)) {
+    // A line that pays none of the three headline currencies (the Brewery pays brews and nothing
+    // else) would be a row of zeroes here; it is reported under the brews block below instead.
+    const rows = computed.lines.filter(
+      (one) => one.side === side && headline.some((currency) => (one.amounts.get(currency) ?? 0) > 0),
+    );
+    for (const row of rows) {
       const cells = headline.map((currency) => money(row.amounts.get(currency) ?? 0).padStart(10));
       console.log(`  ${side === 'income' ? '+' : '−'} ${row.line.padEnd(28)}${cells.join('')}`);
     }
@@ -109,6 +114,23 @@ function report(script: EconomyScript, computed: Rates): void {
       console.log(
         `    ${currency.padEnd(22)} ${income.toFixed(1).padStart(8)} in ${spend.toFixed(1).padStart(8)} out ${(income - spend).toFixed(1).padStart(9)} net`,
       );
+    }
+  }
+  // Where the brews come from. The Brewery is meant to be their main source (the owner's brief),
+  // and this is the line that says whether it is.
+  const brews = others.filter((currency) => currency.startsWith('brew_'));
+  const sources = computed.lines.filter(
+    (row) => row.side === 'income' && brews.some((currency) => (row.amounts.get(currency) ?? 0) > 0),
+  );
+  if (sources.length > 0) {
+    console.log('\n  brews per day, by source');
+    for (const row of sources) {
+      const cells = brews
+        .filter((currency) => (row.amounts.get(currency) ?? 0) > 0)
+        .map(
+          (currency) => `${currency.slice('brew_'.length)} ${(row.amounts.get(currency) ?? 0).toFixed(1)}`,
+        );
+      console.log(`    ${row.line.padEnd(22)} ${cells.join('  ')}`);
     }
   }
 }

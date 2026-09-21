@@ -5,6 +5,7 @@ import { sanitizeTeam, suggestTeam } from '@engine/battle/teams';
 import { scaledEnemyStats } from '@engine/battle/index';
 import { parseStageEncounterId } from '@engine/campaign/encounter';
 import { parseBossEncounterId } from '@engine/bosses/encounter';
+import { parseBreweryEncounterId } from '@engine/brewery/encounter';
 import { parseTowerEncounterId } from '@engine/tower/encounter';
 import { parseStageId, type StagePointer } from '@engine/campaign/progress';
 import { autoRepeatTiers } from '@engine/campaign/run';
@@ -31,6 +32,7 @@ import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { launchBattle } from '@ui/flows/battle';
 import { launchBossFight } from '@ui/flows/boss';
+import { launchBreweryRun } from '@ui/flows/brewery';
 import { launchTowerFloor } from '@ui/flows/tower';
 import { launchCampaignRun } from '@ui/flows/campaign';
 import { pointerCost, runsAffordable, stageRefOf } from '@state/campaign';
@@ -65,6 +67,8 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const boss = parseBossEncounterId(encounterId);
   // So does a tower floor, and its own flow spends that (ETERNAL_TOWER.md §3).
   const towerFloor = parseTowerEncounterId(encounterId);
+  // A brewery stage costs one of the day's twenty runs, spent before the fight (BREWERY.md §5).
+  const brewery = parseBreweryEncounterId(encounterId);
   const ref = pointer ? stageRefOf(pointer) : null;
   const partySize = encounter?.partySize ?? 3;
   const mode: TeamMode = partySize === 4 ? 'boss' : 'campaign';
@@ -125,13 +129,17 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
         ? launchBossFight({ bossId: boss.bossId, tierId: boss.tierId, instanceIds: team, control })
         : towerFloor !== null
           ? launchTowerFloor({ floor: towerFloor, instanceIds: team, control })
-          : launchBattle({ encounterId, instanceIds: team, control });
+          : brewery
+            ? launchBreweryRun({ ...brewery, instanceIds: team, control })
+            : launchBattle({ encounterId, instanceIds: team, control });
     if (!result.ok) {
       setError(
         result.error.code === 'insufficient_energy'
           ? t('campaignRun.insufficientEnergy', { cost })
           : result.error.code === 'insufficient_keys'
-            ? t('tower.noKeys')
+            ? brewery
+              ? t('brewery.runsNone')
+              : t('tower.noKeys')
             : result.error.message,
       );
       playSfx('ui.error');
@@ -148,7 +156,12 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
             ? `${t('settlement.stage', { settlement: pointer.settlement, stage: pointer.stage })} · ${t(
                 `campaign.difficulty.${pointer.difficulty}`,
               )} · ${translate(encounter.name)}`
-            : `${t('battleSetup.title')} · ${translate(encounter.name)}`
+            : brewery
+              ? `${translate(encounter.name)} · ${t('brewery.stageOf', {
+                  stage: brewery.stage,
+                  total: content.breweryByElement(brewery.element).stages.length,
+                })}`
+              : `${t('battleSetup.title')} · ${translate(encounter.name)}`
         }
         onBack={() => actions.pop()}
       />
@@ -370,6 +383,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
             {t('battleSetup.start')}
             {pointer ? ` · ${t('battleSetup.cost', { cost })}` : ''}
             {boss ? ` · ${t('bosses.keyCost')}` : ''}
+            {brewery ? ` · ${t('brewery.runCost')}` : ''}
           </Button>
         </div>
       </section>

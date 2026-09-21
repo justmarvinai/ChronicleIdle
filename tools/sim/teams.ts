@@ -59,6 +59,17 @@ export const SIM_TEAMS: readonly SimTeam[] = [
     skillUpgrades: 1,
   },
   {
+    id: 'late_game',
+    // The mid roster one rank-up and one set of gear later — the yardstick the Brewery's fourth
+    // stage is pitched at (BREWERY.md §7), since "late game" is not yet "finished".
+    label: 'late game (5★50 Epic, half-geared)',
+    champions: ['champ.khazgor', 'champ.anuria', 'champ.maruan'],
+    stars: [5, 5, 5],
+    level: 'cap',
+    gearMult: 1.6,
+    skillUpgrades: 2,
+  },
+  {
     id: 'endgame',
     label: 'endgame (6★60 Legendary/Mythic, geared)',
     champions: ['champ.aurelia_dawnwarden', 'champ.varkos_sundered_king', 'champ.seraphine_vale'],
@@ -115,6 +126,34 @@ export const BANDS: readonly Band[] = [
     why: "Hard's end is not for mid rosters",
   },
   { team: 'endgame', difficulty: 'hard', settlement: 12, min: 0.7, why: 'ROADMAP Phase 3 band' },
+];
+
+/**
+ * A promise about the Brewery's five-stage ladder (`BREWERY.md` §7): stage 1 is clearable the day
+ * a chronicle starts and stage 5 is endgame. Because the four halls are held by four different
+ * factions, a `min` band is checked against the *hardest* hall and a `max` band against the
+ * *easiest* one — so "clearable on day one" means clearable in every hall, and "a mid roster must
+ * stall" means it stalls even where the guards are weakest.
+ */
+export interface BreweryBand {
+  team: string;
+  /** 1..5. */
+  stage: number;
+  min?: number;
+  max?: number;
+  why: string;
+}
+
+export const BREWERY_BANDS: readonly BreweryBand[] = [
+  { team: 'starter_lv10', stage: 1, min: 0.9, why: "day one, in every hall — the owner's brief" },
+  { team: 'starter_lv10', stage: 2, max: 0.5, why: 'early game has to be something to grow into' },
+  { team: 'starter_capped', stage: 2, min: 0.7, why: 'early game: levelling alone clears it' },
+  { team: 'starter_capped', stage: 3, max: 0.3, why: 'mid game is past an ungeared starter' },
+  { team: 'mid_epic', stage: 3, min: 0.7, why: 'mid game: a 4★ Epic roster farms it' },
+  { team: 'mid_epic', stage: 4, max: 0.35, why: 'late game needs rank-ups and gear' },
+  { team: 'late_game', stage: 4, min: 0.7, why: 'late game: a 5★ geared roster farms it' },
+  { team: 'late_game', stage: 5, max: 0.35, why: 'the endgame stage is not for a late-game roster' },
+  { team: 'endgame', stage: 5, min: 0.5, why: 'endgame: winnable in every hall, once finished' },
 ];
 
 /** The champion definition a team fights with: authored stats times its modelled gear. */

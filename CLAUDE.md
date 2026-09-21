@@ -96,6 +96,7 @@ each other's internals.
   app/                        Bootstrap, router, GameViewport, providers, loading screen
   engine/                     Pure TypeScript game logic. No React, no Pixi, no DOM, no timers.
     battle/                   Simulation, turn meter, effects, status, AI policy, event log
+    brewery/                  The Brewery: derived stage fights, the day's runs, the open-day rule
     economy/                  Currencies, wallet, energy, drops, idle chest maths
     palace/                   The Glorious Palace: the stat bonus, the point ledger, the sources
     progression/              Player level, champion level/rank/skills, gear upgrade, unlocks
@@ -105,7 +106,7 @@ each other's internals.
     time/                     Clock abstraction, reset boundaries, offline elapsed time
     schema/                   Zod schemas for content and saves
   content/                    Game data only (see docs/tech/CONTENT_AUTHORING.md)
-    champions/  abilities/  enemies/  gear/  sets/  stages/  bosses/  banners/
+    champions/  abilities/  enemies/  gear/  sets/  stages/  bosses/  banners/  brewery/
     quests/  missions/  currencies/  balance/  tutorial/  unlocks/  palace/  changelog/  registry.ts
   state/                      Zustand store: slices, selectors, persistence, migrations
   ui/                         React: screens/, components/, hooks/, styles/ (tokens, mixins)
@@ -323,6 +324,7 @@ docs/design/SUMMONING.md       shards, banners, rates, pity, rotation, reveal ri
 docs/design/BOSSES.md          daily boss and weekly boss
 docs/design/ETERNAL_TOWER.md   the endless tower: floors, keys, the season, the shard table
 docs/design/GLORIOUS_PALACE.md the account-wide skill tree: the mandala, the points, the reset
+docs/design/BREWERY.md         the four brew halls: the five stages, the twenty runs, the calendar
 docs/design/QUESTS_MISSIONS.md daily/weekly quests and the Chronicler's Path mission line
 docs/design/TUTORIAL.md        interactive onboarding script
 docs/tech/ARCHITECTURE.md      runtime architecture, engine design, state, saves, rendering

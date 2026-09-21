@@ -34,6 +34,15 @@ export function dailyKey(now: number, resetHour: number): string {
 }
 
 /**
+ * Weekday of the "game day" containing `now`, `0` = Sunday … `6` = Saturday, shifted by the reset
+ * hour the same way `dailyKey` is — so a hall that opens on Wednesday opens when the player's
+ * Wednesday starts and closes when their Thursday does (`BREWERY.md` §4).
+ */
+export function gameWeekday(now: number, resetHour: number): number {
+  return new Date(now - resetHour * MS_PER_HOUR).getDay();
+}
+
+/**
  * Key of the game week containing `now`. Weeks start on `resetWeekday` (0 = Sunday … 6 = Saturday)
  * at `resetHour` local time; the key is the local date of that week's start.
  */

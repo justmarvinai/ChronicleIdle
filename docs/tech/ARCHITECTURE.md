@@ -222,6 +222,26 @@ The state layer (`state/palace.ts`) applies those answers, and `gearedStats`/`to
 compiler enumerate every screen that reports a champion's stats instead of letting one of them
 quietly under-report.
 
+### 3.7b Brewery module
+
+`engine/brewery/` is three small files and, like the Palace's, no state of its own:
+
+- `encounter.ts` — `breweryEncounterId` / `parseBreweryEncounterId`, and `breweryEncounter(def,
+  stage, faction, settlement)`, which derives a stage's one wave from the faction holding it: a
+  window over its six units that walks by one per stage, its captain on stage 5, and its
+  settlement's backdrop, music and surface. The faction and settlement are **passed in**, not
+  imported — the engine may read content types but not the content tables (`CLAUDE.md` §5.1), the
+  same discipline the Palace's node lookup follows.
+- `schedule.ts` — `opensOn` / `isBreweryOpen` / `daysUntilOpen` / `nextOpenWeekday` /
+  `msUntilBreweryOpens`, over `gameWeekday`, which shifts `getDay` by the daily reset hour so a
+  hall's Wednesday is the player's own (`BREWERY.md` §2).
+- `runs.ts` — the day's ledger read at the door (`breweryDay` treats a record from an older day as a
+  fresh one), `runsLeft`, `clearedStage`, `isStageUnlocked`, `stageState` and `breweryRewards`.
+
+`content/registry.ts` memoises a derived encounter per `(element, stage)` and resolves brewery ids
+in `encounterById`, so every screen that takes an encounter id — battle setup, the HUD, the result —
+works on a brewery stage without knowing the mode exists.
+
 ### 3.8 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
@@ -251,8 +271,10 @@ the play by `@engine/progression/titles`, never stored), v6 (Phase 6: `inventory
 piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), v8 (Phase 9:
 `idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`), v11 (Phase 13: `missions`), v12
 (Phase 14: `tutorial`), v13 (0.1.1: the tutorial's step ids rotate when the Path moves to chapter 2), v14
-(0.2.0: `tower`, plus the `key_eternal` wallet row) and v15 (0.6.0: `palace`, whose migration also
-back-pays a skill point for every settlement boss stand the chronicle had already cleared). Fields
+(0.2.0: `tower`, plus the `key_eternal` wallet row), v15 (0.6.0: `palace`, whose migration also
+back-pays a skill point for every settlement boss stand the chronicle had already cleared) and v16
+(0.7.0: `brewery`, whose migration writes an empty day because there is nothing to back-pay).
+Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -291,6 +313,11 @@ interface SaveGame {
   // of what is bought, which is what makes the free reset bookkeeping-free (CLAUDE.md §5.5).
   palace: { nodes: string[]; earned: number; settlementsPaid: string[];
             tower: { season: number; floorPaid: number }; bossesPaid: Record<string, string> };
+  // Shipped in save v16. The Brewery (BREWERY.md §5): the game day the count belongs to, the runs
+  // spent that day across all four halls, and the deepest stage cleared per hall. A record from an
+  // older day reads as a fresh one, so the twenty runs come back at the door with nothing running at
+  // midnight; `cleared` outlives the day, because a ladder is progress rather than an allowance.
+  brewery: { periodKey: string; runs: number; cleared: Record<string, number> };
   // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
   // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
   // the campaign's stars, so the ledger cannot disagree with the play).
