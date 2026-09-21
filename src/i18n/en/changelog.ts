@@ -20,6 +20,18 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_6_0.name': 'The Glorious Palace',
+  'release.0_6_0.palace':
+    'A palace has opened on the hill above Emberhold, and inside it a tree of 133 nodes. Its heart gives every champion you own a little more health; its four branches — one for each element — give every champion of that element a little more of everything, for good. Nothing in it is large. All of it is permanent.',
+  'release.0_6_0.points':
+    'Skill points come from finishing things: one for every settlement you beat on every difficulty, one for every fifth floor of the Eternal Tower and again each season, one for emptying the daily boss’s pool and three for the weekly’s.',
+  'release.0_6_0.purple_line':
+    'A champion’s stats now show what the Palace gives them in purple, beside what their gear gives them in green — so you can always see which of the two is carrying them.',
+  'release.0_6_0.free_reset':
+    'Changed your mind? Reclaim every point at any time, as often as you like. It costs nothing.',
+  'release.0_6_0.old_chronicles':
+    'Chronicles that had already beaten settlements were paid for them: open the Palace and the points your campaign earned are waiting.',
+
   'release.0_5_1.name': 'Four Faces',
   'release.0_5_1.four_champions':
     'Bran, Maelis, Reva and Corvin have their own art — portraits, battle sprites and idle animations. Eleven of the twenty-three champions are drawn now; the rest still stand in as the lizard until their art is done.',

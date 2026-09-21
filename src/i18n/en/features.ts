@@ -33,6 +33,8 @@ export const features = {
   'feature.weekly_boss.hint': 'The hardest fight the week has.',
   'feature.eternal_tower.name': 'The Eternal Tower',
   'feature.eternal_tower.hint': 'A hundred floors, and a key every quarter hour.',
+  'feature.glorious_palace.name': 'The Glorious Palace',
+  'feature.glorious_palace.hint': 'A skill tree that lifts every champion of an element, for good.',
   'feature.gear_refine.name': 'Gear Refining',
   'feature.gear_refine.hint': 'Reroll a substat, at a price.',
   'feature.auto_repeat_10.name': 'Auto-repeat ×10',

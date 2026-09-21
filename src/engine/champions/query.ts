@@ -14,9 +14,9 @@ import {
 } from './imports';
 import type { GearSetDef } from '@content/sets/types';
 import { totalPower } from '@engine/gear/champion-stats';
+import { NO_PALACE, type PalaceBonus } from '@engine/palace/bonus';
 import type { GearInstance } from '@engine/gear/instance';
 import type { ChampionInstance, Roster } from './instance';
-import { baseStats, power } from './stats';
 
 export const ROSTER_SORTS = ['rank', 'level', 'power', 'element', 'recent', 'name'] as const;
 export type RosterSort = (typeof ROSTER_SORTS)[number];
@@ -72,6 +72,7 @@ export function rosterEntries(
   championById: (id: ChampionId) => ChampionDef | undefined,
   nameOf: (def: ChampionDef) => string,
   gear?: GearLookup,
+  palace: PalaceBonus = NO_PALACE,
 ): RosterEntry[] {
   const entries: RosterEntry[] = [];
   for (const instance of Object.values(roster)) {
@@ -81,10 +82,12 @@ export function rosterEntries(
     entries.push({
       instance,
       def,
-      power:
-        gear && worn.length > 0
-          ? totalPower(def, instance, worn, gear.setById)
-          : power(baseStats(def.stats, instance.stars, instance.level)),
+      /*
+       * Always through `totalPower`: with nothing worn and nothing bought it comes to the same
+       * number as `power(baseStats(...))`, and the shortcut that used to take that path would
+       * have hidden the Palace from a champion who owns no gear.
+       */
+      power: totalPower(def, instance, worn, gear?.setById ?? (() => undefined), palace),
       worn,
       name: nameOf(def),
     });

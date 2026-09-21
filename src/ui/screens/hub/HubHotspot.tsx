@@ -14,6 +14,8 @@ import styles from './HubHotspot.module.css';
 export interface HubHotspotProps {
   def: HubHotspotDef;
   onOpen: (def: HubHotspotDef, unlocked: boolean) => void;
+  /** Overrides the level gate for a building that opens on progress instead (the Palace). */
+  gate?: boolean;
   notify?: boolean;
   /** 0..1 drawn as a ring around the building — the Idle Chest's fill (`ECONOMY.md` §6). */
   progress?: number;
@@ -24,12 +26,14 @@ export interface HubHotspotProps {
 const neverUnlocked = (): boolean => false;
 
 /** A building on the Emberhold artwork: glowing ring, glyph, banner label, lock state. */
-export function HubHotspot({ def, onOpen, notify, progress, sublabel }: HubHotspotProps) {
-  const unlocked = useGameStore(
+export function HubHotspot({ def, onOpen, gate, notify, progress, sublabel }: HubHotspotProps) {
+  const byLevel = useGameStore(
     def.feature === 'later-phase' ? neverUnlocked : selectFeatureUnlocked(def.feature),
   );
-  const lockText =
-    def.feature === 'later-phase'
+  const unlocked = gate ?? byLevel;
+  const lockText = def.reasonKey
+    ? t(def.reasonKey)
+    : def.feature === 'later-phase'
       ? t('hub.hotspot.later')
       : t('common.unlocksAtLevel', { level: unlockLevel(def.feature) });
   const label = t(def.labelKey);

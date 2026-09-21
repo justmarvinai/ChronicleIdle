@@ -10,6 +10,7 @@ import { GEAR_SLOTS, type GearSlot } from '@content/champions/types';
 import type { BossChestDef, BossDef, BossTierDef } from '@content/bosses/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import { content } from '@content/registry';
+import { grantBossPoints } from './palace';
 import type { BattleOutcome } from '@engine/battle/types';
 import { bossEncounterId } from '@engine/bosses/encounter';
 import {
@@ -150,6 +151,8 @@ export interface BossFightSummary {
   playerXp: number;
   levelUp: LevelUpResult;
   changes: CurrencyChange[];
+  /** Skill points the Glorious Palace paid for putting the boss down (GLORIOUS_PALACE.md §3). */
+  palacePoints: number;
 }
 
 /** Banks a finished fight: the damage, the record, and the tier's chronicle XP. */
@@ -190,7 +193,16 @@ export function applyBossFightFinish(
   bumpCounter(save, 'boss.damage', Math.round(damage));
   if (input.outcome.kind === 'victory') bumpCounter(save, 'boss.kills');
 
+  /*
+   * The Palace pays for putting a boss down (GLORIOUS_PALACE.md §3): one point for the daily, three
+   * for the weekly, keyed on the period — so however many keys it took and whichever tier fell, a
+   * day pays once and a week pays once.
+   */
+  const palacePoints =
+    input.outcome.kind === 'victory' ? grantBossPoints(save, boss.id, state.periodKey, boss.period) : 0;
+
   return ok({
+    palacePoints,
     bossId: boss.id,
     tierId: tier.id,
     damage: Math.round(damage),

@@ -20,6 +20,7 @@ import { QUEST_CHEST_COUNTER, bumpCounter, bumpCounterId, counter } from '@engin
 import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import { boardComplete, boardView, type BoardView } from '@engine/quests/board';
 import type { QuestPeriodSave, SaveGame } from '@engine/schema/save';
+import { palaceBonusOf } from './palace';
 import { dailyKey, msUntilDailyReset, msUntilWeeklyReset, weeklyKey } from '@engine/time/clock';
 import { GOAL_LOOKUPS } from './goal-lookups';
 import { mergeAmounts, payCurrencies } from './payout';
@@ -73,6 +74,7 @@ export function questBoardState(save: SaveGame, period: QuestPeriod, now: number
     save,
     baseline: record.baseline,
     now,
+    palace: palaceBonusOf(save.palace.nodes),
     lookups: GOAL_LOOKUPS,
     playerLevel: save.profile.level,
     claimedQuests: record.claimed,

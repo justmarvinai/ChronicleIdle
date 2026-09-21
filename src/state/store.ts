@@ -70,6 +70,7 @@ import {
 import type { CraftTier } from '@content/balance/forge';
 import type { ShardId } from '@content/balance/summon';
 import { applyIdleClaim, type IdleClaimSummary } from './idle';
+import { applyPalaceReset, applyPalaceUnlock, type PalaceUnlock } from './palace';
 import {
   applyBossChestClaim,
   applyBossFightFinish,
@@ -253,6 +254,10 @@ export interface GameActions {
   setPortalSelection(patch: Partial<{ bannerId: string; shard: ShardId }>): void;
   /** Opens the Idle Chest (`ECONOMY.md` §6): its hours are paid and it starts filling again. */
   claimIdleChest(): Result<IdleClaimSummary>;
+  /** The Glorious Palace: lights one node, if it is reachable and the points are there. */
+  unlockPalaceNode(nodeId: string): Result<PalaceUnlock>;
+  /** Darkens the whole Palace and hands every spent point back (free, any time). */
+  resetPalace(): Result<number>;
   /** Spends a boss key on a tier and hands back the fight it bought (`BOSSES.md` §1). */
   startBossFight(bossId: string, tierId: string): Result<BossFightStarted>;
   /** Spends an Eternal Key and points the save at the tower floor it bought. */
@@ -1136,6 +1141,31 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               events.emit({ type: 'idle.claimed', hours: result.value.hours, tier: result.value.tier });
               // The chest can carry a chronicle over a level; the celebration is the shared one.
               noteLevelUp(result.value.levelUp, 'idle');
+              return result;
+            },
+
+            unlockPalaceNode(nodeId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<PalaceUnlock> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyPalaceUnlock(state.save, nodeId);
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (result.ok)
+                events.emit({ type: 'palace.nodeUnlocked', nodeId, cost: result.value.node.cost });
+              return result;
+            },
+
+            resetPalace() {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<number> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyPalaceReset(state.save);
+                if (result.ok) state.save.updatedAt = clock.now();
+              });
+              if (result.ok) events.emit({ type: 'palace.reset', points: result.value });
               return result;
             },
 

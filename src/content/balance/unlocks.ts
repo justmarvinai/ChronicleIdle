@@ -19,6 +19,7 @@ export const FEATURE_IDS = [
   'weekly_boss',
   'gear_refine',
   'eternal_tower',
+  'glorious_palace',
   'auto_repeat_10',
   'auto_repeat_25',
   'auto_repeat_50',
@@ -53,6 +54,11 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
    * card and the route both ask the campaign.
    */
   eternal_tower: 1,
+  /**
+   * The Palace is gated on *progress* too: the first settlement's boss stand fallen
+   * (`isPalaceUnlocked`). Level 1 so the level gate never speaks for it.
+   */
+  glorious_palace: 1,
   auto_repeat_10: 5,
   auto_repeat_25: 20,
   auto_repeat_50: 30,

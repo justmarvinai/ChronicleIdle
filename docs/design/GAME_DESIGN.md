@@ -70,6 +70,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Summoning | 4 shard types, standard portal + featured banner, pity, deterministic rotation | `SUMMONING.md` |
 | Bosses | Daily boss (4 tiers, 2 keys/day) and weekly boss (3 tiers, 3 keys/week), damage-threshold rewards | `BOSSES.md` |
 | Eternal Tower | 100 floors climbed in order, every 10th a boss floor, keys on a 15-minute clock, a 30-day season | `ETERNAL_TOWER.md` |
+| Glorious Palace | An account-wide skill tree: 237 points from finished content, spent on small permanent stats for a whole element | `GLORIOUS_PALACE.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
 | Tutorial | Interactive scripted onboarding with Eldric Lorekeeper | `TUTORIAL.md` |
@@ -133,6 +134,7 @@ after the first stand.
 | 18 | Gear refine (star-up) |
 | 20 | Auto-repeat ×25 (×10 from level 5) |
 | 30 | Auto-repeat ×50 |
+| — | **The Glorious Palace**: the first settlement's boss stand cleared |
 | — | **The Eternal Tower**: all 120 Intro stages cleared |
 | — | Normal difficulty: all 120 Intro stages cleared |
 | — | Hard difficulty: all 120 Normal stages cleared |
@@ -144,9 +146,11 @@ Gear opens with the chronicle rather than at level 3 (the owner's third batch): 
 drop a piece, and a chronicle that may not wear what it has just found is holding a reward it
 cannot use.
 
-Three unlocks are gated on **progress** rather than on a level, and they are the ones that mark the
-end of a stretch of the game: Normal, Hard, and the Eternal Tower. A player who has cleared Intro
-has run out of first clears; the tower is what is waiting for them (`ETERNAL_TOWER.md` §1).
+Four unlocks are gated on **progress** rather than on a level, and they are the ones that mark a
+stretch of the game beginning or ending: the Glorious Palace, Normal, Hard, and the Eternal Tower.
+The Palace opens early — the first settlement that falls pays the point that buys its Heart — and
+the tower opens at the other end: a player who has cleared Intro has run out of first clears, and
+the tower is what is waiting for them (`ETERNAL_TOWER.md` §1, `GLORIOUS_PALACE.md` §5).
 
 ## 7. Glossary
 

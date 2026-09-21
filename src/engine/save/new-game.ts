@@ -7,6 +7,7 @@ import {
   emptyCampaign,
   emptySummon,
   emptyTeams,
+  emptyPalace,
   type SaveGame,
   type Settings,
 } from '@engine/schema/save';
@@ -69,5 +70,6 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     tutorial: { completedSteps: [], skippedChapters: [] },
     // The tower waits on the whole Intro campaign; its season starts on the first floor attempted.
     tower: emptyTower(now),
+    palace: emptyPalace(),
   };
 }

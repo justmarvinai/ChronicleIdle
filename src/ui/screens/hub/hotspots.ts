@@ -18,6 +18,11 @@ export interface HubHotspotDef {
   route?: Route;
   /** Dialog opened when unlocked, for buildings that are a panel rather than a screen. */
   dialog?: DialogRoute;
+  /**
+   * What the lock says for a building no level opens — the Palace waits on the campaign, not on a
+   * level (`isPalaceUnlocked`). The Locked screen prints the same line.
+   */
+  reasonKey?: I18nKey;
   /** Accent colour of the ring/glow. */
   color: string;
   labelBelow?: boolean;
@@ -82,6 +87,20 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     feature: 'champions',
     route: { name: 'champions' },
     color: '#4aa3df',
+    labelBelow: true,
+  },
+  {
+    /* The lit keep on the hill, top right of the Emberhold artwork. */
+    id: 'palace',
+    labelKey: 'hub.palace',
+    x: 1615,
+    y: 232,
+    size: 132,
+    glyph: 'glyph.eagle_staff',
+    feature: 'glorious_palace',
+    route: { name: 'palace' },
+    reasonKey: 'palace.locked',
+    color: '#b07ae8',
     labelBelow: true,
   },
   {

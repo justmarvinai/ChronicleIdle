@@ -10,6 +10,69 @@ _Nothing pending. Four questions are open for the owner: `USER_QUESTIONS.md` Q46
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key) and Q49 (nothing grants Eternal Keys yet)._
 
+## [0.6.0] — 2026-09-21 — The Glorious Palace
+
+An account-wide skill tree, and the first progression system that lifts champions the player has
+not pulled yet. `docs/design/GLORIOUS_PALACE.md`; owner's answers Q50–Q53.
+
+### Added
+
+- **The Glorious Palace** (`src/content/palace/`): a Heart worth **+1 % HP to every champion**, and
+  four branches — Justice, Valor, Eclipse, Faith — of **7 rings, 33 nodes and 59 points** each.
+  **133 nodes, 237 points** in all. A branch maxed is worth +1,500 HP, +150 ATK, +150 DEF, +6 SPD,
+  +5 % C.RATE, +8 % C.DMG, +25 RES and +20 ACC to every champion of that element — about one good
+  piece of gear spread across a quarter of the roster, which is the size it was asked to be.
+  The shape is authored once as `RING_TEMPLATE` and stamped four times, so the mandala is symmetric
+  and every element is offered the same deal.
+- **Four sources of skill points** (`PALACE_POINT_SOURCES`), all of them finished content: a
+  settlement's boss stand (1, once per difficulty — 36 over the campaign), every fifth floor of the
+  Eternal Tower (1, **again each season**), the daily boss's pool emptied (1) and the weekly
+  boss's (3). Each keeps its own watermark, so no source ever pays twice and every reducer is safe
+  to replay.
+- **The Palace screen** (`UI_DESIGN.md` §5.22): the tree as a mandala you drag and zoom, with the
+  kit's round frame on every node, a breathing halo on the one you can buy next, a travelling dash
+  along the path to it, and the element's colour on everything bought. Hovering a node says what it
+  grants, what it costs, who it applies to and why it can or cannot be bought. The ledger floats
+  over the field: points to spend, points spent of 237, a bar per branch, **what the Palace gives**
+  right now, and where the next points come from.
+- **A building on Emberhold** — the lit keep on the hill — open once the first settlement falls
+  (Q53), gated on progress rather than on a player level, the way the Eternal Tower is.
+- **The purple line** the owner asked for: a champion's stats now print what the Palace adds in
+  epic violet beside what gear adds in green, with a tooltip naming the branch that paid for it.
+- **A free reset, any time** (Q52): *Reclaim all points* darkens the tree and hands every point
+  back. `spent` is derived from what is bought, so the reset needs no bookkeeping at all.
+- The battle result screen carries a violet plate when a clear paid skill points, and pressing it
+  goes to the Palace.
+- **Champions fight with it behind them.** `StartBattleInput.palace` is required rather than
+  defaulted, so a flow that starts a fight has to say what the chronicle's Palace is worth — a
+  battle that quietly left it out would field champions weaker than the sheet that sent them in.
+  A controller test holds a Justice champion's entry HP to the branch bought for him, and a Faith
+  champion's to the Heart alone. The balance simulator passes none on purpose: it measures the
+  campaign's curve against reference teams, not a chronicle.
+- `src/engine/palace/` — `bonus.ts` (what a bought tree adds), `ledger.ts` (earned/spent/available
+  and whether a node may be bought) and `points.ts` (what each source owes): 11 engine tests, 9
+  more through the store, 7 on the screen's geometry, 6 on the screen itself and 2 on the plate the
+  result screen prints, plus an e2e walk that earns the campaign's points, spends them and reclaims
+  them.
+
+### Changed
+
+- **Save v15.** The `palace` slice, and a migration that **back-pays** a skill point for every
+  settlement boss stand a chronicle had already cleared — so an existing chronicle opens the Palace
+  with the points its campaign already earned rather than an empty tree.
+- `gearedStats`, `totalStats` and `totalPower` take a `PalaceBonus` as a **required** last
+  argument. The Palace is the last stat layer — `base → + gear flat → × (1 + gear %) → + palace` —
+  and making the parameter required meant the compiler enumerated all nine call sites instead of
+  letting one screen quietly under-report a champion.
+- `rosterEntries` no longer short-circuits a champion with no gear: a gearless champion still has a
+  Palace behind it.
+
+### Fixed
+
+- The champion sheet asked for `champions.element.<id>`, which is not a key: the element's name in
+  the Palace tooltip printed as the key itself. UI tests now **fail** on any missing i18n key
+  rather than warning to a console nobody reads (`vitest.setup.ts`).
+
 ## [0.5.1] — 2026-09-20 — Four faces
 
 ### Added

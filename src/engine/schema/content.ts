@@ -10,6 +10,9 @@ import type { SettlementDef } from '@content/stages/types';
 import type { GearSetDef } from '@content/sets/types';
 import type { TitleDef } from '@content/titles/types';
 import type { ReleaseDef } from '@content/changelog/types';
+import type { PalaceNodeDef } from '@content/palace/types';
+import { PALACE_BRANCH_COST, PALACE_BRANCH_TOTALS, PALACE_CORE_HP_PCT } from '@content/balance/palace';
+import { ELEMENTS, STAT_IDS } from '@content/champions/types';
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
 import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
@@ -36,6 +39,7 @@ import { gearSetSchema } from './gear-set';
 import { questBoardSchema } from './quest';
 import { titleSchema } from './title';
 import { compareReleases, releaseSchema } from './changelog';
+import { palaceNodeSchema } from './palace';
 
 export const currencySchema = z.object({
   id: z.enum(CURRENCY_IDS),
@@ -91,6 +95,7 @@ export function validateContentRegistry(
     settlements: readonly unknown[];
     titles: readonly unknown[];
     releases: readonly unknown[];
+    palace: { nodes: readonly unknown[] };
     gearSets: readonly unknown[];
     banners: readonly unknown[];
     bosses: readonly unknown[];
@@ -114,6 +119,7 @@ export function validateContentRegistry(
     ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters, registry.bosses),
     ...validateTitles(registry.titles, refs),
     ...validateReleases(registry.releases, refs),
+    ...validatePalace(registry.palace.nodes, refs),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
@@ -692,6 +698,76 @@ function validateTitles(titles: readonly unknown[], refs: ContentRefs): Validati
     if (def.condition.kind === 'settlement_boss' && def.condition.settlement > SETTLEMENT_COUNT)
       error(`${path}.condition`, `settlement ${def.condition.settlement} does not exist`);
   });
+  return issues;
+}
+
+/**
+ * The Glorious Palace (GLORIOUS_PALACE.md). Four things a careless edit to the ring template
+ * breaks, none of which typecheck: a branch that no longer comes to the totals the balance file
+ * promises, a branch that costs more or less than the point budget, a node hanging off a parent
+ * that does not exist, and the core stopping being the only percentage in the tree.
+ */
+function validatePalace(nodes: readonly unknown[], refs: ContentRefs): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const parsed: PalaceNodeDef[] = [];
+  const seen = new Set<string>();
+  nodes.forEach((raw, index) => {
+    const result = palaceNodeSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`palace[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const node = result.data as PalaceNodeDef;
+    if (seen.has(node.id)) error(`palace.${node.id}`, 'duplicate id');
+    seen.add(node.id);
+    if (!refs.i18nKeys.has(node.name)) error(`palace.${node.id}`, `missing i18n key ${node.name}`);
+    parsed.push(node);
+  });
+  if (parsed.length === 0) return issues;
+
+  // Every node is reachable: its prerequisites exist, and walking them arrives at the core.
+  const byId = new Map(parsed.map((node) => [node.id, node]));
+  const core = parsed.filter((node) => node.requires.length === 0);
+  if (core.length !== 1) error('palace', `expected one root node, found ${core.length}`);
+  for (const node of parsed)
+    for (const required of node.requires)
+      if (!byId.has(required)) error(`palace.${node.id}`, `requires unknown node ${required}`);
+  const rootId = core[0]?.id;
+  for (const node of parsed) {
+    let walk: PalaceNodeDef | undefined = node;
+    for (let hops = 0; walk && hops <= 64; hops += 1) {
+      if (walk.id === rootId) break;
+      walk = byId.get(walk.requires[0] ?? '');
+      if (hops === 64) error(`palace.${node.id}`, 'does not lead back to the core');
+    }
+    if (!walk) error(`palace.${node.id}`, 'does not lead back to the core');
+  }
+
+  // Only the core is a percentage, and it is the one the balance file names.
+  for (const node of parsed)
+    if (node.hpPct > 0 && node.id !== rootId)
+      error(`palace.${node.id}`, 'only the core node may grant a percentage');
+  if (core[0] && core[0].hpPct !== PALACE_CORE_HP_PCT)
+    error('palace.core', `grants ${core[0].hpPct}% HP, not the ${PALACE_CORE_HP_PCT}% balance names`);
+
+  // Each branch comes to the same promised totals for the same promised price.
+  for (const element of ELEMENTS) {
+    const branch = parsed.filter((node) => node.element === element);
+    const cost = branch.reduce((sum, node) => sum + node.cost, 0);
+    if (cost !== PALACE_BRANCH_COST)
+      error(`palace.${element}`, `costs ${cost} points, not the ${PALACE_BRANCH_COST} budgeted`);
+    for (const stat of STAT_IDS) {
+      const total = branch.reduce((sum, node) => sum + (node.grants[stat] ?? 0), 0);
+      if (total !== PALACE_BRANCH_TOTALS[stat])
+        error(
+          `palace.${element}.${stat}`,
+          `maxes at ${total}, not the ${PALACE_BRANCH_TOTALS[stat]} budgeted`,
+        );
+    }
+  }
   return issues;
 }
 

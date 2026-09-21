@@ -3,6 +3,7 @@
  * script reads, the two things a lesson writes, and the grants it hands over exactly once.
  */
 import { describe, expect, it } from 'vitest';
+import { NO_PALACE } from '@engine/palace/index';
 import { content } from '@content/registry';
 import { STARTER_IDS, type ChampionId } from '@content/champions/types';
 import { TUTORIAL_BATTLE_SEED, TUTORIAL_SUMMON_RARITY } from '@content/balance/tutorial';
@@ -170,6 +171,7 @@ describe('the tutorial in the save', () => {
       encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'manual',
       speed: 4,
       seed: 'tutorial',
@@ -255,6 +257,7 @@ describe('the tutorial in the save', () => {
         encounterId: 'encounter.stage.01.01.intro',
         instanceIds: team,
         roster,
+        palace: NO_PALACE,
         control: 'manual',
         speed: 4,
         seed: TUTORIAL_BATTLE_SEED,

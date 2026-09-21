@@ -3,6 +3,7 @@ import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
 import { missionsClaimable } from '@state/missions';
+import { isPalaceUnlocked } from '@state/palace';
 import { questsClaimable } from '@state/quests';
 import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
@@ -37,6 +38,8 @@ export default function HubScreen(_props: ScreenProps) {
   const gear = useGameStore(selectGear);
   const unseen = useGameStore(selectUnseen);
   const save = useGameStore(selectSave);
+  // The Palace waits on the first settlement falling rather than on a level (owner's answer).
+  const palace = useGameStore((state) => (state.save ? isPalaceUnlocked(state.save) : false));
   // The chest accrues by the minute; the ring and its countdown follow at that pace.
   const now = useNow(30_000);
   useSceneAudio('hub', 'hub');
@@ -66,7 +69,13 @@ export default function HubScreen(_props: ScreenProps) {
   const open = (def: HubHotspotDef, unlocked: boolean): void => {
     if (unlocked && def.dialog) actions.openDialog(def.dialog);
     else if (unlocked && def.route) actions.push(def.route);
-    else actions.push({ name: 'locked', feature: def.feature, titleKey: def.labelKey });
+    else
+      actions.push({
+        name: 'locked',
+        feature: def.feature,
+        titleKey: def.labelKey,
+        ...(def.reasonKey ? { reasonKey: def.reasonKey } : {}),
+      });
   };
 
   return (
@@ -81,6 +90,7 @@ export default function HubScreen(_props: ScreenProps) {
           def={def}
           onOpen={open}
           notify={notices[def.id] ?? false}
+          {...(def.id === 'palace' ? { gate: palace } : {})}
           {...(def.id === 'idle' && chest
             ? {
                 progress: chest.fill.fraction,

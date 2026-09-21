@@ -8,6 +8,11 @@ import { SaveError } from '@engine/errors';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
 import { stepFeatureGates } from '@engine/tutorial/index';
 import { TOWER_KEY_CAP } from '@content/balance/tower';
+import { BOSS_STAGE_NUMBER, SETTLEMENT_COUNT } from '@content/balance/campaign';
+import { DIFFICULTY_MULT } from '@content/balance/battle';
+import { PALACE_POINT_SOURCES } from '@content/balance/palace';
+import { progressKey, stageIdOf } from '@engine/campaign/progress';
+import { settlementKey } from '@engine/palace/index';
 import { SAVE_VERSION, saveSchema, type SaveGame } from '@engine/schema/save';
 
 export interface MigrationStep {
@@ -269,7 +274,44 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       };
     },
   },
+  {
+    from: 14,
+    to: 15,
+    /*
+     * The Glorious Palace. A chronicle that predates it has already finished settlements, and a
+     * veteran who opens the Palace to find it empty has been robbed of what they earned — so the
+     * migration pays for every settlement boss already beaten, on every difficulty, and records
+     * them as paid. That is the same courtesy the Idle Chest was given (Q40).
+     *
+     * The tower and the bosses are not backpaid: both repeat, and what they owe is measured
+     * against a season and a period that have already turned over.
+     */
+    migrate: (raw) => {
+      const campaign = (raw['campaign'] ?? {}) as { stars?: Record<string, number> };
+      const stars = campaign.stars ?? {};
+      const paid: string[] = [];
+      for (const difficulty of DIFFICULTIES)
+        for (let settlement = 1; settlement <= SETTLEMENT_COUNT; settlement += 1) {
+          const key = progressKey(stageIdOf(settlement, BOSS_STAGE_NUMBER), difficulty);
+          if ((stars[key] ?? 0) > 0) paid.push(settlementKey(difficulty, settlement));
+        }
+      return {
+        ...raw,
+        saveVersion: 15,
+        palace: {
+          nodes: [],
+          earned: paid.length * PALACE_POINT_SOURCES.settlement,
+          settlementsPaid: paid,
+          tower: { season: 0, floorPaid: 0 },
+          bossesPaid: {},
+        },
+      };
+    },
+  },
 ];
+
+/** The three difficulties, in order, read off the table that defines them. */
+const DIFFICULTIES = Object.keys(DIFFICULTY_MULT) as (keyof typeof DIFFICULTY_MULT)[];
 
 /**
  * Where each tutorial chapter went when the Path moved to second place. Chapters 1 and 6 did not

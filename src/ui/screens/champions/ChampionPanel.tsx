@@ -1,11 +1,21 @@
-import { STAT_IDS, type AbilityDef, type ChampionDef, type StatId } from '@content/champions/types';
+import { useMemo } from 'react';
+import {
+  STAT_IDS,
+  type AbilityDef,
+  type ChampionDef,
+  type Element,
+  type StatId,
+} from '@content/champions/types';
 import { content } from '@content/registry';
+import { palaceBonusOf, selectPalaceNodes } from '@state/selectors';
+import { useGameStore } from '@state/store';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import type { ChampionInstance } from '@engine/champions/instance';
 import type { RosterEntry } from '@engine/champions/query';
 import { baseStats, levelCap } from '@engine/champions/stats';
 import { canLevel, championXpToNext } from '@engine/champions/xp';
 import { totalStats } from '@engine/gear/champion-stats';
+import { NO_PALACE, palaceStats } from '@engine/palace/index';
 import { t, translate, type I18nKey } from '@i18n/index';
 import type { ChampionTab } from '@state/ui-types';
 import { AbilityIcon } from '@ui/components/AbilityIcon/AbilityIcon';
@@ -16,6 +26,7 @@ import { Panel } from '@ui/components/Frame/Panel';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { Tabs } from '@ui/components/Tab/Tabs';
+import { Tooltip } from '@ui/components/Tooltip/Tooltip';
 import { formatStat } from '@ui/gear/gear-view';
 import { GearTab } from './GearTab';
 import styles from './ChampionPanel.module.css';
@@ -91,11 +102,46 @@ export function ChampionPanel({
   );
 }
 
+/**
+ * The Palace's share of a stat, in purple beside gear's green, with a tooltip that says which
+ * branch paid for it (the owner's brief). Nothing is drawn when the Palace adds nothing.
+ */
+function PalaceBonusValue({ stat, value, element }: { stat: StatId; value: number; element: Element }) {
+  if (value <= 0) return null;
+  const shown = `+${formatStat(stat, value)}`;
+  return (
+    <Tooltip
+      content={
+        <div className={styles.palaceTip}>
+          <span className={`display ${styles.palaceTipTitle}`}>{t('champions.palaceBonus')}</span>
+          <span>
+            {t('champions.palaceBonus.detail', {
+              value: shown,
+              element: t(`element.${element}` as I18nKey),
+            })}
+          </span>
+        </div>
+      }
+    >
+      <span tabIndex={0}>{shown}</span>
+    </Tooltip>
+  );
+}
+
 function InfoTab({ entry }: { entry: RosterEntry }) {
   const { def, instance, worn } = entry;
   const stats = baseStats(def.stats, instance.stars, instance.level);
-  // What the gear and its complete sets add on top of the base — the second column of the table.
-  const geared = totalStats(def, instance, worn, content.gearSetById);
+  /*
+   * Three columns, three sources: the base, what gear and its complete sets add (green), and what
+   * the Glorious Palace adds (purple). Each is computed from its own source rather than by
+   * subtracting the others — hence `NO_PALACE` here, so the green number is gear and gear alone.
+   */
+  const geared = totalStats(def, instance, worn, content.gearSetById, NO_PALACE);
+  const nodes = useGameStore(selectPalaceNodes);
+  const fromPalace = useMemo(
+    () => palaceStats(palaceBonusOf(nodes), def.element, stats.hp),
+    [nodes, def.element, stats.hp],
+  );
   const cap = levelCap(instance.stars);
   const next = championXpToNext(instance.level);
   return (
@@ -131,6 +177,9 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
             </dd>
             <dd className={`num ${styles.statBonus}`} data-testid={`stat-bonus-${stat}`}>
               {geared[stat] > stats[stat] ? `+${formatStat(stat, geared[stat] - stats[stat])}` : ''}
+            </dd>
+            <dd className={`num ${styles.statPalace}`} data-testid={`stat-palace-${stat}`}>
+              <PalaceBonusValue stat={stat} value={fromPalace[stat] ?? 0} element={def.element} />
             </dd>
           </div>
         ))}

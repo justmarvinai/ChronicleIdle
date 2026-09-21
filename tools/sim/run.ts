@@ -75,6 +75,8 @@ export function simulateStage(
           return def && tuning ? tuned(def, tuning) : def;
         },
         control: 'auto',
+        // No Palace on purpose: the sim measures the campaign's curve against reference teams, and
+        // a skill tree the player may or may not have bought would measure the chronicle instead.
       },
       `sim:${team.id}:${stageId}:${difficulty}:${i}`,
     );

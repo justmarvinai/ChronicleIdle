@@ -3,6 +3,7 @@
  * team for the mode, and enters the battle screen.
  */
 import { maxBattleSpeed } from '@engine/campaign/progress';
+import { palaceBonusOf } from '@state/palace';
 import { battleController, type BattleSpeed } from '@state/battle/index';
 import { progressOf } from '@state/campaign';
 import { useGameStore } from '@state/store';
@@ -25,6 +26,7 @@ export function launchBattle(input: LaunchInput): Result<void> {
     encounterId: input.encounterId,
     instanceIds: input.instanceIds,
     roster: save.roster,
+    palace: palaceBonusOf(save.palace.nodes),
     control,
     speed,
     seed: `${save.seedRoot}:${fought}`,

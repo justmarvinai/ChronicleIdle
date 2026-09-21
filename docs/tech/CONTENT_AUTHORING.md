@@ -583,3 +583,39 @@ release('0.5.0', '2026-09-20', [
 3. `pnpm content:validate` checks that every line has a string, that the id matches the version,
    and that the list really is newest first.
 
+
+## 14. The Glorious Palace
+
+The tree lives in `src/content/palace/index.ts` and is authored **once**: `RING_TEMPLATE` describes
+one branch — seven rings, the nodes in each, what opens them, what they cost and what they grant —
+and the file stamps it out four times, one per element. Change a row there and all four branches
+move together, which is the point: the mandala is symmetric and every element is offered the same
+deal (`docs/design/GLORIOUS_PALACE.md` §1).
+
+```ts
+// Ring 3 — the first point of speed, and it is dear.
+[
+  { name: 'vigour', parent: 0, cost: 1, grants: { hp: 100 } },
+  …
+  { name: 'swiftness', parent: 4, cost: 3, grants: { spd: 1 } },
+],
+```
+
+- `name` is a **slug**, not a string: it becomes `palace.node.<name>` in `src/i18n/en/palace.ts`
+  and the node's glyph in `src/ui/screens/palace/palace-icons.ts`. Names repeat across rings the
+  way a skill tree's do — eleven names cover all 133 nodes, and the tooltip carries the numbers.
+  A new name needs a string **and** a glyph; a test asserts the table matches the tree exactly.
+- `parent` is the **slot** in the ring below that opens this node; ring 1 hangs off the Heart.
+- `grants` is any of the eight stats. C.RATE and C.DMG are already percentages, so `critRate: 2`
+  means two points of crit rate.
+- `cost` is what the stat is worth, not how far out it sits: 1 for HP/ATK/DEF, 2 for RES/ACC, 3 for
+  SPD/C.RATE/C.DMG, 4–5 for a capstone.
+
+Nothing about the **geometry** belongs here. Content says which ring and slot a node sits on; the
+screen turns that into pixels (`UI_DESIGN.md` §5.22), so a branch can be redrawn without touching
+the data and a node can be added without picking coordinates for it.
+
+After any change, `pnpm content:validate` checks that every node's `requires` exists, that every
+node walks back to the Heart, that only the Heart carries a percentage, and that each branch still
+costs `PALACE_BRANCH_COST` and adds up to `PALACE_BRANCH_TOTALS` — so a node changed here and not
+in `balance/palace.ts` fails the build rather than the balance.

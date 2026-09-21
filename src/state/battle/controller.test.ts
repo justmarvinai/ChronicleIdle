@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { NO_PALACE, palaceBonus, type PalaceBonus } from '@engine/palace/index';
+import { PALACE } from '@content/palace/index';
 import { content } from '@content/registry';
 import { createInstance } from '@engine/champions/instance';
 import type { Roster } from '@engine/champions/instance';
@@ -37,6 +39,7 @@ describe('battle controller', () => {
       encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'auto',
       speed: 2,
       seed: 'ctrl',
@@ -52,6 +55,43 @@ describe('battle controller', () => {
     expect(controller.store.getState().status).toBe('idle');
   });
 
+  it('sends champions in with the Glorious Palace behind them', () => {
+    const roster = rosterOf(STARTERS);
+    const start = (palace: PalaceBonus) => {
+      const controller = createBattleController();
+      const result = controller.start({
+        encounterId: 'encounter.stage.01.01.intro',
+        instanceIds: Object.keys(roster),
+        roster,
+        palace,
+        control: 'manual',
+        speed: 1,
+        seed: 'palace',
+      });
+      if (!result.ok) throw new Error(result.error.message);
+      const allies = Object.values(controller.simulation()?.units ?? {}).filter((u) => u.side === 'ally');
+      controller.end();
+      return allies;
+    };
+
+    // Corvin is Justice; a Justice branch reaches him and a Valor one does not.
+    const bare = start(NO_PALACE);
+    const lifted = start(palaceBonus(['palace.core', 'palace.justice.r1.0'], (id) => PALACE.byId[id]));
+    const corvin = (units: typeof bare) => units.find((u) => u.defId === 'champ.ser_corvin');
+    const before = corvin(bare);
+    const after = corvin(lifted);
+    expect(before && after).toBeTruthy();
+    if (!before || !after) return;
+    // +50 flat from the node, plus 1 % of his base HP from the Heart — and he enters at full.
+    expect(after.base.hp).toBeGreaterThan(before.base.hp + 50);
+    expect(after.maxHp).toBe(after.base.hp);
+    expect(after.hp).toBe(after.maxHp);
+    // Wenna is Faith: the Justice branch adds nothing to her beyond the Heart's percentage.
+    const wenna = (units: typeof bare) => units.find((u) => u.defId === 'champ.wenna_novice');
+    const before2 = wenna(bare)?.base.hp ?? 0;
+    expect(wenna(lifted)?.base.hp).toBe(before2 + Math.round(before2 / 100));
+  });
+
   it('holds an auto battle until a presenter attaches when asked to (the screen mounts its stage first)', async () => {
     const controller = createBattleController();
     const roster = rosterOf(STARTERS);
@@ -59,6 +99,7 @@ describe('battle controller', () => {
       encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'auto',
       speed: 1,
       seed: 'hold',
@@ -92,6 +133,7 @@ describe('battle controller', () => {
       encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'manual',
       speed: 1,
       seed: 'manual',
@@ -120,6 +162,7 @@ describe('battle controller', () => {
       encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'manual',
       speed: 1,
       seed: 'mark',
@@ -157,6 +200,7 @@ describe('battle controller', () => {
         encounterId: 'encounter.stage.01.01.intro',
         instanceIds: ['ghost-9'],
         roster,
+        palace: NO_PALACE,
         control: 'auto',
         speed: 1,
         seed: 's',
@@ -167,6 +211,7 @@ describe('battle controller', () => {
         encounterId: 'encounter.nope',
         instanceIds: Object.keys(roster),
         roster,
+        palace: NO_PALACE,
         control: 'auto',
         speed: 1,
         seed: 's',
@@ -176,6 +221,7 @@ describe('battle controller', () => {
       encounterId: 'encounter.stage.01.02.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'manual',
       speed: 1,
       seed: 'retreat',
@@ -207,6 +253,7 @@ describe('battle controller', () => {
       encounterId: 'encounter.stage.01.01.intro',
       instanceIds: Object.keys(roster),
       roster,
+      palace: NO_PALACE,
       control: 'auto',
       speed: 4,
       seed: 'bp',

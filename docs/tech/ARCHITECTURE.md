@@ -203,6 +203,25 @@ planRefine(piece, sacrifice) → Result<RefinePlan>    // the climb, and the re-
 - A refine keeps the piece's identity — same `instanceId`, rarity, level and substat values — and
   only its star changes, which re-bases the main stat through `mainStatValue`.
 
+### 3.7a Palace module
+
+`engine/palace/` is three small files and no state of its own:
+
+- `bonus.ts` — `palaceBonus(bought, nodeById)` folds the bought ids into one flat grant per element
+  plus the Heart's percentage; `withPalace` adds it as the **last** stat layer, after every
+  multiplier (`GLORIOUS_PALACE.md` §3). The lookup is injected rather than imported: the engine may
+  read content *types* but not the content tables (`CLAUDE.md` §5.1), the same way gear sets are.
+- `ledger.ts` — earned/spent/available, and `nodeState` (owned / ready / unreachable / too short),
+  which is the one place that decides whether a point may be spent on a node.
+- `points.ts` — one pure function per source, each returning "what is owed that has not been paid"
+  plus the watermark to store with it, so a reducer can be replayed and a source can never pay
+  twice.
+
+The state layer (`state/palace.ts`) applies those answers, and `gearedStats`/`totalStats`/
+`totalPower` take a `PalaceBonus` as a **required** last argument — so adding the Palace made the
+compiler enumerate every screen that reports a champion's stats instead of letting one of them
+quietly under-report.
+
 ### 3.8 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
@@ -231,8 +250,9 @@ selected pointer and the auto-repeat count), v5 (Phase 4: `profile.titles` becom
 the play by `@engine/progression/titles`, never stored), v6 (Phase 6: `inventory` with every
 piece of gear the chronicle owns, and `counters.gear`), v7 (Phase 8: `summon`), v8 (Phase 9:
 `idle`), v9 (Phase 10: `bosses`), v10 (Phase 12: `quests`), v11 (Phase 13: `missions`), v12
-(Phase 14: `tutorial`), v13 (0.1.1: the tutorial's step ids rotate when the Path moves to chapter 2) and v14
-(0.2.0: `tower`, plus the `key_eternal` wallet row). Fields
+(Phase 14: `tutorial`), v13 (0.1.1: the tutorial's step ids rotate when the Path moves to chapter 2), v14
+(0.2.0: `tower`, plus the `key_eternal` wallet row) and v15 (0.6.0: `palace`, whose migration also
+back-pays a skill point for every settlement boss stand the chronicle had already cleared). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -263,6 +283,14 @@ interface SaveGame {
   // climbed in order, so there is no per-floor list to fall out of step (ETERNAL_TOWER.md §2, §8).
   tower: { firstAttemptAt: number; climbSeason: number; highestFloor: number; bestFloor: number;
            keys: { value: number; lastTickAt: number } };
+  // Shipped in save v15. The Glorious Palace (GLORIOUS_PALACE.md): which nodes are bought, how many
+  // points have ever been earned, and one watermark per source so nothing is ever paid twice — the
+  // settlements that have paid, the highest tower floor paid in which season, and the period each
+  // boss last paid for. `earned` is stored because two of the four sources repeat and today's
+  // progress cannot recover what last month paid; `spent` never is, because it is always the sum
+  // of what is bought, which is what makes the free reset bookkeeping-free (CLAUDE.md §5.5).
+  palace: { nodes: string[]; earned: number; settlementsPaid: string[];
+            tower: { season: number; floorPaid: number }; bossesPaid: Record<string, string> };
   // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
   // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
   // the campaign's stars, so the ledger cannot disagree with the play).

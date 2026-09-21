@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { NO_PALACE } from '@engine/palace/index';
 import { INVENTORY_CAPACITY, INVENTORY_OVERFLOW } from '@content/balance/gear';
 import { content } from '@content/registry';
 import { totalPower, totalStats } from '@engine/gear/champion-stats';
@@ -113,15 +114,33 @@ describe('the armoury', () => {
     const { store, actions } = chronicle();
     const champion = hero(store);
     const def = content.championById(save(store).roster[champion]!.defId)!;
-    const before = totalPower(def, save(store).roster[champion]!, [], (id) => content.gearSetById(id));
+    const before = totalPower(
+      def,
+      save(store).roster[champion]!,
+      [],
+      (id) => content.gearSetById(id),
+      NO_PALACE,
+    );
     const piece = actions.debugGrantGear(8);
     if (!piece) throw new Error('no drop');
     actions.equipGear(champion, piece.instanceId);
     const worn = wornBy(save(store).roster[champion]!, save(store).inventory);
     expect(worn).toHaveLength(1);
-    const after = totalPower(def, save(store).roster[champion]!, worn, (id) => content.gearSetById(id));
+    const after = totalPower(
+      def,
+      save(store).roster[champion]!,
+      worn,
+      (id) => content.gearSetById(id),
+      NO_PALACE,
+    );
     expect(after).toBeGreaterThan(before);
-    const stats = totalStats(def, save(store).roster[champion]!, worn, (id) => content.gearSetById(id));
+    const stats = totalStats(
+      def,
+      save(store).roster[champion]!,
+      worn,
+      (id) => content.gearSetById(id),
+      NO_PALACE,
+    );
     expect(Object.values(stats).every((v) => Number.isFinite(v))).toBe(true);
   });
 

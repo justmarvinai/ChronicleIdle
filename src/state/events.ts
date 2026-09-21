@@ -66,6 +66,9 @@ export type DomainEvent =
   /** A tutorial lesson was taught, or a chapter waved off (`TUTORIAL.md`). */
   | { type: 'tutorial.step'; stepId: string; chapter: number }
   | { type: 'tutorial.chapterSkipped'; chapterId: string }
+  /** One node of the Glorious Palace was lit, or the whole tree darkened (GLORIOUS_PALACE.md). */
+  | { type: 'palace.nodeUnlocked'; nodeId: string; cost: number }
+  | { type: 'palace.reset'; points: number }
   | { type: 'profile.avatarChanged'; defId: ChampionId | null }
   | { type: 'game.loaded'; migrated: boolean }
   | { type: 'game.reset' }

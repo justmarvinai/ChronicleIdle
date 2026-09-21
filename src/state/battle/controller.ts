@@ -22,6 +22,7 @@ import {
 } from '@engine/battle/index';
 import { validateTeam } from '@engine/battle/teams';
 import type { Roster } from '@engine/champions/instance';
+import type { PalaceBonus } from '@engine/palace/index';
 import { fail, ok, type Result } from '@engine/errors';
 import { hashString } from '@engine/rng/rng';
 import { instantPresenter, type BattlePresenter } from './presenter';
@@ -65,6 +66,12 @@ export interface StartBattleInput {
   encounterId: string;
   instanceIds: readonly string[];
   roster: Roster;
+  /**
+   * What the Glorious Palace adds to this chronicle's champions (`GLORIOUS_PALACE.md` §3). Required
+   * rather than defaulted: a fight that quietly left it out would field champions weaker than the
+   * sheet that sent them in. `NO_PALACE` is what a bench or a test passes.
+   */
+  palace: PalaceBonus;
   control: 'manual' | 'auto';
   speed: BattleSpeed;
   /** Deterministic seed material (the save's seedRoot + a counter). */
@@ -205,6 +212,7 @@ export function createBattleController(): BattleController {
           party,
           enemyById: (id) => content.enemyById(id),
           setById: (id) => content.gearSetById(id),
+          palace: input.palace,
           control: input.control,
         },
         seed,

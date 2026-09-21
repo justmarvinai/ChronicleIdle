@@ -32,6 +32,8 @@ export type Route =
   | { name: 'missions'; chapter?: number }
   /** The Eternal Tower; `floor` scrolls the ladder to one (`ETERNAL_TOWER.md` §7). */
   | { name: 'tower'; floor?: number }
+  /** The Glorious Palace, the account-wide skill tree (`GLORIOUS_PALACE.md`). */
+  | { name: 'palace' }
   /** The Chronicle Index; `tab` opens one of its four catalogues (`UI_DESIGN.md` §5.20). */
   | { name: 'index'; tab?: IndexTab }
   | { name: 'game-modes' }
@@ -59,6 +61,8 @@ export type DialogRoute =
   | { name: 'credits' }
   /** The Chronicle of Changes, the same one the title screen keeps open (UI_DESIGN.md §5.21). */
   | { name: 'changelog' }
+  /** Last word before the Glorious Palace goes dark and every point comes back. */
+  | { name: 'palace-reset' }
   | { name: 'reset-confirm' }
   | { name: 'welcome-back' }
   | { name: 'avatar-picker' }

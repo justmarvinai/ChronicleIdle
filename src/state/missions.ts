@@ -22,6 +22,7 @@ import { counter, bumpCounter } from '@engine/progression/counters';
 import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import type { Rng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
+import { palaceBonusOf } from './palace';
 import { GOAL_LOOKUPS } from './goal-lookups';
 import { payCurrencies } from './payout';
 
@@ -42,6 +43,7 @@ export function missionsState(save: SaveGame, now: number): MissionsState {
   const view = pathView(content.missionChapters, save.missions, {
     save,
     now,
+    palace: palaceBonusOf(save.palace.nodes),
     lookups: GOAL_LOOKUPS,
   });
   const finale = content.missionChapters[content.missionChapters.length - 1];

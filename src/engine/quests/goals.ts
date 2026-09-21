@@ -25,6 +25,7 @@ import type { ChampionInstance } from '@engine/champions/instance';
 import { currentPeriod, damagePercent, freshPeriod, tierDamage } from '@engine/bosses/period';
 import { difficultyStars, isStageCleared, settlementStars, stageIdOf } from '@engine/campaign/progress';
 import { totalPower } from '@engine/gear/champion-stats';
+import type { PalaceBonus } from '@engine/palace/bonus';
 import { wornBy } from '@engine/gear/equip';
 import type { GearInstance } from '@engine/gear/instance';
 import { setGroups } from '@engine/gear/sets';
@@ -47,6 +48,8 @@ export interface GoalContext {
   /** Now — only the boss-period goals need it, and only to tell this period from a spent one. */
   now: number;
   lookups: GoalLookups;
+  /** The Glorious Palace's bonus, so a power goal counts the stats a fight would use. */
+  palace: PalaceBonus;
   /**
    * Whether every mission before this one is claimed. Only the Path's last page asks
    * (`all_previous`), and only the mission line can answer it.
@@ -206,7 +209,9 @@ export function evaluateGoal(goal: Goal, ctx: GoalContext): GoalProgress {
      */
     case 'team_power': {
       const powers = owned(ctx)
-        .map(({ instance, def }) => totalPower(def, instance, worn(ctx, instance), ctx.lookups.gearSet))
+        .map(({ instance, def }) =>
+          totalPower(def, instance, worn(ctx, instance), ctx.lookups.gearSet, ctx.palace),
+        )
         .sort((a, b) => b - a)
         .slice(0, PARTY_SIZE_BOSS);
       return made(Math.round(powers.reduce((sum, value) => sum + value, 0)), goal.power);

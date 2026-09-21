@@ -97,6 +97,7 @@ each other's internals.
   engine/                     Pure TypeScript game logic. No React, no Pixi, no DOM, no timers.
     battle/                   Simulation, turn meter, effects, status, AI policy, event log
     economy/                  Currencies, wallet, energy, drops, idle chest maths
+    palace/                   The Glorious Palace: the stat bonus, the point ledger, the sources
     progression/              Player level, champion level/rank/skills, gear upgrade, unlocks
     summon/                   Banner rolling, pity, rotation schedule
     quests/                   Daily/weekly quests, mission-line evaluation
@@ -105,7 +106,7 @@ each other's internals.
     schema/                   Zod schemas for content and saves
   content/                    Game data only (see docs/tech/CONTENT_AUTHORING.md)
     champions/  abilities/  enemies/  gear/  sets/  stages/  bosses/  banners/
-    quests/  missions/  currencies/  balance/  tutorial/  unlocks/  registry.ts
+    quests/  missions/  currencies/  balance/  tutorial/  unlocks/  palace/  changelog/  registry.ts
   state/                      Zustand store: slices, selectors, persistence, migrations
   ui/                         React: screens/, components/, hooks/, styles/ (tokens, mixins)
   render/                     Pixi: battle stage, sprite/atlas loading, FX library, camera, ambient
@@ -321,6 +322,7 @@ docs/design/ECONOMY.md         currencies, energy, player level, idle chest, sou
 docs/design/SUMMONING.md       shards, banners, rates, pity, rotation, reveal ritual
 docs/design/BOSSES.md          daily boss and weekly boss
 docs/design/ETERNAL_TOWER.md   the endless tower: floors, keys, the season, the shard table
+docs/design/GLORIOUS_PALACE.md the account-wide skill tree: the mandala, the points, the reset
 docs/design/QUESTS_MISSIONS.md daily/weekly quests and the Chronicler's Path mission line
 docs/design/TUTORIAL.md        interactive onboarding script
 docs/tech/ARCHITECTURE.md      runtime architecture, engine design, state, saves, rendering

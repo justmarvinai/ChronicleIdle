@@ -9,6 +9,7 @@
 import { useMemo } from 'react';
 import { useStore } from 'zustand';
 import { content } from '@content/registry';
+import { NO_PALACE } from '@engine/palace/index';
 import { bossEncounterId } from '@engine/bosses/encounter';
 import { createInstance, type Roster } from '@engine/champions/instance';
 import { t } from '@i18n/index';
@@ -75,6 +76,8 @@ export default function PerfScreen(_props: ScreenProps) {
       encounterId,
       instanceIds: Object.keys(roster),
       roster,
+      // The bench measures frames, not a chronicle: its champions fight without a Palace behind them.
+      palace: NO_PALACE,
       control: 'auto',
       speed: 4,
       seed: 'bench',

@@ -9,6 +9,7 @@ import type { BattleOutcome } from '@engine/battle/types';
 import { stageEncounterId } from '@engine/campaign/encounter';
 import { maxBattleSpeed, nextStage, type StagePointer } from '@engine/campaign/progress';
 import { fail, ok, type Result } from '@engine/errors';
+import { palaceBonusOf } from '@state/palace';
 import { battleController, type BattleSpeed } from '@state/battle/index';
 import { clearBossSession } from '@state/boss-session';
 import {
@@ -51,6 +52,7 @@ function startRunBattle(
     encounterId: charged.value.encounterId,
     instanceIds,
     roster: save.roster,
+    palace: palaceBonusOf(save.palace.nodes),
     control,
     speed,
     seed: scripted ? TUTORIAL_BATTLE_SEED : `${save.seedRoot}:${save.stats['battles.fought'] ?? 0}`,

@@ -7,6 +7,7 @@
  */
 import { TOWER_FLOORS, TOWER_KEY_CAP, towerFaction } from '@content/balance/tower';
 import { content } from '@content/registry';
+import { grantTowerPoints } from './palace';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { BattleOutcome } from '@engine/battle/types';
 import { isDifficultyComplete } from '@engine/campaign/progress';
@@ -155,6 +156,8 @@ export interface TowerFloorSummary {
   changes: CurrencyChange[];
   /** The shards the boss floor rolled, for the result screen to call out. */
   shards: CurrencyAmount[];
+  /** Skill points the Glorious Palace paid for this climb (GLORIOUS_PALACE.md §3). */
+  palacePoints: number;
 }
 
 /**
@@ -189,6 +192,7 @@ export function applyTowerFloorFinish(
     levelUp: NO_LEVEL_UP,
     changes: [],
     shards: [],
+    palacePoints: 0,
   };
   bumpCounter(save, 'tower.attempts');
   if (!cleared) {
@@ -200,6 +204,13 @@ export function applyTowerFloorFinish(
   save.tower = state;
   summary.highestFloor = state.highestFloor;
   summary.newBest = state.bestFloor > before.bestFloor;
+
+  /*
+   * The Palace's engine (GLORIOUS_PALACE.md §3): one skill point per fifth floor, measured against
+   * this season's own watermark — so a climb pays again after the 30-day reset, and a floor
+   * re-cleared inside one season pays nothing.
+   */
+  summary.palacePoints = grantTowerPoints(save, state.climbSeason, state.highestFloor);
 
   // Seeded on the chronicle, the floor and the clear, so the same clear always pays the same thing.
   const rng = createRng(`${save.seedRoot}:tower:${input.floor}:${input.now}`);

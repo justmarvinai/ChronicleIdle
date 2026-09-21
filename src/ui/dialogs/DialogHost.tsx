@@ -17,6 +17,7 @@ import { ImportConfirmDialog } from './ImportConfirmDialog';
 import { LevelUpDialog } from './LevelUpDialog';
 import { NewGameConfirmDialog } from './NewGameConfirmDialog';
 import { NewGameDialog } from './NewGameDialog';
+import { PalaceResetDialog } from './PalaceResetDialog';
 import { ProfileDialog } from './ProfileDialog';
 import { ResetConfirmDialog } from './ResetConfirmDialog';
 import { SettingsDialog } from './SettingsDialog';
@@ -54,6 +55,9 @@ export function DialogHost() {
       ) : null}
       {dialog?.name === 'credits' ? <CreditsDialog key="credits" onClose={closeDialog} /> : null}
       {dialog?.name === 'changelog' ? <ChangelogDialog key="changelog" onClose={closeDialog} /> : null}
+      {dialog?.name === 'palace-reset' ? (
+        <PalaceResetDialog key="palace-reset" onClose={closeDialog} />
+      ) : null}
       {dialog?.name === 'reset-confirm' ? <ResetConfirmDialog key="reset" onClose={closeDialog} /> : null}
       {dialog?.name === 'welcome-back' ? <WelcomeBackDialog key="welcome" onClose={closeDialog} /> : null}
       {/* The pickers return to the profile they were opened from, so they close themselves. */}

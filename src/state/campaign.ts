@@ -1,3 +1,5 @@
+import { BOSS_STAGE_NUMBER } from '@content/balance/campaign';
+import { grantSettlementPoint } from './palace';
 /**
  * Campaign progress as it touches the save (docs/design/CAMPAIGN.md §2, §7).
  *
@@ -124,6 +126,8 @@ export interface RunSummary {
   /** What the chronicle levels this run bought paid, for the celebration (ECONOMY.md §4). */
   levelUp: LevelUpResult;
   completedDifficulty: boolean;
+  /** Skill points the Glorious Palace paid for this clear (GLORIOUS_PALACE.md §3). */
+  palacePoints: number;
 }
 
 /** Records a finished run and pays what it owes. */
@@ -151,7 +155,16 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
     playerLevelsGained: 0,
     levelUp: NO_LEVEL_UP,
     completedDifficulty: settled.record.completedDifficulty,
+    palacePoints: 0,
   };
+  /*
+   * The Glorious Palace's one-time backbone: a settlement's boss stand falling pays a skill point,
+   * once per difficulty (GLORIOUS_PALACE.md §3). Before the `rewards` early return, because a
+   * stand that pays no spoils the second time round still has a point owed the first.
+   */
+  if (input.pointer.stage === BOSS_STAGE_NUMBER && settled.stars > 0)
+    summary.palacePoints = grantSettlementPoint(save, input.pointer.difficulty, input.pointer.settlement);
+
   const rewards = settled.rewards;
   if (!rewards) return ok(summary);
 

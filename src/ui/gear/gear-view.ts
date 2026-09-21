@@ -8,6 +8,7 @@ import { GEAR_MAX_LEVEL, SUBSTAT_ROLL_LEVELS, type GearStat } from '@content/bal
 import { STAT_IDS, type ChampionDef, type GearSlot, type StatId } from '@content/champions/types';
 import type { GearSetDef } from '@content/sets/types';
 import { content } from '@content/registry';
+import type { PalaceBonus } from '@engine/palace/index';
 import type { ChampionInstance } from '@engine/champions/instance';
 import { totalPower, totalStats } from '@engine/gear/champion-stats';
 import type { GearInstance, GearSubStat } from '@engine/gear/instance';
@@ -113,19 +114,21 @@ export function compareEquip(
   worn: readonly GearInstance[],
   slot: GearSlot,
   piece: GearInstance | null,
+  /** The Palace is on both sides of the comparison, so it cancels out of every delta. */
+  palace: PalaceBonus,
 ): GearCompare {
   const after = worn.filter((p) => p.slot !== slot);
   if (piece) after.push(piece);
-  const before = totalStats(def, instance, worn, content.gearSetById);
-  const next = totalStats(def, instance, after, content.gearSetById);
+  const before = totalStats(def, instance, worn, content.gearSetById, palace);
+  const next = totalStats(def, instance, after, content.gearSetById, palace);
   const rows = STAT_IDS.map((stat) => ({
     stat,
     before: before[stat],
     after: next[stat],
     delta: next[stat] - before[stat],
   }));
-  const powerBefore = totalPower(def, instance, worn, content.gearSetById);
-  const powerAfter = totalPower(def, instance, after, content.gearSetById);
+  const powerBefore = totalPower(def, instance, worn, content.gearSetById, palace);
+  const powerAfter = totalPower(def, instance, after, content.gearSetById, palace);
   const groupsBefore = countGroups(worn);
   const groupsAfter = countGroups(after);
   const gained: GearSetDef[] = [];

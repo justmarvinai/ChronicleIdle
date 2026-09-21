@@ -54,7 +54,8 @@
 }
 .statRow {
   display: grid;
-  grid-template-columns: 1fr auto 52px;
+  /* Label, base, gear's green, the Palace's purple. */
+  grid-template-columns: 1fr auto 52px 52px;
   align-items: center;
   gap: 12px;
   padding: 6px 10px;
@@ -79,6 +80,30 @@
   margin: 0;
   text-align: right;
   opacity: 0.55;
+}
+/*
+ * What the Glorious Palace adds, in its own purple beside gear's green (the owner's brief), and
+ * hoverable — a number with no label needs somewhere to say where it came from.
+ */
+.statPalace {
+  font-size: 16px;
+  color: var(--r-epic);
+  margin: 0;
+  text-align: right;
+}
+.statPalace span {
+  cursor: help;
+  text-shadow: 0 0 8px rgba(163, 93, 227, 0.45);
+}
+.palaceTip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.palaceTipTitle {
+  color: var(--r-epic);
+  font-size: 16px;
+  letter-spacing: 0.03em;
 }
 .hint {
   margin: 12px 0 0;

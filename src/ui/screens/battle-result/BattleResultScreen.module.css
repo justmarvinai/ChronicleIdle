@@ -241,3 +241,42 @@
   font-size: 13px;
   color: var(--text-3);
 }
+
+/*
+ * A skill point earned. It is a button rather than a line: the point is no use where it was won,
+ * and the Palace is two screens away from here.
+ */
+.palace {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  color: var(--text-1);
+  background: linear-gradient(90deg, rgba(163, 93, 227, 0.22), rgba(163, 93, 227, 0.05));
+  box-shadow: inset 0 0 0 1px rgba(163, 93, 227, 0.55);
+  cursor: pointer;
+  transition:
+    background var(--t-fast),
+    transform var(--t-fast) var(--ease-out);
+}
+.palace:hover {
+  background: linear-gradient(90deg, rgba(163, 93, 227, 0.34), rgba(163, 93, 227, 0.1));
+  transform: translateY(-2px);
+}
+.palace:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
+}
+.palaceLabel {
+  font-size: 19px;
+  color: var(--gold-3);
+}
+.palaceValue {
+  font-size: 19px;
+  font-weight: 700;
+  text-align: right;
+  color: var(--r-epic);
+}

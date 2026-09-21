@@ -1,6 +1,7 @@
 import { battle } from './battle';
 import { bosses } from './bosses';
 import { missions } from './missions';
+import { palace } from './palace';
 import { quests } from './quests';
 import { campaign } from './campaign';
 import { changelog } from './changelog';
@@ -36,6 +37,7 @@ export const en = {
   ...tavern,
   ...battle,
   ...bosses,
+  ...palace,
   ...quests,
   ...missions,
   ...tower,

@@ -5,7 +5,14 @@ import { content } from '@content/registry';
 import { wornBy } from '@engine/gear/equip';
 import { DEFAULT_GEAR_VIEW, equipCandidates, gearEntries, sortAndFilterGear } from '@engine/gear/query';
 import { t, translate } from '@i18n/index';
-import { selectActions, selectGearView, selectInventory, selectRoster } from '@state/selectors';
+import {
+  selectActions,
+  selectGearView,
+  selectInventory,
+  selectRoster,
+  selectPalaceNodes,
+  palaceBonusOf,
+} from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
@@ -55,7 +62,10 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
 
   const chosen = chosenId ? (candidates.find((e) => e.piece.instanceId === chosenId) ?? null) : null;
   const replaced = worn.find((piece) => piece.slot === slot) ?? null;
-  const compare = champion && def ? compareEquip(def, champion, worn, slot, chosen?.piece ?? null) : null;
+  const nodes = useGameStore(selectPalaceNodes);
+  const palace = useMemo(() => palaceBonusOf(nodes), [nodes]);
+  const compare =
+    champion && def ? compareEquip(def, champion, worn, slot, chosen?.piece ?? null, palace) : null;
 
   const equip = (): void => {
     if (!chosen) return;

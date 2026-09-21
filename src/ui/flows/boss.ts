@@ -8,6 +8,7 @@
 import type { BattleOutcome } from '@engine/battle/types';
 import { maxBattleSpeed } from '@engine/campaign/progress';
 import { fail, ok, type Result } from '@engine/errors';
+import { palaceBonusOf } from '@state/palace';
 import { battleController, type BattleSpeed } from '@state/battle/index';
 import { beginBossFight, bossSession, clearBossSession, noteBossFightFinished } from '@state/boss-session';
 import { clearCampaignSession } from '@state/campaign-session';
@@ -36,6 +37,7 @@ export function launchBossFight(input: BossLaunchInput): Result<void> {
     encounterId: charged.value.encounterId,
     instanceIds: input.instanceIds,
     roster: save.roster,
+    palace: palaceBonusOf(save.palace.nodes),
     control,
     speed,
     seed: `${save.seedRoot}:boss:${save.stats['boss.fights'] ?? 0}`,

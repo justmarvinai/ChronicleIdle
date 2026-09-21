@@ -285,3 +285,24 @@ champions that the next floor needs.
 Daily reset 00:00 local device time; weekly reset in the night from Sunday to Monday at 00:00
 local (owner's answer, Q3). Reset
 handling uses timestamps; a missed reset while offline is applied on load exactly once per period.
+
+## 10. Skill points (the Glorious Palace)
+
+Skill points are not a wallet currency: they are never spent on anything but the Palace, never
+traded, never bought, and never lost. They live in `save.palace.earned` rather than in the wallet
+for exactly that reason (`GLORIOUS_PALACE.md` §2).
+
+| Source | Points | Cadence | Lifetime supply |
+| --- | --- | --- | --- |
+| Settlement boss stand | 1 | Once per settlement per difficulty | 36, one-time |
+| Eternal Tower | 1 per fifth floor | Again every 30-day season | Repeating |
+| Daily boss pool emptied | 1 | Once a day | ~7 / week |
+| Weekly boss pool emptied | 3 | Once a week | 3 / week |
+
+A player who clears both bosses every period and keeps a tower climb going earns roughly **10–14 a
+week**. The whole tree costs 237, so the 201 the campaign does not cover is about four months of
+steady play — deliberately the longest-running sink in the game, and the only one whose reward
+applies to champions the player has not pulled yet.
+
+Nothing else in the economy is touched by it. The Palace costs no gold, no gems and no energy;
+reclaiming every point is free and can be done any time (Q52).

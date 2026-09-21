@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 14 as const;
+export const SAVE_VERSION = 15 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -249,6 +249,27 @@ export const towerSchema = z.object({
   keys: z.object({ value: z.number().min(0), lastTickAt: z.number().int().nonnegative() }),
 });
 
+/**
+ * The Glorious Palace (GLORIOUS_PALACE.md §3). `earned` is a running total because two of the four
+ * sources repeat — the tower each season, the bosses each period — and no look at today's progress
+ * could recover what last month paid. The watermarks beside it are what stops a source paying
+ * twice; `spent` is never stored, because it is always the sum of what is bought.
+ */
+export const palaceSchema = z.object({
+  /** Node ids bought, in the order they were bought. */
+  nodes: z.array(z.string().min(1)),
+  earned: z.number().int().min(0),
+  /** `<difficulty>.<settlement>` for each settlement already paid; 36 of them at most. */
+  settlementsPaid: z.array(z.string().min(1)),
+  /** The season the floor watermark belongs to, and the highest floor paid inside it. */
+  tower: z.object({
+    season: z.number().int().min(0),
+    floorPaid: z.number().int().min(0),
+  }),
+  /** Boss id → the period key whose pool has already paid, so one kill pays once. */
+  bossesPaid: z.record(z.string(), z.string()),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -310,9 +331,17 @@ export const saveSchemaV14 = saveSchemaV13.extend({
   tower: towerSchema,
 });
 
+/** v15 adds the Glorious Palace; everything else is v14's. */
+export const saveSchemaV15 = saveSchemaV14.extend({
+  saveVersion: z.literal(15),
+  palace: palaceSchema,
+});
+
 export type SaveGameV13 = z.infer<typeof saveSchemaV13>;
 export type SaveGameV14 = z.infer<typeof saveSchemaV14>;
-export type SaveGame = SaveGameV14;
+export type SaveGameV15 = z.infer<typeof saveSchemaV15>;
+export type SaveGame = SaveGameV15;
+export type PalaceSave = z.infer<typeof palaceSchema>;
 export type TowerSaveData = z.infer<typeof towerSchema>;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type MissionsSave = z.infer<typeof missionsSchema>;
@@ -324,7 +353,12 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV14;
+export const saveSchema = saveSchemaV15;
+
+/** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
+export function emptyPalace(): PalaceSave {
+  return { nodes: [], earned: 0, settlementsPaid: [], tower: { season: 0, floorPaid: 0 }, bossesPaid: {} };
+}
 
 export function emptyCampaign(): CampaignSave {
   return { stars: {}, bestTurns: {}, selected: null, autoRepeat: 1 };

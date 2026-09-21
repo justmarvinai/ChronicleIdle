@@ -3,6 +3,8 @@
  * the content modules and validated by `validateContent` (dev boot, tests, CI).
  */
 import { LATEST_RELEASE, RELEASES, RELEASE_BY_ID } from '@content/changelog/index';
+import { PALACE } from '@content/palace/index';
+import type { PalaceTree } from '@content/palace/types';
 import type { ReleaseDef } from '@content/changelog/types';
 import { CHAMPIONS, CHAMPION_BY_ID } from '@content/champions/index';
 import type { ChampionDef, ChampionId } from '@content/champions/types';
@@ -74,6 +76,8 @@ export interface ContentRegistry {
   releaseById(id: string): ReleaseDef | undefined;
   /** The release the panel opens on; `undefined` only if nothing has shipped. */
   latestRelease: ReleaseDef | undefined;
+  /** The Glorious Palace's node tree (GLORIOUS_PALACE.md). */
+  palace: PalaceTree;
   /** The fourteen gear sets (GEAR.md §5); two-piece sets first. */
   gearSets: readonly GearSetDef[];
   gearSetById(id: string): GearSetDef | undefined;
@@ -176,6 +180,7 @@ export function buildContentRegistry(): ContentRegistry {
     releases: RELEASES,
     releaseById: (id) => RELEASE_BY_ID[id],
     latestRelease: LATEST_RELEASE,
+    palace: PALACE,
     gearSets: GEAR_SETS,
     gearSetById: (id) => GEAR_SET_BY_ID[id],
     banners: BANNERS,

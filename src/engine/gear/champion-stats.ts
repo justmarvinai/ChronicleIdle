@@ -6,11 +6,16 @@
  * is built from — the battle applies set bonuses through the passive engine like any other
  * `stat_mod`, so baking them in here would count them twice. `totalStats` adds the set bonuses
  * and is what the screens show, where there is no passive engine to do it.
+ *
+ * Both take the Glorious Palace's bonus, and both add it **last**, after every multiplier
+ * (`engine/palace/bonus.ts` says why). It is a required argument rather than an optional one so
+ * that a new caller has to decide, instead of quietly showing a champion weaker than it fights.
  */
 import type { ChampionDef, ChampionStats } from '@content/champions/types';
 import type { GearSetDef } from '@content/sets/types';
 import type { ChampionInstance } from '@engine/champions/instance';
 import { baseStats, power } from '@engine/champions/stats';
+import { withPalace, type PalaceBonus } from '@engine/palace/bonus';
 import type { GearInstance } from './instance';
 import { setGroups } from './sets';
 import {
@@ -25,10 +30,11 @@ export function gearedStats(
   def: ChampionDef,
   instance: Pick<ChampionInstance, 'stars' | 'level'>,
   worn: readonly GearInstance[],
+  palace: PalaceBonus,
 ): ChampionStats {
   const base = baseStats(def.stats, instance.stars, instance.level);
-  if (worn.length === 0) return base;
-  return applied(base, mergeContributions(worn.map(contributionOf)));
+  const geared = worn.length === 0 ? base : applied(base, mergeContributions(worn.map(contributionOf)));
+  return withPalace(geared, palace, def.element, base.hp);
 }
 
 /** The static stat bonuses a build's complete set groups grant (GEAR.md §5). */
@@ -60,10 +66,11 @@ export function totalStats(
   instance: Pick<ChampionInstance, 'stars' | 'level'>,
   worn: readonly GearInstance[],
   setById: (id: string) => GearSetDef | undefined,
+  palace: PalaceBonus,
 ): ChampionStats {
   const base = baseStats(def.stats, instance.stars, instance.level);
   const contribution = mergeContributions([...worn.map(contributionOf), setContribution(worn, setById)]);
-  return applied(base, contribution);
+  return withPalace(applied(base, contribution), palace, def.element, base.hp);
 }
 
 /** The power number the roster and the compare panel rank by. */
@@ -72,6 +79,7 @@ export function totalPower(
   instance: Pick<ChampionInstance, 'stars' | 'level'>,
   worn: readonly GearInstance[],
   setById: (id: string) => GearSetDef | undefined,
+  palace: PalaceBonus,
 ): number {
-  return power(totalStats(def, instance, worn, setById));
+  return power(totalStats(def, instance, worn, setById, palace));
 }

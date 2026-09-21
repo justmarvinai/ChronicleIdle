@@ -703,3 +703,43 @@ variants are used for Duskmere Marsh and Frostvein Pass.
 - Content: `src/content/changelog/` with its strings in `src/i18n/en/changelog.ts`
   (`CONTENT_AUTHORING.md` §13). Every shipped version writes a release there — that rule is
   `CLAUDE.md` §9.3, and it is the owner's standing instruction.
+
+### 5.22 The Glorious Palace (`docs/design/GLORIOUS_PALACE.md`)
+- A mandala, not a list. The field fills the screen under the top bar: the **Heart** at the centre
+  and four petals growing along the compass — Justice north, Valor east, Eclipse south, Faith west
+  (`PALACE_BRANCH_DIRECTIONS`). Backdrop `bg4` (the domed palace) under a heavy violet grade and a
+  radial scrim, so a lattice of dim orbs has something dimmer behind it.
+- **Geometry is computed, not authored** (`ui/screens/palace/palace-view.ts`). Content says which
+  ring and slot a node sits on; the screen turns that into polar coordinates. Each branch owns the
+  90° lane around its axis and a ring is pushed outward until its nodes fit that lane with a gap to
+  spare — so the inner rings open to the edge of their lane and the outer ones narrow back towards
+  the axis, which is what gives a branch the shape of a petal and makes the capstones read as its
+  tip. A test asserts no two nodes' rims come within 10 px of each other, and that the whole tree
+  fits the field at a zoom above two thirds.
+- **A node is an orb** — the one shape the kit draws round (`CLAUDE.md` §7.1): the kit's
+  `frame_round_sm` ring over a disc that carries the state. Unreachable is dimmed and is not a tab
+  stop (there are 133 of them); *ready* wears a breathing gold halo; *too short* wears a thin gold
+  rim and no pulse; *bought* takes its element's colour, with the link behind it lit to match. A
+  capstone is drawn larger, and the layout gives it the room. Buying one flares a ring outward and
+  plays `torch.light` (`reward.medium` for a capstone).
+- **Links** are one SVG line per node: dark for a path not walked, a travelling gold dash for the
+  one node that can be bought next, the element's colour once both ends are bought. No filters —
+  132 drop-shadows is not a frame budget (`CLAUDE.md` §5.6).
+- **Hover** opens the node's whole story: its name, what it costs in points, every stat it grants
+  with its value, who it applies to ("Every Eclipse champion you own"), and why it can or cannot be
+  bought. Cost numerals sit on the rim and only appear past a zoom of 0.85 — unreadable from far
+  out, and noise besides.
+- **Pan and zoom.** The field is an ordinary scroll container, so dragging it is the game's own
+  drag-to-scroll (`app/dragScroll.ts`) with nothing of its own. The wheel zooms instead of
+  scrolling and keeps whatever is under the cursor under the cursor; the three buttons at the
+  bottom right are further out, whole Palace, closer. The screen opens on the whole mandala.
+- **The ledger floats over the field** on the left, 400 px wide: the points to spend in epic violet
+  (ticking up when they change), what is spent of the 237, a bar per branch, **what the Palace
+  gives** right now — the Heart's percentage and one line of summed stats per element that has any
+  — where points come from, how many of the 133 nodes are lit, and *Reclaim all points*, which is
+  disabled until something is spent and asks once before it darkens the tree.
+- **The purple line.** On a champion's stats (§5.4) a fourth column prints what the Palace adds in
+  epic violet beside gear's green, with a tooltip naming the branch that paid for it — the owner's
+  brief, and the only place the two sources are seen side by side.
+- **Earning one is told where it happens.** The battle result screen (§5.10) carries a violet plate
+  when a clear paid skill points; pressing it goes to the Palace.

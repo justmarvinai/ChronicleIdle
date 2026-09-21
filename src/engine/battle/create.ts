@@ -6,6 +6,7 @@
 import { effectiveAbility } from '@engine/champions/describe';
 import type { ChampionInstance } from '@engine/champions/instance';
 import { gearedStats } from '@engine/gear/champion-stats';
+import { NO_PALACE, type PalaceBonus } from '@engine/palace/bonus';
 import type { GearInstance } from '@engine/gear/instance';
 import { setPassives } from '@engine/gear/sets';
 import type { GearSetDef } from '@content/sets/types';
@@ -44,6 +45,8 @@ export interface BattleSetup {
   enemyById: (id: string) => EnemyDef | undefined;
   /** Resolves a worn piece's set, so gear bonuses reach the units (`GEAR.md` §5). */
   setById?: (id: string) => GearSetDef | undefined;
+  /** The Glorious Palace's bonus, so a fight is fought with the stats the sheet shows. */
+  palace?: PalaceBonus;
   control: 'manual' | 'auto';
 }
 
@@ -82,10 +85,12 @@ export function allyUnit(
   slot: number,
   leader: boolean,
   setById: (id: string) => GearSetDef | undefined = () => undefined,
+  /** The Glorious Palace's standing bonus; `NO_PALACE` is a chronicle that has spent nothing. */
+  palace: PalaceBonus = NO_PALACE,
 ): BattleUnit {
   const { instance, def } = member;
   const worn = member.worn ?? [];
-  const stats = gearedStats(def, instance, worn);
+  const stats = gearedStats(def, instance, worn, palace);
   return {
     id: `a${slot}`,
     side: 'ally',
@@ -213,7 +218,7 @@ export function createBattle(setup: BattleSetup, seed: string): BattleState {
   if (setup.party.length > encounter.partySize)
     throw new Error(`Party of ${setup.party.length} exceeds the encounter's ${encounter.partySize} slots`);
   const allies = setup.party.map((member, slot) =>
-    allyUnit(member, slot, slot === 0, setup.setById ?? (() => undefined)),
+    allyUnit(member, slot, slot === 0, setup.setById ?? (() => undefined), setup.palace ?? NO_PALACE),
   );
   const waves: WaveSpec[] = encounter.waves.map((wave, waveIndex) => ({
     enemies: wave.enemies.map((spawn, slot) => {

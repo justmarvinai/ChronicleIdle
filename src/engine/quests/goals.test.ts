@@ -5,6 +5,7 @@
  * never complete today's quest, and a quest must never un-complete itself.
  */
 import { describe, expect, it } from 'vitest';
+import { NO_PALACE } from '@engine/palace/index';
 import { content } from '@content/registry';
 import type { ChampionId } from '@content/champions/types';
 import type { Goal } from '@content/quests/types';
@@ -35,14 +36,14 @@ function newSave(): SaveGame {
 
 /** A chronicle with the given counters and nothing else played. */
 function ctx(stats: Record<string, number>, baseline: Record<string, number> = {}): GoalContext {
-  return { save: { ...newSave(), stats }, baseline, now: NOW, lookups: LOOKUPS };
+  return { save: { ...newSave(), stats }, baseline, now: NOW, lookups: LOOKUPS, palace: NO_PALACE };
 }
 
 /** A chronicle whose save has been edited by the caller — the state predicates' fixture. */
 function withSave(patch: (save: SaveGame) => void, baseline: Record<string, number> = {}): GoalContext {
   const save = newSave();
   patch(save);
-  return { save, baseline, now: NOW, lookups: LOOKUPS };
+  return { save, baseline, now: NOW, lookups: LOOKUPS, palace: NO_PALACE };
 }
 
 let serial = 0;

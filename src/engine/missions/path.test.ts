@@ -5,6 +5,7 @@
  * content suite; these are synthetic chapters, so the arithmetic is the subject.
  */
 import { describe, expect, it } from 'vitest';
+import { NO_PALACE } from '@engine/palace/index';
 import { content } from '@content/registry';
 import type { ChampionId } from '@content/champions/types';
 import type { MissionChapterDef, MissionDef } from '@content/missions/types';
@@ -61,7 +62,7 @@ function ctx(
 ): Omit<GoalContext, 'baseline' | 'allPrevious'> {
   const save = createNewGame({ name: 'Chronicler', now: NOW, seedRoot: 'path' });
   patch(save);
-  return { save, now: NOW, lookups: LOOKUPS };
+  return { save, now: NOW, lookups: LOOKUPS, palace: NO_PALACE };
 }
 
 const fresh: PathState = { claimed: [], baseline: {}, chests: [] };

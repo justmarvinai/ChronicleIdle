@@ -12,8 +12,10 @@ import type { StagePointer } from '@engine/campaign/progress';
 import type { Roster } from '@engine/champions/instance';
 import type { SummonSave } from '@engine/schema/save';
 import type { Inventory } from '@engine/gear/instance';
-import type { CampaignSave } from '@engine/schema/save';
+import type { CampaignSave, PalaceSave } from '@engine/schema/save';
 import type { Route } from './ui-types';
+
+const EMPTY_NODES: readonly string[] = [];
 
 export const selectSave = (s: GameStore) => s.save;
 const EMPTY_ROSTER: Roster = {};
@@ -76,6 +78,18 @@ export const selectFeatureUnlocked =
 // ---------------------------------------------------------------------------------------------
 // Campaign
 // ---------------------------------------------------------------------------------------------
+
+export const selectPalaceSave = (s: GameStore): PalaceSave | null => s.save?.palace ?? null;
+/** The node ids bought — a stable array, so a component can memoise the bonus off it. */
+export const selectPalaceNodes = (s: GameStore): readonly string[] => s.save?.palace.nodes ?? EMPTY_NODES;
+
+/**
+ * The Palace's resolved bonus lives with the slice (`state/palace.ts`). Re-exported here because
+ * the screens read everything else about a save through the selectors, and summing 133 nodes is
+ * cheap — but it is read by every champion row on three screens, so callers memoise it on
+ * `selectPalaceNodes` rather than calling it per row.
+ */
+export { palaceBonusOf, palaceLedgerOf } from './palace';
 
 export const selectCampaign = (s: GameStore): CampaignSave | null => s.save?.campaign ?? null;
 export const selectAutoRepeat = (s: GameStore): number => s.save?.campaign.autoRepeat ?? 1;

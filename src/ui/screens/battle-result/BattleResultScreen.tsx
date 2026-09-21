@@ -72,6 +72,11 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const repeated = campaign.requested > 1;
   const rewards = repeated ? batchRewards(campaign) : (last?.rewards ?? null);
   // Every piece the batch minted, and the drops the racks were too full to hold (GEAR.md §7).
+  // A skill point for the Glorious Palace, whichever of the three kinds of fight paid it.
+  const palacePoints =
+    campaign.summaries.reduce((sum, summary) => sum + summary.palacePoints, 0) +
+    (tower.summary?.palacePoints ?? 0) +
+    (boss.summary?.palacePoints ?? 0);
   const dropped = campaign.summaries.flatMap((summary) => summary.gear);
   const gearLost = campaign.summaries.reduce((sum, summary) => sum + summary.gearLost, 0);
   // Mastering a difficulty owes a champion of the player's choosing; it is claimed at the Portal.
@@ -224,6 +229,29 @@ export default function BattleResultScreen(_props: ScreenProps) {
                 <li key={key}>{t(key)}</li>
               ))}
             </ul>
+          ) : null}
+          {palacePoints > 0 ? (
+            <button
+              type="button"
+              className={styles.palace}
+              onClick={() => {
+                battleController.end();
+                clearCampaignSession();
+                clearBossSession();
+                clearTowerSession();
+                actions.resetStack({ name: 'hub' });
+                actions.push({ name: 'palace' });
+              }}
+              data-testid="result-palace-points"
+            >
+              <Glyph glyph="glyph.arcane_symbol" size={24} color="var(--r-epic)" />
+              <span className={`display ${styles.palaceLabel}`}>{t('palace.title')}</span>
+              <span className={`num ${styles.palaceValue}`}>
+                {t(palacePoints === 1 ? 'palace.pointsEarned' : 'palace.pointsEarnedPlural', {
+                  count: palacePoints,
+                })}
+              </span>
+            </button>
           ) : null}
           {boss.summary ? (
             <BossOutcomePanel summary={boss.summary} />
