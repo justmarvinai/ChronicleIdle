@@ -839,14 +839,14 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   buy button. Six have to fit without scrolling, so a row is 52 px of icon and nothing taller. A
   second **"× N"** button appears beside *Buy* whenever more than one is affordable — buying the
   rest of a slot in one press is the difference between a shop and a chore. A sold-out slot says
-  *Sold out*; one the purse cannot reach says *Not enough gold*, so a disabled button always says
+  *Sold out*; one the purse cannot reach says *Not enough*, so a disabled button always says
   which reason it is.
 - **The shelf is a grid of cards you read properly.** Singles on the `stone` slab; the four bundles
   on `ember-tall`, so a pack is visibly a pack before the price is read, and each wears a *once per
   chronicle* tag. A single draws the item's own icon tinted to its rarity, with the name in that
   rarity's colour. A bundle draws its **contents as a list plus a `RewardList` of any currencies**,
   because a bundle whose parts are not shown is a price that means nothing. A bundle already taken
-  greys out and its button reads *Taken*.
+  greys out and its button reads *Already taken*.
 - **A purchase never leaves the screen.** No confirmation dialog, no result panel: the wallet in the
   header ticks down, the stall's stock ticks down, and the reward sound plays. Buying is the small
   action here; using is the large one, and that happens in the Bag.
@@ -879,8 +879,8 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   borrowed from gear's rarities, which a player already reads fluently. A tile carries *Day N*, its
   rewards as a `RewardList` (plus the item's name in words when it pays one, because an icon alone
   would be a guess), and its state: *Claimed* on the days behind, a primary **Claim** button on
-  today's, nothing on the days ahead. The three finale tiles carry a warmer frame, so the end of the
-  board reads as the end of the board.
+  today's, nothing on the days ahead. The three finale tiles carry a faint gold wash, so the end of the board
+  reads as the end of the board — every round, not only the first.
 - **The line under the title is the whole design in a sentence.** *A day is a day you came* — so
   missing one costs nothing. Saying it on the board matters: a player who has met a login calendar
   before will assume there is a streak to protect and will feel punished by a day they missed that
