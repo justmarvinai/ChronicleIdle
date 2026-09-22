@@ -6,6 +6,7 @@ import { scaledEnemyStats } from '@engine/battle/index';
 import { parseStageEncounterId } from '@engine/campaign/encounter';
 import { parseBossEncounterId } from '@engine/bosses/encounter';
 import { parseBreweryEncounterId } from '@engine/brewery/encounter';
+import { parseDungeonEncounterId } from '@engine/dungeon/index';
 import { parseTowerEncounterId } from '@engine/tower/encounter';
 import { parseStageId, type StagePointer } from '@engine/campaign/progress';
 import { autoRepeatTiers } from '@engine/campaign/run';
@@ -33,9 +34,12 @@ import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { launchBattle } from '@ui/flows/battle';
 import { launchBossFight } from '@ui/flows/boss';
 import { launchBreweryRun } from '@ui/flows/brewery';
+import { launchDungeonRun } from '@ui/flows/dungeon';
 import { launchTowerFloor } from '@ui/flows/tower';
 import { launchCampaignRun } from '@ui/flows/campaign';
 import { pointerCost, runsAffordable, stageRefOf } from '@state/campaign';
+import { affordableRuns } from '@state/dungeon';
+import { dungeonBand } from '@content/balance/dungeon';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { entriesOf, elementLabel, roleLabel } from '@ui/screens/champions/roster-view';
@@ -69,9 +73,12 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const towerFloor = parseTowerEncounterId(encounterId);
   // A brewery stage costs one of the day's twenty runs, spent before the fight (BREWERY.md §5).
   const brewery = parseBreweryEncounterId(encounterId);
+  const keep = parseDungeonEncounterId(encounterId);
   const ref = pointer ? stageRefOf(pointer) : null;
   const partySize = encounter?.partySize ?? 3;
-  const mode: TeamMode = partySize === 4 ? 'boss' : 'campaign';
+  // A keep fields four like a boss gate does, but a player's dungeon four is rarely their boss
+  // four, so it keeps its own preset row (save v18).
+  const mode: TeamMode = keep ? 'dungeon' : partySize === 4 ? 'boss' : 'campaign';
   const entries = useMemo(() => entriesOf(roster, inventory), [roster, inventory]);
   const powerOf = useMemo(() => {
     const map = new Map(entries.map((e) => [e.instance.instanceId, e.power]));
@@ -92,11 +99,16 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
   const leaderDef = leader ? content.championById(leader.defId) : undefined;
   const teamPower = team.reduce((sum, id) => sum + powerOf(id), 0);
   const control = save.settings.autoBattle ? 'auto' : 'manual';
-  const cost = pointer ? pointerCost(pointer) : 0;
+  const keepEnergy = keep ? dungeonBand(keep.stage, keep.difficulty).energy : 0;
+  const cost = pointer ? pointerCost(pointer) : keepEnergy;
   const repeat = save.campaign.autoRepeat;
   const tiers = autoRepeatTiers(save.profile.level);
-  const affordable = pointer ? runsAffordable(save, pointer, repeat) : 1;
-  const canPay = !pointer || affordable > 0;
+  const affordable = pointer
+    ? runsAffordable(save, pointer, repeat)
+    : keep
+      ? affordableRuns(save, keep.difficulty, keep.stage, repeat)
+      : 1;
+  const canPay = pointer || keep ? affordable > 0 : true;
 
   const place = (instanceId: string): void => {
     setError(null);
@@ -131,7 +143,9 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
           ? launchTowerFloor({ floor: towerFloor, instanceIds: team, control })
           : brewery
             ? launchBreweryRun({ ...brewery, instanceIds: team, control })
-            : launchBattle({ encounterId, instanceIds: team, control });
+            : keep
+              ? launchDungeonRun({ ...keep, instanceIds: team, control, repeat })
+              : launchBattle({ encounterId, instanceIds: team, control });
     if (!result.ok) {
       setError(
         result.error.code === 'insufficient_energy'
@@ -321,7 +335,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
             })}
           </ul>
         </Panel>
-        {pointer ? (
+        {pointer || keep ? (
           <div className={styles.repeat} data-testid="auto-repeat">
             <Dropdown<number>
               label={t('campaignRun.repeat')}

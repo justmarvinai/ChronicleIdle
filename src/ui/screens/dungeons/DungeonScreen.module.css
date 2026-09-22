@@ -1,0 +1,196 @@
+/*
+ * One keep (docs/tech/UI_DESIGN.md §5.24): the keeper and what it holds on the left, the ladder of
+ * twenty stages on the right — the Eternal Tower's shape, because it is the same kind of climb.
+ */
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.side {
+  position: absolute;
+  top: 132px;
+  left: 40px;
+  width: 460px;
+  bottom: 40px;
+  z-index: var(--z-scene);
+}
+.panel {
+  height: 100%;
+}
+.panelBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+.heading {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  color: var(--gold-1);
+}
+.lore {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-2);
+  /* The story is long; it may scroll rather than push the sets off the panel. */
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.keeper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.keeperName {
+  font-size: 17px;
+  letter-spacing: 0.05em;
+  color: var(--text-1);
+}
+.keeperLabel {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.setsLabel {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.setList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.setChip {
+  padding: 5px 10px;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  color: var(--text-1);
+  background: rgba(24, 20, 30, 0.75);
+  border: 1px solid var(--gold-4);
+}
+
+.deepest {
+  margin: auto 0 0;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.ladderWrap {
+  position: absolute;
+  top: 132px;
+  left: 528px;
+  right: 40px;
+  bottom: 40px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ladder {
+  flex: 1;
+}
+.stages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 10px;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 96px 1fr 132px 150px;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: rgba(20, 17, 26, 0.72);
+  border: 1px solid rgba(120, 100, 70, 0.4);
+}
+.stage[data-next='true'] {
+  border-color: var(--gold-3);
+  background: rgba(38, 28, 22, 0.8);
+}
+.stage[data-open='false'] {
+  opacity: 0.5;
+}
+.stageNo {
+  font-size: 17px;
+  letter-spacing: 0.04em;
+  color: var(--text-1);
+}
+.stageLevel {
+  display: block;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.stars {
+  font-size: 17px;
+  color: var(--gold-2);
+}
+.rarities {
+  display: block;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-3);
+}
+.cost {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.second {
+  font-size: 12px;
+  color: var(--text-3);
+}
+/* A rung still shut says what opens it, quietly — it is not an achievement. */
+.lockedMark {
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+/* A rung already taken carries a mark, so the ladder shows the climb at a glance. */
+.clearedMark {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--jade-2, #7fae8a);
+}
+
+/* The repeat row sits above the ladder: how many runs one press buys. */
+.repeatRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+}
+.repeatLabel {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.hardLocked {
+  margin: 0;
+  padding: 14px;
+  font-size: 15px;
+  color: var(--text-2);
+  background: rgba(20, 17, 26, 0.72);
+  border: 1px solid rgba(120, 100, 70, 0.4);
+}

@@ -60,7 +60,7 @@ export const teamModeSchema = z.object({
   /** The team last sent into battle in this mode. */
   lastUsed: z.array(z.string()),
 });
-export const TEAM_MODES = ['campaign', 'boss'] as const;
+export const TEAM_MODES = ['campaign', 'boss', 'dungeon'] as const;
 export type TeamMode = (typeof TEAM_MODES)[number];
 
 const DIFFICULTIES = Object.keys(DIFFICULTY_MULT) as [Difficulty, ...Difficulty[]];

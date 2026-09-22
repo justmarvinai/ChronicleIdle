@@ -38,6 +38,10 @@ export type Route =
   | { name: 'palace' }
   /** The Brewery; `hall` opens on one of its four halls (`BREWERY.md`). */
   | { name: 'brewery'; hall?: Element }
+  /** The five keeps, as cards (`DUNGEONS.md`). */
+  | { name: 'dungeons' }
+  /** One keep; `difficulty` opens on a tab and `stage` scrolls its ladder to a rung. */
+  | { name: 'dungeon'; dungeon: string; difficulty?: 'normal' | 'hard'; stage?: number }
   /** The Chronicle Index; `tab` opens one of its four catalogues (`UI_DESIGN.md` §5.20). */
   | { name: 'index'; tab?: IndexTab }
   | { name: 'game-modes' }

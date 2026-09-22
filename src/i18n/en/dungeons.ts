@@ -121,6 +121,8 @@ export const dungeons = {
   'dungeon.outcome.hardOpen': 'Hard opens.',
   'dungeon.outcome.full': 'The armoury is full. {count} pieces were left behind.',
   'dungeon.outcome.runs': '{count} runs',
+  'dungeon.outcome.spoils': '{gold} gold · {xp} champion XP',
+  'dungeon.outcome.back': 'Back to the keep',
 
   /** Game Modes. */
   'gameModes.dungeons': 'Dungeons',

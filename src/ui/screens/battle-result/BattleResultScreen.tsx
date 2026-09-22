@@ -6,11 +6,13 @@ import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { battleController } from '@state/battle/index';
 import { bossSession, clearBossSession } from '@state/boss-session';
 import { brewerySession, clearBrewerySession } from '@state/brewery-session';
+import { dungeonSession, clearDungeonSession } from '@state/dungeon-session';
 import { clearTowerSession, towerSession } from '@state/tower-session';
 import { batchRewards, batchStars, campaignSession, clearCampaignSession } from '@state/campaign-session';
 import { currentRunView, launchCampaignRun, nextPointerAfter } from '@ui/flows/campaign';
 import { BossOutcomePanel } from './BossOutcomePanel';
 import { BreweryOutcomePanel } from './BreweryOutcomePanel';
+import { DungeonOutcomePanel } from './DungeonOutcomePanel';
 import { TowerOutcomePanel } from './TowerOutcomePanel';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { t, translate } from '@i18n/index';
@@ -48,6 +50,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const tower = useStore(towerSession);
   // A brewery run banks brews and one of the day's twenty runs (BREWERY.md §6).
   const brewery = useStore(brewerySession);
+  // A dungeon batch banks gear — the whole evening of it, not the last fight (DUNGEONS.md §6).
+  const keep = useStore(dungeonSession);
   const outcome = session.outcome;
   const encounter = session.encounter;
   const victory = outcome?.kind === 'victory';
@@ -56,7 +60,9 @@ export default function BattleResultScreen(_props: ScreenProps) {
   // A brewery run's brews are its whole reward, so they cue the spoils sound the same way a
   // stand's do — and a first clear, which opens the next stage, cues the big one.
   const brewed = brewery.summary?.cleared ?? false;
-  const hasRewards = campaign.summaries.some((summary) => summary.rewards !== null) || brewed;
+  // Gear off the racks is a reward like brews are, so a keep's haul cues the same spoils sound.
+  const looted = keep.gear.length > 0;
+  const hasRewards = campaign.summaries.some((summary) => summary.rewards !== null) || brewed || looted;
   const bigReward =
     campaign.summaries.some((summary) => summary.firstClear || summary.chestThresholds.length > 0) ||
     campaign.requested > 1 ||
@@ -89,7 +95,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const gearLost = campaign.summaries.reduce((sum, summary) => sum + summary.gearLost, 0);
   // Mastering a difficulty owes a champion of the player's choosing; it is claimed at the Portal.
   const owedChoice = save ? openChampionChoices(save).length > 0 : false;
-  const sideMode = Boolean(boss.summary || tower.summary || brewery.summary);
+  const sideMode = Boolean(boss.summary || tower.summary || brewery.summary || keep.summary);
   const allies = outcome.units.filter((u) => u.side === 'ally');
   const teamIds = allies.map((u) => u.instanceId).filter((id): id is string => !!id);
   const enemyTurns = outcome.turns - outcome.allyTurns;
@@ -121,6 +127,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
     clearBossSession();
     clearTowerSession();
     clearBrewerySession();
+    clearDungeonSession();
     actions.resetStack({ name: 'hub' });
     if (route === 'hub') return;
     actions.push({ name: 'campaign' });
@@ -250,6 +257,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
                 clearBossSession();
                 clearTowerSession();
                 clearBrewerySession();
+                clearDungeonSession();
                 actions.resetStack({ name: 'hub' });
                 actions.push({ name: 'palace' });
               }}
@@ -268,6 +276,8 @@ export default function BattleResultScreen(_props: ScreenProps) {
             <BossOutcomePanel summary={boss.summary} />
           ) : tower.summary ? (
             <TowerOutcomePanel summary={tower.summary} />
+          ) : keep.summary ? (
+            <DungeonOutcomePanel session={keep} />
           ) : brewery.summary ? (
             <BreweryOutcomePanel summary={brewery.summary} />
           ) : rewards ? (
@@ -430,6 +440,24 @@ export default function BattleResultScreen(_props: ScreenProps) {
             data-testid="result-tower"
           >
             {t('tower.result.back')}
+          </Button>
+        ) : null}
+        {keep.summary ? (
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => {
+              battleController.end();
+              const slug = keep.slug;
+              const difficulty = keep.difficulty;
+              clearDungeonSession();
+              actions.resetStack({ name: 'hub' });
+              // Back into the keep the run was spent in, on the tab it was spent on.
+              actions.push(slug ? { name: 'dungeon', dungeon: slug, difficulty } : { name: 'dungeons' });
+            }}
+            data-testid="result-dungeon"
+          >
+            {t('dungeon.outcome.back')}
           </Button>
         ) : null}
         {brewery.summary ? (

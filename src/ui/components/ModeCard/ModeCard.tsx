@@ -73,8 +73,9 @@ export function ModeCard({
       <div className={styles.foot}>
         <p className={styles.body}>{body}</p>
         {/* Anything static the card carries sits above the live number, which sits above the way
-            in: context, then state, then the press. */}
-        {unlocked ? children : null}
+            in: context, then state, then the press. A shut card shows it too — what a mode *is*
+            is exactly what someone waiting for it wants to read. */}
+        {children}
         {/* A card that is still shut reports nothing live: the button says what it is waiting for. */}
         {unlocked && note ? (
           <p className={`num ${styles.note}`} data-testid={`note-${testId.replace(/^mode-/, '')}`}>

@@ -15,6 +15,7 @@ import { STATUS_BY_ID } from '@content/statuses/index';
 import { batchRewards, campaignSession, stopCampaignBatch } from '@state/campaign-session';
 import { settleBossFight } from '@ui/flows/boss';
 import { settleBreweryRun } from '@ui/flows/brewery';
+import { settleDungeonRun } from '@ui/flows/dungeon';
 import { settleTowerFloor } from '@ui/flows/tower';
 import { settleCampaignRun } from '@ui/flows/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
@@ -136,11 +137,12 @@ export default function BattleScreen({ route }: ScreenProps) {
     // does not (QUESTS_MISSIONS.md §2).
     actions.recordBattle(outcome, encounter.id, !usedAuto);
     // A boss fight banks its damage here, a tower floor its climb, a brewery run its brews; a
-    // campaign run pays out and may start the next of a batch. Each says whether the fight was
-    // theirs, so only one of them acts.
+    // campaign stand and a dungeon run pay out and may start the next of a batch. Each says
+    // whether the fight was theirs, so only one of them acts.
     if (settleBossFight(outcome) || settleTowerFloor(outcome) || settleBreweryRun(outcome)) {
       // Nothing to repeat: one key, one run, one fight.
-    } else if (settleCampaignRun(outcome).repeated) return;
+    } else if (settleDungeonRun(outcome).repeated) return;
+    else if (settleCampaignRun(outcome).repeated) return;
     const id = window.setTimeout(() => actions.replace({ name: 'battle-result' }), RESULT_DELAY_MS);
     return () => window.clearTimeout(id);
   }, [status, outcome, encounter, actions, bench, usedAuto]);

@@ -7,6 +7,7 @@ import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import { currentPointer } from '@state/campaign';
 import { bossKeysNote } from '@ui/screens/bosses/boss-view';
 import { breweryView } from '@state/brewery';
+import { dungeonsNote } from '@ui/screens/dungeons/dungeons-view';
 import { isTowerUnlocked, towerView } from '@state/tower';
 import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -49,6 +50,16 @@ const MODES: readonly ModeDef[] = [
     art: 'bg.bg7',
     glyph: 'glyph.crossed_swords',
     route: { name: 'campaign' },
+  },
+  {
+    id: 'dungeons',
+    // Open from the first hour: what stops a new chronicle is the ladder, not a gate.
+    feature: 'dungeons',
+    titleKey: 'gameModes.dungeons',
+    bodyKey: 'gameModes.dungeons.body',
+    art: 'bg.bg9',
+    glyph: 'glyph.hammer_hit',
+    route: { name: 'dungeons' },
   },
   {
     id: 'bosses',
@@ -106,6 +117,8 @@ export default function GameModesScreen(_props: ScreenProps) {
     if (!save) return null;
     // The Bosses card carries both gates' keys, because the menu behind it holds both bosses.
     if (mode.id === 'bosses') return bossKeysNote(save, now);
+    // The Dungeons card carries how many keeps are open and the deepest any of them has been taken.
+    if (mode.id === 'dungeons') return dungeonsNote(save);
     if (mode.id === 'brewery') {
       const view = breweryView(save, now);
       return t('gameModes.brewery.note', {

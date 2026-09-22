@@ -24,10 +24,12 @@ test.describe('navigation', () => {
     // Campaign, the Bosses menu (0.7.1), the Brewery (0.7.0) and the tower. The tower's card is
     // there from the start and says what opens it, because it is gated on clearing Intro rather
     // than on a level.
-    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(4);
+    await expect(page.locator('[data-testid^="mode-"]')).toHaveCount(5);
     await expect(page.getByTestId('mode-tower')).toContainText(/Intro/);
     // A fresh chronicle is level 1, so the Brewery's card says what it is waiting for.
     await expect(page.getByTestId('mode-brewery')).toContainText('Unlocks at level 3');
+    // The keeps are open from the first hour; only the ladder stands in the way (DUNGEONS.md §2).
+    await expect(page.getByTestId('mode-dungeons')).toContainText('Enter');
   });
 
   test('the Chronicle of Changes is a frame on the title screen, and opens from Settings', async ({
