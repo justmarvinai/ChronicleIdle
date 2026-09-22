@@ -57,19 +57,21 @@ export const DUNGEON_TURN_LIMIT = 50;
  * Normal 1 sits under the Brewery's opening stage on purpose: a new chronicle has **three**
  * champions, not four, so its dungeon party is a slot short of the one these numbers assume.
  *
- * Measured with `pnpm sim:balance --dungeon` (8 runs a rung, Cindervault, auto battles):
+ * Measured with `pnpm sim:balance --dungeon` (12 runs a rung, Cindervault, auto battles):
  *
  * | | N1 | N5 | N10 | N15 | N20 | H1 | H10 | H20 |
  * | --- | --- | --- | --- | --- | --- | --- | --- | --- |
- * | starter, level 10 (three champions) | 100 % | 38 % | 0 % | 0 % | 0 % | 0 % | 0 % | 0 % |
+ * | starter, level 10 (three champions) | 100 % | 33 % | 0 % | 0 % | 0 % | 0 % | 0 % | 0 % |
  * | starter at its star caps | 100 % | 100 % | 0 % | 0 % | 0 % | 0 % | 0 % | 0 % |
  * | mid Epic, 4★40 ungeared | 100 % | 100 % | 100 % | 0 % | 0 % | 0 % | 0 % | 0 % |
- * | late game, 5★50 half-geared | 100 % | 100 % | 100 % | 100 % | 13 % | 0 % | 0 % | 0 % |
- * | endgame, 6★60 geared | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 88 % |
+ * | late game, 5★50 half-geared | 100 % | 100 % | 100 % | 100 % | 8 % | 0 % | 0 % | 0 % |
+ * | endgame, 6★60 geared | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % | 100 % |
  *
- * The four keeps measure within a tenth of each other at the rungs the bands name: their 85 %
- * lines at Hard 20 are ×0.97 (Ashenreach), ×0.98 (the Pale Expanse), ×1.05 (Cindervault) and
- * ×1.13 (Velkora's Cradle) of the shipped scale — the keepers differ in texture, not in weight.
+ * The four keeps sit on top of each other. `pnpm sim:balance --scan --dungeon` prints each keep's
+ * 85 % line as a factor on the shipped scale, and at Hard 20 they come out ×0.98 (the Pale
+ * Expanse), ×1.03 (Ashenreach), ×1.08 (Cindervault) and ×1.13 (Velkora's Cradle) — the keepers
+ * differ in texture, not in weight. The band check reads the hardest of the four, which is why it
+ * reports the endgame roster at 67 % where Cindervault alone shows 100 %.
  *
  * Hard 20 therefore sits right at the top of the sim's endgame roster's reach, which carries no
  * Palace, no optimised six-piece set and no element advantage. A real finished roster brings all

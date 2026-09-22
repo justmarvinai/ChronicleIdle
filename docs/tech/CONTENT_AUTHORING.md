@@ -507,6 +507,7 @@ immediately by every chronicle that already qualifies.
 | `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers, the campaign drop's rarity table per difficulty (`DROP_RARITY_WEIGHTS`) and its star range per settlement |
 | `summon.ts` | shard rates, pity, exchange prices, featured weight, rotation epoch |
 | `idle.ts` | capacity bands, hourly yields, chance rolls |
+| `dungeon.ts` | the twenty stages and two difficulties, the scale curve and enemy levels, the eight bands (stars, energy, rarity table, second-piece chance), gold/XP per run, shard odds |
 | `tower.ts` | floor count, the scale curve, enemy levels, the faction cycle, key cap/regen, season length, gold/energy/brew/XP per floor, `TOWER_SHARD_ODDS` |
 | `economy.ts` | starting wallet, name limits, reset hour/day, gem/gold sanity targets |
 | `unlocks.ts` | player-level unlock table |
@@ -656,3 +657,57 @@ that keeps the mode a lesson in the element wheel rather than a lottery.
 Retuning the ladder is `pnpm sim:balance --brewery` (the five tiers against the five reference
 teams, with bands that fail `--strict`) and `--brewery --scan` (how much room each stage has left).
 `BREWERY.md` §7 is the current fit.
+
+## 16. The Dungeons
+
+The five keeps live in `src/content/dungeons/index.ts` and their four keepers in
+`src/content/dungeons/keepers.ts`. A keep is **~14 lines of data and no authored encounters**:
+
+```ts
+const cindervault: DungeonDef = {
+  id: 'dungeon.cindervault',
+  slug: 'cindervault',          // the route, the testids and the save's keys all use it
+  name: 'dungeon.cindervault.name',
+  description: 'dungeon.cindervault.description',
+  lore: 'dungeon.cindervault.lore',
+  order: 1,                      // reading order on the overview, easiest first
+  sets: ['gear_set.ember_guard', 'gear_set.ironhide', 'gear_set.warcry', 'gear_set.bulwark'],
+  keeperId: 'enemy.cinder_warden',
+  factionId: 'faction.ashen_legion',
+  backdrop: 'bg.bg9',
+  glyph: 'glyph.hammer_hit',
+  surface: 'stone',
+  version: 1,
+};
+```
+
+- **A stage's fight is derived, never authored** (`@engine/dungeon/encounter`): the keeper stands on
+  every stage and the faction supplies three guards as a walking window over its six, so the only
+  per-keep decisions are *who holds it* and *what it sells*.
+- Every number a stage has — its scale, its enemy level, its stars, its rarity table, its energy,
+  its gold and XP, its shard odds — comes from `src/content/balance/dungeon.ts`. Nothing about
+  difficulty or reward is written in the content file.
+- **The keeper is an ordinary `defineEnemy`** with a `named` archetype; it lives in `keepers.ts`
+  only so the four stay together. It is reached because its keep fields it, which is what
+  `validateEnemyReach` was taught in `0.8.0`.
+- `lock: 'accessories'` is the Gilded Veil: a keep whose whole reward does not exist yet ships
+  **shut**, carrying its name, its story and the reason, rather than open and paying something it
+  was not built to pay (`CLAUDE.md` §2.1). A locked keep holds no sets and needs no keeper.
+
+To add a keep: write its `DungeonDef`, add it to `DUNGEONS`, give its keeper a `defineEnemy` in
+`keepers.ts` and `DUNGEON_KEEPERS`, and add its name, blurb and story to `src/i18n/en/dungeons.ts`.
+`DUNGEON_BY_ID`, `DUNGEON_BY_SLUG` and `OPEN_DUNGEONS` all derive from `DUNGEONS`, so nothing else
+has to be told.
+
+After any change, `pnpm content:validate` checks that ids, slugs and orders are unique and that
+`id` matches `slug`, that an open keep names a keeper and a warband that exist, that a sealed one
+names neither and holds no sets, and that **every gear set in the game belongs to exactly one
+keep** — the rule that keeps a set from being unreachable or farmable in two places at once. It
+checks the bands too: that they tile stages 1..20 on both difficulties with no gap or overlap, that
+energy never falls as you go deeper, and that every star and rarity they name carries a positive
+weight.
+
+Retuning the ladder is `pnpm sim:balance --dungeon` (eight rungs of Cindervault against the five
+reference teams, then the seven bands across all four keeps, failing `--strict` when one breaks)
+and `pnpm sim:balance --scan --dungeon` (how much room each keep has left at the rungs the bands
+name — the table a keeper is fitted against). `DUNGEONS.md` §7 is the current fit.

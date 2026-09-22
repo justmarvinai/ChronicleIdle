@@ -333,3 +333,30 @@ day (the Waning Cellar's three days a week must still be enough to rank an Eclip
 
 The Brewery costs **no energy and no gold** — the twenty runs are the whole price (Q54), which is
 what keeps the campaign's energy the thing that paces a sitting.
+
+## 12. Gear (the Dungeons)
+
+The Dungeons (`DUNGEONS.md`) are the game's gear faucet and its **largest energy sink**. A keep's
+run costs 8–18 energy against a campaign stand's 4–10, and the price is the whole design: a band
+charges more precisely because it drops higher stars, so a player reads the price and knows what
+they are buying (`DUNGEONS.md` §5).
+
+There is no daily cap on a keep — the bar is the cap. A day's 1,440 regenerated energy is 180 runs
+of the shallowest Normal band, or 80 of the deepest Hard one, and an evening is spent choosing
+between a settlement and a keep, which is exactly the tension §1 asks for.
+
+What a keep pays back into the wider economy is deliberately thin:
+
+| Line | A dungeon run | Against |
+| --- | --- | --- |
+| Gear | 1 piece always, plus 8–30 % of a second | the campaign's 22 % chance of one |
+| Gold | `260 × (1 + 0.1 × (stage − 1)) × {normal 1, hard 2.6}` | roughly **half** a campaign stand's gold per point of energy |
+| Champion and player XP | the campaign's per-energy rates × `{normal 1.5, hard 2.2}` | the same XP per point of energy as the matching campaign difficulty |
+| Faded Shard | 2 % Normal, 3.5 % Hard | the Portal's real sources (§7) |
+| Ancient Shard | 0.7 %, Hard only | — |
+
+So a keep never becomes the place to farm gold or shards: the gold it pays is there because
+levelling what it drops costs gold, and the shards are the "very rarely" the owner asked for. Gold
+remains the campaign's job, brews the Brewery's, and gear the keeps'. `pnpm sim:economy`'s gold
+bands are therefore unchanged by the mode — a player who spends a day in the keeps earns less gold
+than one who spends it on the map, and comes out with an armoury instead.

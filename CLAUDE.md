@@ -319,6 +319,7 @@ docs/design/CHAMPIONS.md       rarities, stars, elements, roles, stats, full EA-
 docs/design/BATTLE.md          turn system, formulas, status effects, effect DSL, AI, speeds
 docs/design/CAMPAIGN.md        12 settlements × 10 stages × 3 difficulties, enemies, drops, stars
 docs/design/GEAR.md            slots, rarities, stars, main/sub stats, sets, upgrade, crafting
+docs/design/DUNGEONS.md        the five keeps: the sets they hold, the forty rungs, the bands
 docs/design/ECONOMY.md         currencies, energy, player level, idle chest, sources & sinks
 docs/design/SUMMONING.md       shards, banners, rates, pity, rotation, reveal ritual
 docs/design/BOSSES.md          the two period bosses: the Gargoyle and the Titan

@@ -106,7 +106,7 @@ Faction unit names (examples, content decides): Thornwood Bandits → Cutpurse (
 | Gold | `GOLD_BASE(120) × (1 + 0.06 × g) × DIFF_GOLD{intro 1, normal 2.2, hard 4}`; boss stage ×2 |
 | Champion XP (each champion in party) | `CHAMP_XP_BASE(34) × energyCost × DIFF_XP{1, 1.5, 2}` |
 | Player XP | `12 × energyCost × DIFF_XP{1, 1.5, 2}` |
-| Gear drop chance | 22 % (boss 50 %), set chosen from the settlement's set list (60 %) or any (40 %) |
+| Gear drop chance | 22 % (boss 50 %), set chosen from the settlement's set list (60 %) or any (40 %) — the campaign keeps its own pools, and the Dungeons are the place a *particular* set is farmed (`DUNGEONS.md` §2) |
 | Gear rarity at drop | Intro: C 46 / U 33 / R 21; Normal: C 34 / U 30 / R 27 / E 8 / L 1; Hard: C 28 / U 28 / R 28 / E 12 / L 3 / M 1 |
 | Gear stars at drop | by **settlement**, not difficulty: `[⌈s/3⌉, ⌈s/2⌉+1]` clamped to 1–6★, so Thornwood drops 1–2★ and the twelfth settlement 4–6★ |
 | Materials | Intro: Scrap Iron 2–4; Normal: Scrap 3–5 + Ember Alloy 1–2; Hard: Ember 2–3 + Starsteel 0–1; Arcane Dust 1–3 always |
@@ -155,6 +155,12 @@ defineStage({
 Difficulty variants are generated from the same definition via `DIFFICULTY_MULT` unless a stage
 supplies `overrides.hard` (e.g. an extra add on the boss). Enemy levels shown in UI:
 `level = 1 + g × 0.5` (Intro), `+ 20` (Normal), `+ 40` (Hard) — display only.
+
+**Every campaign enemy also carries `CAMPAIGN_ENEMY_SCALE` (0.92) as its `statMult`** — one dial
+that softens all three difficulties by the same 8 % (`BATTLE.md` §4.5, shipped in `0.8.0`). It is
+deliberately not an edit to `DIFFICULTY_MULT`, because the Brewery, the Eternal Tower and the
+Dungeons all pitch their encounters at Intro so that their own curve is the only thing scaling
+them; moving `DIFFICULTY_MULT.intro` would quietly retune three other modes.
 
 ## 9. Auto-repeat
 

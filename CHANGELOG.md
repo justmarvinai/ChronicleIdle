@@ -11,6 +11,79 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.8.0] — 2026-09-22 — The Five Keeps
+
+The Dungeons, and the campaign softened a notch. `docs/design/DUNGEONS.md`,
+`docs/tech/UI_DESIGN.md` §5.24, `docs/tech/CONTENT_AUTHORING.md` §16, `docs/design/ECONOMY.md` §12.
+
+### Added
+
+- **The Dungeons** — five keeps on the Game Modes menu between the campaign and the bosses, open
+  from player level 1 (`FEATURE_UNLOCK_LEVEL.dungeons`). Four are open and the fifth is sealed.
+  Where gear comes from when a player wants a *particular* set at a *particular* star, rather than
+  the campaign's trickle.
+- **`src/content/dungeons/`** — `types.ts` (`DungeonDef`, `DungeonLock`), `index.ts` (the five
+  definitions, `DUNGEON_BY_ID`, `DUNGEON_BY_SLUG`, `OPEN_DUNGEONS`) and `keepers.ts` (the four
+  named enemies). Every one of the game's fourteen gear sets belongs to **exactly one** keep, which
+  `validateDungeons` proves: Cindervault holds Ember Guard, Ironhide, Warcry and Bulwark; the Pale
+  Expanse Warding, Truesight and Immortal; Velkora's Cradle Keen Eye, Executioner and Retaliation;
+  Ashenreach Swiftfoot, Relentless, Lifedrinker and Stunlock.
+- **`src/content/balance/dungeon.ts`** — the whole ladder in one file: 20 stages × 2 difficulties,
+  the geometric scale curve (`DUNGEON_SCALE_BASE` 0.9/24 → `DUNGEON_SCALE_TOP` 18/45), enemy
+  levels, and the eight `DUNGEON_BANDS`, each of which steps stars, rarity, energy and the chance
+  of a second piece together — so a band's price says what it buys. Normal runs 1–2★ at 8 energy
+  up to 5–6★ at 13; Hard opens at 4–6★ for 15 and ends 5–6★ at the owner's 30/70 for 18. Plus the
+  gold, XP and shard-odds constants.
+- **`engine/dungeon/`** — `encounter.ts` (derived encounters: the keeper on every stage plus a
+  three-unit walking window over the warband's six, party size 4, pinned at `intro × stageIndex 0`
+  so `dungeonScale` is the only curve acting on a dungeon enemy), `ladder.ts` (the per-keep,
+  per-difficulty progression, all of it read off two stored numbers) and `rewards.ts`.
+- **Save v18** — `dungeons.cleared` keyed by slug with `{ normal, hard }`, and a third team mode so
+  a keep keeps its own presets: a player's dungeon four is rarely their boss four (the owner's
+  answer). The migration writes an untouched ladder and an empty preset row.
+- **Two screens** — the overview (five `ModeCard`s, the sealed keep carrying its reason on the card
+  itself) and the keep (the keeper and its sets on the left, twenty rungs on the right under a tab
+  per difficulty, opened scrolled to the deepest rung the player may enter). Plus a Dungeons panel
+  on the battle result that reports the **batch**: the pieces in their rarity frames, the count, the
+  gold and XP, what the evening opened, and how many runs completed.
+- **Auto-repeat**, the campaign's own tiers (×10 at level 5, ×25 at 20, ×50 at 30, the owner's
+  answer), stopping on an empty bar, a press or a defeat.
+- Battle setup names a keep's energy on its Start button, as it does a campaign stand's: a keep's
+  deepest rung costs more than twice its shallowest, so the price belongs on the press.
+- **`pnpm sim:balance --dungeon`** — eight rungs of Cindervault against the five reference teams,
+  then the seven bands across all four keeps; folded into the default run and into `--strict`.
+  `--scan --dungeon` prints how much room each keep has left at the rungs the bands name, which is
+  the table the keepers are fitted against.
+- Counters `dungeon.runs`, `dungeon.cleared`, `dungeon.gear` and `dungeon.runs.<id>`, so quests and
+  the mission line can name a keep later.
+
+### Balance
+
+- **The campaign softened 8 % on all three difficulties.** `CAMPAIGN_ENEMY_SCALE` (0.92) rides on
+  every campaign enemy as its `statMult`. Deliberately *not* an edit to `DIFFICULTY_MULT`: the
+  Brewery, the Eternal Tower and the Dungeons all pin their encounters at `intro × stageIndex 0` so
+  that their own curve is the single scaling term, and moving `DIFFICULTY_MULT.intro` would quietly
+  retune three other modes. Every Brewery band measures identically after the change.
+- **`PLAYER_XP_PER_ENERGY` 11 → 12**, a second notch of chronicle XP on top of `0.7.2`'s.
+- **The Pale Herald retuned.** Its `heal(18, 'self', 'CASTER_MAX_HP')` was a percentage self-heal on
+  an enemy whose pool scales with the stage, so it got relatively stronger the deeper the ladder
+  went while the party's damage did not: at Hard 20 the Expanse measured 0 % for a finished roster
+  where Cindervault measured 75 %. Heal 18 → 8 %, `res_up` 40 → 25, `heal_reduction` 70/50 → 55/40,
+  freeze 45 → 30, RES 60 → 45, HP 1,540 → 1,180 (the fight was being lost to the 50-turn limit
+  rather than to damage). The four keeps now measure within ×0.97–1.13 of each other at every rung
+  the bands name. The Ashwake's stun went 40 → 30 in the same pass.
+
+### Changed
+
+- `state/gear.ts` grew `mintGearPiece`, which `applyGearDrop` now calls, so campaign and dungeon
+  drops share the inventory bookkeeping and differ only in what they choose.
+- `validateEnemyReach` knows a dungeon reaches its keeper; its message names dungeons too.
+- `ModeCard` renders its `children` whether or not the card is unlocked — a mode you cannot enter
+  yet still has to say what it **is**, which is how the sealed Gilded Veil carries its reason.
+- `tools/sim/teams.ts` reference teams gained an optional `fourth`, absent on both starter rosters
+  on purpose: a new chronicle really does field three, so "clearable on Normal 1" means clearable a
+  slot short.
+
 ## [0.7.2] — 2026-09-21 — A kinder campaign, a stingier armoury
 
 The owner's balance pass after playing the campaign end to end. `docs/design/CAMPAIGN.md` §7,

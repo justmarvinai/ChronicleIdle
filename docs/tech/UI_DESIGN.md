@@ -574,13 +574,15 @@ Rules the overlay holds to:
 
 ### 5.19 Game Modes
 - Reference: `different_content_battles_screen.png`. Horizontal cards, each reporting its own live
-  state in gold numerals under the blurb: Campaign (the stand the chronicle is on), Bosses (the
-  keys left at each gate, named — `Gargoyle 2/2 · Titan 3/3`, the number the hub's panels used to
-  carry, §5.2),
-  **The Eternal Tower** (`Floor n · Keys k/c`, the floor a key would open and the ring held). A
+  state in gold numerals under the blurb: Campaign (the stand the chronicle is on), **Dungeons**
+  (how many keeps are open and the deepest any of them has been taken — `4 keeps · deepest Normal
+  14`, §5.24), Bosses (the keys left at each gate, named — `Gargoyle 2/2 · Titan 3/3`, the number
+  the hub's panels used to carry, §5.2),
+  **The Eternal Tower** (`Floor n · Keys k/c`, the floor a key would open and the ring held). The
+  Dungeons card sits between Campaign and Bosses, where the owner asked for it. A
   card that is still shut reports nothing live; its button says what opens it — a chronicle level
   for most, and *Clear the Intro campaign* for the tower, which is gated on progress rather than
-  on a level (`ETERNAL_TOWER.md` §1). Backlog cards (Dungeons, Events) do not exist in EA-0.1.
+  on a level (`ETERNAL_TOWER.md` §1). Backlog cards (Events) do not exist in EA-0.1.
 
 ### 5.20 The Chronicle Index
 
@@ -793,3 +795,35 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   tower's: the hall and stage, one cask per brew filling in sequence, the first clear that opened
   the next stage, and the runs left today. Its primary button goes back to the hall the run was
   spent in.
+
+### 5.24 The Dungeons (`docs/design/DUNGEONS.md`)
+- **The overview is a row of keeps, not a list.** Five `ModeCard`s (§5.19) across the screen,
+  easiest first, each on its keep's own backdrop: the keep's name, its blurb, the **sets it holds**
+  spelled out — the one thing a player chooses on — and, as the card's live note, the deepest rung
+  they have taken in it. The sealed Gilded Veil keeps its place
+  at the end of the row, desaturated and wearing the broken shackle, with its reason on the card
+  rather than only on its button: *"Sealed until there are necklaces, rings and trinkets to find."*
+  A mode you cannot enter yet still has to say what it **is**, which is why `ModeCard` renders its
+  children shut as well as open.
+- **A keep is the tower's shape, because it is the same kind of climb.** Left rail (460 px): the
+  keep's name in gold, its story, the keeper under a *Keeper* label, the sets it holds as chips,
+  and the deepest rung at the foot. Right: the Normal/Hard tabs, the repeat selector, and the
+  **ladder of twenty rungs**. It opens scrolled to the deepest rung the player may enter, so a keep
+  twelve stages in does not start at stage 1.
+- **A rung says the four things a run is decided on**, in four columns: its number and the level it
+  fields, the **stars** it drops with the rarities under them in small text, its **energy** with
+  the chance of a second piece under it, and the way in. `data-next` gives the rung the player is
+  on a gold border and a warm wash and its button the primary variant; `data-open='false'` drops a
+  rung still shut to 50 %, where it says what opens it in quiet grey rather than wearing a mark it
+  has not earned. A rung already taken carries a jade *Cleared* under its button, so the ladder
+  shows the climb at a glance. Too little energy for a rung disables its button and the button says
+  so, rather than letting a press fail.
+- **Hard is a tab, not a screen.** Before that keep's Normal 20 falls the tab is still pressable
+  and shows one line saying what opens it — the gate is explained where it is met, and a player can
+  read what they are climbing towards.
+- **What a run says.** The battle result (§5.10) carries a Dungeons panel beside the boss's, the
+  tower's and the Brewery's: the pieces themselves in their rarity frames, landing in turn (at most
+  twelve drawn — a ×50 batch is a number, not a wall of cards), the count under them, then the gold
+  and champion XP the evening was worth, the rung the first clear opened, whether Hard fell, and
+  how many runs of the batch were completed. Its primary button goes back into the keep, on the tab
+  the run was spent on.

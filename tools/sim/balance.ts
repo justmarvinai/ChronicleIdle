@@ -8,6 +8,9 @@
  *   pnpm sim:balance --scan          the enemy scale each band's team can actually take, the
  *                                    table a tuning pass fits the balance constants to
  *   pnpm sim:balance --brewery       only the Brewery's five-stage ladder and its bands
+ *   pnpm sim:balance --dungeon       only the Dungeons' ladder and its bands
+ *   pnpm sim:balance --scan --dungeon   how far apart the four keeps sit at the rungs the bands
+ *                                    name, which is the table the keepers are fitted against
  */
 import { DIFFICULTY_MULT, stageScale, type Difficulty } from '@content/balance/battle';
 import { BREWERY_STAGE_SCALE, BREWERY_STAGES } from '@content/balance/brewery';
@@ -18,6 +21,7 @@ import { content } from '@content/registry';
 import { BANDS, BREWERY_BANDS, DUNGEON_BANDS_CHECK, SIM_TEAMS, TEAM_BY_ID, type SimTeam } from './teams';
 import {
   requiredBreweryScale,
+  requiredDungeonScale,
   requiredScale,
   simulateBrewery,
   simulateDungeon,
@@ -195,6 +199,27 @@ function breweryHeadroom(): void {
   }
 }
 
+/**
+ * How far apart the four keeps sit: the factor on the shipped `dungeonScale` at which a team still
+ * wins 85 % of its runs, per keep, at the rungs the bands name. ×1 means the keep sits exactly on
+ * the shipped curve for that team, so a spread much wider than a tenth means one keeper is doing
+ * something the others are not — which is how the Pale Herald's percentage self-heal was caught.
+ */
+function dungeonHeadroom(): void {
+  console.log('\nDungeon headroom: × the shipped scale a team still wins 85 % of the time at');
+  const runs = Math.max(8, Math.round(RUNS / 2));
+  const rungs = DUNGEON_BANDS_CHECK.filter((band) => band.min !== undefined);
+  for (const band of rungs) {
+    const team = TEAM_BY_ID[band.team];
+    if (!team) throw new Error(`dungeon band names unknown team ${band.team}`);
+    const label = `${band.difficulty === 'hard' ? 'H' : 'N'}${band.stage}`;
+    const cells = KEEPS.map(
+      (slug) => `${slug} ×${requiredDungeonScale(slug, band.difficulty, band.stage, team, runs).toFixed(2)}`,
+    );
+    console.log(`  ${label.padEnd(4)} ${band.team.padEnd(15)} ${cells.join('  ')}`);
+  }
+}
+
 /** The Dungeons' ladder: the rungs the bands name, across all four keeps (DUNGEONS.md §7). */
 function dungeonCurve(): void {
   const rungs: readonly { difficulty: DungeonDifficulty; stage: number }[] = [
@@ -257,9 +282,12 @@ function dungeonBands(): boolean {
 
 const started = Date.now();
 if (flag('scan')) {
-  // `--scan --brewery` narrows the fit to the Brewery's own ladder.
-  if (!flag('brewery')) scan();
-  breweryHeadroom();
+  // `--scan --brewery` and `--scan --dungeon` narrow the fit to one mode's own ladder.
+  if (flag('dungeon')) dungeonHeadroom();
+  else {
+    if (!flag('brewery')) scan();
+    breweryHeadroom();
+  }
 } else if (flag('dungeon')) {
   dungeonCurve();
   const ok = dungeonBands();

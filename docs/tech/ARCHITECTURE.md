@@ -242,6 +242,29 @@ quietly under-report.
 in `encounterById`, so every screen that takes an encounter id — battle setup, the HUD, the result —
 works on a brewery stage without knowing the mode exists.
 
+### 3.7c Dungeon module
+
+`engine/dungeon/` is the same three-file shape (`DUNGEONS.md`):
+
+- `encounter.ts` — `dungeonEncounterId` / `parseDungeonEncounterId`, `dungeonEnemyLevel`, and
+  `dungeonEncounter(def, difficulty, stage, faction)`, which derives a stage's one wave from the
+  keep: its keeper on every stage from the first to the fortieth, plus three guards as a window
+  over the warband's six that walks by one per stage. The faction is **passed in**, not imported,
+  for the same boundary reason as the Brewery's.
+  The encounter is pitched at Intro's flat multiplier and stage index 0 on purpose, so
+  `DIFFICULTY_MULT` and `stageScale` both come out at 1 and `dungeonScale(stage, difficulty)` is
+  the single curve acting on a dungeon enemy — one number decides how hard a stage is.
+- `ladder.ts` — `progressOf`, `isHardOpen`, `highestOpenStage`, `isStageOpen`, `nextStage`,
+  `recordClear` (which reports the first clear and whether that clear opened Hard) and
+  `deepestLabel`. Everything is read off the two numbers the save keeps per keep, because stages
+  are taken in order.
+- `rewards.ts` — `rollDungeonRewards` (the guaranteed piece, the band's chance of a second, gold,
+  the two shard rolls and XP), `dungeonGold` and `dungeonXp`.
+
+`content/registry.ts` memoises a derived encounter per `(slug, difficulty, stage)` and resolves
+dungeon ids in `encounterById`, so battle setup, the HUD and the result work on a keep without
+knowing the mode exists — the same seam the Brewery and the tower use.
+
 ### 3.8 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
@@ -276,7 +299,9 @@ back-pays a skill point for every settlement boss stand the chronicle had alread
 (0.7.0: `brewery`, whose migration writes an empty day because there is nothing to back-pay) and
 v17 (0.7.1: no new shape at all — the version the boss rename hangs on, so a chronicle's keys,
 damage, chests, records, Palace payments and counters move to the new ids instead of reading as a
-chronicle that never fought either of them). Fields
+chronicle that never fought either of them) and v18 (0.8.0: `dungeons`, plus the third team mode
+the keeps get their own presets in — its migration writes an untouched ladder and an empty preset
+row, because there is nothing to back-pay). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -290,7 +315,9 @@ interface SaveGame {
   roster: Record<string, ChampionInstance>;   // instance ids are `<def>-<n>` from `counters.instances`
   counters: { instances: number; gear: number };   // monotonic serials so ids never collide after a release
   inventory: Record<string, GearInstance>;    // gear ids are `gear-<n>` from `counters.gear`
-  teams: Record<'campaign' | 'boss', { presets: string[][]; lastUsed: string[] }>;   // 3 presets per mode (Q25)
+  // `dungeon` joined in v18: a keep fields four like a boss, but a player's dungeon four is rarely
+  // their boss four, so it keeps its own presets rather than sharing the boss row.
+  teams: Record<'campaign' | 'boss' | 'dungeon', { presets: string[][]; lastUsed: string[] }>;   // 3 presets per mode (Q25)
   campaign: { stages: Record<string, { stars: 0|1|2|3; clears: number; bestTurns: number | null }>;
               unlocked: { normal: boolean; hard: boolean }; speeds: { x3: boolean; x4: boolean }; starChests: string[] };
   // Shipped in save v9. The period a boss's numbers belong to is stored, not a reset timer: a
@@ -320,6 +347,12 @@ interface SaveGame {
   // older day reads as a fresh one, so the twenty runs come back at the door with nothing running at
   // midnight; `cleared` outlives the day, because a ladder is progress rather than an allowance.
   brewery: { periodKey: string; runs: number; cleared: Record<string, number> };
+  // Shipped in save v18. The Dungeons (DUNGEONS.md §4): two numbers per keep, the deepest stage
+  // cleared on each difficulty, keyed by the keep's slug. Which stages are behind the player
+  // follows from those because stages are taken in order, and whether Hard is open follows from
+  // `normal` reaching the twentieth — so there is no per-stage list to fall out of step and no
+  // "unlocked" flag to disagree with it (the tower's discipline, one ladder per difficulty).
+  dungeons: { cleared: Record<string, { normal: number; hard: number }> };
   // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
   // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
   // the campaign's stars, so the ledger cannot disagree with the play).

@@ -32,6 +32,15 @@ function release(version: string, date: string, lines: readonly Line[]): Release
 }
 
 export const RELEASES: readonly ReleaseDef[] = [
+  release('0.8.0', '2026-09-22', [
+    { kind: 'added', slug: 'dungeons', lead: true },
+    { kind: 'added', slug: 'sets_per_keep', lead: true },
+    { kind: 'added', slug: 'forty_rungs' },
+    { kind: 'added', slug: 'what_falls' },
+    { kind: 'added', slug: 'gilded_veil' },
+    { kind: 'balance', slug: 'softer_campaign' },
+    { kind: 'balance', slug: 'more_chronicle_xp' },
+  ]),
   release('0.7.2', '2026-09-21', [
     { kind: 'balance', slug: 'campaign_xp', lead: true },
     { kind: 'balance', slug: 'brew_xp', lead: true },

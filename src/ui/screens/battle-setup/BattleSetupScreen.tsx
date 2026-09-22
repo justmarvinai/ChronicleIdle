@@ -395,7 +395,9 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
             data-testid="start-battle"
           >
             {t('battleSetup.start')}
-            {pointer ? ` · ${t('battleSetup.cost', { cost })}` : ''}
+            {/* A keep charges energy like a stand does, and the deepest rung charges more than
+                twice the shallowest — so the button names the price it is about to take. */}
+            {pointer || keep ? ` · ${t('battleSetup.cost', { cost })}` : ''}
             {boss ? ` · ${t('bosses.keyCost')}` : ''}
             {brewery ? ` · ${t('brewery.runCost')}` : ''}
           </Button>

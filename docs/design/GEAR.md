@@ -36,9 +36,16 @@ otherwise a random existing substat is increased by a roll.
 **Where each rarity comes from.** A campaign drop's rarity is capped by the difficulty it was won
 on (`CAMPAIGN.md` §7): Intro stops at Rare, Normal opens Epic and a sliver of Legendary, and only
 Hard mints a Mythic. A first playthrough is therefore a Common-to-Rare armoury, and the way past
-that is the Forge (§6: the Ember tier and above craft Epic, Legendary and Mythic) and the two
-bosses' chests (`BOSSES.md` §2) — a top-rarity piece is earned somewhere specific rather than
-waited for.
+that is the **Dungeons** (`DUNGEONS.md` §5: each keep's ladder raises both the stars and the
+rarity it drops, and Hard never drops below Rare), the Forge (§6: the Ember tier and above craft
+Epic, Legendary and Mythic) and the two bosses' chests (`BOSSES.md` §2) — a top-rarity piece is
+earned somewhere specific rather than waited for.
+
+**Where each *set* comes from.** The campaign's settlements each have their own set pool (§5), and
+every set in the game also belongs to exactly one dungeon (`DUNGEONS.md` §2), which is how a player
+farms a *particular* set rather than waiting for one: Cindervault holds the four a roster is built
+on, the Pale Expanse the three that decide whether a debuff lands, Velkora's Cradle the crit three
+and Ashenreach the four that bend the turn order.
 
 ## 3. Stars and level
 

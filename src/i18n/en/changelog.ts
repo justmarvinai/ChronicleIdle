@@ -20,6 +20,22 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_8_0.name': 'The Five Keeps',
+  'release.0_8_0.dungeons':
+    'There are Dungeons now, on the Battle menu between the Campaign and the Bosses, and they are open from your very first hour. Four keeps stand ready — Cindervault, the Pale Expanse, Velkora’s Cradle and Ashenreach — each one held by a keeper who never leaves it.',
+  'release.0_8_0.sets_per_keep':
+    'Every gear set in the game belongs to exactly one keep, so at last you can go and farm the set you actually want. Cindervault holds the armour a new roster is built on; the Pale Expanse holds resistance, accuracy and regeneration; Velkora’s Cradle holds the crit sets; and Ashenreach, the hardest of the four, holds speed, the extra turn, lifesteal and the stun.',
+  'release.0_8_0.forty_rungs':
+    'Each keep is twenty stages on Normal and twenty more on Hard. Stages are taken in order, and Hard opens in a keep only once you have taken that keep’s twentieth stage on Normal. Stage one is a fight for your first evening; stage twenty is not.',
+  'release.0_8_0.what_falls':
+    'Every clear leaves a piece of gear behind, always, and deeper stages can leave two. The deeper you go the better the stars and the better the rarity — and the more energy a run costs, so the price of a stage tells you what it pays. There is gold and experience as well, and, very rarely, a shard for the Portal.',
+  'release.0_8_0.gilded_veil':
+    'A fifth keep, the Gilded Veil, can be seen but not yet entered: it guards necklaces, rings and trinkets, and there is nowhere to wear those yet. It will open when there is.',
+  'release.0_8_0.softer_campaign':
+    'The campaign hits a little less hard on all three difficulties — every enemy on the map is about eight per cent weaker than it was. Nothing else about a stand has changed.',
+  'release.0_8_0.more_chronicle_xp':
+    'Campaign stands pay a little more of your own experience again, on top of the last increase.',
+
   'release.0_7_2.name': 'A Kinder Campaign, a Stingier Armoury',
   'release.0_7_2.campaign_xp':
     'Campaign stands pay more experience than they did — a little more for you, a bit more for the champions who fought. The same map, climbed faster.',

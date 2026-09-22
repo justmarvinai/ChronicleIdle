@@ -67,6 +67,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Battle | Turn-meter combat, 3 v up to 4 in campaign and 4 v boss + adds, waves, status effects, manual/auto, ×1–×4 speed | `BATTLE.md` |
 | Campaign | 12 settlements × 10 stages × Intro/Normal/Hard, farmable, 3-star ratings, drops | `CAMPAIGN.md` |
 | Gear | 6 slots, 6 rarities, 1–6 stars, +0…+16, main/sub stats, 14 sets, refine, craft, dismantle | `GEAR.md` |
+| Dungeons | 5 keeps, each holding its own gear sets; 20 stages × Normal/Hard, eight reward bands, farmable | `DUNGEONS.md` |
 | Economy | 25 wallet currencies, energy, player level 1–100, idle chest, sources/sinks | `ECONOMY.md` |
 | Summoning | 4 shard types, standard portal + featured banner, pity, deterministic rotation | `SUMMONING.md` |
 | Bosses | Daily boss (4 tiers, 2 keys/day) and weekly boss (3 tiers, 3 keys/week), damage-threshold rewards | `BOSSES.md` |
