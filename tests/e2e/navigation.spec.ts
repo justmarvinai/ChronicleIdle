@@ -1,12 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { closeDialog, gotoTitle, openSettingsTab, settle, startChronicle } from './helpers';
 
-/** The Hall is absent on purpose: the missions open at level 1 and guide the player from there. */
+/**
+ * The Hall is absent on purpose: the missions open at level 1 and guide the player from there.
+ * So is the Market, which opened at level 1 in `0.9.0` — it is checked from the other side below.
+ */
 const LOCKED_HOTSPOTS: Record<string, RegExp> = {
   portal: /level 4/,
   tavern: /level 2/,
   forge: /level 8/,
-  market: /later chapter/,
   idle: /level 5/,
 };
 
@@ -30,6 +32,18 @@ test.describe('navigation', () => {
     await expect(page.getByTestId('mode-brewery')).toContainText('Unlocks at level 3');
     // The keeps are open from the first hour; only the ladder stands in the way (DUNGEONS.md §2).
     await expect(page.getByTestId('mode-dungeons')).toContainText('Enter');
+  });
+
+  test('the Market opens on day one, on the stall this hour is carrying', async ({ page }) => {
+    await startChronicle(page);
+    // It stood shut until `0.9.0` and now opens from the first hour (MARKET.md), which is the half
+    // of the hotspot table the locked walk below can no longer cover.
+    await page.getByTestId('hotspot-market').click();
+    await expect(page.getByTestId('screen-market')).toBeVisible({ timeout: 20_000 });
+    await settle(page);
+    await expect(page.locator('[data-testid^="stall-slot-"]')).toHaveCount(6);
+    await page.getByRole('button', { name: 'Back' }).click();
+    await expect(page.getByTestId('screen-hub')).toBeVisible();
   });
 
   test('the Chronicle of Changes is a frame on the title screen, and opens from Settings', async ({
