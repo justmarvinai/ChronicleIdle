@@ -93,8 +93,8 @@ describe('campaign runs through the store', () => {
       expect(save.roster[id]?.level, id).toBe(3);
       expect(save.roster[id]?.xp, id).toBe(30);
     }
-    // The player's 44 XP is not yet a level (the first costs 100).
-    expect(save.profile).toMatchObject({ level: 1, xp: 44 });
+    // The player's 48 XP is not yet a level (the first costs 100).
+    expect(save.profile).toMatchObject({ level: 1, xp: 48 });
     expect(seen).toContain('campaign.runFinished');
     expect(saveSchema.safeParse(save).success).toBe(true);
     // Stage 2 is now open and the campaign points at it.

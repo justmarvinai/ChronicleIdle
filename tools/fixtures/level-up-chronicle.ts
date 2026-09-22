@@ -16,7 +16,7 @@ const OUT = join(REPO_ROOT, 'tests', 'fixtures', 'saves', 'level-up.chronicle');
 /** 2026-09-12 12:00 local, the same instant every save fixture froze. */
 const NOW = new Date(2026, 8, 12, 12, 0).getTime();
 const SEED = 'fixture.levelup';
-/** One Intro stand of Thornwood pays 44 chronicle XP (4 energy × PLAYER_XP_PER_ENERGY). */
+/** One Intro stand of Thornwood pays 48 chronicle XP (4 energy × PLAYER_XP_PER_ENERGY). */
 const SHORT_BY = 20;
 
 async function main(): Promise<void> {

@@ -9,6 +9,7 @@
 import { PARTY_SIZE_CAMPAIGN, type Difficulty } from '@content/balance/battle';
 import {
   BOSS_ENERGY_EXTRA,
+  CAMPAIGN_ENEMY_SCALE,
   ENEMY_LEVEL_DIFFICULTY_ADD,
   ENEMY_LEVEL_PER_STAGE,
   ENERGY_COST,
@@ -68,7 +69,10 @@ export function stageEncounter(
     difficulty,
     stageIndex: globalIndex,
     enemyLevel: stageEnemyLevel(globalIndex, difficulty),
-    waves: stage.waves.map((wave) => ({ enemies: wave.map((enemyId) => ({ enemyId })) })),
+    // Every campaign enemy carries the campaign's own dial; nothing else in the game reads it.
+    waves: stage.waves.map((wave) => ({
+      enemies: wave.map((enemyId) => ({ enemyId, statMult: CAMPAIGN_ENEMY_SCALE })),
+    })),
     turnLimit: stage.turnLimitDefeat,
     turnLimitMode: 'ally',
     timeUpIsDefeat: true,

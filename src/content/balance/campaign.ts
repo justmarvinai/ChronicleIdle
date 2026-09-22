@@ -38,6 +38,22 @@ export const STAR_CHEST_THRESHOLDS = [10, 20, 30] as const;
 /** Stars available per settlement and difficulty. */
 export const STARS_PER_SETTLEMENT = STAGES_PER_SETTLEMENT * 3;
 
+/**
+ * The campaign's own difficulty dial, on top of `DIFFICULTY_MULT` and `stageScale`
+ * (`BATTLE.md` §4.5). Every campaign enemy is scaled by it, so one number softens or sharpens all
+ * 360 stands at once and all three difficulties by the same share.
+ *
+ * It exists as a separate dial rather than an edit to `DIFFICULTY_MULT` because the Brewery and
+ * the Eternal Tower pin their encounters at `intro × stageIndex 0` precisely so their own curve is
+ * the only thing scaling them (`@engine/brewery/encounter`, `@engine/tower/encounter`). Moving
+ * `DIFFICULTY_MULT.intro` would quietly move both of those modes as well; this cannot.
+ *
+ * `0.92` in `0.8.0` — the owner played the campaign end to end and asked for it a little softer on
+ * every difficulty. An 8 % cut is about one stand's worth of roster growth: it moves where a team
+ * stalls, not whether it stalls.
+ */
+export const CAMPAIGN_ENEMY_SCALE = 0.92;
+
 /** Enemy level shown on plates: display only, never a stat multiplier (USER_QUESTIONS Q29). */
 export const ENEMY_LEVEL_PER_STAGE = 0.5;
 export const ENEMY_LEVEL_DIFFICULTY_ADD: Readonly<Record<Difficulty, number>> = {
@@ -62,11 +78,13 @@ export const GOLD_BOSS_MULT = 2;
  *
  * Both were lifted in `0.7.2` after the owner played the campaign end to end and found it paid
  * too slowly: champion XP by a seventh (30 → 34, so an Intro stand of the first band feeds 136
- * instead of 120) and chronicle XP by a tenth (10 → 11, so three stands still make level 2).
+ * instead of 120) and chronicle XP by a tenth (10 → 11). Chronicle XP went up a second notch in
+ * `0.8.0` (11 → 12, so an Intro stand of the first band pays 48): the owner wanted the chronicle
+ * itself climbing a little faster, and the level is what opens every other mode.
  * Raising these shortens every level in the game, so they move a notch at a time.
  */
 export const CHAMPION_XP_PER_ENERGY = 34;
-export const PLAYER_XP_PER_ENERGY = 11;
+export const PLAYER_XP_PER_ENERGY = 12;
 export const XP_DIFFICULTY: Readonly<Record<Difficulty, number>> = { intro: 1, normal: 1.5, hard: 2 };
 
 /**

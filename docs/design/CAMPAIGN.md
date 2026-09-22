@@ -105,7 +105,7 @@ Faction unit names (examples, content decides): Thornwood Bandits → Cutpurse (
 | --- | --- |
 | Gold | `GOLD_BASE(120) × (1 + 0.06 × g) × DIFF_GOLD{intro 1, normal 2.2, hard 4}`; boss stage ×2 |
 | Champion XP (each champion in party) | `CHAMP_XP_BASE(34) × energyCost × DIFF_XP{1, 1.5, 2}` |
-| Player XP | `11 × energyCost × DIFF_XP{1, 1.5, 2}` |
+| Player XP | `12 × energyCost × DIFF_XP{1, 1.5, 2}` |
 | Gear drop chance | 22 % (boss 50 %), set chosen from the settlement's set list (60 %) or any (40 %) |
 | Gear rarity at drop | Intro: C 46 / U 33 / R 21; Normal: C 34 / U 30 / R 27 / E 8 / L 1; Hard: C 28 / U 28 / R 28 / E 12 / L 3 / M 1 |
 | Gear stars at drop | by **settlement**, not difficulty: `[⌈s/3⌉, ⌈s/2⌉+1]` clamped to 1–6★, so Thornwood drops 1–2★ and the twelfth settlement 4–6★ |

@@ -92,11 +92,19 @@ Explicit effects; buffs are removed newest-first unless the effect names a speci
 ### 4.5 Enemy stat scaling
 
 ```
-enemyStat = archetypeBase × DIFFICULTY_MULT[diff] × stageScale(globalStageIndex)
+enemyStat = archetypeBase × DIFFICULTY_MULT[diff] × stageScale(globalStageIndex) × statMult
 DIFFICULTY_MULT = { intro: 1.0, normal: 2.5, hard: 6.0 }   — what the same stage costs per difficulty
 stageScale(g)  = 1 + (STAGE_GROWTH_TOP − 1) × (g / 119) ^ STAGE_GROWTH_POWER
 STAGE_GROWTH_TOP = 4.8   STAGE_GROWTH_POWER = 2   (index 0..119)
+statMult       = the encounter's own per-enemy dial (elite adds, a keeper, a mode's curve)
 ```
+
+Every campaign enemy carries `CAMPAIGN_ENEMY_SCALE` (0.92) as its `statMult`, which is the
+campaign's own difficulty dial: one number softens or sharpens all 360 stands and all three
+difficulties by the same share. It is deliberately *not* an edit to `DIFFICULTY_MULT`, because the
+Brewery, the Eternal Tower and the Dungeons all pin their encounters at `intro × stageIndex 0` so
+that their own curve is the only thing scaling them — moving `DIFFICULTY_MULT.intro` would quietly
+move all three.
 The stage term is quadratic, not linear: settlement 1 is nearly flat (×1.00 → ×1.04), the curve
 bites from settlement 6 (×1.9) and the last stand is ×4.8 of the first. That shape is what lets the
 roster a new chronicle is given walk Intro's first settlements — it can only level, not rank up or

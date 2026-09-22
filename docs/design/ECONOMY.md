@@ -70,7 +70,7 @@ milestones and the top weekly chest. Common/Uncommon champions have no upgrades.
 
 ## 4. Player level
 
-- XP from every battle win (`11 × energyCost × diffMult`), boss battles (fixed per tier), quest
+- XP from every battle win (`12 × energyCost × diffMult`), boss battles (fixed per tier), quest
   chests and missions.
 - `xpToNext(L) = round(100 × L^1.6)` (L 1→2: 100; 10: 3,981; 30: 23,000; 60: 70,000; 99: 157,000).
   Max level 100.
