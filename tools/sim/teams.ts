@@ -31,6 +31,12 @@ export interface SimTeam {
   gearMult: number;
   /** Skill Tome steps applied to every ability (Phase 5). */
   skillUpgrades: number;
+  /**
+   * A fourth champion, for the modes that field four (`DUNGEONS.md`, the boss gates). Absent on
+   * the two starter rosters on purpose: a new chronicle is given **three** champions, so its
+   * dungeon party really is a slot short, and the opening stage has to be beatable that way.
+   */
+  fourth?: string;
 }
 
 export const SIM_TEAMS: readonly SimTeam[] = [
@@ -57,6 +63,7 @@ export const SIM_TEAMS: readonly SimTeam[] = [
     level: 'cap',
     gearMult: 1,
     skillUpgrades: 1,
+    fourth: 'champ.sister_maelis',
   },
   {
     id: 'late_game',
@@ -68,6 +75,7 @@ export const SIM_TEAMS: readonly SimTeam[] = [
     level: 'cap',
     gearMult: 1.6,
     skillUpgrades: 2,
+    fourth: 'champ.sister_maelis',
   },
   {
     id: 'endgame',
@@ -77,6 +85,7 @@ export const SIM_TEAMS: readonly SimTeam[] = [
     level: 'cap',
     gearMult: 2.2,
     skillUpgrades: 4,
+    fourth: 'champ.eldric_chronicler',
   },
 ];
 
@@ -156,6 +165,78 @@ export const BREWERY_BANDS: readonly BreweryBand[] = [
   { team: 'endgame', stage: 5, min: 0.5, why: 'endgame: winnable in every hall, once finished' },
 ];
 
+/**
+ * The Dungeons' ladder, written down (`DUNGEONS.md` §7).
+ *
+ * Forty rungs are too many to band individually, so these are the seven the mode promises: the
+ * first rung is day one, each difficulty's last rung is a wall for the tier below it, and Hard's
+ * first rung is past a late-game roster entirely. Everything between them follows from the
+ * geometric curve.
+ *
+ * Measured against **Cindervault**, because the four keeps come out within a point or two of each
+ * other at every rung tested — the keepers differ in texture rather than in weight.
+ */
+export interface DungeonBandCheck {
+  team: string;
+  difficulty: 'normal' | 'hard';
+  stage: number;
+  min?: number;
+  max?: number;
+  why: string;
+}
+
+export const DUNGEON_BANDS_CHECK: readonly DungeonBandCheck[] = [
+  {
+    team: 'starter_lv10',
+    difficulty: 'normal',
+    stage: 1,
+    min: 0.9,
+    why: "day one, with the three champions a new chronicle is given — the owner's brief",
+  },
+  {
+    team: 'starter_lv10',
+    difficulty: 'normal',
+    stage: 10,
+    max: 0.2,
+    why: 'the middle of Normal is something to grow into, not to walk into',
+  },
+  {
+    team: 'mid_epic',
+    difficulty: 'normal',
+    stage: 10,
+    min: 0.7,
+    why: 'mid game: a 4★ Epic roster farms the 3–4★ band',
+  },
+  {
+    team: 'mid_epic',
+    difficulty: 'normal',
+    stage: 20,
+    max: 0.25,
+    why: "Normal's last rung is not reachable on day one, nor by a mid roster",
+  },
+  {
+    team: 'late_game',
+    difficulty: 'normal',
+    stage: 15,
+    min: 0.7,
+    why: 'late game: a 5★ half-geared roster farms the 4–5★ band',
+  },
+  {
+    team: 'late_game',
+    difficulty: 'hard',
+    stage: 1,
+    max: 0.2,
+    why: 'Hard is very late endgame: a late-game roster does not get a foot in the door',
+  },
+  {
+    team: 'endgame',
+    difficulty: 'hard',
+    stage: 20,
+    min: 0.5,
+    why: 'the deepest farm in the game is still a farm for a finished roster',
+  },
+];
+
 /** The champion definition a team fights with: authored stats times its modelled gear. */
 function geared(def: ChampionDef, gearMult: number): ChampionDef {
   if (gearMult === 1) return def;
@@ -170,13 +251,16 @@ function geared(def: ChampionDef, gearMult: number): ChampionDef {
   };
 }
 
-export function buildParty(team: SimTeam): PartyMember[] {
-  return team.champions.map((id, i) => {
+export function buildParty(team: SimTeam, withFourth = false): PartyMember[] {
+  const ids = withFourth && team.fourth ? [...team.champions, team.fourth] : team.champions;
+  return ids.map((id, i) => {
     const authored = content.championById(id as never);
     if (!authored) throw new Error(`sim team ${team.id}: unknown champion ${id}`);
     const def = geared(authored, team.gearMult);
     const instance = createInstance(def, { instanceId: `${team.id}-${i}`, now: 0, source: 'summon' });
-    instance.stars = team.stars?.[i] ?? instance.stars;
+    // The fourth carries the roster's own tier: `stars` names the authored three, so it falls
+    // back to the last of them rather than to the rarity's base.
+    instance.stars = team.stars?.[i] ?? team.stars?.[team.stars.length - 1] ?? instance.stars;
     instance.level =
       team.level === 'cap' ? levelCap(instance.stars) : Math.min(team.level, levelCap(instance.stars));
     if (team.skillUpgrades > 0)

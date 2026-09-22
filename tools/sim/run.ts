@@ -10,6 +10,7 @@ import type { EncounterDef } from '@content/encounters/types';
 import { createBattle } from '@engine/battle/create';
 import { runAuto } from '@engine/battle/step';
 import type { EnemyDef } from '@content/enemies/types';
+import type { DungeonDifficulty } from '@content/balance/dungeon';
 import { buildParty, type SimTeam } from './teams';
 
 /**
@@ -236,6 +237,92 @@ export function requiredBreweryScale(
   for (let i = 0; i < steps; i += 1) {
     const mid = Math.sqrt(low * high);
     if (simulateBrewery(element, stage, team, runs, mid).rate >= target) low = mid;
+    else high = mid;
+  }
+  return low;
+}
+
+/** What a dungeon stage costs a team, measured the way a brewery stage is (DUNGEONS.md §7). */
+export interface DungeonResult {
+  slug: string;
+  difficulty: DungeonDifficulty;
+  stage: number;
+  team: string;
+  runs: number;
+  wins: number;
+  rate: number;
+  avgTurns: number;
+  avgHpLeft: number;
+}
+
+/**
+ * Runs one dungeon stage `runs` times on fixed seeds.
+ *
+ * The party is four where the roster has four (`SimTeam.fourth`) and three where it does not —
+ * which is what a new chronicle really fields, and what the opening stage has to be beatable with.
+ */
+export function simulateDungeon(
+  slug: string,
+  difficulty: DungeonDifficulty,
+  stage: number,
+  team: SimTeam,
+  runs: number,
+  scale = 1,
+): DungeonResult {
+  const base = content.dungeonEncounter(slug, difficulty, stage);
+  if (!base) throw new Error(`unknown dungeon stage ${slug}.${difficulty}.${stage}`);
+  const encounter = scale === 1 ? base : scaled(base, scale);
+  let wins = 0;
+  let turns = 0;
+  let hpLeft = 0;
+  let losses = 0;
+  for (let i = 0; i < runs; i += 1) {
+    const state = createBattle(
+      {
+        encounter,
+        party: buildParty(team, true),
+        enemyById: (id) => content.enemyById(id),
+        control: 'auto',
+        // No Palace, for the reason `simulateStage` gives: the bands measure the ladder, not a tree.
+      },
+      `sim:dungeon:${team.id}:${slug}:${difficulty}:${stage}:${i}`,
+    );
+    const { outcome } = runAuto(state);
+    if (outcome.kind === 'victory') {
+      wins += 1;
+      turns += outcome.allyTurns;
+    } else {
+      losses += 1;
+      hpLeft += outcome.enemyHpLeft;
+    }
+  }
+  return {
+    slug,
+    difficulty,
+    stage,
+    team: team.id,
+    runs,
+    wins,
+    rate: wins / runs,
+    avgTurns: wins ? turns / wins : 0,
+    avgHpLeft: losses ? hpLeft / losses : 0,
+  };
+}
+
+/** The factor on the shipped scale at which `team` still wins `target` of its runs. */
+export function requiredDungeonScale(
+  slug: string,
+  difficulty: DungeonDifficulty,
+  stage: number,
+  team: SimTeam,
+  runs: number,
+  target = 0.85,
+): number {
+  let low = 0.05;
+  let high = 12;
+  for (let i = 0; i < 12; i += 1) {
+    const mid = (low + high) / 2;
+    if (simulateDungeon(slug, difficulty, stage, team, runs, mid).rate >= target) low = mid;
     else high = mid;
   }
   return low;

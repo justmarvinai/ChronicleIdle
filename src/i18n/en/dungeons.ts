@@ -58,10 +58,10 @@ export const dungeons = {
   'ab.pale_herald.hoarfrost_touch.description': 'Strikes one enemy. 60 % chance to Weaken them for 2 turns.',
   'ab.pale_herald.the_long_white.name': 'The Long White',
   'ab.pale_herald.the_long_white.description':
-    'Heals itself for 18 % of its maximum HP and raises its own RESISTANCE by 40 % for 3 turns.',
+    'Heals itself for 8 % of its maximum HP and raises its own RESISTANCE by 25 % for 3 turns.',
   'ab.pale_herald.whiteout.name': 'Whiteout',
   'ab.pale_herald.whiteout.description':
-    'Strikes the whole party. 45 % chance to Freeze, and a 70 % chance to halve the healing each enemy receives for 2 turns.',
+    'Strikes the whole party. 30 % chance to Freeze, and a 55 % chance to cut the healing each enemy receives for 2 turns.',
 
   'enemy.velkora.name': 'Velkora',
   'ab.velkora.brood_lash.name': 'Brood Lash',
@@ -83,7 +83,7 @@ export const dungeons = {
     'Strikes the whole party. 65 % chance to lower each enemy’s SPEED by 25 % for 2 turns, and raises its own ATTACK by 25 % for 3 turns.',
   'ab.ashwake.the_light_gives_up.name': 'The Light Gives Up',
   'ab.ashwake.the_light_gives_up.description':
-    'Strikes the whole party. 40 % chance to Stun each enemy for a turn, and it takes another turn immediately.',
+    'Strikes the whole party. 30 % chance to Stun each enemy for a turn, and it takes another turn immediately.',
 
   /** The dungeon screen. */
   'dungeon.difficulty.normal': 'Normal',

@@ -11,11 +11,21 @@
  */
 import { DIFFICULTY_MULT, stageScale, type Difficulty } from '@content/balance/battle';
 import { BREWERY_STAGE_SCALE, BREWERY_STAGES } from '@content/balance/brewery';
+import { dungeonScale, type DungeonDifficulty } from '@content/balance/dungeon';
 import { globalStageIndex } from '@content/balance/campaign';
 import { ELEMENTS } from '@content/champions/types';
 import { content } from '@content/registry';
-import { BANDS, BREWERY_BANDS, SIM_TEAMS, TEAM_BY_ID, type SimTeam } from './teams';
-import { requiredBreweryScale, requiredScale, simulateBrewery, simulateSettlement } from './run';
+import { BANDS, BREWERY_BANDS, DUNGEON_BANDS_CHECK, SIM_TEAMS, TEAM_BY_ID, type SimTeam } from './teams';
+import {
+  requiredBreweryScale,
+  requiredScale,
+  simulateBrewery,
+  simulateDungeon,
+  simulateSettlement,
+} from './run';
+
+/** The four keeps a chronicle can walk into; the Gilded Veil has no fights yet. */
+const KEEPS = ['cindervault', 'pale_expanse', 'velkoras_cradle', 'ashenreach'] as const;
 
 const argv = process.argv.slice(2);
 const flag = (name: string): boolean => argv.includes(`--${name}`);
@@ -185,11 +195,79 @@ function breweryHeadroom(): void {
   }
 }
 
+/** The Dungeons' ladder: the rungs the bands name, across all four keeps (DUNGEONS.md §7). */
+function dungeonCurve(): void {
+  const rungs: readonly { difficulty: DungeonDifficulty; stage: number }[] = [
+    { difficulty: 'normal', stage: 1 },
+    { difficulty: 'normal', stage: 5 },
+    { difficulty: 'normal', stage: 10 },
+    { difficulty: 'normal', stage: 15 },
+    { difficulty: 'normal', stage: 20 },
+    { difficulty: 'hard', stage: 1 },
+    { difficulty: 'hard', stage: 10 },
+    { difficulty: 'hard', stage: 20 },
+  ];
+  console.log(`\nDungeon ladder — Cindervault, ${RUNS} runs per rung, auto battles`);
+  console.log(`  rung        scale  ${TEAMS.map((t) => t.id.padEnd(15)).join('')}`);
+  for (const rung of rungs) {
+    const cells = TEAMS.map((team) => {
+      const result = simulateDungeon('cindervault', rung.difficulty, rung.stage, team, RUNS);
+      return `${pct(result.rate)} ${result.avgTurns ? `${result.avgTurns.toFixed(0)}t` : '  —'}    `;
+    });
+    const label = `${rung.difficulty === 'hard' ? 'H' : 'N'}${rung.stage}`;
+    const scale = dungeonScale(rung.stage, rung.difficulty).toFixed(1);
+    console.log(`  ${label.padEnd(11)} ${scale.padStart(5)}  ${cells.join('')}`);
+  }
+}
+
+/** The bands from `DUNGEON_BANDS_CHECK`: a `min` against the hardest keep, a `max` against the easiest. */
+function dungeonBands(): boolean {
+  console.log('\nDungeon bands (DUNGEONS.md §7 — min = hardest keep, max = easiest keep)');
+  let ok = true;
+  for (const band of DUNGEON_BANDS_CHECK) {
+    const team = TEAM_BY_ID[band.team];
+    if (!team) throw new Error(`dungeon band names unknown team ${band.team}`);
+    const rates = KEEPS.map((slug) => ({
+      slug,
+      rate: simulateDungeon(slug, band.difficulty, band.stage, team, RUNS).rate,
+    }));
+    // The same rule the Brewery's bands use: a promise of clearability has to hold where it is
+    // hardest to keep, and a promise of a wall where it is easiest to walk through.
+    const worst = rates.reduce((a, b) => (b.rate < a.rate ? b : a));
+    const best = rates.reduce((a, b) => (b.rate > a.rate ? b : a));
+    const measured = band.min !== undefined ? worst : best;
+    const low = band.min !== undefined && measured.rate < band.min;
+    const high = band.max !== undefined && measured.rate > band.max;
+    const want = [
+      band.min !== undefined ? `≥ ${pct(band.min)}` : '',
+      band.max !== undefined ? `≤ ${pct(band.max)}` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    if (low || high) ok = false;
+    const label = `${band.difficulty === 'hard' ? 'H' : 'N'}${band.stage}`;
+    console.log(
+      `  ${low || high ? '✗' : '✓'} ${band.team.padEnd(15)} ${label.padEnd(4)} ${pct(
+        measured.rate,
+      )} in ${measured.slug.padEnd(16)} (want ${want})  — ${band.why}`,
+    );
+  }
+  return ok;
+}
+
 const started = Date.now();
 if (flag('scan')) {
   // `--scan --brewery` narrows the fit to the Brewery's own ladder.
   if (!flag('brewery')) scan();
   breweryHeadroom();
+} else if (flag('dungeon')) {
+  dungeonCurve();
+  const ok = dungeonBands();
+  console.log(`\n${((Date.now() - started) / 1000).toFixed(1)} s`);
+  if (!ok && flag('strict')) {
+    console.error('[sim] a dungeon band is out of range — retune before shipping.');
+    process.exit(1);
+  }
 } else if (flag('brewery')) {
   breweryCurve();
   const ok = breweryBands();
@@ -203,8 +281,10 @@ if (flag('scan')) {
   const campaignOk = bands();
   breweryCurve();
   const breweryOk = breweryBands();
+  dungeonCurve();
+  const dungeonOk = dungeonBands();
   console.log(`\n${((Date.now() - started) / 1000).toFixed(1)} s`);
-  if (!(campaignOk && breweryOk) && flag('strict')) {
+  if (!(campaignOk && breweryOk && dungeonOk) && flag('strict')) {
     console.error('[sim] a band is out of range — retune before shipping.');
     process.exit(1);
   }
