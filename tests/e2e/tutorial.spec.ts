@@ -224,8 +224,14 @@ test.describe('the tutorial', () => {
     await expect(page.getByTestId('tutorial-overlay')).toHaveAttribute('data-step', 'tut.1.11', {
       timeout: 30_000,
     });
-    const energy = await page.getByTestId('pill-energy').textContent();
-    expect(Number.parseInt((energy ?? '0').split('/')[0] ?? '0', 10)).toBeGreaterThan(400);
+    /*
+     * The pill *counts up* to its new value, so its text is whatever frame it happens to be
+     * drawing. `data-amount` carries the wallet it is heading for, which is the fact under test —
+     * and `toHaveAttribute` retries, where a one-shot `textContent()` read races the animation.
+     */
+    await expect
+      .poll(async () => Number(await page.getByTestId('pill-energy').getAttribute('data-amount')))
+      .toBeGreaterThan(400);
     await eldricContinue(page);
 
     // The chapter is over: whatever Eldric says next belongs to a later one.
@@ -263,9 +269,9 @@ test.describe('the tutorial', () => {
 
     // Eldric goes quiet, the chapter's own Provision is still handed over, and the game is whole.
     await expect(page.getByTestId('tutorial-overlay')).toHaveCount(0, { timeout: 20_000 });
-    // The fixture stands at its cap of 110; the Path's chapter carries 250 over it.
-    const energy = await page.getByTestId('pill-energy').textContent();
-    expect(Number.parseInt((energy ?? '0').split('/')[0] ?? '0', 10)).toBe(360);
+    // The fixture stands at its cap of 110; the Path's chapter carries 250 over it. Read off
+    // `data-amount` rather than the pill's text, which is still counting up to it.
+    await expect(page.getByTestId('pill-energy')).toHaveAttribute('data-amount', '360');
     await settle(page);
     await page.getByTestId('nav-missions').click();
     await expect(page.getByTestId('screen-missions')).toBeVisible({ timeout: 20_000 });
