@@ -8,6 +8,7 @@ import { campaign } from './campaign';
 import { changelog } from './changelog';
 import { champions } from './champions';
 import { currencies } from './currencies';
+import { dungeons } from './dungeons';
 import { enemies } from './enemies';
 import { features } from './features';
 import { gear } from './gear';
@@ -39,6 +40,7 @@ export const en = {
   ...battle,
   ...bosses,
   ...brewery,
+  ...dungeons,
   ...palace,
   ...quests,
   ...missions,

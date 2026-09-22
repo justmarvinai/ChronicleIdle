@@ -30,6 +30,9 @@ import { BANNERS, BANNER_BY_ID } from '@content/banners/index';
 import type { BannerDef } from '@content/banners/types';
 import { BREWERIES, BREWERY_BY_ELEMENT, BREWERY_BY_ID } from '@content/brewery/index';
 import type { BreweryDef } from '@content/brewery/types';
+import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_BY_SLUG, OPEN_DUNGEONS } from '@content/dungeons/index';
+import type { DungeonDef } from '@content/dungeons/types';
+import type { DungeonDifficulty } from '@content/balance/dungeon';
 import { BOSSES, BOSS_BY_ID, bossTier } from '@content/bosses/index';
 import type { BossDef, BossTierDef } from '@content/bosses/types';
 import { GEAR_SETS, GEAR_SET_BY_ID } from '@content/sets/index';
@@ -47,6 +50,7 @@ import { parseStageEncounterId, stageEncounter } from '@engine/campaign/encounte
 import { bossEncounter, parseBossEncounterId } from '@engine/bosses/encounter';
 import { parseTowerEncounterId, towerEncounter, towerEncounterId } from '@engine/tower/encounter';
 import { breweryEncounter, breweryEncounterId, parseBreweryEncounterId } from '@engine/brewery/encounter';
+import { dungeonEncounter, dungeonEncounterId, parseDungeonEncounterId } from '@engine/dungeon/encounter';
 
 export interface ContentRegistry {
   currencies: readonly CurrencyDef[];
@@ -85,6 +89,13 @@ export interface ContentRegistry {
   breweries: readonly BreweryDef[];
   breweryById(id: string): BreweryDef | undefined;
   breweryByElement(element: Element): BreweryDef;
+  dungeons: readonly DungeonDef[];
+  /** The four a chronicle can walk into; the Gilded Veil is not among them. */
+  openDungeons: readonly DungeonDef[];
+  dungeonById(id: string): DungeonDef | undefined;
+  dungeonBySlug(slug: string): DungeonDef | undefined;
+  /** A dungeon stage's encounter: derived from the keeper, the warband and the stage's scale. */
+  dungeonEncounter(slug: string, difficulty: DungeonDifficulty, stage: number): EncounterDef | undefined;
   /** The fight a hall's stage is, derived from the faction holding it. */
   breweryEncounter(element: Element, stage: number): EncounterDef | undefined;
   /** The fourteen gear sets (GEAR.md §5); two-piece sets first. */
@@ -171,6 +182,25 @@ export function buildContentRegistry(): ContentRegistry {
     derived.set(id, encounter);
     return encounter;
   };
+  /** A dungeon stage's encounter: the keep's keeper and a window over its warband. */
+  const dungeonEncounterOf = (
+    slug: string,
+    difficulty: DungeonDifficulty,
+    stage: number,
+  ): EncounterDef | undefined => {
+    const id = dungeonEncounterId(slug, difficulty, stage);
+    const cached = derived.get(id);
+    if (cached) return cached;
+    const def = DUNGEON_BY_SLUG[slug];
+    // A shut keep has no keeper and no warband, so it has no fights either.
+    if (!def || def.lock !== undefined) return undefined;
+    const keeper = ENEMY_BY_ID[def.keeperId];
+    const faction = FACTION_BY_ID[def.factionId];
+    if (!keeper || !faction) return undefined;
+    const encounter = dungeonEncounter(def, stage, difficulty, keeper, faction);
+    derived.set(id, encounter);
+    return encounter;
+  };
   return {
     currencies: CURRENCIES,
     currencyById: CURRENCY_BY_ID,
@@ -188,6 +218,8 @@ export function buildContentRegistry(): ContentRegistry {
       if (boss) return bossEncounterOf(boss.bossId, boss.tierId);
       const hall = parseBreweryEncounterId(id);
       if (hall) return breweryEncounterOf(hall.element, hall.stage);
+      const keep = parseDungeonEncounterId(id);
+      if (keep) return dungeonEncounterOf(keep.slug, keep.difficulty, keep.stage);
       const floor = parseTowerEncounterId(id);
       return floor === null ? undefined : towerEncounterOf(floor);
     },
@@ -210,6 +242,11 @@ export function buildContentRegistry(): ContentRegistry {
     breweryById: (id) => BREWERY_BY_ID[id],
     breweryByElement: (element) => BREWERY_BY_ELEMENT[element],
     breweryEncounter: breweryEncounterOf,
+    dungeons: DUNGEONS,
+    openDungeons: OPEN_DUNGEONS,
+    dungeonById: (id) => DUNGEON_BY_ID[id],
+    dungeonBySlug: (slug) => DUNGEON_BY_SLUG[slug],
+    dungeonEncounter: dungeonEncounterOf,
     gearSets: GEAR_SETS,
     gearSetById: (id) => GEAR_SET_BY_ID[id],
     banners: BANNERS,

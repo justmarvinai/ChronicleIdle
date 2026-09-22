@@ -8,6 +8,7 @@ import {
   emptySummon,
   emptyTeams,
   emptyBrewery,
+  emptyDungeons,
   emptyPalace,
   type SaveGame,
   type Settings,
@@ -73,5 +74,6 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     tower: emptyTower(now),
     palace: emptyPalace(),
     brewery: emptyBrewery(),
+    dungeons: emptyDungeons(),
   };
 }

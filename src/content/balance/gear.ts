@@ -43,7 +43,7 @@ export const PERCENT_GEAR_STATS: ReadonlySet<GearStat> = new Set<GearStat>([
  * summoned. Every value a save has ever stored must stay in this list.
  */
 /** Where a piece came from; kept on the instance so a save can always say (`GEAR.md` §8). */
-export const GEAR_SOURCES = ['campaign_drop', 'craft', 'boss_chest', 'mission'] as const;
+export const GEAR_SOURCES = ['campaign_drop', 'dungeon', 'craft', 'boss_chest', 'mission'] as const;
 export type GearSource = (typeof GEAR_SOURCES)[number];
 
 /** Gear levels run 0 → 16 (GEAR.md §3). */

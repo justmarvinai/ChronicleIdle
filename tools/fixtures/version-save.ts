@@ -192,8 +192,20 @@ async function main(): Promise<void> {
         lastUsed: instanceIds.slice(0, 4),
       },
       boss: { presets: [instanceIds.slice(0, 4), [], []], lastUsed: instanceIds.slice(0, 4) },
+      dungeon: {
+        presets: [instanceIds.slice(0, 4), instanceIds.slice(2, 6), []],
+        lastUsed: instanceIds.slice(2, 6),
+      },
     },
     campaign: { ...base.campaign, stars, bestTurns, autoRepeat: 3 },
+    // Three keeps in three states: one past Normal and into Hard, one still climbing, one untouched.
+    dungeons: {
+      cleared: {
+        cindervault: { normal: 20, hard: 6 },
+        pale_expanse: { normal: 13, hard: 0 },
+        velkoras_cradle: { normal: 2, hard: 0 },
+      },
+    },
     summon: {
       ...base.summon,
       // Pulls since each rarity, per shard type — the mercy counters, not a single number.

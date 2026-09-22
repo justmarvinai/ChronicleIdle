@@ -74,6 +74,15 @@ export type DomainEvent =
       cleared: boolean;
       brews: number;
     }
+  /** A dungeon run ended; `pieces` is what made it onto the racks (DUNGEONS.md). */
+  | {
+      type: 'dungeon.runFinished';
+      slug: string;
+      difficulty: 'normal' | 'hard';
+      stage: number;
+      cleared: boolean;
+      pieces: number;
+    }
   /** One node of the Glorious Palace was lit, or the whole tree darkened (GLORIOUS_PALACE.md). */
   | { type: 'palace.nodeUnlocked'; nodeId: string; cost: number }
   | { type: 'palace.reset'; points: number }

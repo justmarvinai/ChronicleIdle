@@ -75,6 +75,7 @@ describe('migrateSave', () => {
     expect(result.save.teams).toEqual({
       campaign: { presets: [[], [], []], lastUsed: [] },
       boss: { presets: [[], [], []], lastUsed: [] },
+      dungeon: { presets: [[], [], []], lastUsed: [] },
     });
   });
 

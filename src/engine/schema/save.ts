@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 17 as const;
+export const SAVE_VERSION = 18 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -285,6 +285,25 @@ export const brewerySchema = z.object({
   cleared: z.record(z.string(), z.number().int().min(0)),
 });
 
+/**
+ * The Dungeons (DUNGEONS.md §4). Two numbers per keep — the deepest stage cleared on each
+ * difficulty — and nothing else. Which stages are behind the player follows from those, because
+ * stages are taken in order; whether Hard is open follows from `normal` reaching the twentieth.
+ * There is no per-stage list to fall out of step and no "unlocked" flag to disagree with it.
+ *
+ * Keyed by dungeon **slug** rather than id: the slug is what the route and the screens already
+ * carry, and a save that stores the shorter of two equivalent keys is a save that stays readable.
+ */
+export const dungeonProgressSchema = z.object({
+  normal: z.number().int().min(0),
+  hard: z.number().int().min(0),
+});
+
+export const dungeonsSchema = z.object({
+  /** Dungeon slug → how deep it has been taken. Absent until the first keeper falls. */
+  cleared: z.record(z.string(), dungeonProgressSchema),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -365,14 +384,26 @@ export const saveSchemaV16 = saveSchemaV15.extend({
  */
 export const saveSchemaV17 = saveSchemaV16.extend({ saveVersion: z.literal(17) });
 
+/**
+ * v18 adds the Dungeons, and a third team preset row for them — a dungeon fields four champions
+ * like a boss fight, but a player's dungeon four and their boss four are rarely the same four.
+ */
+export const saveSchemaV18 = saveSchemaV17.extend({
+  saveVersion: z.literal(18),
+  teams: z.object({ campaign: teamModeSchema, boss: teamModeSchema, dungeon: teamModeSchema }),
+  dungeons: dungeonsSchema,
+});
+
 export type SaveGameV13 = z.infer<typeof saveSchemaV13>;
 export type SaveGameV14 = z.infer<typeof saveSchemaV14>;
 export type SaveGameV15 = z.infer<typeof saveSchemaV15>;
 export type SaveGameV16 = z.infer<typeof saveSchemaV16>;
 export type SaveGameV17 = z.infer<typeof saveSchemaV17>;
-export type SaveGame = SaveGameV17;
+export type SaveGameV18 = z.infer<typeof saveSchemaV18>;
+export type SaveGame = SaveGameV18;
 export type PalaceSave = z.infer<typeof palaceSchema>;
 export type BrewerySave = z.infer<typeof brewerySchema>;
+export type DungeonsSave = z.infer<typeof dungeonsSchema>;
 export type TowerSaveData = z.infer<typeof towerSchema>;
 export type QuestPeriodSave = z.infer<typeof questPeriodSchema>;
 export type MissionsSave = z.infer<typeof missionsSchema>;
@@ -384,7 +415,7 @@ export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV17;
+export const saveSchema = saveSchemaV18;
 
 /** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
 export function emptyPalace(): PalaceSave {
@@ -394,6 +425,11 @@ export function emptyPalace(): PalaceSave {
 /** A Brewery nobody has walked into: no day, no runs spent, no hall taken. */
 export function emptyBrewery(): BrewerySave {
   return { periodKey: '', runs: 0, cleared: {} };
+}
+
+/** Dungeons nobody has entered: no keep taken, on either difficulty. */
+export function emptyDungeons(): DungeonsSave {
+  return { cleared: {} };
 }
 
 export function emptyCampaign(): CampaignSave {
@@ -414,6 +450,7 @@ export function emptyTeams(): TeamPresets {
   return {
     campaign: { presets: [[], [], []], lastUsed: [] },
     boss: { presets: [[], [], []], lastUsed: [] },
+    dungeon: { presets: [[], [], []], lastUsed: [] },
   };
 }
 export type Settings = z.infer<typeof settingsSchema>;

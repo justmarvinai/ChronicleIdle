@@ -84,6 +84,13 @@ import {
   type BreweryRunSummary,
 } from './brewery';
 import {
+  applyDungeonRunFinish,
+  applyDungeonRunStart,
+  type DungeonRunStarted,
+  type DungeonRunSummary,
+} from './dungeon';
+import type { DungeonDifficulty } from '@content/balance/dungeon';
+import {
   applyBossChestClaim,
   applyBossFightFinish,
   applyBossFightStart,
@@ -280,6 +287,18 @@ export interface GameActions {
     stage: number;
     outcome: BattleOutcome;
   }): Result<BreweryRunSummary>;
+  /** Charges a dungeon run's energy and hands back the stage it bought. */
+  startDungeonRun(slug: string, difficulty: DungeonDifficulty, stage: number): Result<DungeonRunStarted>;
+  /** Banks a finished dungeon run: the gear it knocked loose, the gold, the XP. */
+  finishDungeonRun(input: {
+    slug: string;
+    difficulty: DungeonDifficulty;
+    stage: number;
+    energySpent: number;
+    runIndex: number;
+    outcome: BattleOutcome;
+    party: readonly string[];
+  }): Result<DungeonRunSummary>;
   /** Spends an Eternal Key and points the save at the tower floor it bought. */
   startTowerFloor(floor: number): Result<TowerFloorStarted>;
   /** Banks a finished tower floor: the climb, the rewards and the XP. */
@@ -1197,6 +1216,49 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 stage: input.stage,
                 cleared: result.value.cleared,
                 brews: result.value.brews.reduce((sum, entry) => sum + entry.amount, 0),
+              });
+              return result;
+            },
+
+            startDungeonRun(slug, difficulty, stage) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<DungeonRunStarted> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyDungeonRunStart(state.save, { slug, difficulty, stage, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok)
+                events.emit({
+                  type: 'energy.changed',
+                  delta: -result.value.energySpent,
+                  total: get().save?.energy.value ?? 0,
+                });
+              return result;
+            },
+
+            finishDungeonRun(input) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<DungeonRunSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyDungeonRunFinish(state.save, { ...input, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              if (result.value.changes.length > 0)
+                events.emit({ type: 'currency.changed', changes: result.value.changes, reason: 'dungeon' });
+              // The run already paid the levels; the celebration waits for the screen after it.
+              noteLevelUp(result.value.levelUp, 'dungeon', false);
+              events.emit({
+                type: 'dungeon.runFinished',
+                slug: input.slug,
+                difficulty: input.difficulty,
+                stage: input.stage,
+                cleared: result.value.cleared,
+                pieces: result.value.gear.length,
               });
               return result;
             },

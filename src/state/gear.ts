@@ -16,7 +16,7 @@ import {
   dropStarRange,
 } from '@content/balance/gear';
 import type { CurrencyAmount } from '@content/currencies/types';
-import type { GearSlot } from '@content/champions/types';
+import type { GearSlot, Rarity } from '@content/champions/types';
 import { content } from '@content/registry';
 import { GEAR_SLOTS } from '@content/champions/types';
 import { spend, type CurrencyChange } from '@engine/economy/wallet';
@@ -177,25 +177,34 @@ export interface DropInput {
   rng: Rng;
 }
 
+/** A piece already decided: what set it belongs to and how good it is. The slot is still rolled. */
+export interface MintInput {
+  setId: string;
+  stars: number;
+  rarity: Rarity;
+  source: GearSource;
+  now: number;
+  rng: Rng;
+}
+
 /**
- * Mints one dropped piece (GEAR.md §7, `CAMPAIGN.md` §7). Returns null when the armoury is full
- * past its overflow — the run still pays everything else, and the screen says so.
+ * Files one piece into the armoury (GEAR.md §7). Returns null when the racks are full past their
+ * overflow — the run still pays everything else, and the screen says so.
+ *
+ * Every source of gear that *falls* goes through here: the campaign's drop below and the
+ * Dungeons' (`@state/dungeon`). What differs between them is which set, star and rarity they
+ * choose, never the bookkeeping — one serial, one counter, one place a piece is filed.
  */
-export function applyGearDrop(save: SaveGame, input: DropInput): GearInstance | null {
+export function mintGearPiece(save: SaveGame, input: MintInput): GearInstance | null {
   if (inventoryRoom(save) <= 0) return null;
-  const settlement = content.settlementByIndex(input.settlementIndex);
-  const pool = input.fromSetPool && settlement ? settlement.setPool : content.gearSets.map((s) => s.id);
-  const setId = pool.length ? input.rng.pick(pool) : content.gearSets[0]?.id;
-  if (!setId) return null;
-  const [minStars, maxStars] = dropStarRange(input.settlementIndex);
   const serial = save.counters.gear + 1;
   const piece = generateGear(
     {
       serial,
       slot: input.rng.pick(GEAR_SLOTS) as GearSlot,
-      setId,
-      rarity: input.rng.weighted(dropRarityEntries(input.difficulty)),
-      stars: input.rng.int(minStars, maxStars),
+      setId: input.setId,
+      rarity: input.rarity,
+      stars: input.stars,
       source: input.source,
       now: input.now,
     },
@@ -205,4 +214,25 @@ export function applyGearDrop(save: SaveGame, input: DropInput): GearInstance | 
   save.inventory[piece.instanceId] = piece;
   bumpCounter(save, 'gear.drops');
   return clonePiece(piece);
+}
+
+/**
+ * Mints one campaign drop (`CAMPAIGN.md` §7): the settlement chooses the set pool and the star
+ * band, the difficulty chooses the rarity and its ceiling.
+ */
+export function applyGearDrop(save: SaveGame, input: DropInput): GearInstance | null {
+  if (inventoryRoom(save) <= 0) return null;
+  const settlement = content.settlementByIndex(input.settlementIndex);
+  const pool = input.fromSetPool && settlement ? settlement.setPool : content.gearSets.map((s) => s.id);
+  const setId = pool.length ? input.rng.pick(pool) : content.gearSets[0]?.id;
+  if (!setId) return null;
+  const [minStars, maxStars] = dropStarRange(input.settlementIndex);
+  return mintGearPiece(save, {
+    setId,
+    rarity: input.rng.weighted(dropRarityEntries(input.difficulty)),
+    stars: input.rng.int(minStars, maxStars),
+    source: input.source,
+    now: input.now,
+    rng: input.rng,
+  });
 }

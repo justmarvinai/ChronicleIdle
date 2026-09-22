@@ -348,7 +348,32 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       missions: withBaseline(raw['missions']),
     }),
   },
+  {
+    from: 17,
+    to: 18,
+    /*
+     * The Dungeons (0.8.0). Two new things a save carries: how deep each keep has been taken, and
+     * a third team preset row for the four champions a dungeon fields.
+     *
+     * Both start empty. There is nothing to back-pay — a chronicle that predates the mode has
+     * cleared nothing in it — and an empty preset row is what every chronicle starts with anyway;
+     * the battle setup fills it from the roster the first time a keep is entered.
+     */
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 18,
+      teams: withDungeonTeam(raw['teams']),
+      dungeons: { cleared: {} },
+    }),
+  },
 ];
+
+/** The v18 team row. A save that somehow already has one keeps it; anything else starts empty. */
+function withDungeonTeam(value: unknown): unknown {
+  const empty = { presets: [[], [], []], lastUsed: [] };
+  if (!isRecord(value)) return { campaign: empty, boss: empty, dungeon: empty };
+  return { ...value, dungeon: isRecord(value['dungeon']) ? value['dungeon'] : empty };
+}
 
 /**
  * What 0.7.1 renamed (`BOSSES.md` §1), old → new. Both spellings a boss's slug has ever appeared

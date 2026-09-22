@@ -14,6 +14,14 @@ import type { PalaceNodeDef } from '@content/palace/types';
 import { PALACE_BRANCH_COST, PALACE_BRANCH_TOTALS, PALACE_CORE_HP_PCT } from '@content/balance/palace';
 import { BREWERY_BOSS_STAGE, BREWERY_STAGES } from '@content/balance/brewery';
 import { brewerySchema } from './brewery';
+import {
+  DUNGEON_BANDS,
+  DUNGEON_DIFFICULTIES,
+  DUNGEON_STAGES,
+  type DungeonDifficulty,
+} from '@content/balance/dungeon';
+import { dungeonSchema } from './dungeon';
+import { GEAR_MAX_STARS } from '@content/balance/gear';
 import { ELEMENTS, STAT_IDS } from '@content/champions/types';
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
@@ -102,6 +110,7 @@ export function validateContentRegistry(
     banners: readonly unknown[];
     bosses: readonly unknown[];
     breweries: readonly unknown[];
+    dungeons: readonly unknown[];
     questBoards: readonly unknown[];
     missionChapters: readonly unknown[];
     tutorialChapters: readonly unknown[];
@@ -119,7 +128,13 @@ export function validateContentRegistry(
     ...validateEncounters(registry.encounters, enemies.ids, refs),
     ...factions,
     ...settlements.issues,
-    ...validateEnemyReach(enemies.ids, settlements.spawned, registry.encounters, registry.bosses),
+    ...validateEnemyReach(
+      enemies.ids,
+      settlements.spawned,
+      registry.encounters,
+      registry.bosses,
+      registry.dungeons,
+    ),
     ...validateTitles(registry.titles, refs),
     ...validateReleases(registry.releases, refs),
     ...validatePalace(registry.palace.nodes, refs),
@@ -130,6 +145,7 @@ export function validateContentRegistry(
       new Set(registry.currencies.map((c) => (c as { id: string }).id)),
       refs,
     ),
+    ...validateDungeons(registry.dungeons, registry.gearSets, enemies.ids, registry.factions, refs),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
@@ -770,6 +786,113 @@ function validateBrewery(
 }
 
 /**
+ * The Dungeons (DUNGEONS.md). Five promises a careless edit breaks, none of which typecheck:
+ *
+ * - **Every gear set is farmable, in exactly one place.** The whole reason to choose a dungeon is
+ *   what it holds, so a set owned by two keeps makes the choice meaningless and a set owned by
+ *   none makes it unreachable.
+ * - **An open keep has something in it.** A keeper and a warband that exist, and at least one set
+ *   to pay out; a shut keep has none of the three, because a keep that is shut has no fights.
+ * - **The bands tile the ladder.** Twenty stages on each difficulty, every one in exactly one
+ *   band — `dungeonBand` throws otherwise, and it is read on every run.
+ * - **The price never falls as the prize rises.** Energy is the mode's only cost and the thing a
+ *   player reads to know what a stage is worth.
+ * - **A band can only roll stars that gear can have**, and every weight it names is a real share.
+ */
+function validateDungeons(
+  dungeons: readonly unknown[],
+  gearSets: readonly unknown[],
+  enemyIds: ReadonlySet<string>,
+  factions: readonly FactionDef[],
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+  const factionIds = new Set(factions.map((f) => f.id));
+  const allSets = new Set(gearSets.map((set) => (set as { id: string }).id));
+  const owner = new Map<string, string>();
+
+  const seenId = new Set<string>();
+  const seenSlug = new Set<string>();
+  const seenOrder = new Set<number>();
+  dungeons.forEach((raw, index) => {
+    const result = dungeonSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`dungeons[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = result.data;
+    const path = def.id;
+    if (seenId.has(def.id)) error(path, 'duplicate id');
+    seenId.add(def.id);
+    if (seenSlug.has(def.slug)) error(path, `duplicate slug ${def.slug}`);
+    seenSlug.add(def.slug);
+    if (seenOrder.has(def.order)) error(path, `duplicate order ${def.order}`);
+    seenOrder.add(def.order);
+    if (def.id !== `dungeon.${def.slug}`) error(path, `id does not match slug ${def.slug}`);
+    for (const key of [def.name, def.description, def.lore])
+      if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
+
+    const shut = def.lock !== undefined;
+    if (shut) {
+      if (def.sets.length) error(path, 'is sealed but still holds gear sets');
+      if (def.keeperId) error(path, 'is sealed but still names a keeper');
+      if (def.factionId) error(path, 'is sealed but still names a warband');
+      return;
+    }
+    if (!def.sets.length) error(path, 'is open but holds no gear sets');
+    if (!enemyIds.has(def.keeperId)) error(path, `unknown keeper ${def.keeperId || '(none)'}`);
+    if (!factionIds.has(def.factionId)) error(path, `unknown warband ${def.factionId || '(none)'}`);
+    for (const setId of def.sets) {
+      if (!allSets.has(setId)) error(path, `holds unknown gear set ${setId}`);
+      const already = owner.get(setId);
+      if (already) error(path, `holds ${setId}, which ${already} already holds`);
+      else owner.set(setId, def.id);
+    }
+  });
+
+  for (const setId of allSets)
+    if (!owner.has(setId)) error('dungeons', `no dungeon holds ${setId}, so it can never be farmed`);
+
+  for (const difficulty of DUNGEON_DIFFICULTIES) {
+    const bands = DUNGEON_BANDS.filter((band) => band.difficulty === difficulty).sort(
+      (a, b) => a.from - b.from,
+    );
+    let expect = 1;
+    let energy = 0;
+    for (const band of bands) {
+      const path = `dungeon.bands.${difficulty}.${band.from}`;
+      if (band.from !== expect) error(path, `starts at ${band.from}, not ${expect}`);
+      if (band.to < band.from) error(path, `ends at ${band.to}, before it starts`);
+      if (band.energy < energy) error(path, `costs ${band.energy} energy, less than the band above`);
+      energy = band.energy;
+      expect = band.to + 1;
+      const stars = Object.entries(band.stars);
+      if (!stars.length) error(path, 'rolls no stars');
+      for (const [star, weight] of stars) {
+        const value = Number.parseInt(star, 10);
+        if (value < 1 || value > GEAR_MAX_STARS) error(path, `rolls ${value}★, which gear cannot be`);
+        if ((weight ?? 0) <= 0) error(path, `names ${value}★ at weight ${weight ?? 0}`);
+      }
+      const rarities = Object.entries(band.rarity);
+      if (!rarities.length) error(path, 'rolls no rarities');
+      for (const [rarity, weight] of rarities)
+        if ((weight ?? 0) <= 0) error(path, `names ${rarity} at weight ${weight ?? 0}`);
+      if (band.extraPiece < 0 || band.extraPiece > 1)
+        error(path, `second-piece chance ${band.extraPiece} is not a share`);
+    }
+    if (expect !== DUNGEON_STAGES + 1)
+      error(
+        `dungeon.bands.${difficulty satisfies DungeonDifficulty}`,
+        `covers ${expect - 1} stages, not ${DUNGEON_STAGES}`,
+      );
+  }
+  return issues;
+}
+
+/**
  * The Glorious Palace (GLORIOUS_PALACE.md). Four things a careless edit to the ring template
  * breaks, none of which typecheck: a branch that no longer comes to the totals the balance file
  * promises, a branch that costs more or less than the point budget, a node hanging off a parent
@@ -994,6 +1117,7 @@ function validateEnemyReach(
   spawned: ReadonlySet<string>,
   encounters: readonly unknown[],
   bosses: readonly unknown[],
+  dungeons: readonly unknown[],
 ): ValidationIssue[] {
   const reachable = new Set(spawned);
   for (const raw of encounters) {
@@ -1012,11 +1136,17 @@ function validateEnemyReach(
       if (tier.adds) reachable.add(tier.adds.id);
     }
   }
+  // A keeper stands on every stage of its dungeon, and those encounters are derived rather than
+  // authored (`@engine/dungeon/encounter`), so the dungeon itself is what reaches it.
+  for (const raw of dungeons) {
+    const parsed = dungeonSchema.safeParse(raw);
+    if (parsed.success && parsed.data.keeperId) reachable.add(parsed.data.keeperId);
+  }
   return [...enemyIds]
     .filter((id) => !reachable.has(id))
     .map((id) => ({
       path: `enemies.${id}`,
-      message: 'no stage, encounter or boss tier fields this enemy',
+      message: 'no stage, encounter, boss tier or dungeon fields this enemy',
       severity: 'error' as const,
     }));
 }

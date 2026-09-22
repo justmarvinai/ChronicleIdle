@@ -75,6 +75,12 @@ export const COUNTER_KEYS = [
   'brewery.cleared',
   /** Brews the halls have handed over, whichever element they were. */
   'brewery.brews',
+  // The Dungeons
+  'dungeon.runs',
+  /** Stages cleared for the first time, across all five keeps. */
+  'dungeon.cleared',
+  /** Pieces the keeps have handed over — the number the mode exists for. */
+  'dungeon.gear',
   // The Eternal Tower
   'tower.attempts',
   'tower.cleared',
@@ -101,6 +107,8 @@ export const COUNTER_PREFIXES = [
   'boss.fights.',
   /** `brewery.runs.<hallId>`, so a quest can ask for runs in one element's hall. */
   'brewery.runs.',
+  /** `dungeon.runs.<dungeonId>`, so a quest can name one keep. */
+  'dungeon.runs.',
   /** `forge.crafts.<tier>`, for the missions that name a bench. */
   'forge.crafts.',
   'summon.pulls.',
