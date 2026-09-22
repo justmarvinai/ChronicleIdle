@@ -84,6 +84,17 @@ The Dungeons, and the campaign softened a notch. `docs/design/DUNGEONS.md`,
   on purpose: a new chronicle really does field three, so "clearable on Normal 1" means clearable a
   slot short.
 
+### Fixed
+
+- **The e2e suite no longer races the fight it is speeding up.** `runItself` — copy-pasted into the
+  boss, Brewery, tower and keep specs, with a fifth copy inline in the tutorial's — toggled auto and
+  then pressed the speed control without checking the battle was still running. A stage the
+  fixture's roster overpowers can be won in between, at which point the control unmounts and the
+  result screen's transition swallows the click; the Brewery's stage 1 lost that race on a loaded
+  runner and failed against a fight it had already won. Now one shared helper, and each press is
+  forgiven **only when the result screen is actually up** — a control that fails while the battle
+  is still running still fails the test.
+
 ## [0.7.2] — 2026-09-21 — A kinder campaign, a stingier armoury
 
 The owner's balance pass after playing the campaign end to end. `docs/design/CAMPAIGN.md` §7,

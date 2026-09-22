@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
-import { collectConsole, importChronicleFile, settle } from './helpers';
+import { collectConsole, importChronicleFile, runItself, settle } from './helpers';
 
 /**
  * The boss fixture is a level-20 chronicle with a four-champion party at 4★40
@@ -25,22 +25,6 @@ async function bankedDamage(page: Page): Promise<number> {
   const match = /([\d,]+) of 250,000/.exec(text);
   if (!match?.[1]) throw new Error(`no damage in tier card: ${text}`);
   return Number(match[1].replaceAll(',', ''));
-}
-
-/**
- * Auto on and the fastest speed this chronicle has earned, so a race runs itself. Both settings
- * persist once set, so the second fight of the run starts where the first left it — and ×2 is this
- * chronicle's ceiling, since it has not cleared Normal (`CAMPAIGN.md` §8).
- */
-async function runItself(page: Page): Promise<void> {
-  await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 30_000 });
-  await page.waitForTimeout(1500);
-  const auto = page.getByTestId('battle-auto');
-  if ((await auto.getAttribute('aria-pressed')) !== 'true') await auto.click();
-  await expect(auto).toHaveAttribute('aria-pressed', 'true');
-  const speed = page.getByTestId('battle-speed');
-  if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
-  await expect(speed).toContainText('2');
 }
 
 /**

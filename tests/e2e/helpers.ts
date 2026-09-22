@@ -176,3 +176,51 @@ export async function closeDialog(page: Page): Promise<void> {
   await page.keyboard.press('Escape');
   await page.waitForTimeout(250);
 }
+
+/**
+ * Presses a control that only exists while the fight does.
+ *
+ * A stage the roster overpowers can be won before the press lands — the control unmounts, the
+ * result screen's transition swallows the click, and the press fails against a fight that is
+ * already over. That is the fight ending early, not the control breaking, so it is forgiven **only
+ * when the result screen is actually up**: a control that fails while the battle is still running
+ * still fails the test.
+ */
+async function pressDuringBattle(page: Page, press: () => Promise<void>): Promise<void> {
+  try {
+    await press();
+  } catch (error) {
+    if (await page.getByTestId('screen-battle-result').isVisible()) return;
+    throw error;
+  }
+}
+
+/**
+ * Auto on and off the slowest speed, so a run fights itself while the spec watches.
+ *
+ * Shared by every mode whose spec walks one fight — the campaign's, the bosses', the tower's, the
+ * Brewery's and the keeps' — because a battle is a battle whatever opened it.
+ */
+export async function runItself(page: Page): Promise<void> {
+  await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 30_000 });
+  await page.waitForTimeout(1500);
+  await pressDuringBattle(page, async () => {
+    const auto = page.getByTestId('battle-auto');
+    if ((await auto.getAttribute('aria-pressed')) !== 'true') await auto.click();
+    await expect(auto).toHaveAttribute('aria-pressed', 'true');
+  });
+  await pressDuringBattle(page, async () => {
+    const speed = page.getByTestId('battle-speed');
+    // The setting is remembered between fights, so a chronicle already on ×2 or ×4 presses nothing.
+    if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
+    await expect(speed).not.toContainText('1');
+  });
+}
+
+/** The speed press on its own, for a spec that already put auto on at the setup screen. */
+export async function speedUpBattle(page: Page): Promise<void> {
+  await pressDuringBattle(page, async () => {
+    const speed = page.getByTestId('battle-speed');
+    if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
+  });
+}

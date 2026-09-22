@@ -1,6 +1,6 @@
 import { join } from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
-import { collectConsole, importChronicleFile, settle } from './helpers';
+import { expect, test } from '@playwright/test';
+import { collectConsole, importChronicleFile, runItself, settle } from './helpers';
 
 /**
  * The Eternal Tower (docs/design/ETERNAL_TOWER.md) in a production build. The Path fixture is the
@@ -9,17 +9,6 @@ import { collectConsole, importChronicleFile, settle } from './helpers';
  * so this run walks the 13 → 14 migration on its way in and finds a full ring of keys.
  */
 const SAVE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'path.chronicle');
-
-/** Auto on and the fastest speed this chronicle has earned, so the floor fights itself. */
-async function runItself(page: Page): Promise<void> {
-  await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 30_000 });
-  await page.waitForTimeout(1500);
-  const auto = page.getByTestId('battle-auto');
-  if ((await auto.getAttribute('aria-pressed')) !== 'true') await auto.click();
-  await expect(auto).toHaveAttribute('aria-pressed', 'true');
-  const speed = page.getByTestId('battle-speed');
-  if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
-}
 
 test.describe('the Eternal Tower', () => {
   // One floor at ×2 with the full stage and its FX; a software renderer needs the room.

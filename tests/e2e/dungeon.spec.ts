@@ -1,6 +1,6 @@
 import { join } from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
-import { collectConsole, importChronicleFile, settle } from './helpers';
+import { expect, test } from '@playwright/test';
+import { collectConsole, importChronicleFile, runItself, settle } from './helpers';
 
 /**
  * The Dungeons (docs/design/DUNGEONS.md) in a production build.
@@ -10,17 +10,6 @@ import { collectConsole, importChronicleFile, settle } from './helpers';
  * is the migration doing its job as well as the screens'.
  */
 const SAVE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'path.chronicle');
-
-/** Auto on and the fastest speed this chronicle has earned, so the run fights itself. */
-async function runItself(page: Page): Promise<void> {
-  await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 30_000 });
-  await page.waitForTimeout(1500);
-  const auto = page.getByTestId('battle-auto');
-  if ((await auto.getAttribute('aria-pressed')) !== 'true') await auto.click();
-  await expect(auto).toHaveAttribute('aria-pressed', 'true');
-  const speed = page.getByTestId('battle-speed');
-  if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
-}
 
 test.describe('the Dungeons', () => {
   // One run at ×2 with the full stage and its FX; a software renderer needs the room.

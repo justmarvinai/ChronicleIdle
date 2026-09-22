@@ -6,6 +6,7 @@ import {
   eldricContinue,
   importChronicleFile,
   settle,
+  speedUpBattle,
   startChronicle,
 } from './helpers';
 
@@ -66,9 +67,9 @@ async function clearStand(page: Page, stage: string): Promise<void> {
   if ((await auto.getAttribute('aria-checked')) !== 'true') await auto.click();
   await page.getByTestId('start-battle').click();
   await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 20_000 });
-  const speed = page.getByTestId('battle-speed');
-  // The setting is remembered, so only the first of these fights has to press it.
-  if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
+  // The setting is remembered, so only the first of these fights presses it — and a stand the
+  // party walks over can be won before the press lands, which `speedUpBattle` forgives.
+  await speedUpBattle(page);
 
   const result = page.getByTestId('screen-battle-result');
   const open = page.locator('[data-testid="ability-a1"][data-ready="true"]');

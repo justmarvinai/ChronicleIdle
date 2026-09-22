@@ -1,6 +1,6 @@
 import { join } from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
-import { collectConsole, importChronicleFile, settle } from './helpers';
+import { expect, test } from '@playwright/test';
+import { collectConsole, importChronicleFile, runItself, settle } from './helpers';
 
 /**
  * The Brewery (docs/design/BREWERY.md) in a production build.
@@ -13,17 +13,6 @@ const SAVE = join(import.meta.dirname, '..', 'fixtures', 'saves', 'path.chronicl
 
 /** The days the Waning Cellar keeps: Wednesday, Saturday and Sunday (BREWERY.md §4). */
 const ECLIPSE_DAYS = [3, 6, 0];
-
-/** Auto on and the fastest speed this chronicle has earned, so the run fights itself. */
-async function runItself(page: Page): Promise<void> {
-  await expect(page.getByTestId('screen-battle')).toBeVisible({ timeout: 30_000 });
-  await page.waitForTimeout(1500);
-  const auto = page.getByTestId('battle-auto');
-  if ((await auto.getAttribute('aria-pressed')) !== 'true') await auto.click();
-  await expect(auto).toHaveAttribute('aria-pressed', 'true');
-  const speed = page.getByTestId('battle-speed');
-  if (((await speed.textContent()) ?? '').includes('1')) await speed.click();
-}
 
 test.describe('the Brewery', () => {
   // One run at ×2 with the full stage and its FX; a software renderer needs the room.
