@@ -43,6 +43,8 @@ export type Route =
   /** One keep; `difficulty` opens on a tab and `stage` scrolls its ladder to a rung. */
   | { name: 'dungeon'; dungeon: string; difficulty?: 'normal' | 'hard'; stage?: number }
   /** The Chronicle Index; `tab` opens one of its four catalogues (`UI_DESIGN.md` §5.20). */
+  /** The Market's two shelves (MARKET.md). */
+  | { name: 'market'; tab?: MarketTab }
   | { name: 'index'; tab?: IndexTab }
   | { name: 'game-modes' }
   /** The world map; `settlement` is the settlement screen with its ten stands. */
@@ -56,6 +58,9 @@ export type Route =
   | { name: 'locked'; feature: FeatureId | 'later-phase'; titleKey: I18nKey; reasonKey?: I18nKey }
   | { name: 'devkit' }
   | { name: 'perf' };
+
+/** Which shelf the Market opens on. */
+export type MarketTab = 'gold' | 'gems';
 
 export type RouteName = Route['name'];
 
@@ -76,6 +81,10 @@ export type DialogRoute =
   | { name: 'avatar-picker' }
   /** Names the slot and set of the 6★ Legendary piece the Path's last chest owes. */
   | { name: 'mission-gift' }
+  /** What the chronicle is holding, and what using it would do (MARKET.md §5). */
+  | { name: 'bag' }
+  /** The thirty-day welcome, opened from the hub or by the day itself (LOGIN.md). */
+  | { name: 'login' }
   /** Seats a companion at the Tavern table (the food picker). */
   | { name: 'food-picker'; instanceId: string; mode: 'level' | 'rank'; seats: number }
   /** Last word before champions are eaten: `food` is what leaves the chronicle. */
@@ -94,6 +103,11 @@ export type DialogRoute =
   | { name: 'summon-history' }
   /** Takes a champion choice the campaign owes (`CAMPAIGN.md` §7). */
   | { name: 'champion-picker'; choiceId: string }
+  /**
+   * Which champion a Bag item is used on. Its own dialog rather than the champion picker above:
+   * that one picks from a *choice list* the campaign owes, this one from the whole roster.
+   */
+  | { name: 'bag-target'; item: string }
   /** The Idle Chest at the docks (`ECONOMY.md` §6). */
   | { name: 'idle-chest' }
   /** A boss's mechanics sheet: its kit, what never lands on it, and how to fight it. */

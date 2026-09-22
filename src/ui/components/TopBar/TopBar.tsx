@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { IconButton } from '@ui/components/Button/IconButton';
 import { CurrencyPill } from '@ui/components/CurrencyPill/CurrencyPill';
 import { IdleChestButton } from '@ui/components/TopBar/IdleChestButton';
+import { BoostPills } from './BoostPills';
 import { ProfileChip } from '@ui/components/TopBar/ProfileChip';
 import { useNow } from '@ui/hooks/useNow';
 import { kitBorder } from '@ui/styles/kit';
@@ -34,6 +35,8 @@ export function TopBar({ title, onBack, onClose, children }: TopBarProps) {
         ) : null}
         {title ? <h1 className={`display ${styles.title}`}>{title}</h1> : null}
         {!onBack && profile ? <ProfileChip onClick={() => actions.openDialog({ name: 'profile' })} /> : null}
+        {/* The live boosts ride beside the chip, so they are on every screen (MARKET.md §4). */}
+        {profile ? <BoostPills /> : null}
       </div>
       <div className={styles.center}>{children}</div>
       <div className={styles.right}>

@@ -122,8 +122,9 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     y: 690,
     size: 120,
     glyph: 'glyph.trophy_cup',
-    feature: 'later-phase',
-    color: '#8d8577',
+    feature: 'market',
+    route: { name: 'market' },
+    color: '#c9a24a',
     labelBelow: true,
   },
   {

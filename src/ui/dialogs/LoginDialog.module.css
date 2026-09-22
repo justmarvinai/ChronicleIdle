@@ -1,0 +1,87 @@
+/*
+ * The Standing Welcome (docs/tech/UI_DESIGN.md §5.27): six tiles across, five rows down, each in
+ * its tier's colour so the shuffle is visible as a scatter rather than a ramp.
+ */
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.cycle {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--gold-2);
+  white-space: nowrap;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 118px;
+  padding: 8px 6px;
+  background: rgba(20, 17, 26, 0.75);
+  /* The tier's colour is the tile's edge — square, never a pill. */
+  border: 1px solid var(--tier, var(--gold-4));
+}
+/* Today's tile is the only one that can be pressed, and it says so loudly. */
+.tile[data-today='true'] {
+  background: rgba(40, 30, 20, 0.85);
+  box-shadow: 0 0 0 1px var(--gold-2) inset;
+}
+.tile[data-taken='true'] {
+  opacity: 0.44;
+}
+/* The three that lead the board carry a faint gold wash, every round. */
+.tile[data-finale='true'] {
+  background: linear-gradient(180deg, rgba(74, 56, 20, 0.7), rgba(24, 19, 12, 0.85));
+}
+
+.day {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--tier, var(--text-2));
+}
+.reward {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.item {
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-1);
+}
+.taken {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--jade-2, #7fae8a);
+}
+
+.foot {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}

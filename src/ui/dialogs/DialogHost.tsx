@@ -6,6 +6,9 @@ import { useLevelUpCelebration } from '@ui/hooks/useLevelUpCelebration';
 import { AvatarPickerDialog } from './AvatarPickerDialog';
 import { ChampionPickerDialog } from './ChampionPickerDialog';
 import { BattlePauseDialog } from './BattlePauseDialog';
+import { BagDialog } from './BagDialog';
+import { BagTargetDialog } from './BagTargetDialog';
+import { LoginDialog } from './LoginDialog';
 import { ChangelogDialog } from './ChangelogDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { FoodPickerDialog } from './FoodPickerDialog';
@@ -55,6 +58,11 @@ export function DialogHost() {
       ) : null}
       {dialog?.name === 'credits' ? <CreditsDialog key="credits" onClose={closeDialog} /> : null}
       {dialog?.name === 'changelog' ? <ChangelogDialog key="changelog" onClose={closeDialog} /> : null}
+      {dialog?.name === 'bag' ? <BagDialog key="bag" onClose={closeDialog} /> : null}
+      {dialog?.name === 'bag-target' ? (
+        <BagTargetDialog key="bag-target" item={dialog.item} onClose={closeDialog} />
+      ) : null}
+      {dialog?.name === 'login' ? <LoginDialog key="login" onClose={closeDialog} /> : null}
       {dialog?.name === 'palace-reset' ? (
         <PalaceResetDialog key="palace-reset" onClose={closeDialog} />
       ) : null}

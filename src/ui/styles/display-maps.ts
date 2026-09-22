@@ -3,6 +3,7 @@
  * (docs/tech/UI_DESIGN.md §3 tokens). Gameplay meaning lives in content; this is presentation only.
  */
 import type { GlyphKey } from '@assets/manifest.generated';
+import type { BoostId } from '@content/balance/boosts';
 import type { Element, GearSlot, Rarity, Role } from '@content/champions/types';
 
 export type { Element, GearSlot, Rarity, Role };
@@ -54,3 +55,21 @@ export const SLOT_GLYPH: Record<GearSlot, GlyphKey> = {
 /** Deco-frame tints for mode/feature cards (gold when open, ash when gated). */
 export const CARD_TINT = { unlocked: '#c9a24a', locked: '#5a554e' } as const;
 export const CARD_FRAME = { unlocked: 13, locked: 16 } as const;
+
+/**
+ * The three boosts (docs/design/MARKET.md §4), for the header pills and the Bag.
+ *
+ * Each takes a colour it does not share with a rarity or an element, so a live boost is never
+ * mistaken for a piece of gear or a champion's affinity at a glance.
+ */
+export const BOOST_GLYPH: Record<BoostId, GlyphKey> = {
+  champion_xp: 'glyph.shooting_stars',
+  player_xp: 'glyph.celestial_body',
+  brewery: 'glyph.health_potion',
+};
+
+export const BOOST_TINT: Record<BoostId, string> = {
+  champion_xp: '#6fc3e8',
+  player_xp: '#e8c76f',
+  brewery: '#8fd48a',
+};

@@ -36,6 +36,12 @@ export const market = {
   'bag.pickChampion': 'Which champion?',
   'bag.used': 'Used {name}.',
   'bag.nothingToDo': 'Nothing to do',
+  'bag.outcome.breweryRuns': 'The cellars are open again — twenty runs, from the top.',
+  'bag.outcome.dailyReset': 'Today’s board is untouched again.',
+  'bag.outcome.weeklyReset': 'This week’s board is untouched again.',
+  'bag.outcome.missionSkipped': 'The Path moves on. Nothing was paid for it.',
+  'bag.outcome.levelled': 'Awake at level {level}.',
+  'bag.outcome.starred': 'Wearing {stars} stars.',
 
   /* ---- What each item does ---- */
   'item.brewery_token.name': 'Brewery Token',

@@ -1,0 +1,151 @@
+/*
+ * The Market (docs/tech/UI_DESIGN.md §5.25): tabs at the head, then the stall or the shelf. The
+ * two read differently on purpose — six wide rows you skim in a hurry against a grid of cards you
+ * read properly — because one changes in an hour and the other never does.
+ */
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.body {
+  position: absolute;
+  top: 128px;
+  left: 60px;
+  right: 60px;
+  bottom: 36px;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 4px;
+}
+.blurb {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.rotates {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--gold-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.scroll {
+  flex: 1;
+}
+
+/* ---- The hourly stall: six rows, skimmed. ---- */
+.stall {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 10px;
+}
+.slot {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 18px;
+  /* Six rows have to fit the shelf without scrolling, so a row is a row and not a poster. */
+  min-height: 56px;
+}
+.slotText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.slotName {
+  font-size: 17px;
+  letter-spacing: 0.03em;
+  color: var(--text-1);
+}
+.slotStock {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.slotBuy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ---- The fixed shelf: a grid of cards, read. ---- */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding-right: 10px;
+}
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* A bundle already taken stays on the shelf, greyed — so a player can see what they have. */
+.entry[data-taken='true'] {
+  opacity: 0.5;
+}
+.entryHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.entryName {
+  display: block;
+  font-size: 19px;
+  letter-spacing: 0.04em;
+  color: var(--gold-1);
+}
+.bundleTag {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 2px 7px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ember-1, #e0a36a);
+  border: 1px solid var(--ember-3, #7a4a2a);
+  background: rgba(60, 30, 16, 0.6);
+}
+.entryBody {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.contents {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-1);
+}
+.entryFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  letter-spacing: 0.03em;
+  color: var(--gold-1);
+  font-variant-numeric: tabular-nums;
+}

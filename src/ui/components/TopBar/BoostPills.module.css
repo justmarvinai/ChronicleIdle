@@ -1,0 +1,49 @@
+/*
+ * The live boosts beside the profile chip (docs/tech/UI_DESIGN.md §5.25). A pill is small enough
+ * to sit in the header's height without pushing anything, and tinted to its own boost so the three
+ * are told apart at a glance rather than read.
+ */
+.pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 6px;
+  background: rgba(18, 15, 24, 0.82);
+  border: 1px solid var(--boost-tint, var(--gold-4));
+  /* Square corners, like every other surface in the kit. */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.time {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-1);
+  /* Tabular figures so a ticking countdown does not jitter the pill's width. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* A boost about to lapse pulses, so the last minutes are noticed without a dialog. */
+@media (prefers-reduced-motion: no-preference) {
+  .pill[data-boost] {
+    animation: boostGlow 3.2s ease-in-out infinite;
+  }
+}
+
+@keyframes boostGlow {
+  0%,
+  100% {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 10px rgba(0, 0, 0, 0.5),
+      0 0 8px var(--boost-tint, var(--gold-3));
+  }
+}

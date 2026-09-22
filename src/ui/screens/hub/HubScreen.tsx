@@ -3,6 +3,7 @@ import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
 import { missionsClaimable } from '@state/missions';
+import { loginView } from '@state/login';
 import { isPalaceUnlocked } from '@state/palace';
 import { questsClaimable } from '@state/quests';
 import { openChampionChoices } from '@state/summon';
@@ -57,6 +58,8 @@ export default function HubScreen(_props: ScreenProps) {
   const ledger = save ? questsClaimable(save, now) : 0;
   // The Path's: the mission it is on, if it is finished, and any chapter chest still waiting.
   const path = save ? missionsClaimable(save, now) : 0;
+  // One dot when today's tile is still there — a day owed is the calendar's only live state.
+  const welcome = save && loginView(save, now).claimable ? 1 : 0;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
@@ -159,6 +162,26 @@ export default function HubScreen(_props: ScreenProps) {
               unlocked
               onClick={() => actions.push({ name: 'champions' })}
               testId="nav-champions"
+            />
+            {/*
+              The Welcome wears a dot the moment a day is owed, which is the whole reminder it
+              needs: a calendar that opens itself over the hub would be the one dialog a player
+              meets before they have decided to do anything (LOGIN.md §4).
+            */}
+            <NavButton
+              label={t('login.open')}
+              glyph="glyph.peace_dove"
+              unlocked
+              notify={welcome}
+              onClick={() => actions.openDialog({ name: 'login' })}
+              testId="nav-login"
+            />
+            <NavButton
+              label={t('bag.open')}
+              glyph="glyph.burning_scroll"
+              unlocked
+              onClick={() => actions.openDialog({ name: 'bag' })}
+              testId="nav-bag"
             />
           </>
         }
