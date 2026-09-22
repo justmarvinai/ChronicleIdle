@@ -89,6 +89,9 @@ import {
   type DungeonRunStarted,
   type DungeonRunSummary,
 } from './dungeon';
+import { applyGemPurchase, applyGoldPurchase, type PurchaseResult } from './market';
+import { applyUseItem, type UseResult } from './bag';
+import { applyLoginClaim, type LoginClaim } from './login';
 import type { DungeonDifficulty } from '@content/balance/dungeon';
 import {
   applyBossChestClaim,
@@ -299,6 +302,14 @@ export interface GameActions {
     outcome: BattleOutcome;
     party: readonly string[];
   }): Result<DungeonRunSummary>;
+  /** Buys from this hour's Gold Market stall. */
+  buyFromStall(index: number, count: number): Result<PurchaseResult>;
+  /** Buys one Gem Market entry — a single, or a bundle that is then struck off for good. */
+  buyFromShelf(entryId: string): Result<PurchaseResult>;
+  /** Uses one consumable out of the Bag. `instanceId` is required by the two that pick a champion. */
+  useItem(item: string, instanceId?: string): Result<UseResult>;
+  /** Takes today's tile off the Login Calendar. */
+  claimLoginDay(): Result<LoginClaim>;
   /** Spends an Eternal Key and points the save at the tower floor it bought. */
   startTowerFloor(floor: number): Result<TowerFloorStarted>;
   /** Banks a finished tower floor: the climb, the rewards and the XP. */
@@ -1323,6 +1334,62 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               });
               // The fight already paid the level; the celebration waits for the result screen.
               noteLevelUp(summary.levelUp, 'boss', false);
+              return result;
+            },
+
+            buyFromStall(index, count) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<PurchaseResult> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyGoldPurchase(state.save, index, count, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok) events.emit({ type: 'market.bought', gems: false });
+              return result;
+            },
+
+            buyFromShelf(entryId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<PurchaseResult> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyGemPurchase(state.save, entryId, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok) events.emit({ type: 'market.bought', gems: true });
+              return result;
+            },
+
+            useItem(item, instanceId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<UseResult> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyUseItem(state.save, {
+                  item,
+                  now,
+                  ...(instanceId === undefined ? {} : { instanceId }),
+                });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok) events.emit({ type: 'bag.used', item });
+              return result;
+            },
+
+            claimLoginDay() {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<LoginClaim> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyLoginClaim(state.save, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok) events.emit({ type: 'login.claimed', day: result.value.day });
               return result;
             },
 

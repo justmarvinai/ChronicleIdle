@@ -366,6 +366,30 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       dungeons: { cleared: {} },
     }),
   },
+  {
+    from: 18,
+    to: 19,
+    /*
+     * The Market, the Bag, the boosts and the Login Calendar (0.9.0).
+     *
+     * Everything starts empty, and **the calendar starts at day 1** for a chronicle that predates
+     * it. Back-paying days for time already played would be wrong twice over: the board counts
+     * logins rather than dates, so there is no history to read; and a veteran opening the game to
+     * a fortnight of free tiles would skip the part of the board that is meant to be walked.
+     *
+     * `market.hour` starts at -1 rather than 0. Zero is a real market hour — the one containing
+     * the epoch — and a save stamped with it would read as "this hour's stall has already been
+     * shopped" for anyone whose clock said 1970. -1 is never a real hour.
+     */
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 19,
+      bag: {},
+      boosts: {},
+      market: { hour: -1, taken: {}, bundles: [] },
+      login: { claimed: 0, lastKey: '' },
+    }),
+  },
 ];
 
 /** The v18 team row. A save that somehow already has one keeps it; anything else starts empty. */

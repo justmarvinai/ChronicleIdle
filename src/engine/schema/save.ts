@@ -11,7 +11,7 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 
-export const SAVE_VERSION = 18 as const;
+export const SAVE_VERSION = 19 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -304,6 +304,48 @@ export const dungeonsSchema = z.object({
   cleared: z.record(z.string(), dungeonProgressSchema),
 });
 
+/**
+ * The Bag (MARKET.md §5): item id → how many are held. A consumable has no instance identity —
+ * one Brewery Token is every Brewery Token — so unlike gear this is a count, not a record per
+ * object. An id that is absent is held zero times, and a count never reaches zero and stays.
+ */
+export const bagSchema = z.record(z.string(), z.number().int().positive());
+
+/**
+ * The three timed boosts (MARKET.md §4): boost id → **the instant it runs out**, never a duration
+ * left. A save closed over a weekend comes back with its boosts correctly spent rather than owing
+ * two days, and nothing has to tick (CLAUDE.md §5.5). A boost that has never run has no row.
+ */
+export const boostsSchema = z.record(z.string(), z.number().int().nonnegative());
+
+/**
+ * The Market (MARKET.md §1). The Gold Market's shelf is **not** here: it is derived from the hour
+ * and the chronicle's seed, so what a save keeps is only which slots of *this* hour have been
+ * bought, and which one-time bundles have been taken for good.
+ *
+ * `hour` stamps the taken list. A list stamped with an older hour reads as an untouched stall,
+ * which is how the shelf comes back at the top of the hour with nothing having run.
+ */
+export const marketSchema = z.object({
+  /** The market hour `taken` belongs to; -1 before the first purchase. */
+  hour: z.number().int(),
+  /** Slot index → how many have been bought from it this hour. */
+  taken: z.record(z.string(), z.number().int().nonnegative()),
+  /** Ids of one-time bundles already taken; they never come back. */
+  bundles: z.array(z.string()),
+});
+
+/**
+ * The Login Calendar (LOGIN.md §3): the two numbers everything else is read off. `claimed` counts
+ * days ever taken and never resets, so `(claimed mod 30) + 1` is the day owed and the board loops
+ * forever; `lastKey` is the day key of the last claim, so a second visit the same day pays
+ * nothing and a fortnight away costs nothing.
+ */
+export const loginSchema = z.object({
+  claimed: z.number().int().nonnegative(),
+  lastKey: z.string(),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -400,7 +442,8 @@ export type SaveGameV15 = z.infer<typeof saveSchemaV15>;
 export type SaveGameV16 = z.infer<typeof saveSchemaV16>;
 export type SaveGameV17 = z.infer<typeof saveSchemaV17>;
 export type SaveGameV18 = z.infer<typeof saveSchemaV18>;
-export type SaveGame = SaveGameV18;
+export type SaveGameV19 = z.infer<typeof saveSchemaV19>;
+export type SaveGame = SaveGameV19;
 export type PalaceSave = z.infer<typeof palaceSchema>;
 export type BrewerySave = z.infer<typeof brewerySchema>;
 export type DungeonsSave = z.infer<typeof dungeonsSchema>;
@@ -414,8 +457,20 @@ export type StagePointer = z.infer<typeof stagePointerSchema>;
 export type SummonSave = SaveGame['summon'];
 export type SummonRecord = z.infer<typeof summonRecordSchema>;
 export type ChampionChoiceRecord = z.infer<typeof championChoiceSchema>;
+/**
+ * v19 adds the Market and everything it needed to exist: a Bag to buy into, the three boosts a
+ * purchase can start, the hour's purchases, and the Login Calendar's two numbers.
+ */
+export const saveSchemaV19 = saveSchemaV18.extend({
+  saveVersion: z.literal(19),
+  bag: bagSchema,
+  boosts: boostsSchema,
+  market: marketSchema,
+  login: loginSchema,
+});
+
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV18;
+export const saveSchema = saveSchemaV19;
 
 /** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
 export function emptyPalace(): PalaceSave {
@@ -444,6 +499,15 @@ export function emptySummon(): SummonSave {
     unseen: [],
     choices: {},
   };
+}
+
+/** A chronicle that has never opened the Market or taken a login day. */
+export function emptyMarket(): SaveGame['market'] {
+  return { hour: -1, taken: {}, bundles: [] };
+}
+
+export function emptyLogin(): SaveGame['login'] {
+  return { claimed: 0, lastKey: '' };
 }
 
 export function emptyTeams(): TeamPresets {

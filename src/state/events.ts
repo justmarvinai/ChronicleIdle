@@ -83,6 +83,12 @@ export type DomainEvent =
       cleared: boolean;
       pieces: number;
     }
+  /** Something was bought at the Market; `gems` says which shelf (MARKET.md). */
+  | { type: 'market.bought'; gems: boolean }
+  /** A consumable was used out of the Bag. */
+  | { type: 'bag.used'; item: string }
+  /** A day was taken off the Login Calendar (LOGIN.md). */
+  | { type: 'login.claimed'; day: number }
   /** One node of the Glorious Palace was lit, or the whole tree darkened (GLORIOUS_PALACE.md). */
   | { type: 'palace.nodeUnlocked'; nodeId: string; cost: number }
   | { type: 'palace.reset'; points: number }

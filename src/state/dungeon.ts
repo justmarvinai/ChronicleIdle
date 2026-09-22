@@ -38,6 +38,7 @@ import { addChampionXp } from '@engine/champions/xp';
 import { bumpCounter, bumpCounterId } from '@engine/progression/counters';
 import { createRng } from '@engine/rng/rng';
 import type { SaveGame } from '@engine/schema/save';
+import { boostedChampionXp, boostedPlayerXp } from './boosts';
 import { mintGearPiece } from './gear';
 import { payCurrencies } from './payout';
 import { applyPlayerXp, NO_LEVEL_UP, type LevelUpResult } from './progression';
@@ -258,12 +259,12 @@ export function applyDungeonRunFinish(
   for (const instanceId of input.party) {
     const champion = save.roster[instanceId];
     if (!champion) continue;
-    const gain = addChampionXp(champion, haul.championXp);
+    const gain = addChampionXp(champion, boostedChampionXp(save, haul.championXp, input.now));
     champion.level = gain.level;
     champion.xp = gain.xp;
     if (gain.levelsGained > 0) summary.levelUps.push(instanceId);
   }
-  summary.levelUp = applyPlayerXp(save, haul.playerXp, input.now);
+  summary.levelUp = applyPlayerXp(save, boostedPlayerXp(save, haul.playerXp, input.now), input.now);
   summary.changes.push(...summary.levelUp.changes);
   return ok(summary);
 }

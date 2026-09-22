@@ -206,6 +206,29 @@ async function main(): Promise<void> {
         velkoras_cradle: { normal: 2, hard: 0 },
       },
     },
+    // A Bag holding three things, one of each kind that has to survive a round trip.
+    bag: {
+      'item.brewery_token': 3,
+      'item.champion_xp_boost': 1,
+      'item.champions_cheatmeal': 1,
+    },
+    /*
+     * Two boosts live and one long lapsed. The lapsed row is the point: a fixture whose boosts are
+     * all running would never catch a migration that mangled an expiry in the past.
+     */
+    boosts: {
+      champion_xp: NOW + 20 * 3_600_000,
+      brewery: NOW + 3 * 3_600_000,
+      player_xp: NOW - 48 * 3_600_000,
+    },
+    // Mid-hour at the stall, with two slots part-bought and two bundles gone for good.
+    market: {
+      hour: Math.floor(NOW / 3_600_000),
+      taken: { '0': 2, '3': 1 },
+      bundles: ['shelf.chroniclers_satchel', 'shelf.quartermasters_crate'],
+    },
+    // Deep into the second round of the board, with today's tile already taken.
+    login: { claimed: 41, lastKey: '2026-09-12' },
     summon: {
       ...base.summon,
       // Pulls since each rarity, per shard type — the mercy counters, not a single number.

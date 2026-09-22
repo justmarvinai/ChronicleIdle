@@ -7,6 +7,7 @@
  */
 import { TOWER_FLOORS, TOWER_KEY_CAP, towerFaction } from '@content/balance/tower';
 import { content } from '@content/registry';
+import { boostedChampionXp, boostedPlayerXp } from './boosts';
 import { grantTowerPoints } from './palace';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { BattleOutcome } from '@engine/battle/types';
@@ -224,7 +225,7 @@ export function applyTowerFloorFinish(
   for (const instanceId of input.party) {
     const champion = save.roster[instanceId];
     if (!champion) continue;
-    const gain = addChampionXp(champion, rewards.championXp);
+    const gain = addChampionXp(champion, boostedChampionXp(save, rewards.championXp, input.now));
     champion.level = gain.level;
     champion.xp = gain.xp;
     if (gain.levelsGained > 0)
@@ -232,7 +233,7 @@ export function applyTowerFloorFinish(
   }
 
   // Chronicle XP last, so a level-up's energy refill lands on the new cap.
-  const levelUp = applyPlayerXp(save, rewards.playerXp, input.now);
+  const levelUp = applyPlayerXp(save, boostedPlayerXp(save, rewards.playerXp, input.now), input.now);
   summary.playerXp = rewards.playerXp;
   summary.levelUp = levelUp;
   summary.changes.push(...levelUp.changes);

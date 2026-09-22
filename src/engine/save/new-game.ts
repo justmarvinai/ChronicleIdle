@@ -5,6 +5,8 @@ import {
   DEFAULT_SETTINGS,
   SAVE_VERSION,
   emptyCampaign,
+  emptyLogin,
+  emptyMarket,
   emptySummon,
   emptyTeams,
   emptyBrewery,
@@ -43,6 +45,11 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     summon: emptySummon(),
     idle: { lastClaimAt: now },
     bosses: {},
+    // Nothing held, nothing boosted, nothing shopped, and the calendar waiting on day 1.
+    bag: {},
+    boosts: {},
+    market: emptyMarket(),
+    login: emptyLogin(),
     settings: { ...DEFAULT_SETTINGS, ...settings },
     stats: {},
     periods: {

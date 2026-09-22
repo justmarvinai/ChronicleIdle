@@ -88,6 +88,20 @@ export const COUNTER_KEYS = [
   'tower.bosses',
   /** Highest floor ever reached. Written as a maximum rather than added to. */
   'tower.best',
+  // The Market, the Bag and the Calendar
+  'market.purchases',
+  /** Gold and gems put across the two counters, for the profile's ledger. */
+  'market.gold.spent',
+  'market.gems.spent',
+  /** Consumables actually used, which is a different number from ones bought. */
+  'bag.used',
+  /** Days taken off the Login Calendar, across every round. */
+  'login.claims',
+  /**
+   * Missions bought past with a Dispensation. Deliberately *not* folded into `missions.claimed`:
+   * that counter answers "how many have been earned", and a bought one was not.
+   */
+  'missions.skipped',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */
@@ -115,6 +129,10 @@ export const COUNTER_PREFIXES = [
   'summon.rarity.',
   /** `tower.floor.<n>`, so a mission may name a floor. */
   'tower.floor.',
+  /** `market.bought.<shelfId>`, so a quest could later name one shelf entry. */
+  'market.bought.',
+  /** `bag.used.<itemId>`, so a mission could later ask for a particular item to be used. */
+  'bag.used.',
   QUEST_CHEST_COUNTER,
 ] as const;
 

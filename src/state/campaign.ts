@@ -1,4 +1,5 @@
 import { BOSS_STAGE_NUMBER } from '@content/balance/campaign';
+import { boostedChampionXp, boostedPlayerXp } from './boosts';
 import { grantSettlementPoint } from './palace';
 /**
  * Campaign progress as it touches the save (docs/design/CAMPAIGN.md §2, §7).
@@ -195,7 +196,7 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   for (const instanceId of input.party) {
     const champion = save.roster[instanceId];
     if (!champion) continue;
-    const gain = addChampionXp(champion, rewards.championXp);
+    const gain = addChampionXp(champion, boostedChampionXp(save, rewards.championXp, input.now));
     champion.level = gain.level;
     champion.xp = gain.xp;
     if (gain.levelsGained > 0)
@@ -203,7 +204,7 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   }
 
   // Chronicle XP is the last thing a run pays, so a level-up's refill lands on the new cap.
-  const levelUp = applyPlayerXp(save, rewards.playerXp, input.now);
+  const levelUp = applyPlayerXp(save, boostedPlayerXp(save, rewards.playerXp, input.now), input.now);
   summary.playerLevelsGained = levelUp.levels.length;
   summary.levelUp = levelUp;
   summary.changes.push(...levelUp.changes);

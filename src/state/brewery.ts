@@ -32,6 +32,7 @@ import { bumpCounter, bumpCounterId } from '@engine/progression/counters';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
 import type { SaveGame } from '@engine/schema/save';
 import { dailyKey, msUntilDailyReset } from '@engine/time/clock';
+import { boostedBrews } from './boosts';
 import { payCurrencies } from './payout';
 
 /** Whether the Brewery is open to this chronicle at all: player level 3 (owner's brief). */
@@ -186,7 +187,7 @@ export function applyBreweryRunFinish(
     summary.deepest = input.stage;
     bumpCounter(save, 'brewery.cleared');
   }
-  summary.brews = breweryRewards(hall, stage);
+  summary.brews = boostedBrews(save, breweryRewards(hall, stage), input.now);
   summary.changes = payCurrencies(save, summary.brews, input.now);
   bumpCounter(save, 'brewery.brews', stage.brews);
   return ok(summary);

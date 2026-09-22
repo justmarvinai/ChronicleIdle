@@ -10,6 +10,7 @@ import { GEAR_SLOTS, type GearSlot } from '@content/champions/types';
 import type { BossChestDef, BossDef, BossTierDef } from '@content/bosses/types';
 import type { CurrencyAmount } from '@content/currencies/types';
 import { content } from '@content/registry';
+import { boostedPlayerXp } from './boosts';
 import { grantBossPoints } from './palace';
 import type { BattleOutcome } from '@engine/battle/types';
 import { bossEncounterId } from '@engine/bosses/encounter';
@@ -184,7 +185,10 @@ export function applyBossFightFinish(
 
   const total = tierDamage(state, tier.id);
   const unlocked = claimableChests(tier, state).filter((pct) => !earnedBefore.has(pct));
-  const levelUp = tier.playerXp > 0 ? applyPlayerXp(save, tier.playerXp, input.now) : NO_LEVEL_UP;
+  const levelUp =
+    tier.playerXp > 0
+      ? applyPlayerXp(save, boostedPlayerXp(save, tier.playerXp, input.now), input.now)
+      : NO_LEVEL_UP;
 
   bumpCounter(save, 'boss.fights');
   bumpCounterId(save, 'boss.fights.', boss.id);
