@@ -14,8 +14,8 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 
 | Id | Name | Icon (asset key) | Main sources | Main sinks |
 | --- | --- | --- | --- | --- |
-| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle | gear levels, refine, rank-up, tavern, crafting, Faded Shards |
-| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups | Ancient/Sacred Shards, energy refills |
+| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, the Standing Welcome | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market** |
+| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, the Standing Welcome | Ancient/Sacred Shards, energy refills, **the Gem Market** |
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Gargoyle Key | stone-vine/icon-key | daily reset (2) | the Gargoyle |
 | `key_weekly` | Titan Key | stone-vine/icon-key (violet tint) | weekly reset (3) | the Titan |
@@ -234,43 +234,65 @@ farming Normal in the back half of the map at level 30. `sim:economy` also plays
 
 | Gems per week | Active | Where it comes from |
 | --- | --- | --- |
-| First clears while progressing | ~273 | three new stands a day, first-clear bundles |
-| The daily hundred | ~350 | the 100-point chest, with its every-third-day Ancient Shard |
-| The weekly board and its chest | ~112 | claimed once a week |
 | Gargoyle (daily) | ~420 | the Normal tier's 60-gem chest at 60 %, every day (`BOSSES.md` §2) |
+| The daily hundred | ~350 | the 100-point chest, with its every-third-day Ancient Shard |
+| First clears while progressing | ~273 | three new stands a day, first-clear bundles |
+| The Standing Welcome | ~240 | one tile a login, and the board loops forever (`LOGIN.md` §5) |
 | Titan (weekly) | ~182 | the Normal tier's chests once a week (`BOSSES.md` §3) |
+| The weekly board and its chest | ~112 | claimed once a week |
+| The idle chest | ~63 | two claims a day at farm tier 20 (§6) |
 | The Chronicler's Path | ~42 | eight missions a week plus a chapter chest |
-| **Income** | **~1,430** | |
+| **Income** | **~1,674** | |
 | Spend: 2 Ancient Shards + 2 refills | ~700 | `SHARD_EXCHANGE`, `ENERGY_REFILL_GEMS` |
-| **Net** | **~730** | about two further Ancient Shards saved a week |
+| Spend: the Gem Market | ~380 | two 24-hour boosts a week (`MARKET.md` §2) |
+| **Net** | **~594** | about two further Ancient Shards saved a week |
 
-A casual player earns ~850 a week, which still clears an Ancient Shard; a dedicated one ~1,760,
-because the boss and chest lines do not scale with how often you sit down — only the campaign does.
+A casual player earns ~1,108 a week and keeps ~908 of it, which clears an Ancient Shard with room
+to spare; a dedicated one ~1,996, because the boss, chest and calendar lines do not scale with how
+often you sit down — only the campaign does.
 
-> **Superseded.** This section used to print ≈ 800 gems a week with "bosses 100", written while the
-> bosses were still a plan. `BOSSES.md`'s tier tables (Phase 10) then gave Gargoyle's Normal tier 60
-> gems a day, so the boss line alone is worth ~600 and the old total was stale by exactly that much.
-> Every other line came in where this section said it would. Whether ~1,430 a week is the intended
-> generosity is `USER_QUESTIONS.md` Q45; the bands hold the shape either way.
+**The Gem Market is a sink and only a sink.** Every entry on the fixed shelf takes gems and hands
+back progress, and the one way that breaks is an entry that pays *gems* back worth more than it
+cost: infinite stock plus a positive return is infinite gems. `pnpm sim:economy` audits all thirteen
+entries against that rule and `--strict` fails on any that reaches it. The two that can pay gems
+back at all are the quest vouchers, because a reset board is a board whose chests pay again — the
+daily returns at most 60 gems of its 175, the weekly at most 110 of its 450. Nothing else on the
+shelf returns a gem, the Mission Skip Token included: a skipped step is marked done and left unpaid.
+
+> **Twice superseded, both times upward.** This section first printed ≈ 800 gems a week with
+> "bosses 100", written while the bosses were still a plan; `BOSSES.md`'s tier tables (Phase 10)
+> then made the boss line alone worth ~600 and the total ~1,430. The Standing Welcome (Phase P)
+> added a permanent ~240 a week on top, because the owner's answer was that the board repeats
+> rather than ending, and the Gem Market took ~380 a week back out. Every other line has come in
+> where this section said it would each time. Whether ~1,674 a week is the intended generosity is
+> `USER_QUESTIONS.md` Q45; the bands hold the shape either way.
 
 ## 8. Gold budget (sanity)
 
 | Gold per day | Active | Where it comes from |
 | --- | --- | --- |
-| Campaign farming | ~155k | ~100 runs of a Normal stand in settlement 9 |
+| Campaign farming | ~154k | ~100 runs of a Normal stand in settlement 9 |
 | Gargoyle's chests | ~80k | once a day at 60 % of the Normal tier |
 | The idle chest | ~58k | two claims a day at farm tier 20 (§6) |
-| The boards, the bosses' weekly, the Path | ~29k | |
-| **Income** | **~322k** | |
+| The boards, the bosses' weekly, the Path | ~30k | |
+| The Standing Welcome | ~4.3k | the board's gold, spread over its thirty tiles (`LOGIN.md` §5) |
+| **Income** | **~326k** | |
 | Spend: gear levels | ~90k | 24 levels a day on 5★ pieces around +9 |
 | Spend: the Tavern | ~68k | 40 champion levels a day around level 34 |
+| Spend: the Gold Market | ~59k | the day's surplus, left at the hourly stall (`MARKET.md` §1) |
 | Spend: Faded Shards | ~40k | eight a day at 5k each |
 | Spend: crafting | ~12k | an Ember craft a day, with its Glyph Sigil |
-| **Net** | **~112k** | |
+| **Net** | **~57k** | |
 
 Gold should feel tight but never blocking, and no script of any activity level ends a day in the red
-— that invariant is a band, not a hope. A casual player earns ~218k a day (the boss and the chest do
-not care how long you play) and spends ~53k of it.
+— that invariant is a band, not a hope. A casual player earns ~222k a day (the boss and the chest do
+not care how long you play) and spends ~82k of it.
+
+**The Gold Market is where the surplus goes.** Before it there was nothing to do with a day's
+leftover gold once the gear and the Tavern had been fed, and the net above was ~112k a day of money
+with nowhere to be. The hourly stall turns that into materials, brews and the occasional shard, and
+a band holds it from the other side: if a 60k budget can no longer find anything on the shelf to
+buy, the pool has been priced out of reach and `--strict` says so.
 
 **The tower is not on that table, on purpose.** A full climb to floor 100 pays 1,334,407 gold and
 300 energy, but it is a *season's* income rather than a day's, and it is paid once: ordinary floors

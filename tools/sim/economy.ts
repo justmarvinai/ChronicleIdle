@@ -17,8 +17,8 @@
  */
 import type { CurrencyId } from '@content/currencies/types';
 import { energyCap } from '@engine/economy/energy';
-import { ECONOMY_BANDS, SCRIPTS, SCRIPT_BY_ID, type EconomyScript } from './economy-script';
-import { DAYS_PER_WEEK, simulate, tierOf } from './economy-run';
+import { ECONOMY_BANDS, SCRIPTS, SCRIPT_BY_ID, type EconomyBand, type EconomyScript } from './economy-script';
+import { DAYS_PER_WEEK, shelfAudit, simulate, tierOf } from './economy-run';
 
 const argv = process.argv.slice(2);
 const flag = (name: string): boolean => argv.includes(`--${name}`);
@@ -135,14 +135,29 @@ function report(script: EconomyScript, computed: Rates): void {
   }
 }
 
+/** A band over the script's whole book: everything that currency came in or went out as. */
+function wholeBook(computed: Rates, band: EconomyBand): number {
+  const { income = 0, spend = 0 } = computed.perDay.get(band.currency) ?? {};
+  return band.side === 'income' ? income : band.side === 'spend' ? spend : income - spend;
+}
+
+/**
+ * A band over one named ledger line. A line that paid nothing reads zero rather than being
+ * skipped: "this source has gone quiet" is exactly the kind of regression a `min` is there to
+ * catch, and skipping would hide it.
+ */
+function oneLine(computed: Rates, band: EconomyBand): number {
+  const row = computed.lines.find((one) => one.line === band.line && one.side === band.side);
+  return row?.amounts.get(band.currency) ?? 0;
+}
+
 function checkBands(all: Map<string, Rates>): boolean {
   console.log('\nBands (ECONOMY.md §7–§8)');
   let ok = true;
   for (const band of ECONOMY_BANDS) {
     const computed = all.get(band.script);
     if (!computed) continue;
-    const { income = 0, spend = 0 } = computed.perDay.get(band.currency) ?? {};
-    const perDay = band.side === 'income' ? income : band.side === 'spend' ? spend : income - spend;
+    const perDay = band.line === undefined ? wholeBook(computed, band) : oneLine(computed, band);
     const value = perDay * (band.per === 'week' ? DAYS_PER_WEEK : 1);
     const low = band.min !== undefined && value < band.min;
     const high = band.max !== undefined && value > band.max;
@@ -155,8 +170,30 @@ function checkBands(all: Map<string, Rates>): boolean {
       .filter(Boolean)
       .join(' and ');
     console.log(
-      `  ${pass ? '✓' : '✗'} ${band.script.padEnd(11)} ${band.currency.padEnd(6)} ${band.side.padEnd(7)} ` +
+      `  ${pass ? '✓' : '✗'} ${(band.line ?? band.script).padEnd(13)} ${band.currency.padEnd(6)} ${band.side.padEnd(7)} ` +
         `per ${band.per.padEnd(5)} ${money(value).padStart(8)} (want ${want})  — ${band.why}`,
+    );
+  }
+  return ok;
+}
+
+/**
+ * The Gem Market, entry by entry: its price against the most it could ever pay back in gems.
+ *
+ * This is not a band — it holds for every player at once, whatever they do with their day — so it
+ * is checked against the content rather than against a ledger. A row that reaches its price is a
+ * loop rather than a sink, and with infinite stock a loop is infinite gems (MARKET.md §2).
+ */
+function checkShelf(): boolean {
+  console.log('\nGem Market — no entry may pay its own price back (MARKET.md §2)');
+  let ok = true;
+  for (const row of shelfAudit()) {
+    const pass = row.gemsBack < row.price;
+    ok = ok && pass;
+    const share = row.price > 0 ? Math.round((row.gemsBack / row.price) * 100) : 0;
+    console.log(
+      `  ${pass ? '✓' : '✗'} ${row.id.padEnd(28)} ${String(row.price).padStart(5)} gems out, ` +
+        `${String(row.gemsBack).padStart(4)} back (${String(share).padStart(3)} %)  — ${row.via}`,
     );
   }
   return ok;
@@ -170,9 +207,14 @@ function main(): void {
     all.set(script.id, computed);
     report(script, computed);
   }
-  const ok = checkBands(all);
-  if (flag('strict') && !ok) {
-    console.error('\nA band in tools/sim/economy-script.ts broke.');
+  const bands = checkBands(all);
+  const shelf = checkShelf();
+  if (flag('strict') && !(bands && shelf)) {
+    console.error(
+      bands
+        ? '\nAn entry of the Gem Market pays back what it costs.'
+        : '\nA band in tools/sim/economy-script.ts broke.',
+    );
     process.exit(1);
   }
 }

@@ -13,6 +13,7 @@
 import { ENERGY_COST, STAGES_PER_SETTLEMENT, globalStageIndex } from '@content/balance/campaign';
 import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS, ENERGY_REGEN_SECONDS } from '@content/balance/energy';
 import { FARM_TIER_BAND } from '@content/balance/idle';
+import { LOGIN_DAYS } from '@content/balance/login';
 import { SHARD_EXCHANGE } from '@content/balance/summon';
 import type { CurrencyId } from '@content/currencies/types';
 import { content } from '@content/registry';
@@ -21,6 +22,7 @@ import { energyCap } from '@engine/economy/energy';
 import { farmTier, idleCapacityHours, idleHaul } from '@engine/economy/idle';
 import { breweryRewards, opensOn } from '@engine/brewery/index';
 import { craftCost } from '@engine/forge/craft';
+import { goldShelf, slotCost } from '@engine/market/index';
 import { flatMissions } from '@engine/missions/path';
 import { levelUpGold } from '@engine/progression/tavern-level';
 import { visibleQuests } from '@engine/quests/board';
@@ -31,6 +33,33 @@ import type { EconomyScript } from './economy-script';
 const HOURS_PER_DAY = 24;
 export const DAYS_PER_WEEK = 7;
 const SECONDS_PER_DAY = 86_400;
+const MS_PER_HOUR = 3_600_000;
+
+/**
+ * What the Standing Welcome pays in a day (LOGIN.md §5).
+ *
+ * The board hands over one tile per login and **loops** when it ends (the owner's answer), so it
+ * is permanent income rather than an onboarding arc, and every script claims it: a calendar nobody
+ * would skip is a calendar the ledger has to carry.
+ *
+ * It is booked at the cycle's rate rather than walked tile by tile, because the board is thirty
+ * days long and a script is twenty-eight — four whole weeks, which every weekly line here needs to
+ * land on a whole number of claims. A walk would stop two tiles short, and those two are days 29
+ * and 30: the finale, the richest part of the board and the one part worth arguing about. Booking
+ * the rate is exact at any `--days`, and it is the truer figure besides — these scripts are
+ * mid-game players a month in, somewhere in the middle of their own cycle rather than on day one.
+ *
+ * Tiles that pay an **item** rather than a currency are not counted. The ledger is kept in
+ * currencies, and what a Brewery Token is worth is the Market audit's question, not this one.
+ */
+const WELCOME_PER_DAY: readonly { currency: CurrencyId; amount: number }[] = (() => {
+  const cycle = new Map<CurrencyId, number>();
+  for (const tile of content.loginBoard)
+    for (const grant of tile.rewards)
+      if (grant.kind === 'currency')
+        cycle.set(grant.currency, (cycle.get(grant.currency) ?? 0) + grant.amount);
+  return [...cycle].map(([currency, amount]) => ({ currency, amount: amount / LOGIN_DAYS }));
+})();
 
 /** Income and spend, kept per line so the report can name where a currency came from. */
 export class Ledger {
@@ -158,6 +187,12 @@ function playDay(script: EconomyScript, day: number, ledger: Ledger, rng: Rng): 
     ledger.earnAll('idle chest', haul.currencies);
   }
 
+  // ── The Standing Welcome: a tile a day, booked at the board's own rate (see WELCOME_PER_DAY).
+  ledger.earnAll('the welcome', WELCOME_PER_DAY);
+
+  // ── The stall: the day's surplus gold, spent on whatever this hour happens to carry.
+  stallDay(script, day, ledger);
+
   // ── The Brewery: the day's runs, spread over the halls whose doors are open this weekday.
   brewDay(script, day, ledger);
 
@@ -197,9 +232,56 @@ function playDay(script: EconomyScript, day: number, ledger: Ledger, rng: Rng): 
   const faded = SHARD_EXCHANGE.faded;
   if (faded) ledger.pay('faded shards', faded.currency, script.fadedShardsPerDay * faded.amount);
   if (endOfWeek) {
+    buyShelf(script, ledger);
     ledger.payAll('crafting', craftCost(script.craftTier, true), script.craftsPerWeek);
     const ancient = SHARD_EXCHANGE.ancient;
     if (ancient) ledger.pay('ancient shards', ancient.currency, script.ancientShardsPerWeek * ancient.amount);
+  }
+}
+
+/**
+ * The day at the hourly stall (MARKET.md §1): the surplus gold, spent on what this hour carries.
+ *
+ * The script walks the stalls it actually sits down in front of — one per sitting, spread across
+ * the day, each drawn by the game's own `goldShelf` — and takes whole slots in shelf order until
+ * the day's budget is gone. Shelf order rather than cheapest-first is deliberate: the shelf is
+ * already a random draw from the pool, so taking it as it comes is the average basket, while a
+ * cheapest-first shopper is one the stall does not have. The dear rows price themselves out
+ * without any rule saying so — a Sacred Shard at 260,000 gold never fits a day's budget, which is
+ * the whole point of that row being on the board.
+ */
+function stallDay(script: EconomyScript, day: number, ledger: Ledger): void {
+  let budget = script.stallGoldPerDay;
+  if (budget <= 0) return;
+  for (let sitting = 0; sitting < script.logins && budget > 0; sitting += 1) {
+    // Sittings spread over the day, so each one meets a stall the last one did not.
+    const hour = day * HOURS_PER_DAY + Math.floor((sitting * HOURS_PER_DAY) / script.logins);
+    for (const slot of goldShelf(`economy:${script.id}`, hour * MS_PER_HOUR)) {
+      const count = Math.min(slot.stock, Math.floor(budget / slot.unitGold));
+      if (count <= 0) continue;
+      const cost = slotCost(slot, count);
+      budget -= cost;
+      ledger.pay('gold market', 'gold', cost);
+      ledger.earn('gold market', slot.currency, count);
+    }
+  }
+}
+
+/**
+ * The week at the Gem Market's fixed shelf (MARKET.md §2).
+ *
+ * A script names entries by id and every figure comes from the content, so a repricing moves the
+ * ledger without a line here being touched. Bundles are in no script's week on purpose: they are
+ * once per chronicle (the owner's answer), which makes them a one-off rather than a rate, and a
+ * one-off has no honest place in a figure printed per week.
+ */
+function buyShelf(script: EconomyScript, ledger: Ledger): void {
+  for (const id of script.shelfPerWeek) {
+    const entry = content.gemShelfById(id);
+    if (!entry) throw new Error(`no shelf entry ${id}`);
+    ledger.pay('gem market', 'gems', entry.price);
+    for (const grant of entry.contents)
+      if (grant.kind === 'currency') ledger.earn('gem market', grant.currency, grant.amount);
   }
 }
 
@@ -246,4 +328,85 @@ export function simulate(script: EconomyScript, sample: number, days: number): L
   const rng = createRng(`economy:${script.id}:${sample}`);
   for (let day = 0; day < days; day += 1) playDay(script, day, ledger, rng);
   return ledger;
+}
+
+/**
+ * One row of the shelf audit: what an entry costs, and the most it can ever hand back in gems.
+ *
+ * This is the question the Gem Market has to answer before anything else. Every entry is a gem
+ * **sink** — gems in, progress out — and the one way that breaks is an entry that pays back more
+ * gems than it costs, because then it is not a sink at all but a loop, and a loop with infinite
+ * stock is infinite gems. `pnpm sim:economy --strict` fails when any row's `gemsBack` reaches its
+ * price, so a future repricing cannot open one by accident.
+ */
+export interface ShelfAudit {
+  id: string;
+  price: number;
+  /** The ceiling on what one purchase can return in gems, contents and effects together. */
+  gemsBack: number;
+  /** Where those gems would come from, for the report to name. */
+  via: string;
+}
+
+/** The most gems one full sweep of a board can pay: its quests, plus the richer face of each chest. */
+function boardGems(period: 'daily' | 'weekly'): number {
+  const board = content.questBoard(period);
+  const gems = (rows: readonly { currency: CurrencyId; amount: number }[]): number =>
+    rows.reduce((sum, row) => sum + (row.currency === 'gems' ? row.amount : 0), 0);
+  let total = board.quests.reduce((sum, quest) => sum + gems(quest.rewards), 0);
+  for (const chest of board.chests)
+    // A chest with a cadence shows two faces; the audit has to assume the one that pays gems.
+    total += Math.max(gems(chest.currencies), chest.cycle ? gems(chest.cycle.instead) : 0);
+  return total;
+}
+
+/**
+ * The most gems using one of an item can return.
+ *
+ * Exhaustive over the effect union, so a new kind of consumable cannot ship without someone
+ * deciding — here, in the open — whether it can pay gems back.
+ */
+function consumableGems(item: string, count: number): { gems: number; via: string } {
+  const def = content.consumableById(item);
+  if (!def) throw new Error(`no consumable ${item}`);
+  const effect = def.effect;
+  switch (effect.kind) {
+    case 'quest_reset': {
+      // The one that can: a reset board is a board whose chests pay again.
+      const per = boardGems(effect.period);
+      return { gems: per * count, via: `${count}× the ${effect.period} board, ${per} gems a sweep` };
+    }
+    case 'boost':
+      // Boosts multiply experience, which no currency in this ledger is.
+      return { gems: 0, via: '' };
+    case 'brewery_runs':
+      return { gems: 0, via: '' };
+    case 'mission_skip':
+      // A skipped step is marked done and left unpaid (the owner's answer), so it pays nothing.
+      return { gems: 0, via: '' };
+    case 'champion_level':
+    case 'champion_stars':
+      return { gems: 0, via: '' };
+  }
+}
+
+/** Every entry of the Gem Market, priced against the most it can ever pay back. */
+export function shelfAudit(): readonly ShelfAudit[] {
+  return content.gemShelf.map((entry) => {
+    let gemsBack = 0;
+    const via: string[] = [];
+    for (const grant of entry.contents) {
+      if (grant.kind === 'currency') {
+        if (grant.currency !== 'gems') continue;
+        gemsBack += grant.amount;
+        via.push(`${grant.amount} gems in the box`);
+        continue;
+      }
+      const from = consumableGems(grant.item, grant.count);
+      if (from.gems <= 0) continue;
+      gemsBack += from.gems;
+      via.push(from.via);
+    }
+    return { id: entry.id, price: entry.price, gemsBack, via: via.join(', ') || 'nothing' };
+  });
 }

@@ -61,6 +61,18 @@ export interface EconomyScript {
   championLevelAround: number;
   craftsPerWeek: number;
   craftTier: CraftTier;
+  /**
+   * Gold left at the hourly stall each day (MARKET.md §1). The stall is where surplus gold goes,
+   * so this is a share of the day's income rather than a shopping list: the sim spends it on
+   * whatever the hours the player sits down in happen to be carrying.
+   */
+  stallGoldPerDay: number;
+  /**
+   * Entries of the Gem Market's fixed shelf bought each week (MARKET.md §2), by id. Prices and
+   * contents come from the content, so a repricing moves the ledger on its own. Bundles belong in
+   * no script: they are once per chronicle, which makes them a one-off rather than a weekly rate.
+   */
+  shelfPerWeek: readonly string[];
 }
 
 /**
@@ -97,6 +109,10 @@ export const MID_GAME: EconomyScript = {
   championLevelAround: 34,
   craftsPerWeek: 7,
   craftTier: 'ember',
+  // About half the day's gold surplus — enough to clear most of the two stalls they sit in front
+  // of, and never enough for the rows the stall puts there to be saved for.
+  stallGoldPerDay: 60_000,
+  shelfPerWeek: ['shelf.champion_xp_boost', 'shelf.brewery_boost'],
 };
 
 /** The same month played by someone who sits down once a day — the floor the design must not block. */
@@ -119,6 +135,8 @@ export const CASUAL: EconomyScript = {
   gearLevelsPerDay: 6,
   championLevelsPerDay: 10,
   craftsPerWeek: 2,
+  stallGoldPerDay: 30_000,
+  shelfPerWeek: ['shelf.champion_xp_boost'],
 };
 
 /**
@@ -141,6 +159,13 @@ export const DEDICATED: EconomyScript = {
   championLevelsPerDay: 60,
   fadedShardsPerDay: 14,
   craftsPerWeek: 12,
+  stallGoldPerDay: 90_000,
+  shelfPerWeek: [
+    'shelf.champion_xp_boost',
+    'shelf.player_xp_boost',
+    'shelf.brewery_boost',
+    'shelf.brewery_token',
+  ],
 };
 
 export const SCRIPTS: readonly EconomyScript[] = [CASUAL, MID_GAME, DEDICATED];
@@ -154,6 +179,13 @@ export interface EconomyBand {
   currency: CurrencyId;
   per: 'day' | 'week';
   side: 'income' | 'spend' | 'net';
+  /**
+   * One ledger line by name, instead of the script's whole book — `'the welcome'`, `'gold market'`.
+   * A line band is how a *source* is held to a size: a total says the week is healthy, and says
+   * nothing about one line having quietly grown to be all of it. `net` is meaningless for a line,
+   * so a line band is `income` or `spend`.
+   */
+  line?: string;
   /** What the design prints. `min`/`max` are the range the sim must land in. */
   min?: number;
   max?: number;
@@ -183,8 +215,8 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     per: 'week',
     side: 'income',
     min: 1_150,
-    max: 1_750,
-    why: 'ECONOMY.md §7: ~1,430 gems a week, of which ~600 is the two bosses',
+    max: 1_950,
+    why: 'ECONOMY.md §7: ~1,670 gems a week — ~600 the two bosses, ~240 the Standing Welcome',
   },
   {
     script: 'mid_active',
@@ -213,6 +245,7 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
   },
   {
     script: 'mid_active',
+    line: 'brewery',
     currency: 'brew_valor',
     per: 'day',
     side: 'income',
@@ -221,6 +254,7 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
   },
   {
     script: 'mid_active',
+    line: 'brewery',
     currency: 'brew_eclipse',
     per: 'day',
     side: 'income',
@@ -264,7 +298,35 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     currency: 'gems',
     per: 'week',
     side: 'income',
-    max: 2_400,
-    why: 'the same for gems — the boss and chest lines do not scale with sittings, and should not',
+    max: 2_600,
+    why: 'the same for gems — the boss, chest and calendar lines do not scale with sittings, and should not',
+  },
+  {
+    script: 'mid_active',
+    line: 'the welcome',
+    currency: 'gems',
+    per: 'week',
+    side: 'income',
+    min: 180,
+    max: 340,
+    why: 'LOGIN.md §5: the board loops forever, so its ~240 gems a week must stay a welcome — about a seventh of an active week — and never a second job',
+  },
+  {
+    script: 'mid_active',
+    line: 'the welcome',
+    currency: 'gold',
+    per: 'day',
+    side: 'income',
+    max: 12_000,
+    why: "LOGIN.md §5: the board's gold is a top-up on the day, not a wage — well under a twentieth of it",
+  },
+  {
+    script: 'mid_active',
+    line: 'gold market',
+    currency: 'gold',
+    per: 'day',
+    side: 'spend',
+    min: 30_000,
+    why: 'MARKET.md §1: the stall is where a day of surplus gold goes, so a budget this size must find things to buy — if it cannot, the pool is priced out of reach',
   },
 ];
