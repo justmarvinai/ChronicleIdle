@@ -124,7 +124,12 @@ function StallSlot({ slot, onBuy }: { slot: GoldSlotView; onBuy: (count: number)
         </span>
       </div>
       <div className={styles.slotBuy}>
-        <span className={`num ${styles.price}`}>
+        <span
+          className={`num ${styles.price}`}
+          data-testid={`stall-price-${slot.index}`}
+          // The dearest rows print abbreviated (260,000 reads as "260K"), so the figure rides along.
+          data-gold={slot.unitGold}
+        >
           <TintedIcon asset={CURRENCY_BY_ID.gold.icon} size={18} label="" />
           {formatAmount(slot.unitGold)}
         </span>

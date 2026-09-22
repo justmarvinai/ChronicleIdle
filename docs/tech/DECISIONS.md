@@ -516,3 +516,29 @@ clock — a dungeon's tickets, a shop's daily stock — is a cap, a period and a
 over-cap case (a chronicle at 16/10) is one implementation rather than two, so it is either right
 everywhere or wrong everywhere; the tower's UI shows it in ember because it is a state worth
 seeing, and nothing in `0.2.0` can reach it yet.
+
+## ADR-045 — A rotating shop is a function of the hour, and a boost is an instant
+**Context.** The Gold Market carries six slots that change every sixty minutes, and the three
+boosts each last twenty-four hours. Both are the kind of thing that gets built with a stored
+snapshot and a clock: roll six rows at the top of the hour and keep them; store "time left" on a
+boost and count it down. Both of those shapes are wrong in the same two ways. Something has to run
+at the boundary — and nothing runs while the game is closed, so the first visit after a night away
+has to reconstruct what should have happened. And a stored roll is a roll a player can refuse: a
+shelf written to the save can be rerolled by closing the tab before it is written, which is the
+oldest exploit in the genre.
+**Decision.** Neither is stored. The stall is `goldShelf(seedRoot, now)` — a weighted draw without
+replacement seeded by `(seedRoot, floor(now / 60 min))` — so the six slots at 14:00 are the same
+six at 14:59 and a different six at 15:00, with nothing running at the top of the hour. What the
+save keeps is only which slot indices have been bought from and the hour that record belongs to; a
+record stamped with an older hour reads as an untouched stall, which is `ADR-033`'s rule applied to
+a shop. A boost stores **the instant it runs out**, never a duration, and `applyBoost` extends from
+`max(current expiry, now)` — which is also what makes the owner's "they stack in time" rule a
+single expression rather than a special case for "already running".
+**Consequences.** The reroll exploit cannot exist: there is nothing to refuse. A boost used before
+a weekend comes back correctly spent rather than owing two days, and three boosts used at once are
+seventy-two hours without anything having to remember that there were three. The header's
+countdown is a subtraction against `Date.now()` rather than a timer that has to survive a reload.
+The cost is that the stall cannot be hand-curated — there is no "this hour, a sale on brews"
+without a second mechanism — and that changing `GOLD_MARKET_POOL` changes every past hour's shelf
+as well as every future one, which is only a problem if a shelf were ever worth reproducing, and it
+is not: it is gone in an hour either way.

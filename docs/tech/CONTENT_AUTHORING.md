@@ -711,3 +711,89 @@ Retuning the ladder is `pnpm sim:balance --dungeon` (eight rungs of Cindervault 
 reference teams, then the seven bands across all four keeps, failing `--strict` when one breaks)
 and `pnpm sim:balance --scan --dungeon` (how much room each keep has left at the rungs the bands
 name — the table a keeper is fitted against). `DUNGEONS.md` §7 is the current fit.
+
+## 17. The Market, the consumables and the calendar
+
+Three content folders, all plain data (`MARKET.md`, `LOGIN.md`).
+
+### 17.1 A consumable (`src/content/consumables/index.ts`)
+
+```ts
+{
+  id: 'item.brewery_token',
+  name: 'item.brewery_token.name',
+  description: 'item.brewery_token.description',
+  icon: 'spell.rune_jade_coin',
+  rarity: 'rare',                       // the frame it is drawn in, not what it does
+  effect: { kind: 'brewery_runs' },
+  version: 1,
+}
+```
+
+`ConsumableEffect` is a **discriminated union of six kinds** — `boost`, `brewery_runs`,
+`quest_reset`, `mission_skip`, `champion_level`, `champion_stars` — and `state/bag.ts` switches over
+it exhaustively. A new *item* that reuses an existing kind is pure data. A new *kind* is an engine
+change: add the arm to the union, the arm to that switch, the sentence it prints to
+`market-view.ts`'s `outcomeLine`, and a test. That is on purpose — every consumable is a thing
+that mutates a save, so no one may ship one without deciding, in the open, what it does and what it
+says.
+
+`needsChampion(def)` is how the Bag knows to open the picker rather than acting on whoever is
+first; it is true for the two champion kinds and derived, never declared.
+
+### 17.2 A shelf entry (`src/content/market/index.ts`)
+
+`single(order, slug, price)` builds the nine that sell one consumable forever, so a repricing is one
+number. A bundle is written out, carries `once: true` and may hold currencies as well as items:
+
+```ts
+{
+  id: 'shelf.stewards_ledger',
+  name: 'shelf.stewards_ledger.name',
+  description: 'shelf.stewards_ledger.description',
+  // Singly: 350 + 450 + 240 = 1,040.
+  price: 750,
+  once: true,
+  contents: [
+    { kind: 'consumable', item: 'item.daily_voucher', count: 2 },
+    { kind: 'consumable', item: 'item.weekly_voucher', count: 1 },
+    { kind: 'consumable', item: 'item.brewery_token', count: 2 },
+  ],
+  order: 12,
+  version: 1,
+}
+```
+
+Always leave the comment with the singly price: `content:validate` checks that a bundle is cheaper
+than its parts, and the comment is what makes the price reviewable without doing the sum again.
+
+The Gold Market has **no content file at all** — its seventeen rows, their weights, their unit
+prices and their stock ranges are balance (`src/content/balance/market.ts`), because every one of
+them is a number to tune rather than a thing to name.
+
+### 17.3 A login tile (`src/content/login/index.ts`)
+
+Thirty entries, `{ day, tier, rewards }`, using the local `c()` and `item()` helpers. The tiers are
+**shuffled on purpose** and days 28–30 must all be `legendary` while nothing before them may be.
+
+### 17.4 What the validator checks
+
+`pnpm content:validate` refuses a build where any of these hold:
+
+- a shelf entry names an item that does not exist, has no contents, is priced at zero or shares an
+  id or an `order` with another;
+- a bundle of consumables is priced at or above the sum of its parts bought singly (a bundle of
+  currencies has no shelf price to compare against, so its value is judged by hand);
+- a login day is duplicated, or one of the thirty is missing;
+- a day before 28 is `legendary`, or one of 28–30 is not;
+- a grant anywhere — shelf, bundle or tile — names a currency or an item that does not exist.
+
+`pnpm sim:economy` adds the balance half: every shelf entry is audited against **the most gems it
+can ever pay back**, and `--strict` fails on any that reaches its own price. That is the rule that
+keeps the Gem Market a sink rather than a loop, and it is checked against the content, so it holds
+for every player at once rather than only for the scripts.
+
+To add an item: write the `ConsumableDef`, add it to `CONSUMABLES`, give it a `single(...)` on the
+shelf (or put it in a bundle), and add its name and description to `src/i18n/en/market.ts`.
+`CONSUMABLE_BY_ID`, `CONSUMABLE_IDS` and `GEM_SHELF_BY_ID` all derive, so nothing else has to be
+told.

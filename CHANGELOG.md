@@ -11,6 +11,81 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.0] — 2026-09-22 — The Market and the Standing Welcome
+
+The game's one shop, the Bag behind it, the three boosts and a thirty-day calendar with no streak.
+`docs/design/MARKET.md`, `docs/design/LOGIN.md`, `docs/tech/UI_DESIGN.md` §5.25–§5.27,
+`docs/tech/CONTENT_AUTHORING.md` §17, `docs/design/ECONOMY.md` §7–§8.
+
+### Added
+
+- **The Market** — two tabs on the hub's Market hotspot, open from player level 1
+  (`FEATURE_UNLOCK_LEVEL.market`), selling nothing for money (`CLAUDE.md` §2 — there is no
+  monetisation and never will be). Both currencies are earned.
+- **The Gold Market** — six slots drawn from a seventeen-row pool, **without replacement**, and
+  replaced every 60 minutes. The shelf is **derived, never rolled and stored**: `(seedRoot, hour)`
+  seeds the draw, so the six a chronicle sees at 14:00 are the same at 14:59 and different at
+  15:00, with nothing running at the top of the hour — which also closes the reroll-by-not-saving
+  exploit for free. Measured over 200,000 stalls: a Legendary Tome once in 12 hours, an Ancient
+  Shard once in 17, a Sacred Shard once in 82, and ~49,000 gold to clear an average stall.
+- **The Gem Market** — nine consumables that never run out plus four `once: true` bundles priced at
+  ~70 % of their parts, which is only sound *because* each can be taken once (the owner's answer).
+- **`src/content/consumables/`** — nine items over a six-kind `ConsumableEffect` union
+  (`boost`, `brewery_runs`, `quest_reset`, `mission_skip`, `champion_level`, `champion_stars`),
+  switched over exhaustively in `state/bag.ts`, so a new kind cannot ship without someone deciding
+  what it does and what it says.
+- **`src/content/market/`**, **`src/content/login/`**, **`src/content/grants.ts`** — the shelf, the
+  thirty-day board and the one `Grant` union both hand things over in.
+- **`src/content/balance/{market,boosts,login}.ts`** — the gold pool and its weights, the three
+  24-hour ×2 boosts, and the board's length, tiers and finale rule.
+- **`engine/market/`, `engine/bag/`, `engine/boosts/`, `engine/login/`** — four pure modules. The
+  stacking rule lives in `applyBoost`: a second use extends from `max(current expiry, now)`, so
+  boosts stack **in time, not in strength** — three Chronicle XP Boosts is 72 hours at ×2.
+- **The Bag** — item id → count, reached from the hub's bottom bar. Buying never uses; an item is
+  spent when the player decides (the owner's brief). The Chicken and the Cheatmeal open a picker
+  that draws the whole roster and greys out every champion they would do nothing for.
+- **The header boost pills** — each *running* boost draws a tinted pill with its countdown beside
+  the profile chip, on every screen. A boost that is not running draws nothing.
+- **The Standing Welcome** — thirty days, tiers shuffled rather than climbing, days 28–30 the best
+  on the board, **no streak**, and the board loops from day 1 forever (the owner's answer). The
+  whole state is `{ claimed, lastKey }`: the day owed is `(claimed mod 30) + 1` and whether it is
+  still there is `lastKey !== todayKey`, so a missed day costs nothing and a second visit pays
+  nothing. Reached from a *Welcome* button that wears a dot when a day is owed, and never opens
+  itself over the hub.
+- **Save v19** — `bag`, `boosts`, `market` and `login`, all four starting empty. Boost expiries are
+  **instants, not durations**; the market keeps only which slots of *this* hour were bought (`hour`
+  starts at −1, which no real hour can collide with) and which bundles are gone for good. A veteran
+  chronicle begins the calendar at day 1 rather than being back-paid thirty days it never claimed.
+- **Counters** `market.purchases`, `market.gold.spent`, `market.gems.spent`, `market.bought.<id>`,
+  `bag.used`, `bag.used.<id>`, `login.claims` and `missions.skipped`, so quests and the mission
+  line can name any of this later without another migration.
+
+### Changed
+
+- `pnpm sim:economy` gained **line bands** — a band may now hold one named ledger line rather than
+  the script's whole book, which is how a *source* is held to a size. The Brewery's two brew bands
+  moved onto the `brewery` line, since the stall now sells brews too and a whole-book reading would
+  no longer be testing what those bands say.
+- The scripts shop: a daily gold budget at the stall (through the game's own `goldShelf`) and a
+  weekly basket on the gem shelf, priced from the content so a repricing moves the ledger by
+  itself. The Gold Market is the sink an active player's ~112k a day of leftover gold was missing;
+  the net now lands at ~57k.
+- `ECONOMY.md` §7–§8 re-measured: **~1,674 gems a week** in (the calendar's ~240 is new) and ~594
+  net after shards, refills and the shelf; ~326k gold a day in and ~57k net. The `mid_active` gem
+  ceiling moved 1,750 → 1,950 and `dedicated`'s 2,400 → 2,600, because the design figure itself
+  moved rather than the content drifting into an old band.
+
+### Balance
+
+- **`pnpm sim:economy` now audits the Gem Market**, entry by entry, against the one rule it has:
+  no entry may pay its own price back in gems, because infinite stock plus a positive gem return is
+  infinite gems. Only the two vouchers return a gem at all — 34 % and 24 % of their price — and the
+  Steward's Ledger 31 %. `--strict` fails on any row that reaches its price. Verified by breaking
+  it on purpose (a voucher priced at 50 → `120 %`, exit 1).
+- Two bands hold the calendar: `the welcome` must pay 180–340 gems a week and at most 12,000 gold a
+  day. It is booked at the board's **cycle rate** rather than walked tile by tile, because a script
+  is 28 days and the board is 30 — a walk would stop two tiles short, and those two are the finale.
+
 ## [0.8.0] — 2026-09-22 — The Five Keeps
 
 The Dungeons, and the campaign softened a notch. `docs/design/DUNGEONS.md`,

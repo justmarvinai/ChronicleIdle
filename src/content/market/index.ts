@@ -2,15 +2,17 @@
  * The Gem Market's shelf (docs/design/MARKET.md §2): nine single items that never run out, and
  * four bundles that can each be taken once.
  *
- * **Prices are weeks.** `ECONOMY.md` §7 measures an active chronicle at ~1,430 gems a week in and
- * ~730 net after its shards and refills, so the shelf reads as: a boost is most of a day's gems, a
- * voucher a day and a half, the Chicken two weeks of what is left over, and the Cheatmeal the best
- * part of six. That is what "very expensive" and "extremely expensive" were asked to mean.
+ * **Prices are weeks.** `ECONOMY.md` §7 measures an active chronicle at ~1,674 gems a week in and
+ * ~594 net after its shards, refills and this shelf, so the prices read as: a boost is most of a
+ * day's gems, a voucher a day and a half, the Chicken two and a half weeks of what is left over,
+ * and the Cheatmeal the best part of seven. That is what "very expensive" and "extremely
+ * expensive" were asked to mean.
  *
- * **No entry may be a gem printer.** The two vouchers hand back a board whose own chest pays gems,
- * so each is priced above what that board can return: the daily chest is ~50 gems and the voucher
- * 175; the weekly board and chest are ~112 and the voucher 450. A player buying one is buying
- * time, never arbitrage — `pnpm sim:economy` holds that as a band.
+ * **No entry may be a gem printer.** The two vouchers hand back a board whose own chests pay gems,
+ * so each is priced well above the most that board can return: the daily board pays at most 60
+ * gems against a 175 price, the weekly 110 against 450. A player buying one is buying time, never
+ * arbitrage — `pnpm sim:economy` audits every entry against that rule and `--strict` fails on any
+ * that reaches its own price.
  *
  * The bundles are the genre's one-time packs: each is priced at roughly 70 % of its parts bought
  * singly, which is only sound *because* it can be taken once (the owner's answer).

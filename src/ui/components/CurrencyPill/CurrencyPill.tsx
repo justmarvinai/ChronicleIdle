@@ -43,6 +43,13 @@ export function CurrencyPill({
         className={[styles.pill, styles[size], highlight ? styles[highlight] : ''].join(' ')}
         style={kitBorder('ui.dark_ember.frame_sm_thin', 0.3)}
         data-testid={`pill-${currency}`}
+        /*
+         * The exact figure, beside the abbreviated one. `formatAmount` prints 825,000 as "825K",
+         * which is right for a header and useless to anything that has to read the number back —
+         * and it carries the *target* rather than the tick-up's current value, so a reader sees the
+         * wallet as it now stands rather than as it is still being drawn.
+         */
+        data-amount={amount}
       >
         <div className={styles.fill} style={kitBorder('ui.dark_ember.bg_tile_sm', 0.5)} aria-hidden="true" />
         <TintedIcon

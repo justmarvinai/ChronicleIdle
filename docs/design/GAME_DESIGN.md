@@ -74,6 +74,8 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Eternal Tower | 100 floors climbed in order, every 10th a boss floor, keys on a 15-minute clock, a 30-day season | `ETERNAL_TOWER.md` |
 | Brewery | Four halls, one per element, five stages each; 20 runs a day across all four, stage *n* pays *n* brews | `BREWERY.md` |
 | Glorious Palace | An account-wide skill tree: 237 points from finished content, spent on small permanent stats for a whole element | `GLORIOUS_PALACE.md` |
+| Market | Two shelves: an hourly gold stall of six random slots, and a fixed gem shelf of nine consumables and four one-time bundles | `MARKET.md` |
+| Standing Welcome | Thirty days of rewards, one per day the player comes back; no streak to lose, and the board loops forever | `LOGIN.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
 | Tutorial | Interactive scripted onboarding with Eldric Lorekeeper | `TUTORIAL.md` |

@@ -265,6 +265,35 @@ works on a brewery stage without knowing the mode exists.
 dungeon ids in `encounterById`, so battle setup, the HUD and the result work on a keep without
 knowing the mode exists — the same seam the Brewery and the tower use.
 
+### 3.7d Market, bag, boosts and login modules
+
+Four small modules, each one file plus a barrel, all pure (`MARKET.md`, `LOGIN.md`; the rotating
+shelf and the boost expiries are `ADR-045`):
+
+- `engine/market/gold.ts` — `marketHour`, `msUntilRotation`, `goldShelf(seedRoot, now)`,
+  `slotCost`, `slotLeft`, `affordableFromSlot`. The shelf is **derived, never rolled and stored**:
+  `(seedRoot, hourKey)` seeds a weighted draw without replacement, so the six slots a chronicle
+  sees at 14:00 are the same six at 14:59 and a different six at 15:00, with nothing running at the
+  top of the hour. It closes the reroll exploit for free — a shelf that were rolled *and* stored
+  could be rerolled by refusing to save.
+- `engine/bag/bag.ts` — `held`, `holds`, `addToBag`, `takeFromBag`, `bagRows`, `bagSize` over a
+  `Readonly<Record<string, number>>`. A consumable has no instance identity, so the Bag is counts
+  rather than objects; `takeFromBag` returns `null` rather than throwing, and deletes the key at
+  zero so an empty Bag is empty rather than full of noughts.
+- `engine/boosts/boosts.ts` — `isBoostActive`, `boostRemaining`, `boostMultiplier`, `activeBoosts`,
+  `pruneBoosts` and `applyBoost`, which is where the stacking rule lives: a second use extends from
+  `max(current expiry, now)`, so boosts stack **in time, not in strength** (the owner's brief).
+  What the save keeps is the instant a boost runs out, never a remaining duration.
+- `engine/login/login.ts` — `pendingDay`, `cycle`, `canClaim`, `claimDay`, `boardState` over
+  `{ claimed, lastKey }`. Which day is owed is `(claimed mod 30) + 1` and whether it is still there
+  is `lastKey !== todayKey`, so there is no streak to reset and no cycle counter to keep in step.
+
+`state/` holds the parts that touch a whole save: `state/market.ts` (the two views and the two
+purchases), `state/bag.ts` (`applyUseItem` and an exhaustive switch over the six effect kinds),
+`state/boosts.ts` (the three reward sites that may be doubled), `state/login.ts` and
+`state/grants.ts` — one payer for currencies and consumables alike, so a bundle and a login tile
+cannot drift apart in what they can give.
+
 ### 3.8 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
@@ -274,8 +303,8 @@ knowing the mode exists — the same seam the Brewery and the tower use.
 ## 4. State (Zustand)
 
 Slices: `profile`, `wallet`, `energy`, `roster`, `gear`, `campaign`, `bosses`, `tower`, `summon`,
-`quests`, `missions`, `idle`, `tutorial`, `settings`, `stats`, `ui` (transient: screen stack, dialogs,
-selection), `battle` (transient controller). Persisted slices form `SaveGame`; `ui` and `battle`
+`quests`, `missions`, `idle`, `bag`, `boosts`, `market`, `login`, `tutorial`, `settings`, `stats`,
+`ui` (transient: screen stack, dialogs, selection), `battle` (transient controller). Persisted slices form `SaveGame`; `ui` and `battle`
 are not persisted (an interrupted battle is forfeited, energy already spent — standard for the
 genre; a "battle in progress" flag prevents double-spend on reload).
 
@@ -301,7 +330,10 @@ v17 (0.7.1: no new shape at all — the version the boss rename hangs on, so a c
 damage, chests, records, Palace payments and counters move to the new ids instead of reading as a
 chronicle that never fought either of them) and v18 (0.8.0: `dungeons`, plus the third team mode
 the keeps get their own presets in — its migration writes an untouched ladder and an empty preset
-row, because there is nothing to back-pay). Fields
+row, because there is nothing to back-pay) and v19 (0.9.0: `bag`, `boosts`, `market` and `login`,
+all four starting empty — a veteran chronicle begins the calendar at day 1 rather than being
+back-paid thirty days it never claimed, and the market's `hour` starts at −1 so no real hour can
+collide with it). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -353,6 +385,25 @@ interface SaveGame {
   // `normal` reaching the twentieth — so there is no per-stage list to fall out of step and no
   // "unlocked" flag to disagree with it (the tower's discipline, one ladder per difficulty).
   dungeons: { cleared: Record<string, { normal: number; hard: number }> };
+  // Shipped in save v19. The Bag (MARKET.md §5): item id → how many are held, and nothing else —
+  // a consumable has no instance identity, so two tokens are the number two. A key at zero is
+  // removed rather than kept.
+  bag: Record<string, number>;
+  // Shipped in save v19. The three timed boosts (MARKET.md §4): boost id → **the instant it runs
+  // out**, never a duration, so a boost survives a reload and cannot be extended by closing the
+  // game. A missing key is a boost that has never run; a past instant is one that has lapsed, and
+  // both read the same way.
+  boosts: Partial<Record<BoostId, number>>;
+  // Shipped in save v19. The Market (MARKET.md §1). The Gold Market's shelf is **not** here: it is
+  // derived from the hour, so what a save keeps is only which slots have been bought from and the
+  // hour that record belongs to — a record from an older hour reads as an untouched stall. The
+  // bundles are once per chronicle, so they are a list that never resets.
+  market: { hour: number; taken: Record<string, number>; bundles: string[] };   // slot index → bought
+  // Shipped in save v19. The Login Calendar (LOGIN.md §3): the two numbers everything else is read
+  // off. `claimed` counts days ever taken across every cycle and never resets — which board day is
+  // owed is `(claimed mod 30) + 1` — and `lastKey` is the day key of the last claim, which is what
+  // makes a second claim on the same day impossible and a missed day free.
+  login: { claimed: number; lastKey: string };
   // Shipped in save v7. `pity` counts pulls since each rarity the shard tracks; `unseen` drives the
   // "NEW" ribbon; `choices` records the champion choices taken (which are *owed* is derived from
   // the campaign's stars, so the ledger cannot disagree with the play).

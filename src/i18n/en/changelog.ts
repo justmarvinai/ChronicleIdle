@@ -20,6 +20,24 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_0.name': 'The Market and the Standing Welcome',
+  'release.0_9_0.market':
+    'There is a Market in Emberhold now, open from your very first hour, and it has two counters. Neither of them takes real money — nothing in this game ever will. One takes gold, the other takes gems, and they could not be less alike.',
+  'release.0_9_0.welcome':
+    'And there is a Standing Welcome: thirty days of rewards, one waiting for you each day you come back. Miss a day and you lose nothing at all — the board simply waits. The day you were owed is still the day you are owed.',
+  'release.0_9_0.gold_stall':
+    'The Gold Market is a stall that changes hands every hour. Six things, chosen at random, in whatever quantity the trader happened to bring: mostly iron, dust, brews and tomes, but now and then a Legendary Tome, and very rarely a Sacred Shard at a price you will have to save for. When the hour turns, everything changes, so a stall worth raiding is worth raiding now.',
+  'release.0_9_0.gem_shelf':
+    'The Gem Market never changes and never runs out. A Brewery Token puts your twenty daily runs back to twenty. Three boosts double your champions’ experience, your own experience, or the brews the cellars pour, each for a day. Two vouchers put a quest board back to untouched. A Mission Skip Token closes the step you are stuck on — unpaid, but properly closed. And for the very patient: the Champion’s Chicken, which takes one champion straight to the top of their stars, and the Champion’s Cheatmeal, which gives them every star they could ever wear.',
+  'release.0_9_0.bundles':
+    'Four bundles sit at the end of that shelf, each close to a third cheaper than buying its parts one at a time — and each can be taken once per chronicle, so choose your moment.',
+  'release.0_9_0.bag':
+    'Everything you buy goes into a Bag rather than being used on the spot, and there it waits until you say so. Every row tells you exactly what using it would do, because you will have forgotten by the time you want it.',
+  'release.0_9_0.boosts':
+    'Boosts stack in time, not in strength: use three Chronicle XP Boosts and you have seventy-two hours of double experience, not one hour of eight times. While one is running it wears a small badge beside your portrait at the top of the screen, counting down, on every screen you visit.',
+  'release.0_9_0.no_streak':
+    'The Welcome has no streak to break and never resets — the rewards are scattered across the thirty days rather than climbing, except for the last three, which are the best on the board. Claim the thirtieth and the board starts again at the first, for as long as you keep playing.',
+
   'release.0_8_0.name': 'The Five Keeps',
   'release.0_8_0.dungeons':
     'There are Dungeons now, on the Battle menu between the Campaign and the Bosses, and they are open from your very first hour. Four keeps stand ready — Cindervault, the Pale Expanse, Velkora’s Cradle and Ashenreach — each one held by a keeper who never leaves it.',

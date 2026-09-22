@@ -827,3 +827,67 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   and champion XP the evening was worth, the rung the first clear opened, whether Hard fell, and
   how many runs of the batch were completed. Its primary button goes back into the keep, on the tab
   the run was spent on.
+
+### 5.25 The Market (`docs/design/MARKET.md` §1–§2)
+- **Two tabs, and the difference is the first thing a player meets.** `Tabs` at the head of the
+  scene, *Gold Market* and *Gem Market*, on the tavern-interior backdrop with the interior ambience.
+  Under the tabs one line of blurb, and — on the gold tab only — **the countdown to the turn of the
+  hour** in gold at the right. The gem tab has no clock at all, which is exactly the point of it: a
+  shelf that never changes should not be wearing a timer.
+- **The stall is six rows you skim, not six posters.** Each slot is a `thin` frame laid out in three
+  columns: the currency's tinted icon at 52 px, its name over *"N left"*, and the price with the
+  buy button. Six have to fit without scrolling, so a row is 52 px of icon and nothing taller. A
+  second **"× N"** button appears beside *Buy* whenever more than one is affordable — buying the
+  rest of a slot in one press is the difference between a shop and a chore. A sold-out slot says
+  *Sold out*; one the purse cannot reach says *Not enough gold*, so a disabled button always says
+  which reason it is.
+- **The shelf is a grid of cards you read properly.** Singles on the `stone` slab; the four bundles
+  on `ember-tall`, so a pack is visibly a pack before the price is read, and each wears a *once per
+  chronicle* tag. A single draws the item's own icon tinted to its rarity, with the name in that
+  rarity's colour. A bundle draws its **contents as a list plus a `RewardList` of any currencies**,
+  because a bundle whose parts are not shown is a price that means nothing. A bundle already taken
+  greys out and its button reads *Taken*.
+- **A purchase never leaves the screen.** No confirmation dialog, no result panel: the wallet in the
+  header ticks down, the stall's stock ticks down, and the reward sound plays. Buying is the small
+  action here; using is the large one, and that happens in the Bag.
+
+### 5.26 The Bag and the champion picker (`docs/design/MARKET.md` §3, §5)
+- **Every row says what using it would do, in full.** A consumable is bought once and used weeks
+  later, so a name alone would make a player guess. Icon in a rarity-coloured square with its count
+  in the corner, then the name in that rarity's colour over its whole description, then the button.
+  Rows are in shelf order so the Bag reads the way the Market does. An empty Bag says so in one
+  line rather than showing an empty frame.
+- **The two that act on a champion say so and hand off.** Their button reads *Use on…* and opens the
+  picker rather than acting on whoever is first.
+- **The picker greys rather than hides.** The whole roster is drawn in a `VirtualGrid` of 96 px
+  cards; champions the item would do nothing for — one already at their level cap for a Chicken, one
+  already wearing every star for a Cheatmeal — are drawn **dimmed and dead to the touch**. Showing
+  them is the point: a player looking for someone who is *not* on the list learns the rule from the
+  list itself.
+- **What happened is said, not announced.** After a use, one line under the list: the item's name in
+  bold and the outcome after it — the boost and its new remaining time, *"twenty runs, from the
+  top"*, the level or the stars reached. A refusal prints the engine's own reason in the same place,
+  in the error colour.
+- **The header pills.** Each running boost draws a small tinted pill beside the profile chip, on
+  every screen, carrying its glyph and its countdown. A boost that is not running draws **nothing** —
+  three permanently dimmed icons would be clutter that says nothing, and an icon that is *there* is
+  the whole signal. The countdown ticks off `useNow` rather than a timer of its own, because the
+  expiry is an instant in the save.
+
+### 5.27 The Standing Welcome (`docs/design/LOGIN.md`)
+- **A board, not a list.** Thirty tiles in a scrolling grid, each framed in its tier's colour —
+  borrowed from gear's rarities, which a player already reads fluently. A tile carries *Day N*, its
+  rewards as a `RewardList` (plus the item's name in words when it pays one, because an icon alone
+  would be a guess), and its state: *Claimed* on the days behind, a primary **Claim** button on
+  today's, nothing on the days ahead. The three finale tiles carry a warmer frame, so the end of the
+  board reads as the end of the board.
+- **The line under the title is the whole design in a sentence.** *A day is a day you came* — so
+  missing one costs nothing. Saying it on the board matters: a player who has met a login calendar
+  before will assume there is a streak to protect and will feel punished by a day they missed that
+  in fact cost them nothing. Beside it, which round of the board this is.
+- **The foot says what is left**: the time until the next day once today's is taken, the finale's
+  invitation while it is still there, and — right after a claim — which day was just taken.
+- **It is reached, never pushed.** A *Welcome* button in the hub's bottom bar wearing a notification
+  dot the moment a day is owed. It does not open itself over the hub at launch: that would be the
+  one dialog a player meets before they have decided to do anything, and with no streak to lose
+  there is nothing urgent enough to justify taking the first press of the session.
