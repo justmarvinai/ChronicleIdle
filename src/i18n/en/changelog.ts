@@ -20,6 +20,14 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_2.name': 'Three Faces Out of the Stone',
+  'release.0_9_2.varkos':
+    'Varkos Sunderking has his own face at last. The Mythic orc king — half grey, half red, under a golden crown — now stands in the Chronicle Index, on the battlefield and anywhere else you meet him, instead of the lizard that was standing in for him.',
+  'release.0_9_2.bosses':
+    'The Gargoyle and the Titan have their own art too. The Gargoyle is a horned, moss-stained thing that crouches at the gate; the Titan is a mountain of scarred plate carrying a hammer the size of a door. Both of them were the same tinted lizard until now.',
+  'release.0_9_2.facing':
+    'Both bosses are drawn facing left, and the Boss Gate used to turn them around to face right — so the Gargoyle stood looking over its own shoulder. They now stand the way they were painted.',
+
   'release.0_9_1.name': 'A Clearer Bar',
   'release.0_9_1.bottom_bar':
     'The row of buttons along the bottom of Emberhold has been rebuilt. The five places you go — Champions, Armoury, Missions, Quests and the Index — now sit together on one rail, each with its own coloured mark above its name, so you can find the one you want without reading all five. Battle stays where it was, in red, on the right.',

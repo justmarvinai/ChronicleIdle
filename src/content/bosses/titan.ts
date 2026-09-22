@@ -32,7 +32,7 @@ export default defineBoss({
   role: 'attack',
   // Violet over the placeholder model at ×2.4 (CLAUDE.md §2.7); the lizard's greens are washed
   // out first, or a multiply tint this pale would leave them showing through.
-  art: { tint: '#8b6bd6', scale: 2.4, desaturate: true },
+  art: { model: 'model.titan', scale: 2.4 },
   backdrop: 'bg.bg9',
   surface: 'stone',
   immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],

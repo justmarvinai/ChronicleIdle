@@ -123,11 +123,20 @@ describe('content registry', () => {
       mythic: 1,
     });
     for (const id of STARTER_IDS) expect(content.championById(id)?.rarity).toBe('rare');
-    // Art lands champion by champion, so the count is not fixed — but every finished sheet in
-    // `/game` must be worn by exactly one champion. A sheet nobody wears is art that was added
-    // and never wired up, and the champion goes on fighting as the placeholder lizard.
-    const finished = content.champions.filter((c) => !c.art.placeholder);
-    expect(finished.map((c) => c.art.model).sort()).toEqual(
+    /*
+     * Art lands one sheet at a time, so the count is not fixed — but every finished sheet in
+     * `/game` must be worn by somebody. A sheet nobody wears is art that was added and never wired
+     * up, and whoever should have worn it goes on fighting as the placeholder lizard.
+     *
+     * Bosses wear sheets too, since `0.9.2` gave the Gargoyle and the Titan their own, so the
+     * check has to look past the roster or it would call theirs unworn.
+     */
+    const worn = new Set([
+      ...content.champions.filter((c) => !c.art.placeholder).map((c) => c.art.model),
+      ...content.enemies.map((e) => e.art.model),
+    ]);
+    worn.delete(PLACEHOLDER_MODEL);
+    expect([...worn].sort()).toEqual(
       Object.keys(MODEL_FACING)
         .filter((model) => model !== PLACEHOLDER_MODEL)
         .sort(),
@@ -149,13 +158,19 @@ describe('content registry', () => {
       expect(champion.art.facing, champion.id).toBe(MODEL_FACING[champion.art.model]);
     for (const enemy of content.enemies)
       expect(enemy.art.facing, enemy.id).toBe(MODEL_FACING[enemy.art.model]);
-    // Every finished sheet is drawn facing right; the placeholder lizard is the one that faces
-    // left, which is why an enemy wearing it needs no mirror and an ally does.
-    expect(
-      Object.entries(MODEL_FACING)
-        .filter(([, facing]) => facing === 'left')
-        .map(([key]) => key),
-    ).toEqual([PLACEHOLDER_MODEL]);
+    /*
+     * The placeholder faces left, which is why an enemy wearing it needs no mirror and an ally
+     * does — and every finished *champion* sheet faces right, which is the convention the roster
+     * screens draw against.
+     *
+     * A finished sheet is free to face either way: the Gargoyle and the Titan were drawn facing
+     * left, and the stage mirrors them by reading this table rather than by anyone remembering to.
+     * This used to assert that the lizard was the only left-facing sheet in the game, which was
+     * only ever true because the lizard was the only sheet a *boss* had.
+     */
+    expect(MODEL_FACING[PLACEHOLDER_MODEL]).toBe('left');
+    for (const champion of content.champions)
+      if (!champion.art.placeholder) expect(MODEL_FACING[champion.art.model], champion.id).toBe('right');
   });
 
   it('renders every ability description with live numbers and no unresolved placeholders', () => {

@@ -11,8 +11,9 @@ recorded in `CREDITS.md`.
 
 | Group | Path | Count | Format / size | Notes |
 | --- | --- | --- | --- | --- |
-| Champion models | `assets/champions/{common_bran,rare_corvin,rare_maelis,rare_reva,epic_anuria,epic_darius,epic_khazgor,epic_maruan,epic_rattledagger,epic_sethlurias,epic_thordakk}/` | 11 | avatar 1254² PNG (1.3–2.3 MB); `still/` 64² PNG; `idle/` 9 × 84–88² PNG + GIF (200 ms/frame, loop) | the folder's rarity prefix is not part of the model id |
-| Enemy / placeholder model | `assets/enemies/teritorial_lizard/` | 1 | avatar 1254²; still 64²; idle 9 × 84² + GIF | placeholder for every model-less champion and all enemies |
+| Champion models | `assets/champions/{common_bran,rare_corvin,rare_maelis,rare_reva,epic_anuria,epic_darius,epic_khazgor,epic_maruan,epic_rattledagger,epic_sethlurias,epic_thordakk,mythic_varkos}/` | 12 | avatar 1254² PNG (1.3–2.3 MB); `still/` 64² PNG; `idle/` 9 × 84–88² PNG + GIF (200 ms/frame, loop) | the folder's rarity prefix is not part of the model id |
+| Boss models | `assets/enemies/{gargoyle,titan}/` | 2 | `still/` 64²; `idle/` 92² PNG + GIF — **no avatar**, because nothing draws one for an enemy | both drawn facing **left**, unlike every champion sheet |
+| Enemy / placeholder model | `assets/enemies/teritorial_lizard/` | 1 | avatar 1254²; still 64²; idle 9 × 84² + GIF | placeholder for every model-less champion and every enemy but the two bosses |
 | Tutorial NPC | `assets/ui/misc_avatars/tutorial_npc_avatar.jpg` | 1 | painted portrait (dwarven king) | Eldric Lorekeeper |
 | Logo | `assets/logos/chronicle_idle.{svg,png}` | 2 | white on transparent; PNG 6848×2975 | title, loading, about, app icons |
 | Wallpapers | `assets/wallpapers/bg1–bg9` | 9 | JPG/PNG ~1672×941 – 1774×887 | see usage map |
@@ -98,8 +99,8 @@ Faith; `midnight`/`phantom`/`vortex`/`felspell` = Eclipse; `PoisonCast`/`PoisonC
   Legendaries → `fire-*`/`fx-*`/`blood-*`, Varkos → `fire-void-flame`, `blood-void-lance`).
   The mapping is in each champion file; the validator ensures uniqueness per champion.
 - Gear set icons: `crest-*` (defensive sets), `weapon-*` (offensive), `rune-*` (utility).
-- Currency icons: see `docs/design/ECONOMY.md` §2. Boss portraits: `hero-demon-lord`
-  (Gargoyle placeholder), `blood-witch` (Titan placeholder) until art exists.
+- Currency icons: see `docs/design/ECONOMY.md` §2. Both bosses wear their own sheets since `0.9.2`;
+  the `hero-demon-lord` and `blood-witch` portraits they stood in with are no longer used.
 
 ### Line glyphs → UI icons
 Status effects (`docs/design/BATTLE.md` §5), role icons (attack `glyph-crossed-swords`, defense

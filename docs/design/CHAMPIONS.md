@@ -125,6 +125,7 @@ Effect vocabulary and targeting are defined in `BATTLE.md` §6. Below, damage is
 
 Elements: J = Justice, V = Valor, F = Faith, E = Eclipse. Models: seven finished models exist; every
 other champion uses the `teritorial_lizard` placeholder with a per-champion tint until art arrives.
+Varkos joined the finished sheets in `0.9.2`.
 Stats are authored 6★60 values (HP / ATK / DEF / SPD / C.RATE / C.DMG / RES / ACC).
 
 ### 4.1 Common (food)

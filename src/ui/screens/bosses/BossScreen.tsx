@@ -106,9 +106,16 @@ export default function BossScreen({ route }: ScreenProps) {
           <SpriteView
             model={boss.art.model}
             scale={6}
-            facing="right"
+            /*
+             * The sheet's own facing, not a fixed "right". Both bosses were drawn facing left in
+             * `0.9.2`, and mirroring a finished sheet to satisfy a hardcoded direction is how the
+             * Gargoyle ended up looking over its own shoulder — the Bestiary already reads it this
+             * way, and the placeholder that used to stand here faced left too, so nothing before
+             * now could notice the difference.
+             */
+            facing={boss.art.facing}
             tint={boss.art.tint}
-            desaturate={boss.art.desaturate}
+            desaturate={boss.art.desaturate ?? false}
           />
         </div>
         <div className={styles.headRight}>

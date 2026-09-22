@@ -7,7 +7,7 @@ export default defineChampion({
   element: 'eclipse',
   role: 'attack',
   stats: [19_800, 1_880, 1_240, 112, 20, 75, 40, 40],
-  art: { placeholderTint: '#4b2a6e' },
+  art: { model: 'model.varkos', avatar: 'avatar.varkos' },
   obtain: ['summon'],
   abilities: [
     {

@@ -43,22 +43,39 @@ export interface EnemyInput {
   role: EnemyDef['role'];
   /** HP / ATK / DEF / SPD / C.RATE / C.DMG / RES / ACC at Intro, stage index 0. */
   stats: [number, number, number, number, number, number, number, number];
-  art: {
-    tint: string;
-    scale?: number;
-    model?: ModelKey;
-    desaturate?: boolean;
-  };
+  art: UnitArt;
   abilities: EnemyAbilityInput[];
   passives?: EnemyPassiveInput[];
   boss?: EnemyBossConfig;
   version?: number;
 }
 
+/**
+ * How a unit is drawn: **either** its own finished sheet **or** the placeholder wearing a tint.
+ *
+ * The two are exclusive, the same way `defineChampion`'s art is. Tinting a finished sheet is how
+ * you get a sprite nobody drew, and `desaturate` exists only so a pale tint can read over the
+ * lizard's own colours — neither has any business near real art. Before the Gargoyle and the Titan
+ * were drawn, a tint was *required* here, so giving either of them their sheet meant leaving a
+ * dead colour behind on it.
+ */
+export type UnitArt = { scale?: number } & ({ model: ModelKey } | { tint: string; desaturate?: boolean });
+
+/** The stored art for a unit: a real sheet carries no tint, a placeholder carries nothing else. */
+export function resolveArt(art: UnitArt): EnemyDef['art'] {
+  const model = 'model' in art ? art.model : LIZARD;
+  return {
+    model,
+    tint: 'model' in art ? null : art.tint,
+    facing: facingOf(model),
+    scale: art.scale ?? 1,
+    ...('model' in art || !art.desaturate ? {} : { desaturate: true as const }),
+  };
+}
+
 export function defineEnemy(input: EnemyInput): EnemyDef {
   const slug = input.id.replace(/^enemy\./, '');
   const [hp, atk, def, spd, critRate, critDmg, res, acc] = input.stats;
-  const model = input.art.model ?? LIZARD;
   const abilities: AbilityDef[] = input.abilities.map((a) => ({
     slot: a.slot,
     id: `ab.${slug}.${a.key}`,
@@ -89,13 +106,7 @@ export function defineEnemy(input: EnemyInput): EnemyDef {
     element: input.element,
     role: input.role,
     stats: { hp, atk, def, spd, critRate, critDmg, res, acc },
-    art: {
-      model,
-      tint: input.art.tint,
-      facing: facingOf(model),
-      scale: input.art.scale ?? 1,
-      ...(input.art.desaturate ? { desaturate: true } : {}),
-    },
+    art: resolveArt(input.art),
     abilities,
     passives,
     ...(input.boss ? { boss: input.boss } : {}),

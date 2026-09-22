@@ -28,7 +28,7 @@ export default defineBoss({
   role: 'health',
   // Weathered limestone over the placeholder model, twice a champion's size (CLAUDE.md §2.7): the
   // lizard's own greens are washed out first, or a pale multiply tint would do nothing at all.
-  art: { tint: '#efe6d2', scale: 2, desaturate: true },
+  art: { model: 'model.gargoyle', scale: 2 },
   backdrop: 'bg.bg3',
   surface: 'stone',
   immunities: ['stun', 'freeze', 'sleep', 'provoke', 'fear'],

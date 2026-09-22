@@ -25,6 +25,8 @@ export const MODEL_FACING = {
   'model.bran': 'right',
   'model.corvin': 'right',
   'model.darius': 'right',
+  /* The Gargoyle crouches with its horned snout to the left; the tail curls away to the right. */
+  'model.gargoyle': 'left',
   'model.khazgor': 'right',
   'model.maelis': 'right',
   'model.maruan': 'right',
@@ -33,6 +35,10 @@ export const MODEL_FACING = {
   'model.sethlurias': 'right',
   'model.teritorial_lizard': 'left',
   'model.thordakk': 'right',
+  /* The Titan holds its hammer out to the left and turns its head after it. */
+  'model.titan': 'left',
+  /* Varkos stands as every champion sheet does, crown and shoulder leading to the right. */
+  'model.varkos': 'right',
 } as const satisfies Record<ModelKey, Facing>;
 
 /** The way a sheet is drawn; the stage mirrors it when the unit's side wants the other way. */

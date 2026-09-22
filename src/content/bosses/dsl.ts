@@ -6,7 +6,7 @@
  * enemy is that definition with its own printed stats. `fixedStats` keeps the campaign's
  * difficulty multiplier and stage curve off them (BOSSES.md §1).
  */
-import type { ModelKey, SpellKey } from '@assets/manifest.generated';
+import type { SpellKey } from '@assets/manifest.generated';
 import type {
   AbilityDef,
   AbilitySlot,
@@ -15,7 +15,7 @@ import type {
   PassiveEffect,
   PassiveTrigger,
 } from '@content/champions/types';
-import { defineEnemy, type EnemyInput } from '@content/enemies/dsl';
+import { defineEnemy, resolveArt, type EnemyInput, type UnitArt } from '@content/enemies/dsl';
 import type { EnemyDef, FactionArchetype } from '@content/enemies/types';
 import type { BossChestDef, BossDef, BossTierDef } from './types';
 
@@ -50,7 +50,7 @@ interface BossAddsInput {
   archetype: FactionArchetype;
   element: BossDef['element'];
   role: BossDef['role'];
-  art: { tint: string; scale: number; model?: ModelKey; desaturate?: boolean };
+  art: UnitArt;
   /** How many stand with the boss. */
   count: number;
   /** Percentage of a hit on the boss a living add takes instead. */
@@ -85,8 +85,8 @@ export interface BossInput {
   keyCurrency: BossDef['keyCurrency'];
   element: BossDef['element'];
   role: BossDef['role'];
-  /** `desaturate` washes the placeholder's own colours out first, so a pale tint reads. */
-  art: { tint: string; scale: number; model?: ModelKey; desaturate?: boolean };
+  /** Its own sheet, or the placeholder wearing a tint — see `UnitArt`. */
+  art: UnitArt;
   backdrop: BossDef['backdrop'];
   surface: BossDef['surface'];
   immunities: BossDef['immunities'];
@@ -156,12 +156,7 @@ export function defineBoss(input: BossInput): BossDef {
         element: input.adds.element,
         role: input.adds.role,
         stats: input.tiers[0]?.addStats ?? [1, 1, 1, 1, 0, 0, 0, 0],
-        art: {
-          tint: input.adds.art.tint,
-          scale: input.adds.art.scale,
-          ...(input.adds.art.model ? { model: input.adds.art.model } : {}),
-          ...(input.adds.art.desaturate ? { desaturate: true } : {}),
-        },
+        art: input.adds.art,
         abilities: abilitiesOf(input.adds.abilities),
         passives: passivesOf(input.adds.passives),
         version,
@@ -187,12 +182,7 @@ export function defineBoss(input: BossInput): BossDef {
     element: input.element,
     role: input.role,
     stats: input.tiers[0]?.stats ?? [1, 1, 1, 1, 0, 0, 0, 0],
-    art: {
-      tint: input.art.tint,
-      scale: input.art.scale,
-      ...(input.art.model ? { model: input.art.model } : {}),
-      ...(input.art.desaturate ? { desaturate: true } : {}),
-    },
+    art: input.art,
     abilities: abilitiesOf(input.abilities),
     passives: passivesOf(input.passives),
     boss: {
@@ -238,12 +228,7 @@ export function defineBoss(input: BossInput): BossDef {
     keyCurrency: input.keyCurrency,
     element: input.element,
     role: input.role,
-    art: {
-      model: input.art.model ?? 'model.teritorial_lizard',
-      tint: input.art.tint,
-      scale: input.art.scale,
-      desaturate: input.art.desaturate ?? false,
-    },
+    art: resolveArt(input.art),
     backdrop: input.backdrop,
     surface: input.surface,
     immunities: input.immunities,
@@ -257,12 +242,7 @@ export function defineBoss(input: BossInput): BossDef {
             guardPercent: input.adds.guardPercent,
             reviveEvery: input.adds.reviveEvery,
             revivedHpPercent: input.adds.revivedHpPercent,
-            art: {
-              model: addsKit.art.model,
-              tint: input.adds.art.tint,
-              scale: input.adds.art.scale,
-              desaturate: input.adds.art.desaturate ?? false,
-            },
+            art: resolveArt(input.adds.art),
           }
         : null,
     tiers,

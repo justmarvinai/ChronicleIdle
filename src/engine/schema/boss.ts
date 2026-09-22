@@ -51,9 +51,13 @@ export const bossSchema = z.object({
   role: z.enum(ROLES),
   art: z.object({
     model: z.string().min(1),
-    tint: z.string().regex(/^#[0-9a-f]{6}$/i),
+    tint: z
+      .string()
+      .regex(/^#[0-9a-f]{6}$/i)
+      .nullable(),
+    facing: z.enum(['left', 'right']),
     scale: z.number().positive().max(3),
-    desaturate: z.boolean(),
+    desaturate: z.boolean().optional(),
   }),
   backdrop: z.string().min(1),
   surface: z.enum(['dirt', 'stone', 'water', 'wood']),
@@ -75,9 +79,13 @@ export const bossSchema = z.object({
       revivedHpPercent: z.number().int().min(1).max(100),
       art: z.object({
         model: z.string().min(1),
-        tint: z.string().regex(/^#[0-9a-f]{6}$/i),
+        tint: z
+          .string()
+          .regex(/^#[0-9a-f]{6}$/i)
+          .nullable(),
+        facing: z.enum(['left', 'right']),
         scale: z.number().positive().max(3),
-        desaturate: z.boolean(),
+        desaturate: z.boolean().optional(),
       }),
     })
     .nullable(),

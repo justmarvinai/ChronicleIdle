@@ -48,7 +48,7 @@ Palace's record of what each has paid, and the counters a quest measures.
 ## 2. The daily gate — Gargoyle, the Waking Stone
 
 Unlocks at player level 10. Two keys per day. Backdrop: `bg3` (the dungeon gate) with bone-dust
-particles; boss model: placeholder lizard ×2.0 scale, bone-white tint until a model exists.
+particles; boss model: its own sheet at ×2.0 scale, drawn facing left (`0.9.2`).
 
 Enrage: from its 12th own turn, +10 % ATK every 2 own turns (`enrageEvery: 2`).
 
@@ -81,7 +81,8 @@ Gear from bosses draws from all sets. Player XP per key: 150 / 300 / 600 / 1,200
 ## 3. The weekly gate — Titan, the Sunless
 
 Unlocks at player level 15. Three keys per week. Backdrop: `bg9` (the Eclipse Gate) with violet
-fog; boss model: placeholder ×2.4 scale, violet tint; its two **Choristers** (adds) at ×1.2.
+fog; boss model: its own sheet at ×2.4 scale, drawn facing left (`0.9.2`); its two
+**Choristers** (adds) stay on the placeholder at ×1.2, violet.
 
 Enrage: from its 24th own turn, +10 % ATK every 3 own turns (`enrageEvery: 3`).
 

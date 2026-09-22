@@ -11,6 +11,41 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.2] — 2026-09-22 — Three Faces Out of the Stone
+
+The owner's art for Varkos, the Gargoyle and the Titan, wired in. `docs/tech/ASSETS.md` §2,
+`docs/design/BOSSES.md`, `docs/design/CHAMPIONS.md`.
+
+### Content
+
+- **Varkos Sunderking** wears `model.varkos` and `avatar.varkos` instead of a violet-tinted lizard.
+- **The Gargoyle** wears `model.gargoyle` and **the Titan** `model.titan`, both at the scales they
+  already had, with the bone-white and violet tints and the `desaturate` wash dropped — those
+  existed only so a pale colour could read over the placeholder's own. The Titan's two Choristers
+  stay on the placeholder, since only she was drawn.
+- `MODEL_FACING` gains all three, read off the art: Varkos faces **right** like every champion
+  sheet; both bosses face **left**. The build refuses a sheet with no entry there, which is how
+  this was noticed rather than shipped backwards.
+
+### Fixed
+
+- **The Boss Gate drew both bosses mirrored.** It passed a hardcoded `facing="right"` to
+  `SpriteView`, which was invisible while every boss wore the left-facing placeholder and became a
+  Gargoyle looking over its own shoulder the moment one had its own sheet. It reads `art.facing`
+  now, as the Bestiary already did.
+
+### Changed
+
+- **A unit's art input is exclusive: a finished sheet, or a tint on the placeholder — never both.**
+  `defineEnemy` and the boss DSL required a `tint` even alongside a `model`, so giving either boss
+  its sheet meant leaving a dead colour on the definition. One `UnitArt` type and one `resolveArt`
+  now serve both DSLs, the way `defineChampion` has always split them. `BossDef.art` carries
+  `facing` and a nullable `tint` to match `EnemyDef.art`.
+- Two content tests widened rather than loosened: "every finished sheet is worn by exactly one
+  champion" now looks at enemies too (bosses wear sheets now), and "every finished sheet faces
+  right" became "every finished *champion* sheet faces right", which is the part that was ever
+  true — the old assertion only held because a boss had never had art.
+
 ## [0.9.1] — 2026-09-22 — A Clearer Bar
 
 The owner's three notes on `0.9.0`'s chrome. `docs/tech/UI_DESIGN.md` §5.2, §5.26–§5.27,

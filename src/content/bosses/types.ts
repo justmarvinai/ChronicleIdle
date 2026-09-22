@@ -38,7 +38,13 @@ export interface BossAddsDef {
   /** Own turns of the boss between revivals; they also return at every phase change. */
   reviveEvery: number;
   revivedHpPercent: number;
-  art: { model: ModelKey; tint: string; scale: number; desaturate: boolean };
+  art: {
+    model: ModelKey;
+    tint: string | null;
+    facing: 'left' | 'right';
+    scale: number;
+    desaturate?: boolean;
+  };
 }
 
 export interface BossTierDef {
@@ -80,7 +86,13 @@ export interface BossDef {
   keyCurrency: 'key_daily' | 'key_weekly';
   element: Element;
   role: Role;
-  art: { model: ModelKey; tint: string; scale: number; desaturate: boolean };
+  art: {
+    model: ModelKey;
+    tint: string | null;
+    facing: 'left' | 'right';
+    scale: number;
+    desaturate?: boolean;
+  };
   backdrop: BackdropKey;
   surface: 'dirt' | 'stone' | 'water' | 'wood';
   /** Statuses that never land on this boss, shown as "Unshakeable". */
