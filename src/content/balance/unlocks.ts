@@ -22,6 +22,8 @@ export const FEATURE_IDS = [
   'glorious_palace',
   'brewery',
   'dungeons',
+  'market',
+  'login_calendar',
   'auto_repeat_10',
   'auto_repeat_25',
   'auto_repeat_50',
@@ -32,6 +34,13 @@ export type FeatureId = (typeof FEATURE_IDS)[number];
 export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
   campaign: 1,
   champions: 1,
+  /**
+   * The Market and the Calendar open with the chronicle. Both are meta rather than power: the Gold
+   * Market's shelf is only worth reading once there is gold to spend, and a calendar that starts
+   * counting on day one is the only kind that is fair to a player who found the game late.
+   */
+  market: 1,
+  login_calendar: 1,
   tavern_level: 2,
   /**
    * Gear is equippable from the first hour (the owner's third batch). A piece drops in the

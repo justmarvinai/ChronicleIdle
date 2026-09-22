@@ -9,6 +9,7 @@ import { changelog } from './changelog';
 import { champions } from './champions';
 import { currencies } from './currencies';
 import { dungeons } from './dungeons';
+import { market } from './market';
 import { enemies } from './enemies';
 import { features } from './features';
 import { gear } from './gear';
@@ -41,6 +42,7 @@ export const en = {
   ...bosses,
   ...brewery,
   ...dungeons,
+  ...market,
   ...palace,
   ...quests,
   ...missions,

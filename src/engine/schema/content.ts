@@ -21,6 +21,8 @@ import {
   type DungeonDifficulty,
 } from '@content/balance/dungeon';
 import { dungeonSchema } from './dungeon';
+import { LOGIN_DAYS, LOGIN_FINALE_FROM } from '@content/balance/login';
+import { consumableSchema, gemShelfEntrySchema, grantSchema, loginDaySchema } from './market';
 import { GEAR_MAX_STARS } from '@content/balance/gear';
 import { ELEMENTS, STAT_IDS } from '@content/champions/types';
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
@@ -111,6 +113,9 @@ export function validateContentRegistry(
     bosses: readonly unknown[];
     breweries: readonly unknown[];
     dungeons: readonly unknown[];
+    consumables: readonly unknown[];
+    gemShelf: readonly unknown[];
+    loginBoard: readonly unknown[];
     questBoards: readonly unknown[];
     missionChapters: readonly unknown[];
     tutorialChapters: readonly unknown[];
@@ -146,6 +151,13 @@ export function validateContentRegistry(
       refs,
     ),
     ...validateDungeons(registry.dungeons, registry.gearSets, enemies.ids, registry.factions, refs),
+    ...validateMarket(
+      registry.consumables,
+      registry.gemShelf,
+      registry.loginBoard,
+      new Set(registry.currencies.map((c) => (c as { id: string }).id)),
+      refs,
+    ),
     ...validateGearSets(registry.gearSets, settlements.setPools, refs),
     ...validateBanners(registry.banners, registry.summonPool, refs),
     ...validateBosses(registry.bosses, refs),
@@ -1373,5 +1385,153 @@ function validateChampions(champions: readonly unknown[], refs: ContentRefs): Va
 
   for (const id of CHAMPION_IDS)
     if (!seen.has(id)) error(`champions.${id}`, 'champion id declared but not defined');
+  return issues;
+}
+
+/**
+ * The consumables, the Gem Market's shelf and the Login Calendar (MARKET.md, LOGIN.md).
+ *
+ * Four promises a content edit could quietly break, each of which would be invisible until a
+ * player hit it:
+ *
+ * - **Nothing hands over a thing that does not exist.** Every `consumable` grant names an item on
+ *   the shelf's own list, and every `currency` grant a currency in the wallet — otherwise a
+ *   calendar day pays into a void.
+ * - **A bundle is worth taking.** A one-time entry must cost *less* than its parts bought singly,
+ *   or it is a trap rather than a bundle. Singles are exempt, being their own price.
+ * - **The calendar is thirty days, numbered 1..30, with no gaps** — the whole board is read by
+ *   index, so a missing day would hand a player nothing on their fourteenth login.
+ * - **The finale is the last three days and only those.** Days 28–30 are `legendary` and no
+ *   earlier day is, which is the one rule the owner put on the shuffle.
+ */
+function validateMarket(
+  consumables: readonly unknown[],
+  shelf: readonly unknown[],
+  board: readonly unknown[],
+  currencyIds: ReadonlySet<string>,
+  refs: ContentRefs,
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const error = (path: string, message: string): void =>
+    void issues.push({ path, message, severity: 'error' });
+
+  const itemIds = new Set<string>();
+  consumables.forEach((raw, index) => {
+    const result = consumableSchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`consumables[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const def = result.data;
+    if (itemIds.has(def.id)) error(def.id, 'duplicate id');
+    itemIds.add(def.id);
+    for (const key of [def.name, def.description])
+      if (!refs.i18nKeys.has(key)) error(def.id, `missing i18n key ${key}`);
+    if (!refs.assetKeys.has(def.icon)) error(def.id, `missing icon ${def.icon}`);
+  });
+
+  /** Every grant in a list names something that exists. */
+  const checkGrants = (path: string, grants: readonly unknown[]): void => {
+    for (const raw of grants) {
+      const parsed = grantSchema.safeParse(raw);
+      if (!parsed.success) {
+        for (const issue of parsed.error.issues) error(path, issue.message);
+        continue;
+      }
+      const grant = parsed.data;
+      if (grant.kind === 'consumable' && !itemIds.has(grant.item))
+        error(path, `hands over unknown item ${grant.item}`);
+      if (grant.kind === 'currency' && !currencyIds.has(grant.currency))
+        error(path, `hands over unknown currency ${grant.currency}`);
+    }
+  };
+
+  /** What one of an item costs on the shelf, for the bundle-value check. */
+  const singlePrice = new Map<string, number>();
+  const entries: { id: string; price: number; once: boolean; contents: readonly unknown[] }[] = [];
+  const seenShelf = new Set<string>();
+  const seenOrder = new Set<number>();
+  shelf.forEach((raw, index) => {
+    const result = gemShelfEntrySchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`shelf[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const entry = result.data;
+    if (seenShelf.has(entry.id)) error(entry.id, 'duplicate id');
+    seenShelf.add(entry.id);
+    if (seenOrder.has(entry.order)) error(entry.id, `duplicate order ${entry.order}`);
+    seenOrder.add(entry.order);
+    for (const key of [entry.name, entry.description])
+      if (!refs.i18nKeys.has(key)) error(entry.id, `missing i18n key ${key}`);
+    checkGrants(entry.id, entry.contents);
+    entries.push({
+      id: entry.id,
+      price: entry.price,
+      once: entry.once === true,
+      contents: entry.contents,
+    });
+    const only = entry.contents[0];
+    if (
+      !entry.once &&
+      entry.contents.length === 1 &&
+      only &&
+      (only as { kind: string }).kind === 'consumable'
+    ) {
+      const single = only as { item: string; count: number };
+      if (single.count === 1) singlePrice.set(single.item, entry.price);
+    }
+  });
+
+  // A bundle has to beat buying its parts, or nobody should ever press it.
+  for (const entry of entries) {
+    if (!entry.once) continue;
+    let parts = 0;
+    let priceable = true;
+    for (const raw of entry.contents) {
+      const grant = raw as { kind: string; item?: string; count?: number };
+      if (grant.kind !== 'consumable') {
+        // A currency bundle has no shelf price to compare against; its value is judged by hand.
+        priceable = false;
+        break;
+      }
+      const unit = singlePrice.get(grant.item ?? '');
+      if (unit === undefined) {
+        priceable = false;
+        break;
+      }
+      parts += unit * (grant.count ?? 0);
+    }
+    if (priceable && entry.price >= parts)
+      error(entry.id, `costs ${entry.price} gems, which is no better than its parts at ${parts}`);
+  }
+
+  const days = new Set<number>();
+  board.forEach((raw, index) => {
+    const result = loginDaySchema.safeParse(raw);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        error(`login[${index}].${issue.path.join('.')}`, issue.message);
+      return;
+    }
+    const day = result.data;
+    const path = `login.day${day.day}`;
+    if (days.has(day.day)) error(path, 'duplicate day');
+    days.add(day.day);
+    checkGrants(path, day.rewards);
+    const finale = day.day >= LOGIN_FINALE_FROM;
+    if (finale && day.tier !== 'legendary')
+      error(
+        path,
+        `is in the finale but only ${day.tier} — days ${LOGIN_FINALE_FROM}–${LOGIN_DAYS} lead the board`,
+      );
+    if (!finale && day.tier === 'legendary')
+      error(path, 'is legendary before the finale, which would outshine days 28-30');
+  });
+  for (let day = 1; day <= LOGIN_DAYS; day += 1)
+    if (!days.has(day)) error('login', `has no day ${day}, so that login would pay nothing`);
+
   return issues;
 }

@@ -31,6 +31,11 @@ import type { BannerDef } from '@content/banners/types';
 import { BREWERIES, BREWERY_BY_ELEMENT, BREWERY_BY_ID } from '@content/brewery/index';
 import type { BreweryDef } from '@content/brewery/types';
 import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_BY_SLUG, OPEN_DUNGEONS } from '@content/dungeons/index';
+import { CONSUMABLES, CONSUMABLE_BY_ID } from '@content/consumables/index';
+import type { ConsumableDef } from '@content/consumables/types';
+import { GEM_SHELF, GEM_SHELF_BY_ID } from '@content/market/index';
+import type { GemShelfEntry } from '@content/market/types';
+import { LOGIN_BOARD, LOGIN_DAY_BY_NUMBER, type LoginDay } from '@content/login/index';
 import type { DungeonDef } from '@content/dungeons/types';
 import type { DungeonDifficulty } from '@content/balance/dungeon';
 import { BOSSES, BOSS_BY_ID, bossTier } from '@content/bosses/index';
@@ -93,6 +98,15 @@ export interface ContentRegistry {
   /** The four a chronicle can walk into; the Gilded Veil is not among them. */
   openDungeons: readonly DungeonDef[];
   dungeonById(id: string): DungeonDef | undefined;
+  /** The consumables a Bag can hold (MARKET.md §3). */
+  consumables: readonly ConsumableDef[];
+  consumableById(id: string): ConsumableDef | undefined;
+  /** The Gem Market's fixed shelf; the Gold Market's is derived, never authored. */
+  gemShelf: readonly GemShelfEntry[];
+  gemShelfById(id: string): GemShelfEntry | undefined;
+  /** The thirty days of the Login Calendar (LOGIN.md §2). */
+  loginBoard: readonly LoginDay[];
+  loginDay(day: number): LoginDay | undefined;
   dungeonBySlug(slug: string): DungeonDef | undefined;
   /** A dungeon stage's encounter: derived from the keeper, the warband and the stage's scale. */
   dungeonEncounter(slug: string, difficulty: DungeonDifficulty, stage: number): EncounterDef | undefined;
@@ -245,6 +259,12 @@ export function buildContentRegistry(): ContentRegistry {
     dungeons: DUNGEONS,
     openDungeons: OPEN_DUNGEONS,
     dungeonById: (id) => DUNGEON_BY_ID[id],
+    consumables: CONSUMABLES,
+    consumableById: (id) => CONSUMABLE_BY_ID[id],
+    gemShelf: GEM_SHELF,
+    gemShelfById: (id) => GEM_SHELF_BY_ID[id],
+    loginBoard: LOGIN_BOARD,
+    loginDay: (day) => LOGIN_DAY_BY_NUMBER[day],
     dungeonBySlug: (slug) => DUNGEON_BY_SLUG[slug],
     dungeonEncounter: dungeonEncounterOf,
     gearSets: GEAR_SETS,
