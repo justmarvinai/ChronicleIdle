@@ -247,10 +247,10 @@ works on a brewery stage without knowing the mode exists.
 `engine/dungeon/` is the same three-file shape (`DUNGEONS.md`):
 
 - `encounter.ts` — `dungeonEncounterId` / `parseDungeonEncounterId`, `dungeonEnemyLevel`, and
-  `dungeonEncounter(def, difficulty, stage, faction)`, which derives a stage's one wave from the
-  keep: its keeper on every stage from the first to the fortieth, plus three guards as a window
-  over the warband's six that walks by one per stage. The faction is **passed in**, not imported,
-  for the same boundary reason as the Brewery's.
+  `dungeonEncounter(def, stage, difficulty, keeper, faction)`, which derives a stage's one wave
+  from the keep: its keeper on every stage from the first to the fortieth, plus three guards as a
+  window over the warband's six that walks by one per stage. The keeper and the faction are
+  **passed in**, not imported, for the same boundary reason as the Brewery's.
   The encounter is pitched at Intro's flat multiplier and stage index 0 on purpose, so
   `DIFFICULTY_MULT` and `stageScale` both come out at 1 and `dungeonScale(stage, difficulty)` is
   the single curve acting on a dungeon enemy — one number decides how hard a stage is.
