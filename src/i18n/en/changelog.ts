@@ -20,6 +20,16 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_1.name': 'A Clearer Bar',
+  'release.0_9_1.bottom_bar':
+    'The row of buttons along the bottom of Emberhold has been rebuilt. The five places you go — Champions, Armoury, Missions, Quests and the Index — now sit together on one rail, each with its own coloured mark above its name, so you can find the one you want without reading all five. Battle stays where it was, in red, on the right.',
+  'release.0_9_1.boost_slots':
+    'Your three boosts now always have a place beside your portrait, whether or not they are running. A boost that is active lights up in its own colour and counts down; one that is not sits there as an empty slot you can hover to see what it does and where to get it. Before, an inactive boost showed nothing at all, which told you nothing.',
+  'release.0_9_1.daily_rewards':
+    'The thirty-day calendar is called Daily Rewards now, and its button on the bottom bar simply says Rewards. It used to be called the Standing Welcome, which is a strange thing to say to someone who has been here for a year.',
+  'release.0_9_1.bag_moved':
+    'Your Bag has moved up to the top bar, next to your gold and your chest, with a count of what is in it. It opens from every screen now instead of only from Emberhold — which is the point of an item you use when you decide to.',
+
   'release.0_9_0.name': 'The Market and the Standing Welcome',
   'release.0_9_0.market':
     'There is a Market in Emberhold now, open from your very first hour, and it has two counters. Neither of them takes real money — nothing in this game ever will. One takes gold, the other takes gems, and they could not be less alike.',

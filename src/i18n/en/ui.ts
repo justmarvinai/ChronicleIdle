@@ -66,6 +66,8 @@ export const ui = {
   'hub.missions': 'Missions',
   'hub.quests': 'Quests',
   'hub.index': 'Index',
+  /* The rail's accessible name — five destinations, read as one strip. */
+  'hub.navigation': 'Emberhold',
   'hub.battle': 'Battle',
   'hub.market': 'Market',
 

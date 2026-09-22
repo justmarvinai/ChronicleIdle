@@ -193,9 +193,12 @@ are doubled, and two things are deliberately not:
   what lets a player save them. The Brewery Boost is the mirror of that rule: it doubles the brews a
   **run** pours, which is the thing a run is spent on.
 
-Each live boost draws a small pill beside the profile chip in the header, on every screen, counting
-down. A boost that is not running draws nothing — three greyed slots would be an advert, and the
-header is not for that.
+**All three draw a socket beside the profile chip, on every screen, whether or not they are
+running** (the owner's instruction). A live one wears its tint and counts down; an idle one is a
+dark empty well, and hovering either says which boost it is and how long is left or where to get
+one. Drawing only the live ones — which is how this first shipped — meant the header could never
+tell a player that a boost was *off*, which is the state worth knowing because it is the one they
+can act on.
 
 ## 5. The Bag
 
@@ -207,13 +210,14 @@ Every row says what using it would do **in full**, because a consumable is bough
 weeks later — by then the name alone would make a player guess. Rows are in shelf order, not
 acquisition order, so the Bag reads the same way the Market does.
 
-The Bag is reached from the hub's bottom bar, and it is the only place an item is spent: buying
-never uses. That is the whole reason the Bag exists — the owner's brief asks for items that are
-"only consumed when the player decides".
+The Bag is reached from **the top bar**, beside the purse and the chest, so it is open from every
+screen rather than only from the hub — it is a thing the chronicle owns, like gold, not a place it
+goes. It is the only place an item is spent: buying never uses. That is the whole reason the Bag
+exists — the owner's brief asks for items that are "only consumed when the player decides".
 
 ## 6. Grants
 
-A **grant** is the one shape that both the Market and the Standing Welcome hand things over in: a
+A **grant** is the one shape that both the Market and Daily Rewards hand things over in: a
 currency and an amount, or a consumable and a count. One union, one payer (`src/state/grants.ts`),
 so a bundle, a login tile and anything added later cannot drift apart in what they are able to
 give or in how the wallet and the Bag are updated.

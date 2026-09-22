@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { collectConsole, importChronicleFile, settle } from './helpers';
 
 /**
- * The Market, the Bag, the boosts and the Standing Welcome in a production build
+ * The Market, the Bag, the boosts and the Rewards Calendar in a production build
  * (docs/design/MARKET.md, docs/design/LOGIN.md).
  *
  * The Path fixture is written at save v12, so this run walks the 12 → 19 migration on the way in
@@ -29,16 +29,17 @@ function digits(text: string | null): number {
   return Number((text ?? '').replace(/[^\d]/g, ''));
 }
 
-test.describe('the Market and the Standing Welcome', () => {
+test.describe('the Market and the Rewards Calendar', () => {
   test('claims a day, buys from both shelves, and the boost reaches the header', async ({ page }) => {
     test.slow();
     const problems = collectConsole(page);
     await importChronicleFile(page, SAVE);
 
-    // ── The Standing Welcome. A veteran chronicle starts the board at day 1, owed and unclaimed.
-    const welcome = page.getByTestId('nav-login');
-    await expect(welcome).toBeVisible();
-    await welcome.click();
+    // ── Daily Rewards. A veteran chronicle starts the board at day 1, owed and unclaimed.
+    const rewards = page.getByTestId('nav-login');
+    await expect(rewards).toBeVisible();
+    await expect(rewards).toHaveAttribute('data-owed', 'true');
+    await rewards.click();
     const board = page.getByTestId('dialog-login');
     await expect(board).toBeVisible();
     await expect(page.getByTestId('login-board')).toBeVisible();
@@ -103,14 +104,14 @@ test.describe('the Market and the Standing Welcome', () => {
     const gems = await purseOf(page, 'gems');
     await page.getByTestId('shelf-buy-champion_xp_boost').click();
     await expect.poll(async () => purseOf(page, 'gems')).toBe(gems - 200);
-    // Buying never uses: nothing is running yet.
-    await expect(page.getByTestId('boost-pills')).toHaveCount(0);
+    // Buying never uses: all three sockets are drawn, and every one of them is still empty.
+    for (const boost of ['champion_xp', 'player_xp', 'brewery'])
+      await expect(page.getByTestId(`boost-${boost}`)).toHaveAttribute('data-active', 'false');
 
-    // ── The Bag: bought, held, and spent only when the player says so.
-    await page.getByRole('button', { name: 'Back' }).click();
-    await expect(page.getByTestId('screen-hub')).toBeVisible({ timeout: 20_000 });
-    await settle(page);
-    await page.getByTestId('nav-bag').click();
+    // ── The Bag: bought, held, and spent only when the player says so. It lives in the header
+    // now, so it is reachable from the Market itself rather than only from the hub.
+    await expect(page.getByTestId('topbar-bag')).toHaveAttribute('data-held', '1');
+    await page.getByTestId('topbar-bag').click();
     const bag = page.getByTestId('dialog-bag');
     await expect(bag).toBeVisible();
     await expect(page.getByTestId('bag-champion_xp_boost')).toContainText('Champion XP Boost');
@@ -122,15 +123,23 @@ test.describe('the Market and the Standing Welcome', () => {
     await page.keyboard.press('Escape');
     await expect(bag).toHaveCount(0);
 
-    // ── The header pill: only the running boost, with its countdown, on every screen.
-    const pill = page.getByTestId('boost-champion_xp');
-    await expect(pill).toBeVisible();
-    await expect(pill).toContainText(/\d/);
-    await expect(page.getByTestId('boost-player_xp')).toHaveCount(0);
-    await expect(page.getByTestId('boost-brewery')).toHaveCount(0);
+    /*
+     * ── The header sockets. All three are drawn whether or not they are running (the owner's
+     * instruction): the one just used lights up and counts down, the other two stay as empty
+     * slots. An icon you only see once a boost is on can never tell you that one is off.
+     */
+    const lit = page.getByTestId('boost-champion_xp');
+    await expect(lit).toHaveAttribute('data-active', 'true');
+    await expect(lit).toContainText(/\d/);
+    for (const boost of ['player_xp', 'brewery']) {
+      const socket = page.getByTestId(`boost-${boost}`);
+      await expect(socket).toBeVisible();
+      await expect(socket).toHaveAttribute('data-active', 'false');
+      await expect(socket).toHaveText('');
+    }
 
-    await page.getByTestId('hotspot-market').click();
-    await expect(page.getByTestId('screen-market')).toBeVisible({ timeout: 20_000 });
+    // And they ride every screen, not just the hub.
+    await expect(page.getByTestId('screen-market')).toBeVisible();
     await expect(page.getByTestId('boost-champion_xp')).toBeVisible();
 
     expect(problems).toEqual([]);

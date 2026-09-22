@@ -92,11 +92,19 @@ export const market = {
   'boost.brewery': 'Brews ×2',
   'boost.remaining': '{time} left',
   'boost.none': 'No boost running',
+  /* What a grey slot in the header says: not an error, and what to do about it. */
+  'boost.idle': 'Not running. Buy one at the Market, then use it from your Bag.',
 
-  /* ---- The Login Calendar ---- */
-  'login.title': 'The Standing Welcome',
+  /*
+   * ---- The Rewards Calendar ----
+   *
+   * It is called **Daily Rewards** to the player, never "welcome" (the owner's instruction): a
+   * board that repeats forever greets a two-year veteran as often as a newcomer, and welcoming
+   * someone who never left reads as a system that has not noticed them.
+   */
+  'login.title': 'Daily Rewards',
   'login.subtitle': 'Thirty days, in whatever order you come.',
-  'login.open': 'Welcome',
+  'login.open': 'Rewards',
   'login.day': 'Day {day}',
   'login.today': 'Today',
   'login.claim': 'Take it',

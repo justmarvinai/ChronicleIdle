@@ -11,6 +11,43 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.1] — 2026-09-22 — A Clearer Bar
+
+The owner's three notes on `0.9.0`'s chrome. `docs/tech/UI_DESIGN.md` §5.2, §5.26–§5.27,
+`docs/design/MARKET.md` §4–§5, `docs/design/LOGIN.md`.
+
+### Changed
+
+- **The hub's bottom bar is three weights instead of seven slabs.** Far left, a gold-framed
+  **Rewards** plate — the one button down there that gives rather than leads. Centre, one **rail**
+  of five destinations (Champions, Armoury, Missions, Quests, Index), each an icon *above* its word
+  and tinted its own colour, with the frame belonging to the rail and a tile drawing its own edge
+  only on hover. Far right, **BATTLE**, untouched. The rail's tiles keep their old test ids, so
+  every spec that pressed one still does.
+
+  The red ember frame stays Battle's alone: Rewards is built from the kit's stone and a gold
+  hairline (`CLAUDE.md` §7.1) rather than from `btn_ember_wide`, because a second button in the
+  fight's colour would make the two read as a pair and cost the fight its place as the screen's one
+  primary action.
+- **The Bag moved to the top bar**, beside the purse and the chest — a square slot with the sack
+  icon and its count in the corner. It is a thing the chronicle *owns*, not a fifth place to go, and
+  from the header it opens on every screen rather than only on the hub, which is the point of an
+  item whose whole design is being spent when the player decides to.
+- **All three boost sockets are always drawn**, lit when running and dark when not (the owner's
+  instruction). A lit one wears its tint and counts down; a dark one is a recessed empty well with a
+  grey glyph and no clock, and both carry a tooltip — so a dark socket says what it would be and
+  where to get one instead of being an unexplained dead icon.
+
+  `0.9.0` drew only the running ones, on the reasoning that an icon which is *there* is the whole
+  signal. That was wrong in the way that matters: an icon you see only once a boost is already on
+  can never tell you that one is **off**, which is the state a player can actually act on.
+- **The calendar is Daily Rewards**, and its button reads *Rewards* (the owner's instruction). It
+  shipped as "the Standing Welcome" hours earlier, which greets a two-year veteran as warmly as a
+  newcomer — welcoming someone who never left reads as a system that has not noticed them. The
+  code's own name stays `login` (`LOGIN.md`, `engine/login/`, `FEATURE_UNLOCK_LEVEL.login_calendar`),
+  because only the player-facing name was wrong; `sim:economy`'s ledger line and its two bands moved
+  from `the welcome` to `daily rewards`.
+
 ## [0.9.0] — 2026-09-22 — The Market and the Standing Welcome
 
 The game's one shop, the Bag behind it, the three boosts and a thirty-day calendar with no streak.

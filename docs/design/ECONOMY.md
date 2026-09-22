@@ -14,8 +14,8 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 
 | Id | Name | Icon (asset key) | Main sources | Main sinks |
 | --- | --- | --- | --- | --- |
-| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, the Standing Welcome | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market** |
-| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, the Standing Welcome | Ancient/Sacred Shards, energy refills, **the Gem Market** |
+| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, Daily Rewards | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market** |
+| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards | Ancient/Sacred Shards, energy refills, **the Gem Market** |
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Gargoyle Key | stone-vine/icon-key | daily reset (2) | the Gargoyle |
 | `key_weekly` | Titan Key | stone-vine/icon-key (violet tint) | weekly reset (3) | the Titan |
@@ -237,7 +237,7 @@ farming Normal in the back half of the map at level 30. `sim:economy` also plays
 | Gargoyle (daily) | ~420 | the Normal tier's 60-gem chest at 60 %, every day (`BOSSES.md` §2) |
 | The daily hundred | ~350 | the 100-point chest, with its every-third-day Ancient Shard |
 | First clears while progressing | ~273 | three new stands a day, first-clear bundles |
-| The Standing Welcome | ~240 | one tile a login, and the board loops forever (`LOGIN.md` §5) |
+| Daily Rewards | ~240 | one tile a login, and the board loops forever (`LOGIN.md` §5) |
 | Titan (weekly) | ~182 | the Normal tier's chests once a week (`BOSSES.md` §3) |
 | The weekly board and its chest | ~112 | claimed once a week |
 | The idle chest | ~63 | two claims a day at farm tier 20 (§6) |
@@ -261,7 +261,7 @@ shelf returns a gem, the Mission Skip Token included: a skipped step is marked d
 
 > **Twice superseded, both times upward.** This section first printed ≈ 800 gems a week with
 > "bosses 100", written while the bosses were still a plan; `BOSSES.md`'s tier tables (Phase 10)
-> then made the boss line alone worth ~600 and the total ~1,430. The Standing Welcome (Phase P)
+> then made the boss line alone worth ~600 and the total ~1,430. Daily Rewards (Phase P)
 > added a permanent ~240 a week on top, because the owner's answer was that the board repeats
 > rather than ending, and the Gem Market took ~380 a week back out. Every other line has come in
 > where this section said it would each time. Whether ~1,674 a week is the intended generosity is
@@ -275,7 +275,7 @@ shelf returns a gem, the Mission Skip Token included: a skipped step is marked d
 | Gargoyle's chests | ~80k | once a day at 60 % of the Normal tier |
 | The idle chest | ~58k | two claims a day at farm tier 20 (§6) |
 | The boards, the bosses' weekly, the Path | ~30k | |
-| The Standing Welcome | ~4.3k | the board's gold, spread over its thirty tiles (`LOGIN.md` §5) |
+| Daily Rewards | ~4.3k | the board's gold, spread over its thirty tiles (`LOGIN.md` §5) |
 | **Income** | **~326k** | |
 | Spend: gear levels | ~90k | 24 levels a day on 5★ pieces around +9 |
 | Spend: the Tavern | ~68k | 40 champion levels a day around level 34 |

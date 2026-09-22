@@ -151,11 +151,20 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   **Account Power** row — every owned champion's power summed, gold numerals, ticking up when the
   roster gains a level, a rank or a piece of gear; currencies centre-right:
   Energy, Gold, Gems, +; the Idle Chest as a framed pill with its countdown, once it is unlocked;
-  settings right); left edge: Idle Chest at the docks — the hourglass hotspot wearing a gold
-  `FillRing` (an SVG arc, exact at any size) with its countdown under the banner and a dot once it
-  is full; bottom bar: **Missions**, **Quests**, **Armoury**, **Index**, **Champions**,
-  primary **BATTLE** (opens Game Modes, and wears the boss-chest dot). **Index** opens the
-  Chronicle Index (§5.20).
+  the Bag as a square slot; settings right); left edge: Idle Chest at the docks — the hourglass
+  hotspot wearing a gold `FillRing` (an SVG arc, exact at any size) with its countdown under the
+  banner and a dot once it is full.
+- **The bottom bar is three weights, not seven buttons.** Far left, the **Rewards** plate: its own
+  gold-framed stone, because it is the one thing down here that *gives* rather than leads, and it
+  wears the calendar's dot. Centre, one **rail** holding five destinations — Champions, Armoury,
+  Missions, Quests, Index — each an icon **above** its word, tinted its own colour, with the frame
+  belonging to the rail and a tile drawing its own edge only on hover. Far right, the primary
+  **BATTLE** (opens Game Modes, wears the boss-chest dot), whose red ember frame is its alone.
+
+  It read as seven identical silver slabs before `0.9.1`, which is a bar you have to *read* rather
+  than see: five tiles that differ in hue and silhouette are told apart at a glance, and separating
+  the giving button from the going buttons from the fighting button gives the eye somewhere to land.
+  The Bag left the bar entirely for the header (§5.26).
 - Hotspots (label banner `banner-plain` + glow ring + dot): Tavern, Forge, Portal (statue replaced
   with a violet gate overlay), Chronicler's Hall (missions), Campaign gate (world map), Champions
   barracks, Boss gate.
@@ -868,13 +877,24 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   bold and the outcome after it — the boost and its new remaining time, *"twenty runs, from the
   top"*, the level or the stars reached. A refusal prints the engine's own reason in the same place,
   in the error colour.
-- **The header pills.** Each running boost draws a small tinted pill beside the profile chip, on
-  every screen, carrying its glyph and its countdown. A boost that is not running draws **nothing** —
-  three permanently dimmed icons would be clutter that says nothing, and an icon that is *there* is
-  the whole signal. The countdown ticks off `useNow` rather than a timer of its own, because the
-  expiry is an instant in the save.
+- **The header sockets.** Three slots beside the profile chip, on every screen, one per boost —
+  **always all three**, lit when running and dark when not (the owner's instruction). A lit socket
+  wears its boost's tint and counts down; a dark one is a recessed empty well with a grey glyph and
+  no clock, because "0h 0m" would read as a bug. Both states carry a tooltip, so a dark socket says
+  what it would be and where to get one rather than sitting there as an unexplained dead icon.
+  The countdown ticks off `useNow` rather than a timer of its own, because the expiry is an instant
+  in the save.
 
-### 5.27 The Standing Welcome (`docs/design/LOGIN.md`)
+  The first cut drew only the running ones, which was wrong in the way that matters: an icon you see
+  only once a boost is already on can never tell you that one is *off*, and off is the state a
+  player can do something about.
+- **The Bag lives in the header**, beside the purse and the chest — a square slot with the sack icon
+  and the count in its corner. It belongs there because it is a thing the chronicle *owns*, like
+  gold and energy, not a fifth place to go; and it makes an item usable from any screen rather than
+  only from the hub, which matters for something whose whole point is being spent at the moment you
+  decide to.
+
+### 5.27 Daily Rewards (`docs/design/LOGIN.md`)
 - **A board, not a list.** Thirty tiles in a scrolling grid, each framed in its tier's colour —
   borrowed from gear's rarities, which a player already reads fluently. A tile carries *Day N*, its
   rewards as a `RewardList` (plus the item's name in words when it pays one, because an icon alone
@@ -887,7 +907,7 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   in fact cost them nothing. Beside it, which round of the board this is.
 - **The foot says what is left**: the time until the next day once today's is taken, the finale's
   invitation while it is still there, and — right after a claim — which day was just taken.
-- **It is reached, never pushed.** A *Welcome* button in the hub's bottom bar wearing a notification
+- **It is reached, never pushed.** A *Rewards* plate at the far left of the hub's bottom bar wearing a notification
   dot the moment a day is owed. It does not open itself over the hub at launch: that would be the
   one dialog a player meets before they have decided to do anything, and with no streak to lose
   there is nothing urgent enough to justify taking the first press of the session.

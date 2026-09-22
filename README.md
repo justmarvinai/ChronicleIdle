@@ -3,13 +3,13 @@
 A 2D pixel-art, dark-fantasy, **turn-based idle gacha champion-collection RPG** for desktop
 browsers (and later Steam via Electron). Single player, no accounts, no monetisation.
 
-> Status: **`0.9.0` — The Market and the Standing Welcome.** Early Access 0.1 shipped as `0.1.0`
+> Status: **`0.9.1` — The Market and Daily Rewards.** Early Access 0.1 shipped as `0.1.0`
 > with all fifteen phases in: the game shell, 23 champions, deterministic animated battles, the
 > twelve-settlement campaign, chronicle levels and titles, the Tavern, gear and its fourteen sets,
 > the Forge, the Portal, the idle chest, the two period bosses, quests, the Chronicler's Path and
 > the tutorial. Since then, one feature a minor version: the Eternal Tower (`0.2.0`), the Chronicle
 > of Changes (`0.5.0`), the Glorious Palace (`0.6.0`), the Brewery (`0.7.0`), the Dungeons
-> (`0.8.0`) and now the Market, the Bag, the three boosts and the thirty-day Standing Welcome
+> (`0.8.0`) and now the Market, the Bag, the three boosts and the thirty-day Daily Rewards calendar
 > (`0.9.0`). See `ROADMAP.md` for what is planned and `CHANGELOG.md` for what landed.
 
 ## Documents
@@ -31,7 +31,7 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 | `GEAR.md` — slots, stars, stats, 14 sets, crafting | `DEPLOYMENT.md` — Ubuntu VPS (nginx) and Vercel |
 | `ECONOMY.md` — 25 currencies, energy, player level, idle chest | `DECISIONS.md` — architecture decision records |
 | `MARKET.md` — the two shelves, the consumables, the boosts, the Bag | `CREDITS.md` — asset provenance and licences |
-| `LOGIN.md` — the Standing Welcome: thirty days, and no streak | |
+| `LOGIN.md` — Daily Rewards: thirty days, and no streak | |
 | `DUNGEONS.md`, `BREWERY.md`, `GLORIOUS_PALACE.md`, `ETERNAL_TOWER.md` | |
 | `SUMMONING.md`, `BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md` | |
 

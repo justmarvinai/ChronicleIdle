@@ -1,3 +1,4 @@
+import { playSfx } from '@audio/index';
 import { t } from '@i18n/index';
 import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
@@ -10,6 +11,7 @@ import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { BottomBar } from '@ui/components/BottomBar/BottomBar';
 import { Button } from '@ui/components/Button/Button';
@@ -59,7 +61,7 @@ export default function HubScreen(_props: ScreenProps) {
   // The Path's: the mission it is on, if it is finished, and any chapter chest still waiting.
   const path = save ? missionsClaimable(save, now) : 0;
   // One dot when today's tile is still there — a day owed is the calendar's only live state.
-  const welcome = save && loginView(save, now).claimable ? 1 : 0;
+  const rewards = save && loginView(save, now).claimable ? 1 : 0;
 
   // Dots on the buildings that owe the player something: copies not looked at yet, and a
   // champion choice the campaign still owes (CAMPAIGN.md §7).
@@ -104,11 +106,38 @@ export default function HubScreen(_props: ScreenProps) {
       ))}
 
       <BottomBar
-        left={
-          <>
-            <NavButton
+        /*
+         * Three weights, left to right: the day's free thing, the places you go, the fight.
+         * Before this the bar was seven identical slabs and the eye had to read all seven to find
+         * one, which is the complaint the owner made of it.
+         */
+        left={<RewardsButton owed={rewards > 0} onClick={() => actions.openDialog({ name: 'login' })} />}
+        center={
+          <nav className={styles.rail} aria-label={t('hub.navigation')} data-testid="hub-rail">
+            <NavTile
+              label={t('hub.champions')}
+              glyph="glyph.cloaked_figure"
+              tint="#c9a24a"
+              unlocked
+              onClick={() => actions.push({ name: 'champions' })}
+              testId="nav-champions"
+            />
+            <NavTile
+              label={t('hub.armoury')}
+              glyph="glyph.ribcage_armor"
+              tint="#9fb4c9"
+              unlocked={gear}
+              onClick={() =>
+                actions.push(
+                  gear ? { name: 'armoury' } : { name: 'locked', feature: 'gear', titleKey: 'hub.armoury' },
+                )
+              }
+              testId="nav-armoury"
+            />
+            <NavTile
               label={t('hub.missions')}
               glyph="glyph.spell_book"
+              tint="#b48ad4"
               unlocked={missions}
               notify={path}
               onClick={() =>
@@ -120,9 +149,10 @@ export default function HubScreen(_props: ScreenProps) {
               }
               testId="nav-missions"
             />
-            <NavButton
+            <NavTile
               label={t('hub.quests')}
               glyph="glyph.burning_scroll"
+              tint="#d4a06a"
               unlocked={quests}
               notify={ledger}
               onClick={() =>
@@ -134,56 +164,15 @@ export default function HubScreen(_props: ScreenProps) {
               }
               testId="nav-quests"
             />
-            <NavButton
-              label={t('hub.armoury')}
-              glyph="glyph.ribcage_armor"
-              unlocked={gear}
-              onClick={() =>
-                actions.push(
-                  gear ? { name: 'armoury' } : { name: 'locked', feature: 'gear', titleKey: 'hub.armoury' },
-                )
-              }
-              testId="nav-armoury"
-            />
-          </>
-        }
-        center={
-          <>
-            <NavButton
+            <NavTile
               label={t('hub.index')}
               glyph="glyph.owl"
+              tint="#8fb98a"
               unlocked
               onClick={() => actions.push({ name: 'index' })}
               testId="nav-index"
             />
-            <NavButton
-              label={t('hub.champions')}
-              glyph="glyph.cloaked_figure"
-              unlocked
-              onClick={() => actions.push({ name: 'champions' })}
-              testId="nav-champions"
-            />
-            {/*
-              The Welcome wears a dot the moment a day is owed, which is the whole reminder it
-              needs: a calendar that opens itself over the hub would be the one dialog a player
-              meets before they have decided to do anything (LOGIN.md §4).
-            */}
-            <NavButton
-              label={t('login.open')}
-              glyph="glyph.peace_dove"
-              unlocked
-              notify={welcome}
-              onClick={() => actions.openDialog({ name: 'login' })}
-              testId="nav-login"
-            />
-            <NavButton
-              label={t('bag.open')}
-              glyph="glyph.burning_scroll"
-              unlocked
-              onClick={() => actions.openDialog({ name: 'bag' })}
-              testId="nav-bag"
-            />
-          </>
+          </nav>
         }
         right={
           <Button
@@ -202,9 +191,18 @@ export default function HubScreen(_props: ScreenProps) {
   );
 }
 
-function NavButton({
+/**
+ * One destination on the hub's rail.
+ *
+ * Icon **above** the word rather than beside it, and tinted per destination: five tiles that differ
+ * in colour and silhouette are told apart at a glance, where five identical slabs have to be read.
+ * The tile itself carries no frame until it is hovered — the rail behind them is the frame, so the
+ * bar reads as one navigation strip rather than as five competing buttons.
+ */
+function NavTile({
   label,
   glyph,
+  tint,
   unlocked,
   notify = 0,
   onClick,
@@ -212,29 +210,64 @@ function NavButton({
 }: {
   label: string;
   glyph: Parameters<typeof Glyph>[0]['glyph'];
+  /** The destination's own colour, so the rail is read by hue before it is read by word. */
+  tint: string;
   unlocked: boolean;
-  /** How many things are waiting behind this button; 0 wears no badge. */
+  /** How many things are waiting behind this tile; 0 wears no badge. */
   notify?: number;
   onClick: () => void;
   testId: string;
 }) {
   return (
-    <Button
-      variant="secondary"
-      size="md"
-      className={[styles.nav, unlocked ? '' : styles.navLocked].join(' ')}
-      icon={
-        <Glyph
-          glyph={unlocked ? glyph : 'glyph.broken_shackle'}
-          size={26}
-          color={unlocked ? 'var(--gold-3)' : 'var(--text-3)'}
-        />
-      }
-      onClick={onClick}
+    <button
+      type="button"
+      className={styles.tile}
+      data-locked={!unlocked}
+      style={{ '--tile-tint': tint } as React.CSSProperties}
+      onMouseEnter={() => playSfx('ui.hover')}
+      onClick={() => {
+        playSfx(unlocked ? 'ui.open' : 'ui.error');
+        onClick();
+      }}
       data-testid={testId}
     >
-      {label}
+      <Glyph
+        glyph={unlocked ? glyph : 'glyph.broken_shackle'}
+        size={30}
+        color={unlocked ? tint : 'var(--text-3)'}
+      />
+      <span className={`display ${styles.tileLabel}`}>{label}</span>
       {unlocked && notify > 0 ? <NotificationDot count={notify} /> : null}
-    </Button>
+    </button>
+  );
+}
+
+/**
+ * The day's tile, at the far left of the bar (the owner's instruction).
+ *
+ * It is the one thing down here that *gives* rather than leads, so it is drawn as its own gold
+ * plate rather than as a sixth destination on the rail — the bar then reads left to right as take,
+ * go, fight. Gold and not the ember red on purpose: the red frame is Battle's, and a second button
+ * wearing it would make the two look like a pair and cost the fight its place as the one primary
+ * action on the screen. It wears a dot the moment a day is owed and goes quiet once it is taken, which is the
+ * whole reminder the calendar gets: it never opens itself over the hub (`LOGIN.md` §4).
+ */
+function RewardsButton({ owed, onClick }: { owed: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className={styles.rewards}
+      data-owed={owed}
+      onMouseEnter={() => playSfx('ui.hover')}
+      onClick={() => {
+        playSfx('ui.open');
+        onClick();
+      }}
+      data-testid="nav-login"
+    >
+      <AssetImage asset="ui.stone_vine.icon_star" className={styles.rewardsIcon} alt="" />
+      <span className={`display ${styles.rewardsLabel}`}>{t('login.open')}</span>
+      {owed ? <NotificationDot /> : null}
+    </button>
   );
 }

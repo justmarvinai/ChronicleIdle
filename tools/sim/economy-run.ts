@@ -36,7 +36,7 @@ const SECONDS_PER_DAY = 86_400;
 const MS_PER_HOUR = 3_600_000;
 
 /**
- * What the Standing Welcome pays in a day (LOGIN.md §5).
+ * What the Rewards Calendar pays in a day (LOGIN.md §5).
  *
  * The board hands over one tile per login and **loops** when it ends (the owner's answer), so it
  * is permanent income rather than an onboarding arc, and every script claims it: a calendar nobody
@@ -52,7 +52,7 @@ const MS_PER_HOUR = 3_600_000;
  * Tiles that pay an **item** rather than a currency are not counted. The ledger is kept in
  * currencies, and what a Brewery Token is worth is the Market audit's question, not this one.
  */
-const WELCOME_PER_DAY: readonly { currency: CurrencyId; amount: number }[] = (() => {
+const REWARDS_PER_DAY: readonly { currency: CurrencyId; amount: number }[] = (() => {
   const cycle = new Map<CurrencyId, number>();
   for (const tile of content.loginBoard)
     for (const grant of tile.rewards)
@@ -187,8 +187,8 @@ function playDay(script: EconomyScript, day: number, ledger: Ledger, rng: Rng): 
     ledger.earnAll('idle chest', haul.currencies);
   }
 
-  // ── The Standing Welcome: a tile a day, booked at the board's own rate (see WELCOME_PER_DAY).
-  ledger.earnAll('the welcome', WELCOME_PER_DAY);
+  // ── The Rewards Calendar: a tile a day, booked at the board's own rate (see REWARDS_PER_DAY).
+  ledger.earnAll('daily rewards', REWARDS_PER_DAY);
 
   // ── The stall: the day's surplus gold, spent on whatever this hour happens to carry.
   stallDay(script, day, ledger);

@@ -180,7 +180,7 @@ export interface EconomyBand {
   per: 'day' | 'week';
   side: 'income' | 'spend' | 'net';
   /**
-   * One ledger line by name, instead of the script's whole book — `'the welcome'`, `'gold market'`.
+   * One ledger line by name, instead of the script's whole book — `'daily rewards'`, `'gold market'`.
    * A line band is how a *source* is held to a size: a total says the week is healthy, and says
    * nothing about one line having quietly grown to be all of it. `net` is meaningless for a line,
    * so a line band is `income` or `spend`.
@@ -216,7 +216,7 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     side: 'income',
     min: 1_150,
     max: 1_950,
-    why: 'ECONOMY.md §7: ~1,670 gems a week — ~600 the two bosses, ~240 the Standing Welcome',
+    why: 'ECONOMY.md §7: ~1,670 gems a week — ~600 the two bosses, ~240 the Rewards Calendar',
   },
   {
     script: 'mid_active',
@@ -303,17 +303,17 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
   },
   {
     script: 'mid_active',
-    line: 'the welcome',
+    line: 'daily rewards',
     currency: 'gems',
     per: 'week',
     side: 'income',
     min: 180,
     max: 340,
-    why: 'LOGIN.md §5: the board loops forever, so its ~240 gems a week must stay a welcome — about a seventh of an active week — and never a second job',
+    why: 'LOGIN.md §5: the board loops forever, so its ~240 gems a week must stay a bonus — about a seventh of an active week — and never a second job',
   },
   {
     script: 'mid_active',
-    line: 'the welcome',
+    line: 'daily rewards',
     currency: 'gold',
     per: 'day',
     side: 'income',

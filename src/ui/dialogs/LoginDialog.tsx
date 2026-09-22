@@ -25,7 +25,7 @@ const TIER_COLOR = {
 } as const;
 
 /**
- * The Standing Welcome (docs/tech/UI_DESIGN.md §5.27): thirty tiles, today's one pressable.
+ * Daily Rewards (docs/tech/UI_DESIGN.md §5.27): thirty tiles, today's one pressable.
  *
  * The line under the title is the whole design in a sentence — **a day is a day you came**, so
  * missing one costs nothing. Saying it on the board matters: a player who has met a login calendar

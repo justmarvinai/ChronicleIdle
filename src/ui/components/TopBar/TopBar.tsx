@@ -10,6 +10,7 @@ import { BoostPills } from './BoostPills';
 import { ProfileChip } from '@ui/components/TopBar/ProfileChip';
 import { useNow } from '@ui/hooks/useNow';
 import { kitBorder } from '@ui/styles/kit';
+import { BagButton } from './BagButton';
 import styles from './TopBar.module.css';
 
 export interface TopBarProps {
@@ -61,6 +62,7 @@ export function TopBar({ title, onBack, onClose, children }: TopBarProps) {
               ),
             )
           : null}
+        <BagButton />
         <IdleChestButton />
         <IconButton
           kind="settings"

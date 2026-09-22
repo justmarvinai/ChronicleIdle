@@ -3,9 +3,169 @@
   inset: 0;
   overflow: hidden;
 }
-.nav {
-  min-width: 170px;
+
+/*
+ * ── The bottom bar (docs/tech/UI_DESIGN.md §5.2).
+ *
+ * One rail holding five destinations, not five buttons sitting next to each other. The frame
+ * belongs to the rail; a tile only draws its own edge once the pointer is on it. That is the whole
+ * fix for a bar that used to be seven identical slabs competing for the same attention.
+ */
+.rail {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 5px;
+  background: linear-gradient(180deg, rgba(26, 22, 32, 0.92), rgba(14, 12, 18, 0.92));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 14px rgba(0, 0, 0, 0.5);
 }
-.navLocked {
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  /* Wide enough for the longest label at this size, so the rail never reflows between screens. */
+  width: 104px;
+  height: 74px;
+  padding: 6px 4px 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    transform 140ms ease;
+}
+
+.tile::after {
+  /* The tile's own edge, drawn only on hover — the rail is the frame the rest of the time. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  box-shadow: inset 0 0 0 1px var(--tile-tint, var(--gold-2));
+  transition: opacity 140ms ease;
+  pointer-events: none;
+}
+
+.tile:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+.tile:hover::after {
+  opacity: 0.75;
+}
+.tile:active {
+  transform: translateY(0);
+}
+.tile:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: -2px;
+}
+
+.tileLabel {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--text-2);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+  transition: color 140ms ease;
+}
+.tile:hover .tileLabel {
+  color: var(--text-1);
+}
+
+/* A destination that has not opened yet keeps its place and says so by going quiet. */
+.tile[data-locked='true'] {
+  opacity: 0.5;
+}
+.tile[data-locked='true'] .tileLabel {
   color: var(--text-3);
+}
+.tile[data-locked='true']:hover {
+  opacity: 0.75;
+  transform: none;
+}
+
+/*
+ * ── The day's tile, at the far left. Its own gold plate, because it gives rather than leads —
+ * the bar then reads take, go, fight.
+ *
+ * Built from the kit's materials rather than from its ember button (UI_DESIGN.md §7.1): dark stone
+ * under a gold hairline. The ember frame belongs to Battle, and a second button wearing it would
+ * make the two read as a pair and cost the fight its place as the screen's one primary action.
+ */
+.rewards {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  height: 62px;
+  padding: 0 24px 0 18px;
+  border: none;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(138, 107, 42, 0.32), rgba(26, 21, 14, 0.94) 62%), rgba(14, 12, 18, 0.95);
+  box-shadow:
+    inset 0 0 0 1px var(--gold-2),
+    inset 0 0 0 3px rgba(10, 9, 14, 0.9),
+    inset 0 0 0 4px rgba(201, 162, 74, 0.35),
+    inset 0 10px 22px rgba(240, 213, 122, 0.08),
+    0 4px 14px rgba(0, 0, 0, 0.55);
+  transition:
+    filter 140ms ease,
+    transform 140ms ease;
+}
+.rewards:hover {
+  filter: brightness(1.14);
+  transform: translateY(-2px);
+}
+.rewards:active {
+  transform: translateY(0);
+  filter: brightness(0.96);
+}
+.rewards:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
+}
+
+.rewardsIcon {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+}
+
+.rewardsLabel {
+  font-size: 19px;
+  letter-spacing: 0.06em;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.75);
+}
+
+/* A day still waiting pulls the eye; a day already taken sits quiet until tomorrow. */
+@media (prefers-reduced-motion: no-preference) {
+  .rewards[data-owed='true'] {
+    animation: rewardsWaiting 2.6s ease-in-out infinite;
+  }
+}
+.rewards[data-owed='false'] {
+  filter: saturate(0.75) brightness(0.9);
+}
+.rewards[data-owed='false']:hover {
+  filter: saturate(1) brightness(1.05);
+}
+
+@keyframes rewardsWaiting {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.16) drop-shadow(0 0 8px rgba(240, 213, 122, 0.4));
+  }
 }

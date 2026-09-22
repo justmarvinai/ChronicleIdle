@@ -1,4 +1,4 @@
-# LOGIN.md — The Standing Welcome
+# LOGIN.md — Daily Rewards
 
 Related: `MARKET.md` (the other half of the same batch — the board hands out three of its items),
 `ECONOMY.md` §7–§8 (what a week comes to with it), `docs/tech/UI_DESIGN.md` §5.27 (the board).
@@ -99,8 +99,9 @@ backwards.
 
 ## 4. Reaching it
 
-A **Welcome** button in the hub's bottom bar, beside the Bag. It wears a notification dot the moment
-a day is owed, and that is the whole reminder it gets.
+A **Rewards** plate at the far left of the hub's bottom bar — its own gold frame rather than a
+sixth tile on the navigation rail, because it is the one thing down there that *gives* rather than
+leads. It wears a notification dot the moment a day is owed, and that is the whole reminder it gets.
 
 It deliberately does **not** open itself over the hub on launch. A calendar that did would be the
 one dialog a player meets before they have decided to do anything — and since there is no streak to
@@ -121,11 +122,11 @@ two bands of its own:
 
 | Band | Want | Why |
 | --- | --- | --- |
-| `the welcome`, gems, income per week | 180–340 | it must stay a welcome — about a seventh of an active week — and never a second job |
-| `the welcome`, gold, income per day | ≤ 12,000 | the board's gold is a top-up on the day, not a wage |
+| `daily rewards`, gems, income per week | 180–340 | it must stay a bonus — about a seventh of an active week — and never a second job |
+| `daily rewards`, gold, income per day | ≤ 12,000 | the board's gold is a top-up on the day, not a wage |
 
 Raising any gem row on the board moves the first of those, which is the point of it: a tempting
-"just 50 more gems on day 19" is exactly the edit that turns a welcome into income the rest of the
+"just 50 more gems on day 19" is exactly the edit that turns a bonus into income the rest of the
 economy then has to be balanced around.
 
 The sim books the board at **the cycle's rate** rather than walking it tile by tile, because a
