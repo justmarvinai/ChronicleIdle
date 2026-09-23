@@ -9,6 +9,11 @@
   opacity: 0.5;
   pointer-events: none;
 }
+/* Without its own label, the slider is the channel and its value. */
+.bare {
+  grid-template-columns: 1fr 64px;
+  padding: 0;
+}
 .label {
   color: var(--text-1);
 }

@@ -1,0 +1,249 @@
+/* Settings (docs/tech/UI_DESIGN.md §5.17): a rail of sections, and the section's cards beside it. */
+.layout {
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+  gap: 24px;
+  min-height: 660px;
+  padding-bottom: 8px;
+}
+
+/* ─── The rail ──────────────────────────────────────────────────────────────────────── */
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  text-align: left;
+  color: inherit;
+  background: linear-gradient(180deg, rgba(30, 25, 22, 0.9), rgba(14, 12, 11, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition:
+    filter var(--t-fast),
+    box-shadow var(--t-fast),
+    background var(--t-fast);
+}
+.tab:hover:not(:disabled) {
+  filter: brightness(1.18);
+}
+.tab:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
+}
+.tab:disabled {
+  opacity: 0.4;
+}
+/* The section open: lit, with a gold rule down its edge. */
+.tabOn {
+  background:
+    radial-gradient(ellipse 60% 90% at 15% 50%, rgba(240, 213, 122, 0.16), transparent 72%),
+    linear-gradient(180deg, rgba(56, 40, 22, 0.95), rgba(24, 17, 10, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.55),
+    inset 3px 0 0 var(--gold-3);
+}
+.tabGlyph {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: radial-gradient(circle, rgba(240, 213, 122, 0.1), rgba(11, 10, 13, 0.92) 75%);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.tabOn .tabGlyph {
+  box-shadow:
+    inset 0 0 0 1px var(--gold-2),
+    0 0 12px rgba(240, 213, 122, 0.25);
+}
+.tabText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tabLabel {
+  font-size: 19px;
+  line-height: 1.1;
+  color: var(--text-1);
+}
+.tabOn .tabLabel {
+  color: var(--gold-3);
+}
+.tabHint {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.version {
+  margin: auto 0 0;
+  padding: 0 4px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* ─── The pane ──────────────────────────────────────────────────────────────────────── */
+.pane {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.paneHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: var(--hairline);
+}
+.paneGlyph {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle, rgba(240, 213, 122, 0.16), rgba(11, 10, 13, 0.9) 75%);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
+}
+.paneTitle {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.paneHint {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--text-3);
+}
+.scroll {
+  padding-right: 14px;
+}
+.notice {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--text-2);
+  background: rgba(11, 10, 13, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.groupTitle {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  color: var(--gold-2);
+}
+.groupDanger .groupTitle {
+  color: #ff9d88;
+}
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* One setting: its name and what it does, then its control. */
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: center;
+  gap: 24px;
+  min-height: 74px;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, rgba(30, 25, 21, 0.92), rgba(13, 11, 10, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.22);
+  transition: box-shadow var(--t-fast);
+}
+.card:hover {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
+}
+.compact {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.cardDanger {
+  background:
+    radial-gradient(ellipse 50% 100% at 0% 50%, rgba(224, 74, 58, 0.14), transparent 70%),
+    linear-gradient(180deg, rgba(36, 16, 14, 0.94), rgba(14, 8, 8, 0.94));
+  box-shadow: inset 0 0 0 1px rgba(224, 102, 74, 0.5);
+}
+.cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.cardLabel {
+  font-size: 18px;
+  line-height: 1.15;
+  color: var(--text-1);
+}
+.cardHint {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--text-3);
+}
+.cardControl {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+.cardControl > * {
+  flex: 1;
+}
+.compact .cardControl > * {
+  flex: 0 0 auto;
+}
+
+/* The battle speed as a row of joined plates; the ones not yet earned are dim and chained. */
+.speeds {
+  display: flex;
+}
+.speed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 62px;
+  height: 40px;
+  padding: 0 10px;
+  font-size: 18px;
+  color: var(--text-2);
+  background: linear-gradient(180deg, #221e1b, #141211);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+  transition:
+    filter var(--t-fast),
+    background var(--t-fast);
+}
+.speed + .speed {
+  margin-left: -1px;
+}
+.speed:hover {
+  filter: brightness(1.2);
+}
+.speed:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: -2px;
+}
+.speedOn {
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c 70%, #a8771f);
+  box-shadow:
+    inset 0 0 0 1px rgba(90, 60, 10, 0.6),
+    0 0 12px rgba(240, 213, 122, 0.35);
+}
+.speedLocked {
+  color: var(--text-3);
+  opacity: 0.6;
+}

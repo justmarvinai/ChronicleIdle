@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { playSfx } from '@audio/index';
+import { t } from '@i18n/index';
 import styles from './Toggle.module.css';
 
 export interface ToggleProps {
@@ -8,14 +9,19 @@ export interface ToggleProps {
   label: string;
   description?: string;
   disabled?: boolean;
+  /** The label is said by the row around the switch (a settings card), so it is only read aloud. */
+  hideLabel?: boolean;
 }
 
-/** Stone switch with an ember knob. */
-export function Toggle({ checked, onChange, label, description, disabled }: ToggleProps) {
+/** A bevelled stone switch: dark and marked *Off*, or ember-lit with a gold knob and marked *On*. */
+export function Toggle({ checked, onChange, label, description, disabled, hideLabel = false }: ToggleProps) {
   const id = useId();
   return (
-    <label htmlFor={id} className={[styles.row, disabled ? styles.disabled : ''].join(' ')}>
-      <span className={styles.text}>
+    <label
+      htmlFor={id}
+      className={[styles.row, hideLabel ? styles.bare : '', disabled ? styles.disabled : ''].join(' ')}
+    >
+      <span className={hideLabel ? 'sr-only' : styles.text}>
         <span className={styles.label}>{label}</span>
         {description ? <span className={styles.description}>{description}</span> : null}
       </span>
@@ -33,6 +39,9 @@ export function Toggle({ checked, onChange, label, description, disabled }: Togg
           onChange(!checked);
         }}
       >
+        <span className={styles.state} aria-hidden="true">
+          {checked ? t('common.on') : t('common.off')}
+        </span>
         <span className={styles.knob} />
       </button>
     </label>

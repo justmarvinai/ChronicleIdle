@@ -436,6 +436,14 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   the count arrives with the turn being played (`turn.started` carries it), not from the ability's
   authored cooldown.
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
+- **The pause menu** (640 px). It opens with the fight in one strip: where it is, then the wave,
+  the ally turns against the limit, the speed, and whether the champions or the player are
+  choosing. Under it:
+  - **Resume**, full width;
+  - *Settings* and *Retreat*, side by side;
+  - a line saying Esc resumes.
+
+  *Retreat* turns into a red card that says what it costs, with *Stay and fight* and **Retreat**.
 
 ### 5.10 Battle result
 One layout for every fight. The result is laid out in three bands: the crest at the top, the team
@@ -813,8 +821,27 @@ under a purple banner of their own.
 - Title picker: two-column list of every title, earned ones in gold with a trophy glyph and
   selectable, locked ones dimmed with a shackle glyph and a "Locked" tag; *No title* is always
   available.
-- Settings: music/sfx sliders, default speed, auto, reduced motion, fullscreen, language (en),
-  *Export save*, *Import save*, *Reset chronicle* (typed confirmation), credits.
+- **Settings** (1060 px wide): a rail of sections on the left and the chosen section's cards on
+  the right.
+  - **The rail.** A vertical tab list (the arrows, Home and End walk it). Each section is a plate:
+    its glyph (dove for Audio, eye for Display, crossed swords for Battle, the book for Save data,
+    the quill for About), its name, and one line of what it holds. The open one is lit with a
+    gold rule down its edge. The version sits at the rail's foot.
+  - **The pane.** A header repeats the section's glyph, name and line, over titled groups of
+    setting cards. Each card has its name and a sentence of what it does on the left, and its
+    control on the right:
+    - a slider takes the card's wide right half;
+    - a switch, a button or a picker sits at the card's end.
+  - **Switches** are bevelled stone grooves with a square knob. Off, the groove is dark and says
+    *Off*; on, it is ember-lit with a gold knob and says *On*.
+  - **Battle speed** is a row of joined plates, ×1 to ×4: the one in force is gold, and the
+    speeds not yet earned are dim and chained. Pressing a chained one says where it is earned
+    instead of applying it.
+  - **Save data** keeps *Export* and *Import* under *Keep your chronicle*, and *Reset chronicle*
+    alone under *Start over* on a red card (the typed confirmation follows).
+  - **About** holds the Chronicle of Changes and the credits.
+  - Every change applies at once and is saved with the chronicle. Before a chronicle exists, the
+    controls show but are still.
 
 ### 5.17a Level-up
 - The moment (`ECONOMY.md` §4) is a dialog, never an overlay on a fight: levels earned during a

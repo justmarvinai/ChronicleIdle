@@ -1,0 +1,85 @@
+/* The pause menu (docs/tech/UI_DESIGN.md §5.9). */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 6px;
+}
+/* The fight, in one strip. */
+.fight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  background:
+    radial-gradient(ellipse 50% 100% at 0% 50%, rgba(240, 213, 122, 0.1), transparent 70%),
+    linear-gradient(180deg, rgba(30, 25, 21, 0.92), rgba(13, 11, 10, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.where {
+  font-size: 20px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.resume {
+  width: 100%;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.row > * {
+  width: 100%;
+}
+/* Leaving asks once, on a red card that says what it costs. */
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  background:
+    radial-gradient(ellipse 50% 100% at 0% 50%, rgba(224, 74, 58, 0.16), transparent 70%),
+    linear-gradient(180deg, rgba(36, 16, 14, 0.95), rgba(14, 8, 8, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(224, 102, 74, 0.55);
+  animation: rise 0.25s var(--ease-out) both;
+}
+.confirmText {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-1);
+}
+.hint {
+  margin: 0;
+  font-size: 13px;
+  text-align: center;
+  color: var(--text-3);
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

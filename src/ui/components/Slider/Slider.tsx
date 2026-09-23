@@ -11,6 +11,8 @@ export interface SliderProps {
   label: string;
   format?: (value: number) => string;
   disabled?: boolean;
+  /** The label is said by the row around the slider (a settings card), so it is only read aloud. */
+  hideLabel?: boolean;
 }
 
 /** Track height in px; the stone channel's rim is scaled from its 103 px source to match. */
@@ -29,12 +31,13 @@ export function Slider({
   label,
   format,
   disabled,
+  hideLabel = false,
 }: SliderProps) {
   const id = useId();
   const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
   return (
-    <div className={[styles.row, disabled ? styles.disabled : ''].join(' ')}>
-      <label htmlFor={id} className={styles.label}>
+    <div className={[styles.row, hideLabel ? styles.bare : '', disabled ? styles.disabled : ''].join(' ')}>
+      <label htmlFor={id} className={hideLabel ? 'sr-only' : styles.label}>
         {label}
       </label>
       <div className={styles.control}>
