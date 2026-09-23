@@ -6,10 +6,11 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending. Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
+_Nothing pending. Six questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
-lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
-Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
+lost floor still spends its key), Q49 (nothing grants Eternal Keys yet), Q57 (whether "the Intro
+Campaign" in the drop-rarity note meant the difficulty or the early settlements) and Q62 (whether
+a gear card should carry its slot glyph beside the set emblem)._
 
 ## [0.9.3] — 2026-09-23 — Marks of the Fourteen
 
@@ -56,8 +57,9 @@ identifier emblem per set, shown on every piece wherever it turns up. `docs/desi
 ### Changed
 
 - **`GearCard`** fills with the piece's painting and badges the set's emblem bottom-left — the
-  corner that held a slot glyph, which the painting now makes redundant (a helmet is a helmet).
-  A piece whose set has left the content keeps a large slot glyph instead of a picture.
+  corner that held a slot glyph, which the painting now makes redundant (a helmet is a helmet;
+  `USER_QUESTIONS.md` Q62 asks whether to keep both). A piece whose set has left the content keeps
+  a large slot glyph instead of a picture.
 - **The champion's Gear tab** fills each worn slot with the painting under its rarity ring, with
   the emblem plate in the corner; the set-bonus rows lead with the emblem.
 - **The Armoury**: each set's run opens under its emblem; the bench shows the painting at 116 px

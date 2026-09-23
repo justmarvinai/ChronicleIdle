@@ -5,6 +5,22 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
+### Q62 — Gear cards: the set emblem took the slot glyph's corner. Should both be on a card?
+
+**Why it matters.** You asked for a very small set icon on every piece of gear. A card has two
+free corners along its foot — the main stat on the right, and until now a slot glyph on the left —
+and with each piece now drawn as its own painting, that glyph only said what the picture already
+shows: a helmet is a helmet. So the emblem took the glyph's corner rather than squeezing in beside
+it. Keeping both would put six marks on a 96 px card (stars, level, main stat, lock, slot, set).
+
+**The default in use.** The emblem alone, bottom-left, on a small dark stone plate — bare, it
+vanishes into its own set's painting (Ember Guard's red emblem on Ember Guard's lava). The slot is
+still named everywhere it was: in the piece's name (*Warcry Weapon*), on the bench, in the card's
+accessible label, and by the slot filter above the racks.
+
+Bringing the glyph back is a few lines in `GearCard`, which still draws it for the one case a card
+has no painting (a piece whose set has left the content).
+
 ### Q57 — "No Epic or Legendary in the Intro Campaign": the difficulty, or the early settlements?
 
 **Why it matters.** Your balance note said *no Legendary or Epic item drops in for example the

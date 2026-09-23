@@ -161,7 +161,7 @@ Since `0.9.3` every piece is drawn with its own painting and every set is named 
   that emblem's own fill level (the brightness a quarter of its clearly coloured pixels sit under):
   Executioner's blood red peaks at 157 where the rest reach 253, and keyed against white it would
   have come out two-thirds transparent. Rim pixels are lifted back to the fill colour, so there is
-  no black fringe; the sources' background noise peaks at 5 and keys clear below 8.
+  no black fringe; the sources' background noise peaks at 5, and anything at 8 or under keys clear.
 - **Where they are drawn.** A painting fills every piece card, worn slot, drop chip and the
   Armoury bench; an emblem sits on a small dark-stone plate in a piece's corner (a bare emblem
   vanishes on its own set's painting — Ember Guard's red on Ember Guard's lava), and bare beside a
