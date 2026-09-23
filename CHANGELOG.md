@@ -11,6 +11,48 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.6] — 2026-09-23 — The Stall and the Shelf
+
+The owner's seventh batch: the Market, Gold and Gem, reworked as the Tavern, the Forge, the hub and
+the Idle Chest were — the same two shelves, on a better screen. `docs/tech/UI_DESIGN.md` §4, §5.25,
+`docs/design/MARKET.md` §1.1.
+
+### Added
+
+- **`StallCard`**, **`ShelfCard`** and **`BundleCard`** (`ui/screens/market`), replacing the rows
+  and panels `MarketScreen` drew inline; the screen keeps the tabs, the clock and the layout.
+- A **quantity picker** on every stacked stall slot — −, the number, +, *Max* — with the total it
+  comes to; *Buy* buys the chosen number (`stall-qty-N`, `stall-less-N`, `stall-more-N`,
+  `stall-max-N`, `stall-total-N`). It replaces the "×N" buy-everything button.
+- **Rare finds**: `rareFind` on the gold pool's three "sometimes" rows (`balance/market.ts`), read by
+  `isRareFind`; the card wears a gold frame, a ribbon and a sheen.
+- `market-view.ts`: `shelfSlug`, `isRareFind`, `consumableKind` (what a single is for, exhaustive
+  over the effect union) and `bundleWorth` / `bundleSaving` (a bundle's parts at the shelf's own
+  prices, `null` where a part is not sold singly).
+- `Tabs` take an optional painted `icon`; `ScrollArea` takes `fade`, which fades the content at an
+  edge it runs on past and nowhere else.
+- Tests: `market-screen.test.tsx` — the six wares and their numbers, buying a chosen number, *Max*
+  against the purse, *Not enough* and *Sold out*, the rare find, the gem shelf's thirteen entries,
+  a bundle's parts and saving, a single reaching the Bag, a bundle going once; the worth of every
+  bundle against `MARKET.md` §2.2; every consumable's kind in words.
+
+### Changed
+
+- **The Gold Market**: six wares, three by two, on one screen — the ware on a lit stand, what it is
+  for and how many are held, a slim stock bar, the price of one, the picker and the total. The turn
+  of the hour is an hourglass with the hour draining under it. A sold-out slot is stamped where it
+  stood.
+- **The Gem Market**: two headed sections. The nine singles in three columns, each framed and lit
+  in its rarity, with what kind of thing it is, what it does and how many the Bag holds. The four
+  bundles two by two in gold knotted frames, with a legible *Once per chronicle* ribbon, their
+  contents as marked chips instead of a bulleted list, and what they save; a taken bundle is stamped
+  where it stands.
+- A purchase shows itself on the card — "+N" off the stand, the held count and the stock moving, a
+  bundle stamped as it is bought.
+- Strings: `market.subtitle`, `market.price`, `market.bundle`, `market.bought`, `market.toBag` and
+  `market.empty` retired unused; the picker's, the sections', the kinds', the worth and the stamps'
+  strings are new.
+
 ## [0.9.5] — 2026-09-23 — Hearth and Harbour
 
 The owner's sixth batch: the Tavern, the Forge, the Emberhold hub and the Idle Chest dialog, each

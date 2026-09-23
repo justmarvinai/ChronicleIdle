@@ -20,6 +20,16 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_6.name': 'The Stall and the Shelf',
+  'release.0_9_6.gold_market':
+    'The Gold Market lays its six wares out as proper cards: each on a lit stand with what it is for and how many you already hold, how many are left, and a count to buy — from one to all your purse can reach — with the total before you pay.',
+  'release.0_9_6.gem_market':
+    'The Gem Market reads as a shelf: the nine things that never run out, each in its rarity’s colour with what it does and how many are in your Bag, then the four bundles with everything they hold shown by its icon, what those parts would cost on their own, and how much the bundle saves.',
+  'release.0_9_6.rare_finds':
+    'When the stall carries something rare — a Legendary Tome, an Ancient Shard or a Sacred Shard — it is framed in gold and marked as a rare find, so you will not walk past it.',
+  'release.0_9_6.stamps':
+    'Buying shows what you got right on the card, and a ware you have bought out or a bundle you have taken keeps its place with a stamp across it.',
+
   'release.0_9_5.name': 'Hearth and Harbour',
   'release.0_9_5.tavern':
     'The Tavern has been rebuilt around the champion you are raising. They stand framed between the seats, a road beneath them shows how far the table takes them towards their level cap, brews sit on a shelf showing what each is worth to them, and the panel shows their health, attack, defence and power before and after.',

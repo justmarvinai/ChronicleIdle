@@ -102,7 +102,7 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `Button.secondary` | `stone-vine/btn-stone-wide` / `btn-stone-med` / `btn-stone-long` | |
 | `Button.icon` | `stone-vine/btn-icon-back` / `btn-icon-close` / `btn-icon-settings`, `dark-ember/btn-ember-round` | 64 px |
 | `Button.square` | `dark-ember/btn-ember-square` (+ `-on`/`-off`) | toggles (Auto, speed) |
-| `Tab` | `dark-ember/banner-plain` / `banner-dark` (active = ember, inactive = dark) | an optional line glyph before the word — the Tavern's three tracks, the Forge's three benches |
+| `Tab` | `dark-ember/banner-plain` / `banner-dark` (active = ember, inactive = dark) | an optional line glyph before the word — the Tavern's three tracks, the Forge's three benches — or a painted icon (the Market's coin and gem) |
 | `CurrencyPill` | the currency's icon cut round inside `dark-ember/frame-round-sm-lit` — the kit's own round frame — at the head of a slim dark bar with the gold hairline, the animated amount in `--font-num`, and `dark-ember/btn-ember-square-on` for "+" | top bar; the Bag and the idle chest are built from the same socket and bar, so the header's right side reads as one row of instruments |
 | `Bar` | `stone-vine/bar-track-stone-*` + `bar-fill-health` / `bar-fill-mana` / `bar-fill-stamina`; `dark-ember/bar-track-ember` + `bar-fill-ember` for boss HP | fills are masked and animated; the carved track is used from 40 px (its rim is 30–40 source px), shorter bars get a hairline frame in the same materials; labels and values only above 20 px |
 | `Slot` | `stone-vine/slot-stone-sm/md/lg/long` (+ `-fill`) | team slots, gear slots, brew slots |
@@ -127,7 +127,7 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `FxSprite` | a flipbook from the FX library (`fx.*`, §6.3) stepped on one DOM element by a single rAF loop — no React render per frame — and screen-blended over what is behind it | loops (the Forge's hearth flames, the Portal's rune ring on the hub) or plays once per `playKey` (the anvil's burst, the Idle Chest bursting open); under reduced motion a loop holds its middle frame and a one-shot is not drawn |
 | `FillRing` | an SVG arc over a carved groove, exact at any size | the Idle Chest's fill on the hub and in its vault; an empty ring shows only its groove (a round cap would leave a dot) |
 | `Timer` | `--font-num`, hourglass glyph | resets, chest |
-| `Scrollbar` | custom stone channel (14 px, gold hairline) + ember thumb with grip ridges | never native; shown only past 8 px of real overflow and capped so it always reads as a handle |
+| `Scrollbar` | custom stone channel (14 px, gold hairline) + ember thumb with grip ridges | never native; shown only past 8 px of real overflow and capped so it always reads as a handle; a `ScrollArea` with `fade` fades its content out at an edge it runs on past (the gem shelf), and only there |
 | `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters; a dropdown option may carry an icon before its label (a set's emblem in the set choosers); a list opens upward when the stage has no room for it below its control — measured before paint, in stage pixels — so a control at a screen's foot (the campaign's difficulty) never opens a list the stage clips |
 | `TopBar`, `BottomBar` | `dark-ember/bg-wide` strips with gold hairline | |
 
@@ -937,26 +937,37 @@ variants are used for Duskmere Marsh and Frostvein Pass.
 
 ### 5.25 The Market (`docs/design/MARKET.md` §1–§2)
 - **Two tabs, and the difference is the first thing a player meets.** `Tabs` at the head of the
-  scene, *Gold Market* and *Gem Market*, on the tavern-interior backdrop with the interior ambience.
-  Under the tabs one line of blurb, and — on the gold tab only — **the countdown to the turn of the
-  hour** in gold at the right. The gem tab has no clock at all, which is exactly the point of it: a
-  shelf that never changes should not be wearing a timer.
-- **The stall is six rows you skim, not six posters.** Each slot is a `thin` frame laid out in three
-  columns: the currency's tinted icon at 52 px, its name over *"N left"*, and the price with the
-  buy button. Six have to fit without scrolling, so a row is 52 px of icon and nothing taller. A
-  second **"× N"** button appears beside *Buy* whenever more than one is affordable — buying the
-  rest of a slot in one press is the difference between a shop and a chore. A sold-out slot says
-  *Sold out*; one the purse cannot reach says *Not enough*, so a disabled button always says
-  which reason it is.
-- **The shelf is a grid of cards you read properly.** Singles on the `stone` slab; the four bundles
-  on `ember-tall`, so a pack is visibly a pack before the price is read, and each wears a *once per
-  chronicle* tag. A single draws the item's own icon tinted to its rarity, with the name in that
-  rarity's colour. A bundle draws its **contents as a list plus a `RewardList` of any currencies**,
-  because a bundle whose parts are not shown is a price that means nothing. A bundle already taken
-  greys out and its button reads *Already taken*.
-- **A purchase never leaves the screen.** No confirmation dialog, no result panel: the wallet in the
-  header ticks down, the stall's stock ticks down, and the reward sound plays. Buying is the small
-  action here; using is the large one, and that happens in the Bag.
+  scene, each wearing its currency — the coin over *Gold Market*, the gem over *Gem Market* — on
+  the market-street backdrop with the interior ambience. Under the tabs one line of blurb, and — on
+  the gold tab only — **the turn of the hour as an instrument**: an hourglass, "New stock in
+  40m 00s" and the hour draining away under it. The gem tab has no clock at all, which is exactly
+  the point of it: a shelf that never changes should not be wearing a timer.
+- **The stall is six wares on one screen**, three by two, each a card in the gear cards' frame in
+  bronze: the ware on a lit stand at 116 px, its name, what it is for (the currency's own
+  description) and *You hold N*; a slim stock bar with *N left* and the price of one; then a
+  **quantity picker** — −, the number, +, *Max* for all the purse can reach — with the total it
+  comes to, and **Buy**. A slot with one in stock has no picker. The three rows `MARKET.md` §1.1
+  calls the "sometimes" are **rare finds** (`rareFind` on the pool row): a bold gold frame, a *Rare
+  find* ribbon and a sheen passing over the card, so a player skimming the stall does not walk past
+  the one thing worth running for. A sold-out slot keeps its place, greyed and stamped *Sold out*;
+  one the purse cannot reach says *Not enough*, so a disabled button always says which reason it
+  is. Until `0.9.6` the stall was six bare full-width rows with the price a screen's width from the
+  name.
+- **The shelf reads top to bottom, in two headed sections.** *Always on the shelf*: the nine singles
+  in three columns, each framed and lit in its rarity — the item on its stand, its name in that
+  colour over what kind of thing it is (*Boost · 24 h*, *Today's quests*, *One champion* …),
+  exactly what using it does, *In your Bag ×N* once one is held, the gem price and **Buy**.
+  *Bundles*, with a line counting how many are still on offer: the four bundles two by two in gold
+  knotted frames, each with a legible *Once per chronicle* ribbon, what it is, everything it
+  **holds as marked chips** (an item by its icon and count, a currency by its icon and amount) and
+  — where every part is also sold singly — **what those parts would cost bought singly and what
+  the bundle saves**, from the shelf's own prices. A bundle already taken keeps its place, quiet,
+  with *Taken* stamped across it, and its button reads *Already taken*. The shelf fades out at an
+  edge it runs on past rather than cutting a card in half.
+- **A purchase never leaves the screen.** No confirmation dialog, no result panel: "+N" rises off
+  the ware's stand, the held count and the stock move, the wallet in the header ticks down and the
+  reward sound plays; a bundle is stamped as it is bought. Buying is the small action here; using
+  is the large one, and that happens in the Bag.
 
 ### 5.26 The Bag and the champion picker (`docs/design/MARKET.md` §3, §5)
 - **Every row says what using it would do, in full.** A consumable is bought once and used weeks

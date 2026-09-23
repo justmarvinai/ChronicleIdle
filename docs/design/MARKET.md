@@ -65,7 +65,9 @@ That shape is the owner's brief read literally: *mostly small amounts or singles
 sometimes something very rare*. The three bottom rows are the "sometimes": measured over 200,000
 stalls, a Legendary Tome turns up once in 12 hours, an Ancient Shard once in 17 and a **Sacred Shard
 once in 82** — and that one costs most of a week's gold when it does. It is meant to be a thing a
-player saves for and misses, not a thing they budget around.
+player saves for and misses, not a thing they budget around. The stall marks those three as a
+**rare find** (`rareFind` on the row; `UI_DESIGN.md` §5.25) — a gold frame and a ribbon — so a
+player skimming it does not walk past the one thing it is carrying.
 
 An average slot costs ~8,200 gold to clear and an average stall ~49,000, which is why
 `ECONOMY.md` §8 can hand the stall ~59k of an active player's day and still end that day above
