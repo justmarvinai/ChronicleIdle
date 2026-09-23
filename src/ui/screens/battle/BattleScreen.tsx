@@ -9,7 +9,6 @@ import { useGameStore } from '@state/store';
 import type { BattleStageHandle } from '@render/battle/index';
 import { Bar } from '@ui/components/Bar/Bar';
 import { Button } from '@ui/components/Button/Button';
-import { Glyph } from '@ui/components/Glyph/Glyph';
 import { StatusIcon } from '@ui/components/StatusIcon/StatusIcon';
 import { STATUS_BY_ID } from '@content/statuses/index';
 import { batchRewards, campaignSession, stopCampaignBatch } from '@state/campaign-session';
@@ -23,10 +22,14 @@ import type { ScreenProps } from '@ui/router/screens';
 import { AbilityBar } from './AbilityBar';
 import { BossChips } from './BossChips';
 import { BattleStageMount } from './BattleStageMount';
+import { ControlDock } from './ControlDock';
 import { CutIn, type CutInState } from './CutIn';
+import { HudCounters } from './HudCounters';
 import { InfoPanel } from './InfoPanel';
+import { TurnBanner } from './TurnBanner';
 import { UnitPlate } from './UnitPlate';
 import { useBattleSession } from './useBattleSession';
+import { WaveBanner } from './WaveBanner';
 import styles from './BattleScreen.module.css';
 
 const RESULT_DELAY_MS = 900;
@@ -321,8 +324,10 @@ export default function BattleScreen({ route }: ScreenProps) {
     ? view.units.filter((u) => u.alive && boss.boss?.adds?.ids.includes(u.id)).length
     : 0;
   const turnLimit = view.turnLimit;
-  const minutes = Math.floor(elapsed / 60_000);
-  const seconds = Math.floor((elapsed % 60_000) / 1000);
+  const acting = currentUnit ?? view.units.find((u) => u.side === 'ally' && u.alive) ?? null;
+  const provokedBy = request?.forced
+    ? translate(view.units.find((u) => u.id === request.forced?.targetId)?.name ?? '')
+    : null;
 
   return (
     <div
@@ -361,29 +366,19 @@ export default function BattleScreen({ route }: ScreenProps) {
         ))}
       </div>
 
-      <div className={styles.topLeft}>
-        <Button
-          variant="square"
-          size="sm"
-          sound="ui.open"
-          onClick={pause}
-          aria-label={t('battle.pause')}
-          data-testid="battle-pause"
-        >
-          <Glyph glyph="glyph.hourglass" size={26} color="var(--gold-3)" />
-        </Button>
-        <div className={styles.counters}>
-          <span className={`display ${styles.counter}`} data-testid="battle-wave">
-            {t('battle.wave', { wave: view.wave, count: view.waveCount })}
-          </span>
-          <span className={`num ${styles.counterSmall}`} data-testid="battle-turns">
-            {t('battle.turnsUsed', { turns: view.allyTurns, limit: turnLimit })}
-          </span>
-          <span className={`num ${styles.counterSmall}`}>
-            {t('battle.time')} {minutes}:{String(seconds).padStart(2, '0')}
-          </span>
-        </div>
-      </div>
+      <HudCounters
+        wave={view.wave}
+        waveCount={view.waveCount}
+        allyTurns={view.allyTurns}
+        turnLimit={turnLimit}
+        elapsed={elapsed}
+        onPause={pause}
+      />
+      {/* The first wave is named when the fight begins — the stage holds the first turn until it
+          is up — not when the screen mounts, or a slow renderer would spend the banner unseen. */}
+      {view.waveCount > 1 && log.length > 0 ? (
+        <WaveBanner wave={view.wave} waveCount={view.waveCount} />
+      ) : null}
 
       {repeat.requested > 1 ? (
         <div className={styles.repeatHud} data-testid="repeat-hud">
@@ -431,57 +426,28 @@ export default function BattleScreen({ route }: ScreenProps) {
         </div>
       ) : null}
 
-      <div className={styles.turnBanner} data-testid="turn-banner">
-        {request && currentUnit ? (
-          <span className={`display ${styles.turnText}`}>
-            {t('battle.yourTurn', { name: translate(currentUnit.name) })}
-            {request.forced ? (
-              <span className={styles.forced}>
-                {' '}
-                ·{' '}
-                {t('battle.provoked', {
-                  name: translate(view.units.find((u) => u.id === request.forced?.targetId)?.name ?? ''),
-                })}
-              </span>
-            ) : null}
-          </span>
-        ) : currentUnit && currentUnit.side === 'enemy' ? (
-          <span className={`display ${styles.turnTextEnemy}`}>{t('battle.enemyTurn')}</span>
-        ) : null}
-      </div>
+      <TurnBanner unit={currentUnit} asking={!!request} provokedBy={provokedBy} lowered={!!boss} />
 
-      <div className={styles.bottomLeft}>
-        <Button
-          variant="square"
-          size="sm"
-          active={showInfo}
-          onClick={() => setShowInfo((v) => !v)}
-          data-testid="battle-info-toggle"
-        >
-          <Glyph glyph="glyph.spell_book" size={24} color="var(--gold-3)" />
-          <span className="display">{t('battle.info')}</span>
-        </Button>
-        <Button
-          variant="square"
-          size="sm"
-          active={control === 'auto'}
-          onClick={toggleAuto}
-          data-testid="battle-auto"
-          aria-pressed={control === 'auto'}
-        >
-          <Glyph glyph="glyph.spirit_vortex" size={24} color="var(--gold-3)" />
-          <span className="display">{t('battle.auto')}</span>
-        </Button>
-        <Button variant="square" size="sm" onClick={cycleSpeed} data-testid="battle-speed">
-          <span className={`num ${styles.speedLabel}`}>×{speed}</span>
-        </Button>
-      </div>
+      <ControlDock
+        info={showInfo}
+        auto={control === 'auto'}
+        speed={speed}
+        maxSpeed={maxSpeed}
+        onInfo={() => {
+          setShowInfo((v) => !v);
+          playSfx('ui.tab');
+        }}
+        onAuto={toggleAuto}
+        onSpeed={cycleSpeed}
+      />
 
       <AbilityBar
-        unit={currentUnit ?? view.units.find((u) => u.side === 'ally' && u.alive) ?? null}
+        unit={acting}
         request={request}
         selectedAbilityId={selectedAbility}
         onSelect={onSelectAbility}
+        skillUpgrades={acting?.instanceId ? save.roster[acting.instanceId]?.skillUpgrades : undefined}
+        auto={control === 'auto'}
       />
 
       {showInfo ? <InfoPanel log={log} view={view} /> : null}
@@ -494,7 +460,7 @@ export default function BattleScreen({ route }: ScreenProps) {
           ].join(' ')}
           data-testid="battle-end"
         >
-          <span className="display">{t(`battleResult.${outcome.kind}`)}</span>
+          <span className={`display ${styles.endTitle}`}>{t(`battleResult.${outcome.kind}`)}</span>
         </div>
       ) : null}
     </div>

@@ -1,0 +1,323 @@
+/* The fight's HUD around the stage (docs/tech/UI_DESIGN.md §5.9). */
+
+/* ---- Top left: pause, waves, turns, time ---- */
+.topLeft {
+  position: absolute;
+  top: 20px;
+  left: 22px;
+  z-index: var(--z-scene);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.pause {
+  width: 64px;
+  height: 64px;
+}
+/* A pause mark drawn from two bars: the kit has no glyph for it, and nothing reads faster. */
+.pauseMark {
+  display: flex;
+  gap: 7px;
+}
+.pauseMark > span {
+  display: block;
+  width: 8px;
+  height: 24px;
+  background: linear-gradient(180deg, var(--gold-3), var(--gold-1));
+  box-shadow: 0 0 6px rgba(240, 213, 122, 0.45);
+}
+.counters {
+  composes: surfaceStone from global;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+  padding: 9px 14px 10px;
+}
+.counters::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-2), transparent);
+}
+.waveRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.wave {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.pips {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+}
+.pip {
+  width: 12px;
+  height: 12px;
+  rotate: 45deg;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.55);
+}
+.pipDone {
+  background: var(--gold-1);
+}
+.pipNow {
+  background: var(--gold-3);
+  box-shadow:
+    inset 0 0 0 1px rgba(90, 60, 10, 0.6),
+    0 0 8px rgba(240, 213, 122, 0.7);
+}
+.turns {
+  font-size: 15px;
+  color: var(--text-1);
+}
+/* The ally-turn budget, draining as it is spent; the last quarter turns ember. */
+.budget {
+  display: block;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.budget > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+  transition: width var(--t-base) var(--ease-out);
+}
+.budget > .budgetLow {
+  background: linear-gradient(90deg, var(--ember-2), var(--ember-3));
+  box-shadow: 0 0 8px rgba(216, 85, 47, 0.6);
+}
+.time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+/* ---- Top centre: whose turn ---- */
+.turnBanner {
+  position: absolute;
+  top: 118px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: var(--z-scene);
+  display: flex;
+  justify-content: center;
+  min-height: 48px;
+  pointer-events: none;
+}
+/* The boss's pool bar and its chips take the top of the screen, so the banner steps down. */
+.lowered {
+  top: 156px;
+}
+.turn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 22px 5px 6px;
+  white-space: nowrap;
+  background: linear-gradient(
+    90deg,
+    rgba(11, 10, 13, 0.25),
+    rgba(11, 10, 13, 0.88) 18%,
+    rgba(11, 10, 13, 0.88) 82%,
+    rgba(11, 10, 13, 0.25)
+  );
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.turnAlly {
+  border-top: 1px solid rgba(240, 213, 122, 0.6);
+  border-bottom: 1px solid rgba(240, 213, 122, 0.6);
+}
+.turnEnemy {
+  border-top: 1px solid rgba(216, 85, 47, 0.6);
+  border-bottom: 1px solid rgba(216, 85, 47, 0.6);
+}
+.turnFace {
+  width: 38px;
+  height: 38px;
+  background-size: cover;
+  background-position: center 15%;
+  box-shadow: inset 0 0 0 1px rgba(240, 213, 122, 0.7);
+}
+.turnSigil {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  background: radial-gradient(circle, var(--element) 0%, rgba(11, 10, 13, 0.9) 78%);
+  box-shadow: inset 0 0 0 1px rgba(216, 85, 47, 0.6);
+}
+.turnText {
+  font-size: 22px;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.turnAlly .turnText {
+  color: var(--gold-3);
+}
+.turnEnemy .turnText {
+  color: #f2b39a;
+}
+.provoked {
+  font-size: 15px;
+  color: var(--debuff);
+}
+
+/* ---- The middle: a wave's name as it begins ---- */
+.waveBanner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 36%;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 0 16px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(11, 10, 13, 0.82) 25%,
+    rgba(11, 10, 13, 0.82) 75%,
+    transparent
+  );
+  pointer-events: none;
+}
+.waveBanner::before,
+.waveBanner::after {
+  content: '';
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-2), transparent);
+}
+.waveBanner::before {
+  top: 0;
+}
+.waveBanner::after {
+  bottom: 0;
+}
+.waveTitle {
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  color: var(--gold-3);
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.9),
+    0 0 26px rgba(240, 213, 122, 0.45);
+}
+.waveOf {
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  color: var(--text-2);
+}
+
+/* ---- Bottom left: log, auto, speed ---- */
+.dock {
+  composes: surfaceStone from global;
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  z-index: var(--z-scene);
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+}
+.control {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(180deg, rgba(44, 36, 28, 0.95), rgba(16, 13, 11, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+  transition:
+    filter var(--t-fast),
+    transform var(--t-fast),
+    box-shadow var(--t-fast);
+}
+.control:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+}
+.control:active {
+  transform: translateY(1px);
+}
+.control:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--gold-3);
+}
+.controlOn {
+  background: linear-gradient(180deg, rgba(143, 42, 28, 0.95), rgba(64, 18, 12, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 180, 110, 0.7),
+    0 0 16px rgba(216, 85, 47, 0.45);
+}
+.controlLabel {
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  color: var(--text-1);
+}
+.key {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  padding: 0 4px;
+  font-family: var(--font-num);
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--text-3);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+/* Auto turns while it runs the fight. */
+.spin {
+  animation: spin 3.2s linear infinite;
+}
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+.speed {
+  font-size: 30px;
+  line-height: 1;
+  color: var(--gold-3);
+}
+.speedPips {
+  display: flex;
+  gap: 4px;
+}
+.speedPip {
+  width: 12px;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
+}
+.speedPipOn {
+  background: var(--gold-3);
+  box-shadow: 0 0 6px rgba(240, 213, 122, 0.6);
+}
+.speedPipLocked {
+  opacity: 0.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

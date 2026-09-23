@@ -376,10 +376,30 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 ### 5.9 Battle
 - Reference: `in_battle_non_boss_screen*.png`, `in_battle_boss_screen*.png`.
 - Layout: Pixi stage full-bleed (allies left, enemies right, ¾ perspective floor plane); above
-  each unit: level badge, HP bar, TM bar, status row (up to 10 icons); top-left: pause, wave
-  "2/3", turn counter, timer; top-centre (boss): boss HP bar with phase pips and boss status row;
-  bottom-left: *Info*, *Auto*, *×N speed*; bottom-right: ability bar (A1–A4 `AbilityIcon`,
-  passive tag), current champion mini-portrait; target reticle on hover.
+  each unit a plate: level, the unit's **element** sigil (the wheel decides who should strike whom),
+  name, HP bar with its shield, TM bar and the status row (up to 10 icons). A plate under a third
+  of its health pulses its edge red; a full turn meter turns gold, because that unit acts next.
+- **Top left** — the instruments: a kit square with a drawn **pause** mark (two gold bars — the
+  kit has no glyph for it and nothing reads faster), then a stone plate with *Wave 2/3* and the
+  waves as diamond pips (done, now, to come), *Ally turns 7 of 40* with the turn budget draining
+  in a thin bar under it (ember for its last quarter), and the time.
+- **Top centre** — whose turn: a champion's face and *Name's turn* on gold rules, or an enemy's
+  element sigil and *Name acts* on ember; each turn slides in over the last, so a fight at ×4 still
+  reads as a sequence. A provoked champion's banner says what the provocation leaves it. It steps
+  down under a boss's pool bar (top centre, with phase pips and the boss's statuses).
+- **The middle** — a wave's name sweeps in as the wave begins (*Wave 2*, *2 of 3* under it) and
+  holds for 1.4 s; it never takes the pointer. The first wave's waits for the fight to begin — the
+  stage holds the first turn until it is up — so a slow renderer never spends it unseen.
+- **Bottom left** — one stone dock of three switches, each a 92 px square with its key in the
+  corner: *Info* (I) opens the log, *Auto* (A) glows ember and turns its vortex while it runs the
+  fight, and the speed (+/−) shows *×2* over four pips — lit to the speed, dark past what the
+  chronicle has unlocked.
+- **Bottom right** — the ability bar: a head with who acts and what **Space** would cast (or *Choose
+  an ability, then a target*, or *Auto chooses every move*), then the portrait, A1–A4 as
+  `AbilityIcon`s and the passive. The tooltips quote the numbers the fight uses — **with the
+  champion's Skill Tome steps in them**, not the ability's base line.
+- **The end** — *Victory* or *Defeat* as a ribbon across the whole screen, gold or red rules above
+  and below, the word spreading as it lands, for the beat before the result takes over.
 - *Info* opens the **battle log**: a 460 × 640 ember panel of events, newest pinned to the bottom,
   capped at the last 120 lines, with the hotkey legend under it. The list scrolls inside the frame
   — the flex column belongs to the panel's *content box*, and the list needs `min-height: 0` to

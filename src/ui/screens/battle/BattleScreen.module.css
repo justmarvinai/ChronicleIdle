@@ -59,6 +59,9 @@
  * is open, because marking one is a thing a player does between turns and in auto mode — where
  * there are no decisions at all.
  */
+.plateAlly {
+  border-color: rgba(201, 162, 74, 0.4);
+}
 .plateEnemy {
   border-color: rgba(255, 77, 109, 0.28);
   pointer-events: auto;
@@ -80,6 +83,30 @@
 .plateDead {
   opacity: 0.35;
   filter: grayscale(0.8);
+}
+/* A living unit under a third of its health: the plate's edge warms to red, slowly. */
+.plateLow {
+  animation: lowHp 1.6s ease-in-out infinite;
+}
+@keyframes lowHp {
+  0%,
+  100% {
+    border-color: rgba(224, 74, 58, 0.45);
+  }
+  50% {
+    border-color: rgba(224, 74, 58, 0.95);
+    box-shadow: 0 0 14px rgba(224, 74, 58, 0.45);
+  }
+}
+/* The element beside the name: who should strike whom is read off the wheel (CHAMPIONS.md §1). */
+.plateSigil {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, var(--element) 0%, rgba(11, 10, 13, 0.9) 80%);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
 }
 .plateHead {
   display: flex;
@@ -136,6 +163,11 @@
   background: linear-gradient(to right, #7a5cff, #c58cff);
   transition: width 220ms linear;
 }
+/* A full meter: the unit acts next, and the bar says so. */
+.tmReady .tmFill {
+  background: linear-gradient(to right, #c58cff, #f0d57a);
+  box-shadow: 0 0 8px rgba(240, 213, 122, 0.7);
+}
 .statusRow {
   display: flex;
   flex-wrap: wrap;
@@ -152,31 +184,6 @@
   border: 3px solid var(--debuff);
   box-shadow: 0 0 16px rgba(255, 77, 109, 0.8);
   pointer-events: none;
-}
-.topLeft {
-  position: absolute;
-  top: 22px;
-  left: 24px;
-  z-index: var(--z-scene);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.counters {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 14px;
-  background: rgba(11, 10, 13, 0.7);
-  border: 1px solid rgba(201, 162, 74, 0.28);
-}
-.counter {
-  font-size: 22px;
-  color: var(--gold-3);
-}
-.counterSmall {
-  font-size: 15px;
-  color: var(--text-2);
 }
 .bossBar {
   position: absolute;
@@ -198,68 +205,64 @@
   display: flex;
   gap: 4px;
 }
-/* The boss's pool bar and its chips take the top of the screen, so the banner steps down. */
-.root[data-boss='true'] .turnBanner {
-  top: 156px;
-}
-.turnBanner {
-  position: absolute;
-  top: 120px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--z-scene);
-  min-height: 34px;
-  pointer-events: none;
-}
-.turnText {
-  padding: 4px 18px;
-  font-size: 22px;
-  color: var(--gold-3);
-  background: rgba(11, 10, 13, 0.7);
-  border: 1px solid rgba(201, 162, 74, 0.4);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
-}
-.turnTextEnemy {
-  padding: 4px 18px;
-  font-size: 20px;
-  color: var(--text-2);
-  background: rgba(11, 10, 13, 0.6);
-  border: 1px solid rgba(255, 77, 109, 0.3);
-}
-.forced {
-  font-size: 16px;
-  color: var(--debuff);
-}
-.bottomLeft {
-  position: absolute;
-  left: 24px;
-  bottom: 24px;
-  z-index: var(--z-scene);
-  display: flex;
-  gap: 12px;
-}
-.bottomLeft button {
-  min-width: 96px;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-size: 13px;
-}
-.speedLabel {
-  font-size: 26px;
-  color: var(--gold-3);
-}
 .abilityBar {
   composes: surfaceStone from global;
   position: absolute;
-  right: 24px;
-  bottom: 24px;
+  right: 22px;
+  bottom: 22px;
   z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px 12px;
+}
+.abilityBar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-2) 30%, var(--gold-2) 70%, transparent);
+}
+/* Who acts, and what a press of Space would cast. */
+.abilityHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(201, 162, 74, 0.2);
+}
+.abilityWho {
+  font-size: 20px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.abilityNext {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 16px;
+  color: var(--text-1);
+}
+.abilityNextKey {
+  padding: 0 6px;
+  font-family: var(--font-num);
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--text-3);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.abilityWait {
+  font-size: 14px;
+  color: var(--text-3);
+}
+.abilityBody {
   display: flex;
   align-items: flex-end;
   gap: 16px;
-  padding: 12px 16px;
 }
 .portrait {
   position: relative;
@@ -553,26 +556,88 @@
   );
   pointer-events: none;
 }
+/* The fight's last word, as a ribbon across the whole screen before the result takes over. */
 .endBanner {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   top: 40%;
-  transform: translate(-50%, -50%);
+  translate: 0 -50%;
   z-index: var(--z-scene);
-  padding: 12px 48px;
-  font-size: 72px;
-  letter-spacing: 0.08em;
-  background: rgba(11, 10, 13, 0.7);
-  border-top: 2px solid rgba(201, 162, 74, 0.6);
-  border-bottom: 2px solid rgba(201, 162, 74, 0.6);
-  animation: pop 0.5s var(--ease-out) both;
+  display: flex;
+  justify-content: center;
+  padding: 18px 0 20px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(11, 10, 13, 0.86) 22%,
+    rgba(11, 10, 13, 0.86) 78%,
+    transparent
+  );
+  animation: ribbon 0.5s var(--ease-out) both;
   pointer-events: none;
 }
-.endVictory {
-  color: var(--gold-3);
+.endBanner::before,
+.endBanner::after {
+  content: '';
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  height: 2px;
 }
-.endDefeat {
-  color: var(--debuff);
+.endBanner::before {
+  top: 0;
+}
+.endBanner::after {
+  bottom: 0;
+}
+.endVictory::before,
+.endVictory::after {
+  background: linear-gradient(90deg, transparent, var(--gold-3), transparent);
+  box-shadow: 0 0 14px rgba(240, 213, 122, 0.6);
+}
+.endDefeat::before,
+.endDefeat::after {
+  background: linear-gradient(90deg, transparent, var(--danger), transparent);
+  box-shadow: 0 0 14px rgba(224, 74, 58, 0.6);
+}
+.endTitle {
+  font-size: 84px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  animation: spread 0.9s var(--ease-out) both;
+}
+.endVictory .endTitle {
+  color: var(--gold-3);
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.9),
+    0 0 36px rgba(240, 213, 122, 0.55);
+}
+.endDefeat .endTitle {
+  color: #ff8a74;
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.9),
+    0 0 36px rgba(224, 74, 58, 0.55);
+}
+@keyframes ribbon {
+  from {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+@keyframes spread {
+  from {
+    letter-spacing: 0.02em;
+    opacity: 0;
+  }
+  to {
+    letter-spacing: 0.12em;
+    opacity: 1;
+  }
 }
 @keyframes pulse {
   0%,
@@ -583,16 +648,6 @@
     box-shadow:
       0 0 0 3px rgba(240, 213, 122, 0.9),
       0 0 22px rgba(240, 213, 122, 0.5);
-  }
-}
-@keyframes pop {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
   }
 }
 

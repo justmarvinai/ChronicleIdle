@@ -1,11 +1,16 @@
-import { memo } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { STATUS_BY_ID } from '@content/statuses/index';
 import type { UnitView } from '@engine/battle/index';
 import { t, translate } from '@i18n/index';
 import { plateAnchor } from '@render/battle/index';
 import { Bar } from '@ui/components/Bar/Bar';
+import { Glyph } from '@ui/components/Glyph/Glyph';
 import { StatusIcon } from '@ui/components/StatusIcon/StatusIcon';
+import { ELEMENT_COLOR, ELEMENT_GLYPH } from '@ui/styles/display-maps';
 import styles from './BattleScreen.module.css';
+
+/** Below this share of its health a living unit's plate warns in red. */
+const LOW_HP = 0.3;
 
 export interface UnitPlateProps {
   unit: UnitView;
@@ -18,7 +23,11 @@ export interface UnitPlateProps {
   onHover?: ((id: string | null) => void) | undefined;
 }
 
-/** HUD plate above a unit: name, level, HP (with shield), TM and the status row. */
+/**
+ * HUD plate above a unit: level, element, name, HP (with shield), TM and the status row. The
+ * element rides beside the name because the wheel decides who should strike whom; a plate warns
+ * when its unit is low, and its turn meter glows when the unit is about to act.
+ */
 export const UnitPlate = memo(function UnitPlate({
   unit,
   active,
@@ -31,6 +40,8 @@ export const UnitPlate = memo(function UnitPlate({
   const anchor = plateAnchor(unit.side, unit.slot, unit.art.scale, unit.guarding !== null);
   const shieldPct = unit.maxHp > 0 ? Math.min(100, (unit.shield / unit.maxHp) * 100) : 0;
   const interactive = !!onPick;
+  const low = unit.alive && unit.maxHp > 0 && unit.hp / unit.maxHp < LOW_HP;
+  const ready = unit.alive && unit.tm >= 1;
   return (
     <div
       className={[
@@ -40,9 +51,10 @@ export const UnitPlate = memo(function UnitPlate({
         targetable ? styles.plateTargetable : '',
         targeted ? styles.plateTargeted : '',
         focused ? styles.plateFocused : '',
+        low ? styles.plateLow : '',
         unit.alive ? '' : styles.plateDead,
       ].join(' ')}
-      style={{ left: anchor.x, top: anchor.y }}
+      style={{ left: anchor.x, top: anchor.y, '--element': ELEMENT_COLOR[unit.element] } as CSSProperties}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={`${translate(unit.name)}, ${t('common.levelShort', { level: unit.level })}`}
@@ -62,6 +74,9 @@ export const UnitPlate = memo(function UnitPlate({
     >
       <div className={styles.plateHead}>
         <span className={`num ${styles.plateLevel}`}>{unit.level}</span>
+        <span className={styles.plateSigil} aria-hidden="true">
+          <Glyph glyph={ELEMENT_GLYPH[unit.element]} size={14} color="var(--text-1)" />
+        </span>
         <span className={`display ${styles.plateName}`}>{translate(unit.name)}</span>
         {unit.isBoss ? <span className={styles.bossTag}>{t('battle.boss')}</span> : null}
         {focused ? (
@@ -80,7 +95,7 @@ export const UnitPlate = memo(function UnitPlate({
           />
         ) : null}
       </div>
-      <div className={styles.plateTm}>
+      <div className={[styles.plateTm, ready ? styles.tmReady : ''].join(' ')}>
         <div className={styles.tmFill} style={{ width: `${Math.min(100, unit.tm * 100)}%` }} />
       </div>
       {unit.statuses.length ? (
