@@ -99,7 +99,8 @@ export function runXp(input: Pick<RunRewardInput, 'difficulty' | 'energySpent'>)
   };
 }
 
-const BREW_OF: Readonly<Record<Element, CurrencyId>> = {
+/** The brew a settlement can drop: the one of its dominant element. The settlement screen lists it. */
+export const BREW_OF: Readonly<Record<Element, CurrencyId>> = {
   justice: 'brew_justice',
   valor: 'brew_valor',
   faith: 'brew_faith',
@@ -107,7 +108,7 @@ const BREW_OF: Readonly<Record<Element, CurrencyId>> = {
 };
 
 /** The shard a difficulty can drop: Faded everywhere, and only from the campaign (SUMMONING.md §3). */
-const CAMPAIGN_SHARD: CurrencyId = 'shard_faded';
+export const CAMPAIGN_SHARD: CurrencyId = 'shard_faded';
 
 export function rollRunRewards(input: RunRewardInput, rng: Rng): RunRewards {
   const gains = new Map<CurrencyId, number>();

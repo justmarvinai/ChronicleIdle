@@ -16,12 +16,14 @@ import {
 } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { Button } from '@ui/components/Button/Button';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { RARITY_HEX } from '@ui/styles/display-maps';
 import { formatGearValue, mainStatLine, pieceArtwork, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import styles from './RefineBench.module.css';
 
 const selectRefineUnlocked = selectFeatureUnlocked('gear_refine');
@@ -103,6 +105,7 @@ export function RefineBench() {
                   level={entry.piece.level}
                   slot={entry.piece.slot}
                   {...pieceArtwork(entry.piece)}
+                  {...pieceTooltip(entry.piece)}
                   mainStat={mainStatLine(entry.piece)}
                   setName={setOf(entry.piece) ? translate(setOf(entry.piece)?.name ?? '') : entry.piece.setId}
                   size={96}
@@ -147,6 +150,7 @@ export function RefineBench() {
                     level={entry.piece.level}
                     slot={entry.piece.slot}
                     {...pieceArtwork(entry.piece)}
+                    {...pieceTooltip(entry.piece)}
                     mainStat={mainStatLine(entry.piece)}
                     setName={
                       setOf(entry.piece) ? translate(setOf(entry.piece)?.name ?? '') : entry.piece.setId
@@ -198,10 +202,14 @@ export function RefineBench() {
             <p className={styles.hint}>{t('forge.refine.keeps')}</p>
             {cost ? (
               <p className={`num ${styles.cost}`} data-testid="refine-cost">
-                {t('forge.refine.cost', {
-                  cores: cost.cores,
-                  gold: cost.gold.toLocaleString('en-US'),
-                })}
+                {cost.amounts.map((entry) => (
+                  <CurrencyLabel
+                    key={entry.currency}
+                    currency={entry.currency}
+                    amount={entry.amount}
+                    size={22}
+                  />
+                ))}
               </p>
             ) : null}
             <p className={styles.held}>{t('forge.refine.cores', { count: cores })}</p>

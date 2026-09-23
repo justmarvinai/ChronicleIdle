@@ -29,9 +29,17 @@ test.describe('the Dungeons', () => {
     await expect(page.getByTestId('screen-dungeons')).toBeVisible({ timeout: 20_000 });
     await settle(page);
 
-    // Five cards, each saying what it holds — which is the only question the overview answers.
+    // Five cards, each saying what it holds — which is the only question the overview answers —
+    // and each set by its emblem as well as its name, so the keep a set lives in is spotted.
     await expect(page.getByTestId('dungeon-sets-cindervault')).toContainText('Ember Guard');
     await expect(page.getByTestId('dungeon-sets-ashenreach')).toContainText('Swiftfoot');
+    const emblem = page
+      .getByTestId('dungeon-sets-cindervault')
+      .locator('[data-emblem="emblem.ember_guard"] img');
+    await expect(emblem).toBeVisible();
+    await expect
+      .poll(() => emblem.evaluate((img) => (img as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0);
     await expect(page.getByTestId('note-dungeon-cindervault')).toHaveText('Never entered');
 
     // The Gilded Veil is shut, and says why on the card rather than only on its button: a mode a
@@ -54,6 +62,7 @@ test.describe('the Dungeons', () => {
 
     // A rung's price says what it buys: stars and energy rise together down the ladder.
     await expect(page.getByTestId('dungeon-stars-1')).toHaveText('1–2★');
+    await expect(page.getByTestId('dungeon-rarities-1')).toHaveText('Drops Common, Uncommon, Rare, Epic');
     await expect(page.getByTestId('dungeon-stage-1')).toContainText('8 energy');
     await expect(page.getByTestId('dungeon-stars-20')).toHaveText('5–6★');
     await expect(page.getByTestId('dungeon-stage-20')).toContainText('13 energy');

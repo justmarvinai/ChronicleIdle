@@ -3,11 +3,10 @@
  * the quick picks the dismantle bench offers. The rules are in `@engine/forge/*`.
  */
 import { CRAFT_TIERS, CRAFT_TIER, type CraftTier } from '@content/balance/forge';
-import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyAmount } from '@content/currencies/types';
 import type { GearEntry } from '@engine/gear/query';
 import { dismantleRefusal } from '@engine/forge/dismantle';
-import { t, translate, type I18nKey } from '@i18n/index';
+import { t, type I18nKey } from '@i18n/index';
 
 export { CRAFT_TIERS, CRAFT_TIER };
 export type { CraftTier };
@@ -16,11 +15,6 @@ export const tierLabel = (tier: CraftTier): string => t(`forge.craft.tier.${tier
 export const tierBody = (tier: CraftTier): string => t(`forge.craft.tier.${tier}.body` as I18nKey);
 export const poolLabel = (tier: CraftTier): string =>
   t(`forge.craft.pool.${CRAFT_TIER[tier].setPool}` as I18nKey);
-
-/** "20 Scrap Iron" — a cost line as a player reads it. */
-export function costLine(entry: CurrencyAmount): string {
-  return `${entry.amount.toLocaleString('en-US')} ${translate(CURRENCY_BY_ID[entry.currency].name)}`;
-}
 
 /** Whether the wallet covers every line of a cost. */
 export function affordable(cost: readonly CurrencyAmount[], held: (id: string) => number): boolean {

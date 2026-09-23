@@ -6,7 +6,6 @@ import { playSfx } from '@audio/index';
 import { TintedIcon } from '@ui/components/AssetImage/TintedIcon';
 import { Tooltip } from '@ui/components/Tooltip/Tooltip';
 import { useAnimatedNumber } from '@ui/hooks/useAnimatedNumber';
-import { kitBorder } from '@ui/styles/kit';
 import styles from './CurrencyPill.module.css';
 
 export interface CurrencyPillProps {
@@ -19,7 +18,13 @@ export interface CurrencyPillProps {
   highlight?: 'over' | 'low' | null;
 }
 
-/** Top-bar currency chip: icon, animated amount, optional "+" (docs/tech/UI_DESIGN.md §4). */
+/** The icon inside the socket, per pill size: it sits inside the ring, clear of the bronze. */
+const ICON = { sm: 24, md: 32 } as const;
+
+/**
+ * Top-bar currency (docs/tech/UI_DESIGN.md §4): the icon in a round bronze socket at the head of a
+ * slim dark bar that carries the animated amount, and the kit's ember square for "+".
+ */
 export function CurrencyPill({
   currency,
   amount,
@@ -41,7 +46,6 @@ export function CurrencyPill({
     >
       <div
         className={[styles.pill, styles[size], highlight ? styles[highlight] : ''].join(' ')}
-        style={kitBorder('ui.dark_ember.frame_sm_thin', 0.3)}
         data-testid={`pill-${currency}`}
         /*
          * The exact figure, beside the abbreviated one. `formatAmount` prints 825,000 as "825K",
@@ -51,14 +55,16 @@ export function CurrencyPill({
          */
         data-amount={amount}
       >
-        <div className={styles.fill} style={kitBorder('ui.dark_ember.bg_tile_sm', 0.5)} aria-hidden="true" />
-        <TintedIcon
-          asset={def.icon}
-          tint={def.tint}
-          size={size === 'sm' ? 26 : 34}
-          label={translate(def.name)}
-          className={styles.icon}
-        />
+        <span className={styles.bar} aria-hidden="true" />
+        <span className={styles.socket}>
+          <TintedIcon
+            asset={def.icon}
+            tint={def.tint}
+            size={size === 'sm' ? ICON.sm : ICON.md}
+            label={translate(def.name)}
+            className={styles.icon}
+          />
+        </span>
         <span className={`num ${styles.amount}`}>
           {formatAmount(Math.round(shown))}
           {cap !== undefined ? <span className={styles.cap}>/{formatAmount(cap)}</span> : null}

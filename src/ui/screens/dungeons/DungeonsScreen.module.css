@@ -22,13 +22,27 @@
 }
 
 /* What the keep holds, above the live line. Two lines at most; a fifth set wraps. */
+/* What a keep holds, by emblem: the sets are why a player picks one keep over another. */
 .sets {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
-  line-height: 1.35;
-  letter-spacing: 0.03em;
   color: var(--text-2);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+}
+.setsLabel {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-2);
+}
+.setChips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
 }
 
 /* The sealed keep says why, in the card's own body rather than only on its button. */

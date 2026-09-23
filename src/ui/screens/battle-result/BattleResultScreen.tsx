@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
 import { content } from '@content/registry';
 import { playSfx } from '@audio/index';
-import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { battleController } from '@state/battle/index';
 import { bossSession, clearBossSession } from '@state/boss-session';
 import { brewerySession, clearBrewerySession } from '@state/brewery-session';
@@ -23,9 +22,10 @@ import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { championAvatar } from '@ui/champions/art';
 import { pieceArtwork, pieceName } from '@ui/gear/gear-view';
-import { RARITY_COLOR, RARITY_HEX } from '@ui/styles/display-maps';
+import { BOOST_GLYPH, BOOST_TINT, RARITY_COLOR, RARITY_HEX } from '@ui/styles/display-maps';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import { Panel } from '@ui/components/Frame/Panel';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { PieceThumb } from '@ui/components/PieceThumb/PieceThumb';
@@ -40,6 +40,8 @@ import styles from './BattleResultScreen.module.css';
  */
 const DROPS_SHOWN = 12;
 const DROP_THUMB = 40;
+/** A reward row's icon, in stage pixels: the row's text is 15 px, the icon reads beside it. */
+const REWARD_ICON = 24;
 
 const TITLE: Record<string, I18nKey> = {
   victory: 'battleResult.victory',
@@ -299,28 +301,42 @@ export default function BattleResultScreen(_props: ScreenProps) {
                 <ul className={styles.rewardList}>
                   {rewards.currencies.map((entry) => (
                     <li key={entry.currency}>
-                      <span>{translate(CURRENCY_BY_ID[entry.currency].name)}</span>
+                      <CurrencyLabel currency={entry.currency} size={REWARD_ICON} />
                       <span className="num">+{entry.amount.toLocaleString('en-US')}</span>
                     </li>
                   ))}
                   {rewards.gems > 0 ? (
                     <li>
-                      <span>{translate(CURRENCY_BY_ID.gems.name)}</span>
+                      <CurrencyLabel currency="gems" size={REWARD_ICON} />
                       <span className="num">+{rewards.gems}</span>
                     </li>
                   ) : null}
                   {rewards.energy > 0 ? (
                     <li>
-                      <span>{translate(CURRENCY_BY_ID.energy.name)}</span>
+                      <CurrencyLabel currency="energy" size={REWARD_ICON} />
                       <span className="num">+{rewards.energy}</span>
                     </li>
                   ) : null}
                   <li>
-                    <span>{t('battleResult.championXpLabel')}</span>
+                    <span className={styles.xpLabel}>
+                      <Glyph
+                        glyph={BOOST_GLYPH.champion_xp}
+                        size={REWARD_ICON - 2}
+                        color={BOOST_TINT.champion_xp}
+                      />
+                      {t('battleResult.championXpLabel')}
+                    </span>
                     <span className="num">+{rewards.championXp.toLocaleString('en-US')}</span>
                   </li>
                   <li>
-                    <span>{t('battleResult.playerXpLabel')}</span>
+                    <span className={styles.xpLabel}>
+                      <Glyph
+                        glyph={BOOST_GLYPH.player_xp}
+                        size={REWARD_ICON - 2}
+                        color={BOOST_TINT.player_xp}
+                      />
+                      {t('battleResult.playerXpLabel')}
+                    </span>
                     <span className="num">+{rewards.playerXp.toLocaleString('en-US')}</span>
                   </li>
                 </ul>

@@ -1,20 +1,58 @@
+/*
+ * The selected champion (docs/tech/UI_DESIGN.md §5.3). The portrait sits to the left of the
+ * column so the idle sprite has room to stand at its lower-right corner, half in front of the
+ * frame; the kit strip runs under the portrait. The column's box is fixed by the stage, so the
+ * placements below are stage pixels measured from its top-left.
+ */
 .hero {
   position: absolute;
   left: 640px;
-  top: 112px;
-  width: 740px;
-  bottom: 24px;
+  top: 108px;
+  width: 752px;
+  bottom: 20px;
   z-index: var(--z-scene);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
 }
+/* Carries the rarity's and the element's colours to everything drawn inside. */
+.stage {
+  position: absolute;
+  inset: 0;
+}
+
+/* The rarity's light behind the frame, breathing slowly — a legendary warms the wall behind it. */
+.aura {
+  position: absolute;
+  left: -40px;
+  top: -30px;
+  width: 680px;
+  height: 840px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 46%,
+    color-mix(in srgb, var(--rarity) 30%, transparent) 0%,
+    color-mix(in srgb, var(--rarity) 10%, transparent) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: breathe 6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .portraitFrame {
-  width: 560px;
-  height: 700px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 600px;
+  height: 780px;
   background: var(--bg-1);
   overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
 }
 .portrait {
   position: absolute;
@@ -33,14 +71,17 @@
   mask-position: center top;
   pointer-events: none;
 }
+/* Dark at the head for the ribbon, clear through the face, deep at the foot for the title. */
 .shade {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(11, 10, 13, 0.1) 0%,
-    rgba(11, 10, 13, 0) 40%,
-    rgba(11, 10, 13, 0.85) 100%
+    rgba(11, 10, 13, 0.35) 0%,
+    rgba(11, 10, 13, 0) 16%,
+    rgba(11, 10, 13, 0) 56%,
+    rgba(11, 10, 13, 0.82) 82%,
+    rgba(11, 10, 13, 0.95) 100%
   );
 }
 .shimmer {
@@ -59,6 +100,20 @@
     transform: translateX(40%);
   }
 }
+
+/* The rarity, named on a kit banner at the painting's head. */
+.ribbon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 6px 22px 7px;
+  font-size: 19px;
+  letter-spacing: 0.1em;
+  color: var(--rarity);
+  text-shadow:
+    0 0 10px color-mix(in srgb, var(--rarity) 55%, transparent),
+    0 2px 0 rgba(0, 0, 0, 0.85);
+}
 .placeholder {
   position: absolute;
   top: 18px;
@@ -73,63 +128,122 @@
   background: rgba(11, 10, 13, 0.75);
   border: 1px solid rgba(201, 162, 74, 0.6);
 }
-.sprite {
+
+/*
+ * The title, set into the foot of the painting. Its right side is left clear: that is where the
+ * idle sprite stands in front of the frame.
+ */
+.title {
   position: absolute;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
-  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.6));
-}
-.nameplate {
+  left: 24px;
+  right: 92px;
+  bottom: 20px;
   display: flex;
-  align-items: center;
-  gap: 18px;
-  width: 620px;
-  padding: 14px 28px;
-}
-.sigils {
-  display: flex;
+  flex-direction: column;
   gap: 8px;
-}
-.sigil {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  background: rgba(11, 10, 13, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.7);
-}
-.names {
-  flex: 1;
-  min-width: 0;
 }
 .name {
   margin: 0;
-  font-size: 30px;
+  font-size: 42px;
+  line-height: 1;
   color: var(--gold-3);
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.sub {
+.long {
+  font-size: 36px;
+}
+.tags {
   display: flex;
+  gap: 10px;
+}
+/* Element and role as chips: the mark in its socket, then the word. */
+.tag {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
-  font-size: 16px;
-  color: var(--text-2);
-}
-.rarity {
+  height: 32px;
+  padding: 0 12px 0 0;
   font-size: 17px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: rgba(11, 10, 13, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.34);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
 }
-.dot {
-  color: var(--text-3);
+.sigil {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(11, 10, 13, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.5);
+}
+.sigilElement {
+  background: radial-gradient(circle, var(--element) 0%, rgba(11, 10, 13, 0.92) 80%);
+}
+.elementName {
+  color: var(--element);
+  font-weight: 700;
 }
 .rank {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+  align-items: center;
+  gap: 14px;
 }
 .level {
-  font-size: 20px;
+  font-size: 22px;
   color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+
+/*
+ * The idle sprite, anchored by the middle of its feet: the box is a point at the anchor, and the
+ * sprite stands on it. Every model's cell carries 12–18 px of air under the feet, so the sprite
+ * is lowered by that much at its scale, and the ground glow sits on the line the feet touch.
+ */
+.figure {
+  position: absolute;
+  left: 648px;
+  top: 802px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+/* The sprite flips itself to face the portrait, so the centring is this wrapper's. */
+.sprite {
+  position: absolute;
+  left: 0;
+  bottom: -56px;
+  display: block;
+  line-height: 0;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.65));
+}
+.ground {
+  position: absolute;
+  left: -130px;
+  top: -22px;
+  width: 260px;
+  height: 44px;
+  background:
+    radial-gradient(ellipse closest-side, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.45) 45%, transparent 70%),
+    radial-gradient(
+      ellipse closest-side,
+      color-mix(in srgb, var(--element) 70%, transparent) 0%,
+      color-mix(in srgb, var(--element) 25%, transparent) 60%,
+      transparent 100%
+    );
+}
+
+/* The kit strip under the portrait, centred on it. */
+.kit {
+  position: absolute;
+  left: 300px;
+  top: 804px;
+  transform: translateX(-50%);
 }

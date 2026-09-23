@@ -19,6 +19,12 @@ export interface AbilityIconProps {
    * two-character chip on a 56 px circle only covers the art.
    */
   badge?: string;
+  /**
+   * Pressing reads the ability rather than casts it — the champion screen's kit strip, which opens
+   * the Abilities tab. The icon is pressable whatever it is, a passive included; it still lights
+   * up only as a castable ability would.
+   */
+  inspect?: boolean;
   onClick?: () => void;
 }
 
@@ -32,9 +38,11 @@ export function AbilityIcon({
   disabled = false,
   selected = false,
   badge,
+  inspect = false,
   onClick,
 }: AbilityIconProps) {
   const ready = cooldown === 0 && !disabled && !passive;
+  const pressable = inspect ? !disabled : ready;
   // The lit frame is a filled ember disc, so it sits *behind* the art as a glow; the plain
   // frame is a transparent ring and always goes on top.
   const ring = imageUrl('ui.dark_ember.frame_round_sm');
@@ -43,17 +51,17 @@ export function AbilityIcon({
     <button
       type="button"
       aria-label={cooldown > 0 ? `${label} — ${cooldown}` : label}
-      aria-disabled={!ready || undefined}
+      aria-disabled={!pressable || undefined}
       className={[
         styles.button,
-        ready ? styles.ready : '',
+        pressable ? styles.pressable : '',
         selected ? styles.selected : '',
         cooldown > 0 ? styles.cooling : '',
       ].join(' ')}
       style={{ width: size, height: size, ['--ability-size' as string]: `${size}px` }}
       data-cooldown={cooldown > 0 ? cooldown : undefined}
-      onMouseEnter={() => ready && playSfx('ui.hover')}
-      onClick={() => ready && onClick && (playSfx('ui.tab'), onClick())}
+      onMouseEnter={() => pressable && playSfx('ui.hover')}
+      onClick={() => pressable && onClick && (playSfx('ui.tab'), onClick())}
     >
       {glow ? (
         <span className={styles.glow} style={{ backgroundImage: `url("${glow}")` }} aria-hidden="true" />

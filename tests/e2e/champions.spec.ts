@@ -64,7 +64,11 @@ test.describe('champion detail', () => {
     await expect(page.getByTestId('champion-power')).not.toHaveText('0');
     await expect(page.getByTestId('stat-hp')).toContainText('3,010');
 
-    await page.getByTestId('tab-abilities').click();
+    // The kit under the portrait says what an ability does on hover, and opens the whole tab.
+    await expect(page.getByTestId('hero-kit')).toContainText('A1');
+    await page.getByTestId('hero-kit-a1').getByRole('button').hover();
+    await expect(page.getByRole('tooltip')).toContainText('320% of DEF');
+    await page.getByTestId('hero-kit-a1').getByRole('button').click();
     await expect(page.getByTestId('panel-abilities')).toBeVisible();
     await expect(page.getByTestId('ability-text-a1')).toContainText('320% of DEF');
     await expect(page.getByTestId('ability-text-a2')).toContainText('Cooldown 5 turns');

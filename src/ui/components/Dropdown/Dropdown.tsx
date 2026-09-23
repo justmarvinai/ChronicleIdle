@@ -1,8 +1,21 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { playSfx } from '@audio/index';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { kitBorder } from '@ui/styles/kit';
+import { VIRTUAL_HEIGHT, ViewportContext } from '@ui/viewport/viewport';
 import styles from './Dropdown.module.css';
+
+/** The gap between the control and its open list, in stage pixels (the CSS says the same). */
+const LIST_GAP = 4;
 
 export interface DropdownOption<V extends string | number> {
   value: V;
@@ -38,7 +51,32 @@ export function Dropdown<V extends string | number>({
     ),
   );
   const root = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+  const viewport = useContext(ViewportContext);
+  const [upward, setUpward] = useState(false);
   const current = options.find((o) => o.value === value);
+
+  /*
+   * A list opens downward unless the stage has no room for it there. A control near the foot of
+   * a screen — the campaign's difficulty, say — would otherwise open a list the stage clips, and
+   * only its first row could ever be chosen. Measured before paint, so it never flashes the wrong
+   * way; the stage is scaled as a whole, so a layout height becomes screen pixels by its scale.
+   */
+  const place = useCallback((): void => {
+    const control = root.current?.getBoundingClientRect();
+    if (!control) return;
+    const height = list.current?.offsetHeight ?? 0;
+    const scale = viewport?.scale ?? 1;
+    const top = viewport?.offsetY ?? 0;
+    const bottom = viewport ? viewport.offsetY + VIRTUAL_HEIGHT * viewport.scale : window.innerHeight;
+    const needed = (height + LIST_GAP) * scale;
+    const below = bottom - control.bottom;
+    const above = control.top - top;
+    setUpward(needed > below && above > below);
+  }, [viewport]);
+  useLayoutEffect(() => {
+    if (open) place();
+  }, [open, place]);
 
   useEffect(() => {
     if (!open) return;
@@ -104,9 +142,11 @@ export function Dropdown<V extends string | number>({
       </button>
       {open ? (
         <ul
+          ref={list}
           id={`${id}-list`}
           role="listbox"
-          className={styles.list}
+          data-placement={upward ? 'up' : 'down'}
+          className={[styles.list, upward ? styles.up : ''].join(' ')}
           style={kitBorder('ui.dark_ember.frame_sm_thin', 0.35)}
         >
           {options.map((option, index) => (

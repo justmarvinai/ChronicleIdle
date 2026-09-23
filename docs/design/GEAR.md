@@ -128,12 +128,15 @@ owner's art (`ASSETS.md` §2, *Gear set art*):
   piece turns up (the racks, the champion's slots, the picker, the Forge's benches, a dungeon's
   haul, a mission gift, and each drop under a campaign result), the heading of the set's run on
   the racks, the set line on the bench, the set bonuses on a champion, beside its name in the
-  racks' set filter, the Forge's set chooser and a dungeon's list of the sets it holds, and its
-  plate in the Index's *Gear Sets*.
+  racks' set filter, the Forge's set chooser, a dungeon's list of the sets it holds and each keep's
+  card on the Dungeons overview, a settlement's *Drops here*, the worn gear under a champion's
+  stats and a piece's hover sheet, and its plate in the Index's *Gear Sets* (0.9.4 carried it to
+  the last few places a set was still only a name).
 - **The painting** — each set's six pieces are six different paintings in the set's own palette,
   so a piece shows its slot by itself (a helmet is a helmet) and its set at a glance. The card's
   corner that used to carry a slot glyph now carries the emblem, the one thing a painting cannot
-  say on its own.
+  say on its own — the owner's call: the emblem alone is identifier enough (`USER_QUESTIONS.md`
+  Q62).
 
 Neither is ever shared: `pnpm content:validate` refuses a set that wears another set's emblem or
 painting, or whose painting in one slot is of another slot's piece — telling sets apart is the

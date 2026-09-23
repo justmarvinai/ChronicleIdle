@@ -4,6 +4,7 @@ import { t, translate, type I18nKey } from '@i18n/index';
 import type { DungeonSessionState } from '@state/dungeon-session';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { mainStatLine, pieceArtwork } from '@ui/gear/gear-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import styles from './DungeonOutcomePanel.module.css';
 
 /**
@@ -45,6 +46,7 @@ export function DungeonOutcomePanel({ session }: { session: DungeonSessionState 
                   level={piece.level}
                   slot={piece.slot}
                   {...pieceArtwork(piece)}
+                  {...pieceTooltip(piece)}
                   mainStat={mainStatLine(piece)}
                   size={96}
                 />

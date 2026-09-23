@@ -136,6 +136,10 @@
 }
 
 .costEntry {
+  font-size: 15px;
+  color: var(--text-1);
+}
+.costEntry .num {
   font-size: 17px;
   color: var(--gold-3);
 }

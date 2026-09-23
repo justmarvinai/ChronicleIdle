@@ -6,10 +6,10 @@
  * pulling in the overview screen's chunk.
  */
 import type { DungeonBand } from '@content/balance/dungeon';
-import { RARITIES } from '@content/champions/types';
+import { RARITIES, type Rarity } from '@content/champions/types';
 import { content } from '@content/registry';
 import { deepestLabel, progressOf } from '@engine/dungeon/index';
-import { t, translate, type I18nKey } from '@i18n/index';
+import { t, type I18nKey } from '@i18n/index';
 import type { SaveGame } from '@engine/schema/save';
 import type { DungeonView } from '@state/dungeon';
 
@@ -43,16 +43,6 @@ export function deepestText(view: DungeonView): string {
   });
 }
 
-/** The sets a keep holds, by name, in the order it lists them. */
-export function setsText(view: DungeonView): string {
-  if (!view.def.sets.length) return t('dungeons.card.setsNone');
-  const names = view.def.sets.map((id) => {
-    const set = content.gearSetById(id);
-    return set ? translate(set.name) : id;
-  });
-  return t('dungeons.card.sets', { sets: names.join(', ') });
-}
-
 /** "1–2★", or "6★" when a band rolls only one. */
 export function starsLabel(stars: readonly number[]): string {
   const min = Math.min(...stars);
@@ -60,10 +50,7 @@ export function starsLabel(stars: readonly number[]): string {
   return min === max ? t('dungeon.starsOne', { stars: min }) : t('dungeon.stars', { min, max });
 }
 
-/** The rarities a band can drop, worst first — the names, not the weights. */
-export function raritiesLabel(band: DungeonBand): string {
-  const names = RARITIES.filter((rarity) => (band.rarity[rarity] ?? 0) > 0).map((rarity) =>
-    t(`rarity.${rarity}` as I18nKey),
-  );
-  return t('dungeon.drops', { rarities: names.join(', ') });
+/** The rarities a band can drop, worst first — which ones, not the weights. */
+export function bandRarities(band: DungeonBand): Rarity[] {
+  return RARITIES.filter((rarity) => (band.rarity[rarity] ?? 0) > 0);
 }

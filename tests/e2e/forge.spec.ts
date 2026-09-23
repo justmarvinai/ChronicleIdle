@@ -49,7 +49,7 @@ test.describe('the Forge', () => {
     const weapons = page.getByRole('button', { name: /Weapon/i });
     await weapons.first().click();
     await expect(page.getByTestId('refine-climb')).toContainText('★');
-    await expect(page.getByTestId('refine-cost')).toContainText('cores');
+    await expect(page.getByTestId('refine-cost')).toContainText('Refining Core');
     // The twin rack now holds the other 4★ weapon; the last card is never the chosen piece.
     const twins = page.getByRole('button', { name: /Weapon/i });
     await twins.last().click();

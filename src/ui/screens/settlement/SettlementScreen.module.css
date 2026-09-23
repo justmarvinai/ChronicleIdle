@@ -65,14 +65,25 @@
   color: var(--gold-3);
 }
 .drops {
-  margin: 0;
-  padding-left: 18px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+.dropGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.dropLabel {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.dropChips {
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--text-2);
 }
 .stages {
   position: absolute;

@@ -226,7 +226,7 @@ describe('the Forge — Refine', () => {
     );
     await user.click((targetCard ?? cards[0]) as HTMLElement);
     expect(screen.getByTestId('refine-climb')).toBeInTheDocument();
-    expect(screen.getByTestId('refine-cost')).toHaveTextContent('cores');
+    expect(screen.getByTestId('refine-cost')).toHaveTextContent('Refining Core');
 
     const twinCards = screen.getAllByRole('button', { name: /weapon/i });
     const before = Object.values(save().inventory).map((p) => p.stars);

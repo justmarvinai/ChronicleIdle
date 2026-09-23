@@ -181,6 +181,33 @@ describe('the champion Gear tab', () => {
     expect(route).toEqual({ name: 'armoury', pieceId: piece.instanceId });
   });
 
+  it('says what a worn piece is on hover: its stats and its set', async () => {
+    const user = userEvent.setup();
+    const layer = document.createElement('div');
+    layer.id = 'tooltip-layer';
+    document.body.append(layer);
+    const piece = stock('weapon', 'gear_set.warcry', 44);
+    actions().equipGear(starter(), piece.instanceId);
+    openGearTab(starter());
+
+    const slot = within(screen.getByTestId('gear-slot-weapon')).getByRole('button', { name: 'Weapon' });
+    await user.hover(slot);
+    const tip = await screen.findByTestId('gear-tooltip');
+    expect(tip).toHaveTextContent('Warcry Weapon');
+    expect(tip).toHaveTextContent('Main stat');
+    expect(tip).toHaveTextContent('SPD +6');
+    // The set, with what a complete group gives.
+    expect(tip.querySelector('[data-emblem="emblem.warcry"]')).not.toBeNull();
+    expect(tip).toHaveTextContent('+15 % ATK while two pieces are worn.');
+
+    // An empty slot has nothing to say.
+    await user.unhover(slot);
+    await user.hover(within(screen.getByTestId('gear-slot-boots')).getByRole('button'));
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(screen.queryByTestId('gear-tooltip')).not.toBeInTheDocument();
+    layer.remove();
+  });
+
   it('takes a piece off from the slot itself', async () => {
     const user = userEvent.setup();
     const piece = stock('boots', 'gear_set.swiftfoot', 5);

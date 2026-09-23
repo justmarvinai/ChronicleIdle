@@ -1,4 +1,3 @@
-import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { BossDef } from '@content/bosses/types';
 import { t, translate, type I18nKey } from '@i18n/index';
 import type { BossTierView } from '@state/bosses';
@@ -6,6 +5,7 @@ import { Bar } from '@ui/components/Bar/Bar';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
 import { Tooltip } from '@ui/components/Tooltip/Tooltip';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import styles from './TierCard.module.css';
 
 export interface TierCardProps {
@@ -68,8 +68,9 @@ export function TierCard({ boss, view, selected, onSelect, onClaim }: TierCardPr
                 {translate('bosses.chestAt', { pct: chest.pct, damage: count(chest.threshold) })}
               </strong>
               {(def?.currencies ?? []).map((entry) => (
-                <span key={entry.currency}>
-                  {t(CURRENCY_BY_ID[entry.currency].name as I18nKey)} ×{count(entry.amount)}
+                <span key={entry.currency} className={styles.tipRow}>
+                  <CurrencyLabel currency={entry.currency} size={22} />
+                  <span className="num">×{count(entry.amount)}</span>
                 </span>
               ))}
               {def?.gear ? (

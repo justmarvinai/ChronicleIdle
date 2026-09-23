@@ -25,6 +25,7 @@ import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { mainStatLine, pieceArtwork, pieceName, setOf, wearerName } from '@ui/gear/gear-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import { GearDetail } from './GearDetail';
 import { GearFilterBar } from './GearFilterBar';
 import styles from './ArmouryScreen.module.css';
@@ -95,6 +96,7 @@ export default function ArmouryScreen({ route }: ScreenProps) {
         level={entry.piece.level}
         slot={entry.piece.slot}
         {...pieceArtwork(entry.piece)}
+        {...pieceTooltip(entry.piece)}
         mainStat={mainStatLine(entry.piece)}
         setName={setName(entry.piece)}
         size={CARD}

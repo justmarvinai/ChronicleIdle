@@ -1,44 +1,82 @@
+/*
+ * The purse (docs/tech/UI_DESIGN.md §4). Two parts, both from the kits: a round bronze socket —
+ * the kit's own round frame, the one place a round shape is allowed — holding the currency's icon,
+ * and a slim dark bar behind it carrying the amount, edged in the gold hairline the rest of the
+ * chrome uses. The Bag and the chest are built from the same two parts, so the right of the
+ * header reads as one row of instruments rather than as boxes of different makes.
+ */
 .pill {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   height: 52px;
-  padding: 0 14px 0 8px;
-  min-width: 170px;
+  min-width: 176px;
+  padding-right: 6px;
 }
 .sm {
   height: 42px;
-  min-width: 130px;
-  padding: 0 10px 0 6px;
+  min-width: 136px;
 }
-.fill {
+
+/* The bar starts under the socket's centre, so the socket sits on it like a boss on a strap. */
+.bar {
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  top: 9px;
+  bottom: 9px;
+  left: 25px;
+  right: 0;
+  background: linear-gradient(180deg, rgba(34, 29, 40, 0.95) 0%, rgba(12, 11, 15, 0.97) 72%);
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.42),
+    inset 0 1px 0 1px rgba(255, 236, 190, 0.06),
+    inset 0 -10px 14px rgba(0, 0, 0, 0.45),
+    0 3px 8px rgba(0, 0, 0, 0.55);
 }
-.icon,
-.amount,
-.add {
+.sm .bar {
+  top: 7px;
+  bottom: 7px;
+  left: 20px;
+}
+
+.socket {
   position: relative;
   z-index: 1;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  background: var(--ui-dark-ember-frame-round-sm-lit) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.75));
 }
+.sm .socket {
+  width: 40px;
+  height: 40px;
+}
+/* A painted icon is a square; inside the ring it is cut round, as ability icons are. */
 .icon {
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+  border-radius: 50%;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
 }
+
 .amount {
-  font-size: 24px;
-  color: var(--text-1);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+  position: relative;
+  z-index: 1;
   flex: 1 1 auto;
+  padding: 0 10px 0 8px;
   text-align: right;
+  font-size: 23px;
+  line-height: 1;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
 }
 .sm .amount {
-  font-size: 20px;
+  font-size: 19px;
 }
 .cap {
   color: var(--text-3);
-  font-size: 0.8em;
+  font-size: 0.78em;
 }
 .over .amount {
   color: var(--gold-3);
@@ -46,26 +84,41 @@
 .low .amount {
   color: #ffb3a8;
 }
+
 .add {
-  width: 30px;
-  height: 30px;
+  position: relative;
+  z-index: 1;
+  flex: none;
   display: grid;
   place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0 0 2px;
+  border: none;
+  background: var(--ui-dark-ember-btn-ember-square-on) center / 100% 100% no-repeat;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 24px;
+  font-size: 21px;
   line-height: 1;
   color: var(--gold-3);
-  background: linear-gradient(to bottom, var(--ember-2), var(--ember-1));
-  border: 1px solid var(--gold-1);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
+  cursor: var(--cursor-pointer);
   transition:
     filter var(--t-fast),
     transform var(--t-fast);
 }
 .add:hover {
   filter: brightness(1.25);
-  transform: scale(1.06);
+  transform: scale(1.08);
 }
+.add:active {
+  transform: scale(0.96);
+}
+.add:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
+}
+
 .tipTitle {
   font-size: 20px;
   color: var(--gold-3);

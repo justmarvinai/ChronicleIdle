@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { playSfx } from '@audio/index';
 import { GEAR_SLOTS, type GearSlot } from '@content/champions/types';
 import { unlockLevel } from '@engine/progression/unlocks';
@@ -12,8 +13,10 @@ import { Glyph } from '@ui/components/Glyph/Glyph';
 import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Slot } from '@ui/components/Slot/Slot';
 import { StarRow } from '@ui/components/StarRow/StarRow';
+import { Tooltip } from '@ui/components/Tooltip/Tooltip';
 import { RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
 import { mainStatLine, pieceArtwork, pieceName, setLines } from '@ui/gear/gear-view';
+import { GEAR_TOOLTIP_WIDTH, GearTooltip } from '@ui/gear/GearTooltip';
 import { rarityLabel } from '@ui/screens/champions/roster-view';
 import styles from './GearTab.module.css';
 
@@ -35,6 +38,22 @@ function WornPiece({ piece }: { piece: GearInstance }) {
       ) : null}
       <span className={`num ${styles.pieceLevel}`}>{t('gear.level', { level: piece.level })}</span>
     </span>
+  );
+}
+
+/** A worn slot tells what it holds on hover; an empty one has nothing to tell. */
+function WornTooltip({
+  piece,
+  children,
+}: {
+  piece: GearInstance | undefined;
+  children: ReactElement<{ 'aria-describedby'?: string | undefined }>;
+}) {
+  if (!piece) return children;
+  return (
+    <Tooltip content={<GearTooltip piece={piece} />} maxWidth={GEAR_TOOLTIP_WIDTH}>
+      {children}
+    </Tooltip>
   );
 }
 
@@ -72,16 +91,18 @@ export function GearTab({ entry }: GearTabProps) {
           };
           return (
             <div key={slot} className={styles.gearSlot} data-testid={`gear-slot-${slot}`}>
-              <Slot
-                size="sm"
-                locked={!unlocked}
-                emptyGlyph={SLOT_GLYPH[slot]}
-                label={label}
-                selected={!!piece}
-                {...(unlocked ? { onClick: open } : {})}
-              >
-                {piece ? <WornPiece piece={piece} /> : null}
-              </Slot>
+              <WornTooltip piece={piece}>
+                <Slot
+                  size="sm"
+                  locked={!unlocked}
+                  emptyGlyph={SLOT_GLYPH[slot]}
+                  label={label}
+                  selected={!!piece}
+                  {...(unlocked ? { onClick: open } : {})}
+                >
+                  {piece ? <WornPiece piece={piece} /> : null}
+                </Slot>
+              </WornTooltip>
               <span className={`display ${styles.slotName}`}>{label}</span>
               {piece ? (
                 <>

@@ -15,6 +15,8 @@ import { ChampionCard } from '@ui/components/ChampionCard/ChampionCard';
 import type { Rarity } from '@ui/styles/display-maps';
 import { CurrencyPill } from '@ui/components/CurrencyPill/CurrencyPill';
 import { RewardList } from '@ui/components/RewardList/RewardList';
+import { CurrencyChip, SetChip } from '@ui/components/Chip/Chip';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import { Divider } from '@ui/components/Divider/Divider';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { DecoFrame } from '@ui/components/Frame/DecoFrame';
@@ -173,6 +175,14 @@ export default function DevKitScreen(_props: ScreenProps) {
                 layout="column"
                 size={22}
               />
+            </Row>
+            <Row>
+              <SetChip setId="gear_set.ember_guard" />
+              <SetChip setId="gear_set.warcry" size="sm" />
+              <CurrencyChip currency="mat_scrap_iron" value="2–4" />
+              <CurrencyChip currency="shard_faded" value="3%" size="sm" />
+              <CurrencyLabel currency="gold" />
+              <CurrencyLabel currency="brew_valor" size={20} />
             </Row>
           </Section>
           <Section title="Bars, slots, stars, status, timers">

@@ -65,6 +65,9 @@
 }
 
 .cost {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
   margin: 4px 0 0;
   font-size: 18px;
   color: var(--text-1);

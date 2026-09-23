@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { content } from '@content/registry';
 import { playSfx } from '@audio/index';
 import { energyCap } from '@engine/economy/energy';
@@ -11,6 +10,7 @@ import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import styles from './LevelUpDialog.module.css';
 
 /**
@@ -79,7 +79,7 @@ export function LevelUpDialog({ onClose }: { onClose: () => void }) {
           <ul className={styles.rewards} data-testid="level-up-rewards">
             {currencies.map((change) => (
               <li key={change.currency}>
-                <span>{translate(CURRENCY_BY_ID[change.currency].name)}</span>
+                <CurrencyLabel currency={change.currency} size={26} />
                 <span className="num">+{change.delta.toLocaleString('en-US')}</span>
               </li>
             ))}

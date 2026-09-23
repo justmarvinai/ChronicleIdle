@@ -119,6 +119,14 @@
 .tipTitle {
   color: var(--gold-3);
 }
+.tipRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tipRow .num {
+  color: var(--gold-3);
+}
 
 @keyframes waiting {
   0%,

@@ -103,7 +103,7 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `Button.icon` | `stone-vine/btn-icon-back` / `btn-icon-close` / `btn-icon-settings`, `dark-ember/btn-ember-round` | 64 px |
 | `Button.square` | `dark-ember/btn-ember-square` (+ `-on`/`-off`) | toggles (Auto, speed) |
 | `Tab` | `dark-ember/banner-plain` / `banner-dark` (active = ember, inactive = dark) | |
-| `CurrencyPill` | `dark-ember/frame-wide-alt` + icon + `--font-num` + "+" button | top bar |
+| `CurrencyPill` | the currency's icon cut round inside `dark-ember/frame-round-sm-lit` — the kit's own round frame — at the head of a slim dark bar with the gold hairline, the animated amount in `--font-num`, and `dark-ember/btn-ember-square-on` for "+" | top bar; the Bag and the idle chest are built from the same socket and bar, so the header's right side reads as one row of instruments |
 | `Bar` | `stone-vine/bar-track-stone-*` + `bar-fill-health` / `bar-fill-mana` / `bar-fill-stamina`; `dark-ember/bar-track-ember` + `bar-fill-ember` for boss HP | fills are masked and animated; the carved track is used from 40 px (its rim is 30–40 source px), shorter bars get a hairline frame in the same materials; labels and values only above 20 px |
 | `Slot` | `stone-vine/slot-stone-sm/md/lg/long` (+ `-fill`) | team slots, gear slots, brew slots |
 | `Slider` | `stone-vine/bar-track-stone` channel + `dark-ember/bar-fill-ember` level + gold orb in `frame-round-sm` | a transparent range input on top keeps native keyboard and drag |
@@ -113,17 +113,20 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `GearCard` | `Frame` (rarity) + the piece's own painting (`gear.<set>.<slot>`) + star row + `+N` badge + main stat + the set's emblem on a stone plate, bottom-left | 96 / 128; the painting shows the slot, so the corner that held a slot glyph names the set |
 | `SetEmblem` | a set's emblem (`emblem.<set>`), bare on a panel or on a square dark-stone plate with a gold hairline | on a painting it always takes the plate — a bare red emblem vanishes into Ember Guard's own lava |
 | `PieceThumb` | a piece's painting at list size in a hairline of its rarity (or gold), optionally with the emblem plate | drop chips, the Index's six pieces |
-| `AbilityIcon` | `dark-ember/frame-round-sm` (+ `-lit` when ready) + spell icon + cooldown overlay + "P" tag | 96 px in battle, 64 px in menus |
+| `AbilityIcon` | `dark-ember/frame-round-sm` (+ `-lit` when ready) + spell icon + cooldown overlay + "P" tag | 96 px in battle, 64 px in menus; `inspect` makes it pressable whatever it is, a passive included — pressing reads it rather than casts it (the champion's kit strip) |
 | `StatusIcon` | line-glyph (mask) tinted buff/debuff + duration digit | 28 px |
 | `StarRow` | `stone-vine/icon-star` tinted (gold earned, grey empty) | |
-| `Tooltip` | `dark-ember/frame-sm-thin` + `bg-tile-sm` | 200 ms delay, follows pointer |
+| `Tooltip` | `dark-ember/frame-sm-thin` + `bg-tile-sm` | 200 ms delay, follows pointer; placed again once measured, before paint, so a tall one near the stage's foot opens above the pointer instead of past the edge |
+| `GearTooltip` | a `Tooltip` holding a piece's sheet: painting and emblem, name in its rarity, slot · rarity · +level, stars, power, main stat, every substat with its rolls, the set's emblem, name, piece count and bonus, and who wears it | on every gear card (racks, picker, Forge benches, dungeon haul, mission gift) and on a champion's worn slots |
+| `Chip` / `SetChip` / `CurrencyChip` | dark stone with the gold hairline, square-cornered: the thing's mark (a set's emblem, a currency's icon), its name, and a count, range or chance in gold | wherever something important is *named*: what a settlement drops, what a keep holds, a tower boss's shards (`sm` 28 px / `md` 34 px) |
+| `CurrencyLabel` | a currency's icon before its name, optionally with an amount in front | every row that lists what was won, spent or paid: a result's rewards, a dismantle's yield, a level-up, Forge and Tavern costs, a boss chest's contents |
 | `Dialog` | `dark-ember/frame-wide` over dimmed backdrop; title banner | Esc closes |
 | `Divider` | `stone-vine/divider-vine`, `deco-frames/deco-divider-NN` | |
 | `RewardBurst` | item cards flying to the wallet with count-up | used everywhere |
 | `NotificationDot` | ember dot with pulse | on hub buildings/buttons |
 | `Timer` | `--font-num`, hourglass glyph | resets, chest |
 | `Scrollbar` | custom stone channel (14 px, gold hairline) + ember thumb with grip ridges | never native; shown only past 8 px of real overflow and capped so it always reads as a handle |
-| `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters; a dropdown option may carry an icon before its label (a set's emblem in the set choosers) |
+| `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters; a dropdown option may carry an icon before its label (a set's emblem in the set choosers); a list opens upward when the stage has no room for it below its control — measured before paint, in stage pixels — so a control at a screen's foot (the campaign's difficulty) never opens a list the stage clips |
 | `TopBar`, `BottomBar` | `dark-ember/bg-wide` strips with gold hairline | |
 
 Every component has states: default, hover, active, disabled, focus-visible, and a `motion` prop
@@ -189,16 +192,34 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 ### 5.3 Champions (Index)
 - Reference: left rail of `champions_gearing_info_screen.png`, `_alternative_3.png`.
 - Layout: left rail grid of `ChampionCard` (4 columns, virtualised), sort (rank, level, power,
-  element, recent) + filters (rarity, element, role, locked, favourite); content: selected champion
-  large portrait on a settlement backdrop with idle sprite at the feet; right column: stats block
-  (base + green gear bonus), power, rarity ribbon, element/role sigils, buttons *Gear*,
-  *Abilities*, *Lore*, *Tavern*, *Lock/Favourite*.
+  element, recent) + filters (rarity, element, role, locked, favourite); right column: the tabs
+  (§5.4) over their stone panel, and *Lock*, *Favourite* and *Tavern* beneath.
+- **The centre column** (`ChampionHero`) is the champion, composed rather than listed (0.9.4):
+  - The **portrait** (600 × 780, the rarity's deco frame) sits to the left of the column on a
+    slowly breathing glow of the rarity's colour. The rarity is named on a kit banner at the
+    painting's head; the **title is set into the painting's foot** — the name (42 px, a size
+    smaller from eighteen letters so the longest name fits), element and role as chips (the mark in
+    its socket, then the word, the element in its own colour), then the stars and *Level n / cap*.
+  - The **idle sprite** (×4) stands at the frame's lower-right corner, half in front of it, facing
+    the portrait, on a ground glow of the element's colour — anchored by its feet (every model's
+    cell carries 12–18 px of air under them), not by its cell. The title leaves that corner clear.
+  - The **kit strip** under the portrait: A1–A4, a rule, then the passive and the aura, each a
+    64 px `AbilityIcon` in `inspect` mode with its slot named beneath. Hover says what it does —
+    the name, cooldown and description with live numbers, upgrades counted; a press opens the
+    *Abilities* tab.
 - Vault (backlog): none in EA-0.1; instead "Food" filter.
 
 ### 5.4 Champion detail tabs
 - Reference: `champions_gearing_info_screen_alternative_2.png` (right attribute list + gear column),
   `champions_gearing_info_screen.png` (gear grid + total stats).
-- **Info**: as 5.3, with a second stat column carrying what the gear and its complete sets add.
+- **Info**: the power on a plate of its own (crossed swords in the lit round frame — the account
+  power's mark), the XP bar, then the stat table: each stat led by its mark (`STAT_GLYPH` — the
+  Glorious Palace's marks for the nodes that grant it, held together by a test), the base, what
+  gear and its complete sets add (green) and what the Palace adds (purple, hoverable). The three
+  columns are named once above the table in their own colours, where a hint line used to explain
+  them. Under the table, **Worn gear**: the six slots in order as 58 px paintings with the set's
+  emblem and `+level` (an empty slot shows its mark in a stone recess), each piece's full sheet on
+  hover, any slot opening the *Gear* tab — and the sets the build completes as emblem chips.
   **Gear**: the power with everything worn, then a 3×2 slot grid of the small stone `Slot` on
   `minmax(0, 1fr)` tracks, so a cell can never push the row wider than the panel — each slot shows
   the piece's painting filling the recess under a ring in its **rarity's colour**, its set's emblem
@@ -224,8 +245,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   is drinking; centre: `bg5` interior with the champion's portrait, name, stars, level and XP bar,
   flanked by the offering seats — six on the Level track, exactly as many as the rank-up asks for
   on the Rank track — with the brew row beneath; right column: vertical tabs *Upgrade Level*,
-  *Upgrade Rank*, *Upgrade Skills* over the track's own panel, and a cost pill + **Upgrade**
-  primary at its foot.
+  *Upgrade Rank*, *Upgrade Skills* over the track's own panel, and the cost (each amount with its
+  currency's icon, `CurrencyLabel`) + **Upgrade** primary at its foot.
 - Level track: each seat opens the food picker (locked, favourite and already-seated champions
   never appear; the picker prices each companion in XP), the brew row pours by the glass with the
   champion's own element listed first, and the panel names the level the offering reaches, the XP
@@ -247,15 +268,18 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   `DecoFrame` over the settlement's own backdrop and colour grade with its index, element sigil,
   name, star row and star count; the settlement the player stands in is ringed in gold and says
   so. Locked banners are desaturated and carry "Beat the boss of …" instead of a button.
-  Difficulty dropdown bottom-left with the gate line under it, star-chest track bottom-centre
-  (10/20/30), *Emberhold* bottom-right.
+  Difficulty dropdown bottom-left with the gate line under it — its list opens upward, since the
+  stage has no room below it (`Dropdown`, §4) — star-chest track bottom-centre (10/20/30),
+  *Emberhold* bottom-right.
 - Motion: banners rise in on open and lift on hover; cleared settlements take the ornate gold
   frame.
 
 ### 5.7 Settlement stages
 - Reference: `campaign_stages_screen.png`.
-- Layout: left panel: settlement name and lore, star count, faction element, drop preview
-  (set pool, material ranges, shard and brew chances for the chosen difficulty); content: ten
+- Layout: left panel: settlement name and lore, star count, faction element, and **Drops here** —
+  everything by its mark, in three captioned rows of chips (`SetChip`, `CurrencyChip`): the set
+  pool by emblem, the difficulty's materials with their ranges (*every victory*), and the Faded
+  Shard and the settlement's brew with their chances (*now and then*); content: ten
   scrolling stand rows — stage number, stars, best turns, enemy count and plate level, enemy chips
   with their element sigils, the star and defeat turn limits, and a **Battle · ⚡cost** button. The
   boss stand uses the ember frame and is labelled; a locked stand names the stand it waits on.
@@ -318,8 +342,9 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 
 ### 5.10 Battle result
 - Victory: the stand's stars and a "New record" badge on the stats panel, stage name and
-  settlement, turns and waves, the spoils list (gold, materials, shards, brews, gems, energy,
-  champion and chronicle XP) with first-clear, star-chest and level-up lines and the drops — each
+  settlement, turns and waves, the spoils list (gold, materials, shards, brews, gems, energy —
+  each by its icon, `CurrencyLabel` — and champion and chronicle XP under the boosts' own marks)
+  with first-clear, star-chest and level-up lines and the drops — each
   piece a chip of its painting with its set's emblem, named in its rarity's colour, two to a row
   and a dozen at most (a longer batch counts the rest, as the dungeons do) — the
   per-champion report, and buttons *Emberhold*, *Campaign*, *Team*, *Replay*, **Next stand**.
@@ -337,19 +362,20 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   with the hearth's own glows; horizontal tabs and the bench's one-line hint at the top, *Open the
   Armoury* on the right, and one stone panel holding the bench.
   - *Craft*: the six slots as `Slot` buttons, three tier cards (name, set pool, one line of what
-    the tier is for, and its material lines — red when the chest is short), and a set chooser
+    the tier is for, and its material lines — each amount, icon and name, red when the chest is
+    short), and a set chooser
     whose rows are the tier's pool, each led by the set's emblem, with the Sigils held beside it. Right: the anvil — a stone
     block over the hearth's light with the hammer falling on every strike, sparks on impact, and
     the struck piece revealed under it in its rarity colour; below, **Strike** and the recipe's
     running cost.
   - *Dismantle*: the quick picks of `GEAR.md` §6 (*Common & Uncommon*, *Never levelled*, *1–2★*),
     a *Clear the selection* link and the count; a `GearCard` grid of everything free to break
-    (worn and locked pieces are never listed); right, *Returns* with the merged yield, the level
-    refund line, and **Dismantle n** pinned to the bottom.
+    (worn and locked pieces are never listed); right, *Returns* with the merged yield (each
+    material by its icon), the level refund line, and **Dismantle n** pinned to the bottom.
   - *Refine*: two racks — the pieces that can climb, then the twins that may feed the chosen one
     (same slot, same star, unworn, unlocked) — and a panel with the piece's name, its stars
     `n★ → n+1★`, the main stat either side, the note that rarity, level and substats survive, the
-    cores and gold, and **Light the star**. Below player level 18 the tab shows that level
+    cores and gold by their icons, and **Light the star**. Below player level 18 the tab shows that level
     instead.
 - **The Armoury** (`screen-armoury`, reached from the hub's bottom bar, the champion Gear tab and
   the Forge): the racks and the bench. Backdrop `bg5` — the armory interior. Left: the
@@ -472,8 +498,8 @@ that open on different clocks.
   between floors. The key is charged when the fight starts (`ETERNAL_TOWER.md` §6).
 - The result screen (§5.10) swaps the campaign's stars and spoils for a **tower panel**: the floor
   and whether it was the keeper's, whether the climb advanced (and whether it is the highest the
-  chronicle has ever stood), the currencies the floor paid as a spoils list, and the keeper's
-  shards on their own line. *Back to the tower* is the only press; a defeat says the floor held and
+  chronicle has ever stood), the currencies the floor paid as a spoils list with their icons, and
+  the keeper's shards on their own line as `CurrencyChip`s. *Back to the tower* is the only press; a defeat says the floor held and
   the key is spent, and does not offer a retry the player may not be able to afford.
 
 ### 5.14 Quests — The Chronicler's Ledger (`QUESTS_MISSIONS.md` §2–§3)
@@ -558,7 +584,8 @@ that open on different clocks.
 - The moment (`ECONOMY.md` §4) is a dialog, never an overlay on a fight: levels earned during a
   battle queue in `ui.levelUp` and celebrate on the screen that follows it.
 - Layout: ember burst behind a large numeral for the level reached ("Level 4 → 7" when a batch
-  crossed several), then *Paid out* (gold, gems, shards, the energy refill and the new cap),
+  crossed several), then *Paid out* (gold, gems, shards — each by its icon — the energy refill
+  and the new cap),
   *Now open to you* (one row per feature the levels unlocked, with its one-line hint) and *Title
   earned* when a level brought one. The body scrolls; **Continue** clears the queue.
 - Motion and sound: spring-in numeral, burst flare, `stinger.levelup` on open.
@@ -818,19 +845,21 @@ variants are used for Duskmere Marsh and Frostvein Pass.
 ### 5.24 The Dungeons (`docs/design/DUNGEONS.md`)
 - **The overview is a row of keeps, not a list.** Five `ModeCard`s (§5.19) across the screen,
   easiest first, each on its keep's own backdrop: the keep's name, its blurb, the **sets it holds**
-  spelled out — the one thing a player chooses on — and, as the card's live note, the deepest rung
+  under a *Holds* caption as emblem chips (`SetChip`) — the one thing a player chooses on, so the
+  set's mark is what they spot — and, as the card's live note, the deepest rung
   they have taken in it. The sealed Gilded Veil keeps its place
   at the end of the row, desaturated and wearing the broken shackle, with its reason on the card
   rather than only on its button: *"Sealed until there are necklaces, rings and trinkets to find."*
   A mode you cannot enter yet still has to say what it **is**, which is why `ModeCard` renders its
   children shut as well as open.
 - **A keep is the tower's shape, because it is the same kind of climb.** Left rail (460 px): the
-  keep's name in gold, its story, the keeper under a *Keeper* label, the sets it holds as chips
-  (each led by the set's emblem), and the deepest rung at the foot. Right: the Normal/Hard tabs, the repeat selector, and the
+  keep's name in gold, its story, the keeper under a *Keeper* label, the sets it holds as
+  `SetChip`s, and the deepest rung at the foot. Right: the Normal/Hard tabs, the repeat selector, and the
   **ladder of twenty rungs**. It opens scrolled to the deepest rung the player may enter, so a keep
   twelve stages in does not start at stage 1.
 - **A rung says the four things a run is decided on**, in four columns: its number and the level it
-  fields, the **stars** it drops with the rarities under them in small text, its **energy** with
+  fields, the **stars** it drops with the rarities under them, each named in its own rarity's
+  colour, its **energy** with
   the chance of a second piece under it, and the way in. `data-next` gives the rung the player is
   on a gold border and a warm wash and its button the primary variant; `data-open='false'` drops a
   rung still shut to 50 %, where it says what opens it in quiet grey rather than wearing a mark it

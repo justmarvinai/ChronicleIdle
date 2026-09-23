@@ -4,9 +4,9 @@
  */
 import type { GlyphKey } from '@assets/manifest.generated';
 import type { BoostId } from '@content/balance/boosts';
-import type { Element, GearSlot, Rarity, Role } from '@content/champions/types';
+import type { Element, GearSlot, Rarity, Role, StatId } from '@content/champions/types';
 
-export type { Element, GearSlot, Rarity, Role };
+export type { Element, GearSlot, Rarity, Role, StatId };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
   common: 'var(--r-common)',
@@ -50,6 +50,23 @@ export const SLOT_GLYPH: Record<GearSlot, GlyphKey> = {
   gauntlets: 'glyph.fist_punch',
   chestplate: 'glyph.ribcage_armor',
   boots: 'glyph.stomp_impact',
+};
+
+/**
+ * A mark for each of the eight stats, beside its name wherever a champion's stats are listed. They
+ * are the Glorious Palace's marks for the nodes that grant each stat — Vigour's potion for HP, Keen
+ * Eye's bow for crit rate — so a stat reads the same on the champion as on the tree that raises it;
+ * a test holds the two tables together.
+ */
+export const STAT_GLYPH: Record<StatId, GlyphKey> = {
+  hp: 'glyph.health_potion',
+  atk: 'glyph.spiked_cleaver',
+  def: 'glyph.shield_block',
+  spd: 'glyph.magic_feather',
+  critRate: 'glyph.bow_and_arrow',
+  critDmg: 'glyph.exploding_bomb',
+  res: 'glyph.nature_shield',
+  acc: 'glyph.magic_arrow',
 };
 
 /** Deco-frame tints for mode/feature cards (gold when open, ash when gated). */

@@ -10,6 +10,7 @@ import { content } from '@content/registry';
 import type { StageDef } from '@content/stages/types';
 import { playSfx } from '@audio/index';
 import { stageEnemyLevel, stageEncounterId, stageEnergyCost } from '@engine/campaign/encounter';
+import { BREW_OF, CAMPAIGN_SHARD } from '@engine/campaign/rewards';
 import {
   bestTurnsOf,
   isStageUnlocked,
@@ -26,6 +27,7 @@ import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
+import { CurrencyChip, SetChip } from '@ui/components/Chip/Chip';
 import { Panel } from '@ui/components/Frame/Panel';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
@@ -99,26 +101,50 @@ export default function SettlementScreen({ route }: ScreenProps) {
             <span className={styles.elementName}>{elementLabel(settlement.element)}</span>
           </div>
           <h3 className={`display ${styles.dropsTitle}`}>{t('settlement.drops')}</h3>
-          <ul className={styles.drops}>
-            <li>
-              {t('settlement.dropGear', {
-                sets: settlement.setPool.map((id) => setName(id)).join(', '),
-              })}
-            </li>
-            <li>
-              {t('settlement.dropMaterials')}:{' '}
-              {MATERIAL_DROPS[difficulty]
-                .map((roll) => `${translate(`currency.${roll.currency}.name`)} ${roll.min}–${roll.max}`)
-                .join(', ')}
-            </li>
-            <li>{t('settlement.dropShard', { percent: Math.round(SHARD_DROP_CHANCE[difficulty] * 100) })}</li>
-            <li>
-              {t('settlement.dropBrew', {
-                element: elementLabel(settlement.element),
-                percent: Math.round(BREW_DROP_CHANCE * 100),
-              })}
-            </li>
-          </ul>
+          {/*
+           * Every drop by its mark — a set's emblem, a material's or a shard's icon — so what a
+           * settlement is worth farming reads at a glance rather than from a line of names.
+           */}
+          <div className={styles.drops} data-testid="settlement-drops">
+            <div className={styles.dropGroup}>
+              <span className={styles.dropLabel}>{t('settlement.dropGear')}</span>
+              <div className={styles.dropChips} data-testid="settlement-drop-sets">
+                {settlement.setPool.map((id) => (
+                  <SetChip key={id} setId={id} size="sm" />
+                ))}
+              </div>
+            </div>
+            <div className={styles.dropGroup}>
+              <span className={styles.dropLabel}>{t('settlement.dropMaterials')}</span>
+              <div className={styles.dropChips} data-testid="settlement-drop-materials">
+                {MATERIAL_DROPS[difficulty].map((roll) => (
+                  <CurrencyChip
+                    key={roll.currency}
+                    currency={roll.currency}
+                    value={t('settlement.dropRange', { min: roll.min, max: roll.max })}
+                    size="sm"
+                  />
+                ))}
+              </div>
+            </div>
+            <div className={styles.dropGroup}>
+              <span className={styles.dropLabel}>{t('settlement.dropChance')}</span>
+              <div className={styles.dropChips} data-testid="settlement-drop-chance">
+                <CurrencyChip
+                  currency={CAMPAIGN_SHARD}
+                  value={t('settlement.dropPercent', {
+                    percent: Math.round(SHARD_DROP_CHANCE[difficulty] * 100),
+                  })}
+                  size="sm"
+                />
+                <CurrencyChip
+                  currency={BREW_OF[settlement.element]}
+                  value={t('settlement.dropPercent', { percent: Math.round(BREW_DROP_CHANCE * 100) })}
+                  size="sm"
+                />
+              </div>
+            </div>
+          </div>
         </Panel>
       </aside>
 
@@ -233,15 +259,4 @@ function StageRow({
       </Panel>
     </li>
   );
-}
-
-/** The set's own name, or a readable fallback if a settlement names a set that has gone. */
-function setName(id: string): string {
-  const set = content.gearSetById(id);
-  if (set) return translate(set.name);
-  return id
-    .replace('gear_set.', '')
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
 }

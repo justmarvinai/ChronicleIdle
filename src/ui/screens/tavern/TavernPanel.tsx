@@ -13,6 +13,7 @@ import { Bar } from '@ui/components/Bar/Bar';
 import { Button } from '@ui/components/Button/Button';
 import { Panel } from '@ui/components/Frame/Panel';
 import { Tabs } from '@ui/components/Tab/Tabs';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import { upgradeLabel } from './tavern-view';
 import styles from './TavernPanel.module.css';
 
@@ -210,9 +211,13 @@ export function TavernPanel(props: TavernPanelProps) {
             <span className={styles.costLabel}>{t('tavern.cost')}</span>
             {props.cost.length ? (
               props.cost.map((entry) => (
-                <span key={entry.currency} className={`num ${styles.costEntry}`}>
-                  {entry.amount.toLocaleString('en-US')} {translate(CURRENCY_BY_ID[entry.currency].name)}
-                </span>
+                <CurrencyLabel
+                  key={entry.currency}
+                  currency={entry.currency}
+                  amount={entry.amount}
+                  size={22}
+                  className={styles.costEntry}
+                />
               ))
             ) : (
               <span className={styles.costEntry}>—</span>

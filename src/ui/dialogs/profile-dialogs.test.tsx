@@ -63,7 +63,7 @@ describe('the level-up dialog', () => {
 
     expect(screen.getByTestId('level-up-level')).toHaveTextContent('2');
     const rewards = within(screen.getByTestId('level-up-rewards'));
-    expect(rewards.getByText('Gold').parentElement).toHaveTextContent('+400');
+    expect(rewards.getByText('Gold').closest('li')).toHaveTextContent('+400');
     // The refill is the new cap, granted on top of what was left (owner's answer Q15).
     expect(screen.getByTestId('level-up-energy')).toHaveTextContent('+70');
     expect(screen.getByTestId('level-up-unlocks')).toHaveTextContent('Tavern: Levelling');

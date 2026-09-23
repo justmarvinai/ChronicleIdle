@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { playSfx } from '@audio/index';
 import { DISMANTLE_MAX_SELECTION } from '@content/balance/forge';
-import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { t, translate } from '@i18n/index';
 import { planDismantle } from '@engine/forge/dismantle';
 import { gearEntries, sortAndFilterGear } from '@engine/gear/query';
@@ -11,7 +10,9 @@ import { useGameStore } from '@state/store';
 import { Button } from '@ui/components/Button/Button';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import { mainStatLine, pieceArtwork, setOf } from '@ui/gear/gear-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import { QUICK_PICKS, breakable, quickPick, quickPickLabel } from './forge-view';
 import styles from './DismantleBench.module.css';
 
@@ -110,6 +111,7 @@ export function DismantleBench() {
                     level={entry.piece.level}
                     slot={entry.piece.slot}
                     {...pieceArtwork(entry.piece)}
+                    {...pieceTooltip(entry.piece)}
                     mainStat={mainStatLine(entry.piece)}
                     setName={set ? translate(set.name) : entry.piece.setId}
                     size={96}
@@ -130,7 +132,7 @@ export function DismantleBench() {
             <ul className={styles.yield} data-testid="dismantle-yield">
               {plan.value.yield.map((entry) => (
                 <li key={entry.currency} className={styles.yieldRow}>
-                  <span>{translate(CURRENCY_BY_ID[entry.currency].name)}</span>
+                  <CurrencyLabel currency={entry.currency} size={26} />
                   <span className="num">+{entry.amount.toLocaleString('en-US')}</span>
                 </li>
               ))}

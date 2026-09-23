@@ -5,11 +5,12 @@ import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
+import { SetChip } from '@ui/components/Chip/Chip';
 import { ModeCard } from '@ui/components/ModeCard/ModeCard';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
-import { deepestText, setsText } from './dungeons-view';
+import { deepestText } from './dungeons-view';
 import styles from './DungeonsScreen.module.css';
 
 /**
@@ -53,9 +54,18 @@ export default function DungeonsScreen(_props: ScreenProps) {
                   {t('dungeons.locked.accessories')}
                 </p>
               ) : (
-                <p className={styles.sets} data-testid={`dungeon-sets-${view.def.slug}`}>
-                  {setsText(view)}
-                </p>
+                <div className={styles.sets} data-testid={`dungeon-sets-${view.def.slug}`}>
+                  <span className={styles.setsLabel}>{t('dungeons.card.holds')}</span>
+                  {view.def.sets.length ? (
+                    <div className={styles.setChips}>
+                      {view.def.sets.map((id) => (
+                        <SetChip key={id} setId={id} size="sm" />
+                      ))}
+                    </div>
+                  ) : (
+                    <span>{t('dungeons.card.setsNone')}</span>
+                  )}
+                </div>
               )}
             </ModeCard>
           );

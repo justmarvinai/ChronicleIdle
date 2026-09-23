@@ -1,53 +1,54 @@
 /*
- * The Bag beside the purse (docs/tech/UI_DESIGN.md §5.26). Square rather than a pill, because it
- * holds a count and not an amount — the eye should not read it as a fourth currency.
+ * The Bag beside the purse (docs/tech/UI_DESIGN.md §5.26): the purse's round bronze socket with no
+ * bar, because it holds a count and not an amount — the eye should not read it as a fourth
+ * currency. The count sits on the rim, where a stack count sits on an inventory slot.
  */
-.pill {
+.socket {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
   padding: 0;
   border: none;
-  background: none;
-  cursor: pointer;
-  transition: filter var(--t-base);
+  background: var(--ui-dark-ember-frame-round-sm-lit) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.75));
+  cursor: var(--cursor-pointer);
+  transition:
+    filter var(--t-fast),
+    transform var(--t-fast);
 }
-
-.pill:hover {
-  filter: brightness(1.12);
+.socket:hover {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.75)) brightness(1.18);
+  transform: translateY(-1px);
 }
-.pill:active {
-  filter: brightness(0.95);
+.socket:active {
+  transform: translateY(0) scale(0.97);
 }
-
-.fill {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+.socket:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
 }
 
 .icon {
-  position: relative;
-  z-index: 1;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
 }
 
-/* How many things are in it, in the corner the way a stack count sits on an inventory slot. */
 .count {
   position: absolute;
-  right: 2px;
-  bottom: 1px;
-  z-index: 2;
-  padding: 0 4px;
+  right: -5px;
+  bottom: -3px;
+  min-width: 20px;
+  padding: 1px 5px 0;
   font-size: 13px;
-  line-height: 16px;
+  line-height: 17px;
+  text-align: center;
   color: var(--gold-3);
-  background: rgba(10, 9, 14, 0.85);
-  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.5);
+  background: linear-gradient(180deg, rgba(34, 29, 40, 0.97), rgba(10, 9, 13, 0.97));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.7);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }

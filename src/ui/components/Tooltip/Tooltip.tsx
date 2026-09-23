@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type ReactElement,
@@ -29,9 +30,12 @@ export function Tooltip({ content, children, delayMs = 200, maxWidth = 360 }: To
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const box = useRef<HTMLDivElement>(null);
+  /** Where the pointer last was, so the box can be placed again once it has a size. */
+  const pointer = useRef({ x: 0, y: 0 });
 
   const move = useCallback(
     (clientX: number, clientY: number) => {
+      pointer.current = { x: clientX, y: clientY };
       const stage = toStageCoords(viewport, clientX, clientY);
       const w = box.current?.offsetWidth ?? maxWidth;
       const h = box.current?.offsetHeight ?? 80;
@@ -55,6 +59,14 @@ export function Tooltip({ content, children, delayMs = 200, maxWidth = 360 }: To
     if (timer.current) clearTimeout(timer.current);
     setOpen(false);
   };
+  /*
+   * The first placement guesses the box's size, because the box does not exist until it opens;
+   * a tall one near the foot of the stage — a gear piece's full sheet, an ability's rules — then
+   * ran off the bottom. Once it is in the layer it is measured and placed again, before paint.
+   */
+  useLayoutEffect(() => {
+    if (open) move(pointer.current.x, pointer.current.y);
+  }, [open, move]);
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);

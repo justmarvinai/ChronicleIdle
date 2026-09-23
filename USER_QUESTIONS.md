@@ -5,22 +5,6 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-### Q62 — Gear cards: the set emblem took the slot glyph's corner. Should both be on a card?
-
-**Why it matters.** You asked for a very small set icon on every piece of gear. A card has two
-free corners along its foot — the main stat on the right, and until now a slot glyph on the left —
-and with each piece now drawn as its own painting, that glyph only said what the picture already
-shows: a helmet is a helmet. So the emblem took the glyph's corner rather than squeezing in beside
-it. Keeping both would put six marks on a 96 px card (stars, level, main stat, lock, slot, set).
-
-**The default in use.** The emblem alone, bottom-left, on a small dark stone plate — bare, it
-vanishes into its own set's painting (Ember Guard's red emblem on Ember Guard's lava). The slot is
-still named everywhere it was: in the piece's name (*Warcry Weapon*), on the bench, in the card's
-accessible label, and by the slot filter above the racks.
-
-Bringing the glyph back is a few lines in `GearCard`, which still draws it for the one case a card
-has no painting (a piece whose set has left the content).
-
 ### Q57 — "No Epic or Legendary in the Intro Campaign": the difficulty, or the early settlements?
 
 **Why it matters.** Your balance note said *no Legendary or Epic item drops in for example the
@@ -243,3 +227,4 @@ but if you want her reachable the week she unlocks, the fix is a fourth tier bel
 | Q59 | What a Quest Voucher resets — the quests only, or the chests too | Full reset, chests included | The baseline is re-snapshotted to *now*, so a counter goal measures from there and the whole board is earnable again. A board earned twice still counts one day towards the weekly quest that counts days, and the daily hundred's every-third-claim Ancient Shard advances on a voucher claim like any other — which is what stops three vouchers being a cheaper shard than the Portal's 300 gems (`MARKET.md` §2.1) |
 | Q60 | Whether a skipped mission still counts towards its chapter chest | Yes, counts fully | The step enters `claimed` like any other, so the line advances and the chapter's chest counts it; the only thing lost is that step's own reward. It bumps `missions.skipped` rather than `missions.claimed`, because that counter feeds quests asking how many have been *earned* (`MARKET.md` §3) |
 | Q61 | Whether the Gem Market's bundles are repeatable | One-time per chronicle | Which is what lets them be priced at ~70 % of their parts: a repeatable bundle at that price would simply be a permanent 30 % discount on the shelf, and the single prices would be fiction (`MARKET.md` §2.2) |
+| Q62 | Whether a gear card keeps its slot glyph beside the set emblem | “Keep emblem only, the new Icons for the Gear pieces are identifier enough.” | The default stands: the emblem alone, bottom-left on its stone plate. The painting says the slot, and the name, the bench, the card's accessible label and the slot filter still name it; `GearCard` draws the glyph only for a piece whose set has left the content (`GEAR.md` §5.1) |

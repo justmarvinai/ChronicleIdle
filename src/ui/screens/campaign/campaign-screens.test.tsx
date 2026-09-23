@@ -147,4 +147,23 @@ describe('settlement stands', () => {
     expect(second).toHaveTextContent('Best: 10 turns');
     expect(within(second).getByTestId('battle-stage-01-02')).toBeInTheDocument();
   });
+
+  it('shows what the settlement drops by its marks: set emblems, material and shard icons', () => {
+    render(stage(<SettlementScreen route={THORNWOOD} />));
+    // Thornwood's two sets, each a chip led by the set's own emblem (the owner's fourth batch).
+    const sets = screen.getByTestId('settlement-drop-sets');
+    expect(sets).toHaveTextContent('Ember Guard');
+    expect(sets).toHaveTextContent('Warcry');
+    expect(
+      [...sets.querySelectorAll('[data-emblem]')].map((mark) => mark.getAttribute('data-emblem')),
+    ).toEqual(['emblem.ember_guard', 'emblem.warcry']);
+    // Intro's materials with their ranges, and the chance drops with their odds, each with its icon.
+    const materials = screen.getByTestId('settlement-drop-materials');
+    expect(materials).toHaveTextContent('Scrap Iron2–4');
+    expect(materials).toHaveTextContent('Arcane Dust1–3');
+    expect(materials.querySelectorAll('[style*="background-image"]')).toHaveLength(2);
+    const chance = screen.getByTestId('settlement-drop-chance');
+    expect(chance).toHaveTextContent('Faded Shard3%');
+    expect(chance).toHaveTextContent('Valor Brew12%');
+  });
 });

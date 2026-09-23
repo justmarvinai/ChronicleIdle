@@ -1,6 +1,7 @@
-import { CURRENCY_BY_ID } from '@content/currencies/index';
-import { t, translate } from '@i18n/index';
+import { t } from '@i18n/index';
 import type { TowerFloorSummary } from '@state/tower';
+import { CurrencyChip } from '@ui/components/Chip/Chip';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import styles from './TowerOutcomePanel.module.css';
 
 /**
@@ -27,18 +28,25 @@ export function TowerOutcomePanel({ summary }: { summary: TowerFloorSummary }) {
         <ul className={styles.rows} data-testid="tower-outcome-rewards">
           {summary.changes.map((change) => (
             <li key={change.currency}>
-              <span>{translate(CURRENCY_BY_ID[change.currency].name)}</span>
+              <CurrencyLabel currency={change.currency} size={24} />
               <span className="num">+{change.delta.toLocaleString('en-US')}</span>
             </li>
           ))}
         </ul>
       ) : null}
       {summary.shards.length ? (
-        <p className={styles.gain} data-testid="tower-outcome-shards">
-          {t('tower.result.shards', {
-            shards: summary.shards.map((shard) => translate(CURRENCY_BY_ID[shard.currency].name)).join(' · '),
-          })}
-        </p>
+        <div className={styles.gain} data-testid="tower-outcome-shards">
+          <p className={styles.gainLine}>{t('tower.result.shards')}</p>
+          <div className={styles.gainChips}>
+            {summary.shards.map((shard) => (
+              <CurrencyChip
+                key={shard.currency}
+                currency={shard.currency}
+                value={t('tower.result.shardCount', { count: shard.amount })}
+              />
+            ))}
+          </div>
+        </div>
       ) : null}
     </div>
   );

@@ -10,6 +10,7 @@ import { useGameStore } from '@state/store';
 import type { GearInstance } from '@engine/gear/instance';
 import { craftPool } from '@engine/forge/craft';
 import { Button } from '@ui/components/Button/Button';
+import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
 import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { GearCard } from '@ui/components/GearCard/GearCard';
@@ -19,12 +20,15 @@ import { Slot } from '@ui/components/Slot/Slot';
 import { CARD_TINT, RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import { mainStatLine, pieceArtwork, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
-import { CRAFT_TIERS, affordable, costLine, poolLabel, tierBody, tierLabel } from './forge-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
+import { CRAFT_TIERS, affordable, poolLabel, tierBody, tierLabel } from './forge-view';
 import type { CraftTier } from './forge-view';
 import styles from './CraftBench.module.css';
 
 /** A set's emblem beside its name in the Sigil's set chooser, in CSS pixels. */
 const OPTION_EMBLEM = 22;
+/** A cost line's currency icon, in stage pixels. */
+const COST_ICON = 20;
 
 /** The anvil: slot, tier, an optional Sigil naming the set, and the hammer. */
 export function CraftBench() {
@@ -135,7 +139,7 @@ export function CraftBench() {
                         held(entry.currency) < entry.amount ? styles.costShort : '',
                       ].join(' ')}
                     >
-                      {costLine(entry)}
+                      <CurrencyLabel currency={entry.currency} amount={entry.amount} size={COST_ICON} />
                     </li>
                   ))}
                 </ul>
@@ -202,6 +206,7 @@ export function CraftBench() {
               level={struck.level}
               slot={struck.slot}
               {...pieceArtwork(struck)}
+              {...pieceTooltip(struck)}
               mainStat={mainStatLine(struck)}
               setName={set ? translate(set.name) : struck.setId}
               size={128}
@@ -231,7 +236,7 @@ export function CraftBench() {
               key={entry.currency}
               className={['num', held(entry.currency) < entry.amount ? styles.costShort : ''].join(' ')}
             >
-              {costLine(entry)}
+              <CurrencyLabel currency={entry.currency} amount={entry.amount} size={COST_ICON} />
             </li>
           ))}
         </ul>

@@ -127,7 +127,7 @@ export default function ChampionsScreen({ route }: ScreenProps) {
 
       {selected ? (
         <>
-          <ChampionHero entry={selected} />
+          <ChampionHero entry={selected} onAbility={() => setTab('abilities')} />
           <ChampionPanel
             entry={selected}
             copies={copies}

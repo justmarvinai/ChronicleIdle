@@ -156,7 +156,6 @@ export const gear = {
   'forge.refine.choose': 'Choose a piece to raise.',
   'forge.refine.chooseSacrifice': 'Choose a {slot} of {stars}★ to feed it.',
   'forge.refine.noSacrifice': 'No spare {slot} of {stars}★ on the racks.',
-  'forge.refine.cost': '{cores} cores · {gold} gold',
   'forge.refine.cores': '{count} held',
   'forge.refine.result': '{from}★ → {to}★',
   'forge.refine.mainStat': 'Main stat {from} → {to}',

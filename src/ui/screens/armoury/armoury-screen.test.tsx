@@ -142,6 +142,30 @@ describe('the Armoury', () => {
     expect(screen.getByTestId('gear-count')).toHaveTextContent('3 of 3');
   });
 
+  it('shows a piece’s stats and set on hover, without leaving the racks', async () => {
+    const user = userEvent.setup();
+    const layer = document.createElement('div');
+    layer.id = 'tooltip-layer';
+    document.body.append(layer);
+    const a = actions();
+    a.resetGame();
+    a.newGame('Tester');
+    a.chooseStarter('champ.ser_corvin');
+    a.setGearView({ ...DEFAULT_GEAR_VIEW, filters: { ...DEFAULT_GEAR_VIEW.filters } });
+    stock('gear_set.ember_guard', 7);
+
+    render(stage(<ArmouryScreen route={ARMOURY} />));
+    await user.hover(screen.getByRole('button', { name: /Ember Guard weapon/ }));
+    const tip = await screen.findByTestId('gear-tooltip');
+    expect(tip).toHaveTextContent('Ember Guard Weapon');
+    expect(tip).toHaveTextContent('Epic');
+    expect(tip).toHaveTextContent('Power');
+    expect(tip).toHaveTextContent('SPD +6');
+    expect(tip).toHaveTextContent('1 roll');
+    expect(tip).toHaveTextContent('+15 % HP while two pieces are worn.');
+    layer.remove();
+  });
+
   it('filters the racks by slot and clears the filter again', async () => {
     const user = userEvent.setup();
     render(stage(<ArmouryScreen route={ARMOURY} />));

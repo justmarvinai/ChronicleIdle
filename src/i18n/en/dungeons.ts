@@ -7,7 +7,7 @@ export const dungeons = {
   'dungeons.subtitle': 'Five keeps, and the gear sealed inside them.',
 
   /** The overview card. */
-  'dungeons.card.sets': 'Holds {sets}',
+  'dungeons.card.holds': 'Holds',
   'dungeons.card.setsNone': 'Holds nothing yet',
   'dungeons.card.deepest': 'Deepest: {label}',
   'dungeons.card.untouched': 'Never entered',
@@ -94,7 +94,7 @@ export const dungeons = {
   'dungeon.starsOne': '{stars}★',
   'dungeon.energy': '{energy} energy',
   'dungeon.level': 'Level {level}',
-  'dungeon.drops': 'Drops {rarities}',
+  'dungeon.drops': 'Drops',
   'dungeon.extraPiece': '{percent} % chance of a second piece',
   'dungeon.onePiece': 'One piece every clear',
   'dungeon.locked': 'Clear stage {stage} first',

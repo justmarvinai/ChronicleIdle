@@ -28,7 +28,9 @@ import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { Tabs } from '@ui/components/Tab/Tabs';
 import { Tooltip } from '@ui/components/Tooltip/Tooltip';
 import { formatStat } from '@ui/gear/gear-view';
+import { STAT_GLYPH } from '@ui/styles/display-maps';
 import { GearTab } from './GearTab';
+import { WornStrip } from './WornStrip';
 import styles from './ChampionPanel.module.css';
 
 const TABS: readonly ChampionTab[] = ['info', 'abilities', 'lore', 'gear'];
@@ -67,7 +69,7 @@ export function ChampionPanel({
       />
       <Panel kind="stone" className={styles.body} contentClassName={styles.bodyContent} padding={22}>
         <ScrollArea height="100%">
-          {tab === 'info' ? <InfoTab entry={entry} /> : null}
+          {tab === 'info' ? <InfoTab entry={entry} onGear={() => onTab('gear')} /> : null}
           {tab === 'abilities' ? <AbilitiesTab def={def} instance={instance} /> : null}
           {tab === 'lore' ? <LoreTab def={def} instance={instance} copies={copies} /> : null}
           {tab === 'gear' ? <GearTab entry={entry} /> : null}
@@ -128,7 +130,7 @@ function PalaceBonusValue({ stat, value, element }: { stat: StatId; value: numbe
   );
 }
 
-function InfoTab({ entry }: { entry: RosterEntry }) {
+function InfoTab({ entry, onGear }: { entry: RosterEntry; onGear: () => void }) {
   const { def, instance, worn } = entry;
   const stats = baseStats(def.stats, instance.stars, instance.level);
   /*
@@ -144,9 +146,13 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
   );
   const cap = levelCap(instance.stars);
   const next = championXpToNext(instance.level);
+  const levelling = canLevel(instance.level, instance.stars);
   return (
     <div data-testid="panel-info">
       <div className={styles.powerRow}>
+        <span className={styles.powerMark} aria-hidden="true">
+          <Glyph glyph="glyph.crossed_swords" size={24} color="var(--gold-3)" />
+        </span>
         <span className={`display ${styles.powerLabel}`}>{t('champions.power')}</span>
         <span className={`num ${styles.power}`} data-testid="champion-power">
           {entry.power.toLocaleString('en-US')}
@@ -154,24 +160,31 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
       </div>
       <div className={styles.xpRow}>
         <span className={styles.xpLabel}>
-          {canLevel(instance.level, instance.stars)
-            ? t('champions.xp', { xp: instance.xp, next })
-            : t('champions.xpMax')}
+          {levelling ? t('champions.xp', { xp: instance.xp, next }) : t('champions.xpMax')}
         </span>
         <Bar
-          value={canLevel(instance.level, instance.stars) ? instance.xp : 1}
-          max={canLevel(instance.level, instance.stars) ? next : 1}
+          value={levelling ? instance.xp : 1}
+          max={levelling ? next : 1}
           kind="xp"
           height={22}
           width="100%"
           label={t('champions.level', { level: instance.level, cap })}
         />
       </div>
-      <Divider kind="deco" index={2} width="100%" />
+      {/* The columns named once, in their own colours, where a hint line used to explain them. */}
+      <div className={`${styles.statRow} ${styles.statHead}`} aria-hidden="true">
+        <span />
+        <span className={styles.headBase}>{t('champions.stat.base')}</span>
+        <span className={styles.headGear}>{t('champions.stat.gear')}</span>
+        <span className={styles.headPalace}>{t('champions.stat.palace')}</span>
+      </div>
       <dl className={styles.stats} data-testid="champion-stats">
         {STAT_IDS.map((stat: StatId) => (
           <div key={stat} className={styles.statRow}>
-            <dt className={styles.statLabel}>{t(`champions.stat.${stat}` as I18nKey)}</dt>
+            <dt className={styles.statLabel}>
+              <Glyph glyph={STAT_GLYPH[stat]} size={20} color="var(--gold-2)" />
+              <span>{t(`champions.stat.${stat}` as I18nKey)}</span>
+            </dt>
             <dd className={`num ${styles.statValue}`} data-testid={`stat-${stat}`}>
               {formatStat(stat, stats[stat])}
             </dd>
@@ -184,7 +197,7 @@ function InfoTab({ entry }: { entry: RosterEntry }) {
           </div>
         ))}
       </dl>
-      <p className={styles.hint}>{t('champions.stat.gearHint')}</p>
+      <WornStrip worn={worn} onOpen={onGear} />
     </div>
   );
 }

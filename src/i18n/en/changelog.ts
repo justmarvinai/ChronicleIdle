@@ -20,6 +20,22 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_4.name': 'Every Mark in Its Place',
+  'release.0_9_4.gear_tooltips':
+    'Rest your cursor on a piece of gear — in the Armoury, on a champion, at the Forge or in a battle’s spoils — and it tells you everything about it: its power, its main stat, each substat with how many times it rolled, and its set’s bonus.',
+  'release.0_9_4.champions':
+    'The Champions screen has been rebuilt around the portrait. The name, rarity, element and role sit on the painting itself, the champion steps out of the frame’s corner in battle form, and a row of their abilities waits underneath — rest on one to read it, press it to open the full list. The stats carry icons, and what the champion wears is shown right under them.',
+  'release.0_9_4.drops_marked':
+    'A settlement’s drop list shows everything by its mark: each gear set by its emblem, each material and shard by its icon, with how many you get and how often. The Dungeons show each keep’s sets by their emblems too, and a keep’s stages name their rarities in their own colours.',
+  'release.0_9_4.icons_everywhere':
+    'Rewards and prices show their icons wherever they are listed: after a battle and a tower floor, when you level up, at the Forge, in the Tavern and in the boss chests.',
+  'release.0_9_4.header':
+    'The currencies across the top of the screen sit in round bronze sockets on a slim bar, and the Bag and the idle chest are built to match.',
+  'release.0_9_4.difficulty_list':
+    'The campaign’s difficulty list opens upwards when there is no room below it, so Normal and Hard can be chosen again.',
+  'release.0_9_4.tooltip_edge':
+    'Tall tooltips near the bottom of the screen open above your cursor instead of running off the edge.',
+
   'release.0_9_3.name': 'Marks of the Fourteen',
   'release.0_9_3.paintings':
     'Every piece of gear has its own painting now. All fourteen sets were drawn piece by piece — six pictures each, from the weapon down to the boots — so an Ember Guard helmet looks like an Ember Guard helmet, and no two pieces of a set look alike.',

@@ -12,6 +12,7 @@ import { GearCard } from '@ui/components/GearCard/GearCard';
 import { Slot } from '@ui/components/Slot/Slot';
 import { SLOT_GLYPH } from '@ui/styles/display-maps';
 import { mainStatLine, pieceArtwork, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import styles from './dialogs.module.css';
 
 /**
@@ -61,6 +62,7 @@ export function MissionGiftDialog({ onClose }: { onClose: () => void }) {
             level={struck.level}
             slot={struck.slot}
             {...pieceArtwork(struck)}
+            {...pieceTooltip(struck)}
             mainStat={mainStatLine(struck)}
             setName={setOf(struck) ? t(setOf(struck)?.name as I18nKey) : struck.setId}
             size={128}

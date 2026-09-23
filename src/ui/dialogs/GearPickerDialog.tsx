@@ -29,6 +29,7 @@ import {
   slotLabel,
   statLabel,
 } from '@ui/gear/gear-view';
+import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import styles from './GearPickerDialog.module.css';
 
 /** The emblem leading a set the swap makes or breaks, in CSS pixels. */
@@ -112,6 +113,7 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
                       level={entry.piece.level}
                       slot={entry.piece.slot}
                       {...pieceArtwork(entry.piece)}
+                      {...pieceTooltip(entry.piece)}
                       mainStat={mainStatLine(entry.piece)}
                       setName={set ? translate(set.name) : entry.piece.setId}
                       size={128}

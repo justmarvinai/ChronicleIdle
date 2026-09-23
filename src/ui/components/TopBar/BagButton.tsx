@@ -4,7 +4,6 @@ import { t } from '@i18n/index';
 import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AssetImage } from '@ui/components/AssetImage/AssetImage';
-import { kitBorder } from '@ui/styles/kit';
 import styles from './BagButton.module.css';
 
 /**
@@ -29,8 +28,7 @@ export function BagButton() {
   return (
     <button
       type="button"
-      className={styles.pill}
-      style={kitBorder('ui.dark_ember.frame_sm_thin', 0.3)}
+      className={styles.socket}
       aria-label={label}
       title={label}
       data-testid="topbar-bag"
@@ -41,10 +39,9 @@ export function BagButton() {
         actions.openDialog({ name: 'bag' });
       }}
     >
-      <span className={styles.fill} style={kitBorder('ui.dark_ember.bg_tile_sm', 0.5)} aria-hidden="true" />
       <AssetImage asset="ui.stone_vine.icon_sack" className={styles.icon} alt="" />
-      {/* The count rides the corner rather than taking a column: an empty Bag should still be a
-          square, not a pill that shrinks when the last item is used. */}
+      {/* The count rides the socket's rim rather than taking a column: an empty Bag should keep
+          its shape, not become a pill that shrinks when the last item is used. */}
       {held > 0 ? <span className={`num ${styles.count}`}>{held}</span> : null}
     </button>
   );

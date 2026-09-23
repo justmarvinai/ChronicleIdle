@@ -1,35 +1,71 @@
+/* The chest in the header: the purse's socket and bar (see CurrencyPill.module.css). */
 .pill {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   height: 52px;
-  min-width: 124px;
-  padding: 0 12px 0 6px;
+  min-width: 132px;
+  padding: 0 12px 0 0;
   border: none;
   background: none;
-  cursor: pointer;
-  transition: filter var(--t-base);
+  cursor: var(--cursor-pointer);
+  transition: filter var(--t-fast);
 }
-
 .pill:hover {
-  filter: brightness(1.12);
+  filter: brightness(1.14);
 }
-
 .pill:active {
   filter: brightness(0.95);
 }
-
-.fill {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+.pill:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
 }
 
-.icon,
-.text {
+.bar {
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: 25px;
+  right: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(34, 29, 40, 0.95) 0%, rgba(12, 11, 15, 0.97) 72%);
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.42),
+    inset 0 1px 0 1px rgba(255, 236, 190, 0.06),
+    inset 0 -10px 14px rgba(0, 0, 0, 0.45),
+    0 3px 8px rgba(0, 0, 0, 0.55);
+}
+
+/*
+ * How full the chest is, as a seam of light along the bar's lower edge — an edge that lights up,
+ * not an underline beneath the time.
+ */
+.progress {
+  position: absolute;
+  left: 26px;
+  right: 1px;
+  bottom: 1px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--gold-3) 0,
+    var(--gold-3) var(--fill),
+    rgba(60, 54, 66, 0.8) var(--fill),
+    rgba(60, 54, 66, 0.8) 100%
+  );
+}
+
+.socket {
   position: relative;
   z-index: 1;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  background: var(--ui-dark-ember-frame-round-sm-lit) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.75));
 }
 
 .icon {
@@ -39,26 +75,17 @@
 }
 
 .text {
-  flex: 1 1 auto;
-  font-size: 19px;
-  text-align: right;
-  color: var(--text-1);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
-}
-
-/* How full the chest is, as a seam of light along the bottom of the pill. */
-.progress {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 4px;
-  height: 3px;
+  position: relative;
   z-index: 1;
-  background: linear-gradient(
-    90deg,
-    var(--gold-3) 0,
-    var(--gold-3) var(--fill),
-    rgba(20, 18, 24, 0.7) var(--fill),
-    rgba(20, 18, 24, 0.7) 100%
-  );
+  flex: 1 1 auto;
+  padding-left: 10px;
+  font-size: 19px;
+  line-height: 1;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.75);
+}
+.text[data-full='true'] {
+  color: var(--gold-3);
 }

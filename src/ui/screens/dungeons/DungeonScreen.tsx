@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { playSfx } from '@audio/index';
 import { AUTO_REPEAT_TIERS } from '@content/balance/campaign';
 import { DUNGEON_STAGES, type DungeonDifficulty } from '@content/balance/dungeon';
@@ -13,19 +13,17 @@ import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
+import { SetChip } from '@ui/components/Chip/Chip';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
-import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Tabs } from '@ui/components/Tab/Tabs';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
-import { raritiesLabel, starsLabel } from './dungeons-view';
+import { RARITY_HEX } from '@ui/styles/display-maps';
+import { bandRarities, starsLabel } from './dungeons-view';
 import styles from './DungeonScreen.module.css';
-
-/** A set's emblem at the head of its chip in the keep's set list, in CSS pixels. */
-const CHIP_EMBLEM = 22;
 
 type DungeonRoute = Extract<Route, { name: 'dungeon' }>;
 
@@ -96,15 +94,11 @@ export default function DungeonScreen({ route }: ScreenProps) {
           <div>
             <p className={styles.setsLabel}>{t('dungeon.sets')}</p>
             <ul className={styles.setList} data-testid="dungeon-sets">
-              {def.sets.map((id) => {
-                const set = content.gearSetById(id);
-                return (
-                  <li key={id} className={styles.setChip}>
-                    {set ? <SetEmblem emblem={set.emblem} size={CHIP_EMBLEM} /> : null}
-                    <span>{set ? translate(set.name) : id}</span>
-                  </li>
-                );
-              })}
+              {def.sets.map((id) => (
+                <li key={id}>
+                  <SetChip setId={id} />
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -189,7 +183,18 @@ function StageRow({
         <span className={`num ${styles.stars}`} data-testid={`dungeon-stars-${stage.stage}`}>
           {starsLabel(stage.stars)}
         </span>
-        <span className={styles.rarities}>{raritiesLabel(stage.band)}</span>
+        {/* Each rarity in its own colour, so the rung a Legendary starts falling from is seen. */}
+        <span className={styles.rarities} data-testid={`dungeon-rarities-${stage.stage}`}>
+          {t('dungeon.drops')}{' '}
+          {bandRarities(stage.band).map((rarity, index) => (
+            <Fragment key={rarity}>
+              {index > 0 ? ', ' : null}
+              <span className={styles.rarity} style={{ color: RARITY_HEX[rarity] }}>
+                {t(`rarity.${rarity}` as I18nKey)}
+              </span>
+            </Fragment>
+          ))}
+        </span>
       </div>
       <div className={`num ${styles.cost}`}>
         <span>{t('dungeon.energy', { energy: stage.band.energy })}</span>

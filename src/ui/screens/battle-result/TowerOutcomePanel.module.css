@@ -28,7 +28,7 @@
 }
 .rows li {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   font-size: 15px;
   color: var(--text-2);
@@ -40,8 +40,18 @@
 
 /* A boss floor's shards are the reason to fight one twice, so they get their own line. */
 .gain {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gainLine {
   margin: 0;
   font-size: 16px;
   color: var(--gold-3);
   text-shadow: 0 0 10px rgba(240, 213, 122, 0.4);
+}
+.gainChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }

@@ -6,11 +6,102 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending. Six questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
+_Nothing pending. Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
-lost floor still spends its key), Q49 (nothing grants Eternal Keys yet), Q57 (whether "the Intro
-Campaign" in the drop-rarity note meant the difficulty or the early settlements) and Q62 (whether
-a gear card should carry its slot glyph beside the set emblem)._
+lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
+Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
+
+## [0.9.4] — 2026-09-23 — Every Mark in Its Place
+
+The owner's fifth batch: a tooltip on every piece of gear, a better header, a rebuilt Champions
+overview, every important mention shown by its mark, and the campaign's difficulty list fixed.
+Q62 answered. `docs/tech/UI_DESIGN.md` §4, §5.3, §5.4, §5.5, §5.6, §5.7, §5.10, §5.11, §5.13a,
+§5.17a, §5.24, `docs/design/GEAR.md` §5.1.
+
+### Added
+
+- **`GearTooltip`** — a piece's whole sheet on hover: painting and emblem, name in its rarity,
+  slot · rarity · +level, stars, power, main stat, every substat with how many times it rolled,
+  the set's emblem, name, piece count and bonus, and who wears it. `GearCard` takes `tooltip` /
+  `tooltipWidth`, and `pieceTooltip(piece)` spreads both, so every card grows one: the racks, the
+  picker, the Forge's three benches, a dungeon's haul and a mission gift. A champion's worn slots
+  (Gear tab) and the new worn strip (Info tab) carry it too.
+- **`Chip`, `SetChip`, `CurrencyChip`** (`ui/components/Chip`) — a thing named by its mark: dark
+  stone, gold hairline, square corners, the emblem or icon first, then the name and a count, range
+  or chance in gold. **`CurrencyLabel`** — a currency's icon before its name, optionally with an
+  amount in front, for the rows that list what was won, spent or paid.
+- **The kit strip** (`KitStrip`) under a champion's portrait: A1–A4, a rule, the passive and the
+  aura, each with its slot named under it. Hover reads the ability with live numbers; a press opens
+  the Abilities tab. `AbilityIcon` gains `inspect`: pressable whatever it is, a passive included,
+  while it still lights up only as a castable ability would (`.ready:hover` became
+  `.pressable:hover`, so the battle bar is unchanged).
+- **`STAT_GLYPH`** (`display-maps.ts`) — a mark per stat, the Glorious Palace's own for the node
+  that grants it; `display-maps.test.ts` holds the two tables together.
+- `BREW_OF` and `CAMPAIGN_SHARD` are exported from `@engine/campaign/rewards`, so the settlement
+  screen names the brew and shard a victory really rolls rather than restating them.
+- Tests: the Dropdown's placement at the foot and the head of a scaled, letterboxed stage; the
+  Tooltip placing itself again by its measured height (it failed before the fix: 908 against 688);
+  the gear tooltip on the racks and on a worn slot; the kit strip (tooltip, the passive pressing
+  through to the Abilities tab); the Info tab's column names and worn strip (emblem, `+level`, the
+  empty slot's name, the completed set, the Gear tab from any slot); the settlement's drop chips
+  with their emblems and icons; e2e checks the kit strip's tooltip and press, a keep card's emblem
+  loading and a rung's rarity line.
+
+### Changed
+
+- **The header** (`CurrencyPill`, `BagButton`, `IdleChestButton`): each currency's icon cut round
+  inside the kit's lit round frame, at the head of a slim dark bar with the gold hairline, the
+  amount in the numerals' face and the kit's ember square for "+". The Bag and the chest are built
+  from the same socket and bar, so the right of the header reads as one row of instruments. Sizes
+  are as they were (the owner's note).
+- **The Champions overview** (`ChampionHero`, `ChampionPanel`):
+  - The portrait grew to 600 × 780 on a slowly breathing glow of the rarity's colour, with the
+    rarity on a kit banner at its head and the title set into its foot — name (a size smaller from
+    eighteen letters), element and role as chips, stars and level. The old nameplate under it is
+    gone.
+  - The idle sprite left the portrait's chest: ×4, facing the painting, it stands at the frame's
+    lower-right corner, half in front of it, on a ground glow of the element — anchored by its feet
+    (12–18 px of air under them in every model's cell).
+  - The Info tab: the power on a plate with the account power's crossed swords; each stat led by
+    its mark; *Base*, *Gear* and *Palace* named above their columns in their colours (the hint line
+    that explained them is gone, and gear's green is at full strength); and **Worn gear** under the
+    table — the six slots as paintings with emblem and level, and the completed sets as chips.
+- **Every important mention by its mark:**
+  - A settlement's *Drops here* is three captioned rows of chips: the set pool by emblem, the
+    difficulty's materials with their ranges (*every victory*), the Faded Shard and the
+    settlement's brew with their chances (*now and then*).
+  - A keep's card on the Dungeons overview lists its sets as emblem chips under *Holds*; the keep's
+    own screen uses the same chip; each rung names its rarities in their own colours.
+  - Rewards, yields and costs carry their currency's icon: a campaign result's spoils (and the two
+    XP lines under the boosts' marks), a tower floor's rewards and its keeper's shards as chips, the
+    level-up dialog, the Forge's tier and strike costs and the refine cost, the dismantle yield,
+    the Tavern's cost and a boss chest's contents. `costLine` and `setsText` went with the text
+    they built.
+- Strings: `settlement.dropGear` / `dropMaterials` became captions, with `dropChance`, `dropRange`
+  and `dropPercent` new; `dropShard` and `dropBrew` went. `dungeons.card.sets` → `dungeons.card.holds`,
+  `dungeon.drops` lost its placeholder, `tower.result.shards` its list (`tower.result.shardCount`
+  new), `forge.refine.cost` and `champions.stat.gearHint` went.
+- The component gallery shows the chips and the currency label.
+
+### Fixed
+
+- **The campaign's difficulty list** opened straight past the foot of the stage, so only *Intro*
+  could ever be chosen (the owner's report). A `Dropdown` now measures, before paint and in stage
+  pixels, whether its list fits below its control, and opens upward when it does not and there is
+  more room above.
+- **A tall tooltip near the foot of the stage** ran off the bottom until the pointer moved: its
+  first placement guessed an 80 px box. It is placed again once it is measured, before paint.
+
+### Docs
+
+- `USER_QUESTIONS.md` Q62 moved to Answered: *"Keep emblem only, the new Icons for the Gear pieces
+  are identifier enough."* The default stands; `GEAR.md` §5.1 says so and lists the places the
+  emblem now reaches.
+- `UI_DESIGN.md`: the component table (`CurrencyPill`, `AbilityIcon`'s `inspect`, `Tooltip`'s
+  placement, `GearTooltip`, the chips, `CurrencyLabel`, the `Dropdown`'s flip), the Champions
+  overview and Info tab (§5.3–§5.4), the campaign's difficulty list and drop panel (§5.6–§5.7), and
+  the icons on the result, Forge, Tavern, tower and level-up screens (§5.5, §5.10, §5.11, §5.13a,
+  §5.17a) and in the Dungeons (§5.24).
 
 ## [0.9.3] — 2026-09-23 — Marks of the Fourteen
 

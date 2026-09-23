@@ -232,9 +232,15 @@
 }
 .rewardList li {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+.xpLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding-left: 1px;
 }
 .rewardList li span:last-child {
   color: var(--gold-3);

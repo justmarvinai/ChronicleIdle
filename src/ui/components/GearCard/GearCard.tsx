@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { EmblemKey, GearArtKey } from '@assets/manifest.generated';
 import { playSfx } from '@audio/index';
 import { AssetImage } from '@ui/components/AssetImage/AssetImage';
@@ -5,6 +6,7 @@ import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { StarRow } from '@ui/components/StarRow/StarRow';
+import { Tooltip } from '@ui/components/Tooltip/Tooltip';
 import { RARITY_HEX, SLOT_GLYPH, type GearSlot, type Rarity } from '@ui/styles/display-maps';
 import styles from './GearCard.module.css';
 
@@ -26,6 +28,10 @@ export interface GearCardProps {
   selected?: boolean;
   locked?: boolean;
   onClick?: () => void;
+  /** What the piece is, shown on hover — `GearTooltip` wherever a card stands for a real piece. */
+  tooltip?: ReactNode;
+  /** The tooltip's width, when it has one. */
+  tooltipWidth?: number;
 }
 
 /**
@@ -46,10 +52,12 @@ export function GearCard({
   selected,
   locked,
   onClick,
+  tooltip,
+  tooltipWidth,
 }: GearCardProps) {
   const color = RARITY_HEX[rarity];
   const interactive = !!onClick;
-  return (
+  const card = (
     <DecoFrame
       frame={10}
       tint={color}
@@ -94,5 +102,12 @@ export function GearCard({
         />
       ) : null}
     </DecoFrame>
+  );
+  return tooltip ? (
+    <Tooltip content={tooltip} {...(tooltipWidth ? { maxWidth: tooltipWidth } : {})}>
+      {card}
+    </Tooltip>
+  ) : (
+    card
   );
 }
