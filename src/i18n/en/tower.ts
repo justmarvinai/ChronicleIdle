@@ -26,6 +26,7 @@ export const tower = {
   'tower.result.shards': 'The keeper left something behind:',
   'tower.result.shardCount': '×{count}',
   'tower.result.back': 'Back to the tower',
+  'tower.keyCost': '1 key',
   'tower.noKeys': 'No Eternal Key left. One returns every fifteen minutes.',
   'tower.floor.next': 'Open',
   'tower.floor.repeatable': 'Repeatable',

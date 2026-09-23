@@ -1,0 +1,207 @@
+/* The seam between the two sides (docs/tech/UI_DESIGN.md §5.8). */
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  min-height: 0;
+}
+
+/* The VS mark: a gold-edged diamond between two hairlines that run to the panels' heads. */
+.emblem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rule {
+  width: 2px;
+  height: 34px;
+  background: linear-gradient(to bottom, transparent, rgba(240, 213, 122, 0.65));
+}
+.rule:last-child {
+  background: linear-gradient(to bottom, rgba(240, 213, 122, 0.65), transparent);
+}
+.medal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+}
+.medal::before {
+  content: '';
+  position: absolute;
+  inset: 26px;
+  rotate: 45deg;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(216, 85, 47, 0.35), transparent 70%),
+    linear-gradient(135deg, #2a1712, #0e0908);
+  border: 2px solid var(--gold-2);
+  outline: 1px solid rgba(240, 213, 122, 0.35);
+  outline-offset: 5px;
+  box-shadow:
+    0 0 28px rgba(216, 85, 47, 0.45),
+    inset 0 0 18px rgba(0, 0, 0, 0.8);
+  animation: glow 3.2s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(216, 85, 47, 0.3),
+      inset 0 0 18px rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    box-shadow:
+      0 0 38px rgba(216, 85, 47, 0.6),
+      inset 0 0 18px rgba(0, 0, 0, 0.8);
+  }
+}
+.swords {
+  position: absolute;
+}
+.vs {
+  position: relative;
+  font-size: 54px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: linear-gradient(180deg, #fff3c4 0%, #f0d57a 45%, #d8552f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.9)) drop-shadow(0 0 10px rgba(216, 85, 47, 0.5));
+}
+
+/* The two powers on one bar: the chronicle's gold from the left, the enemy's ember from the right. */
+.duel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(11, 10, 13, 0.72);
+  border: 1px solid rgba(201, 162, 74, 0.25);
+}
+.duelNumbers {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.right {
+  align-items: flex-end;
+}
+.sideLabel {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.ours,
+.theirs {
+  font-size: 22px;
+  line-height: 1;
+}
+.ours {
+  color: var(--gold-3);
+}
+.theirs {
+  color: #f2b39a;
+}
+.bar {
+  display: flex;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.barOurs {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+  box-shadow: 0 0 8px rgba(240, 213, 122, 0.45);
+  transition: width var(--t-slow) var(--ease-out);
+}
+.barTheirs {
+  flex: 1;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ember-3), var(--ember-1));
+}
+
+/* What the fight is for, and how it is lost. */
+.stakes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(11, 10, 13, 0.72);
+  border: 1px solid rgba(201, 162, 74, 0.25);
+}
+.stars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stakesTitle {
+  font-size: 18px;
+  color: var(--gold-3);
+}
+.conditions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.conditions li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.25;
+  color: var(--text-2);
+}
+.star {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: grayscale(1) brightness(0.45);
+}
+.lit {
+  color: var(--text-1);
+}
+.lit .star {
+  filter: drop-shadow(0 0 6px rgba(240, 213, 122, 0.7));
+}
+.best {
+  font-size: 14px;
+  color: var(--text-3);
+}
+.limit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(201, 162, 74, 0.18);
+  font-size: 14px;
+  color: var(--text-3);
+}
+.stars + .limit {
+  margin-top: 2px;
+}
+.stakes > .limit:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .medal::before {
+    animation: none;
+  }
+}

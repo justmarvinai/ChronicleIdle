@@ -1,0 +1,100 @@
+/* The column the fight is launched from (docs/tech/UI_DESIGN.md §5.8). */
+.panel {
+  composes: surfaceStone from global;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 18px 22px 20px;
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-2), var(--ember-3));
+  box-shadow: 0 0 12px rgba(216, 85, 47, 0.4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.label {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.note {
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+/* Manual or auto as one switch with two halves, the chosen half lit. */
+.switchWrap {
+  display: block;
+}
+.switch {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 48px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.45),
+    inset 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+.switch:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px var(--gold-3),
+    inset 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+.half {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  transition:
+    color var(--t-fast),
+    background var(--t-base) var(--ease-out);
+}
+.chosen {
+  color: var(--gold-3);
+  background: linear-gradient(180deg, rgba(143, 42, 28, 0.95), rgba(74, 20, 14, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 180, 110, 0.55),
+    0 0 12px rgba(216, 85, 47, 0.35);
+}
+.switch:hover .half:not(.chosen) {
+  color: var(--text-1);
+}
+
+.error {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #ffb4a6;
+  background: rgba(90, 26, 18, 0.55);
+  border-left: 2px solid var(--danger);
+}
+
+.start {
+  width: 100%;
+  margin-top: auto;
+}
+.dot {
+  opacity: 0.6;
+}
+.price {
+  white-space: nowrap;
+}

@@ -333,15 +333,45 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - The difficulty is the one chosen on the map; auto-repeat lives on the Battle setup screen.
 
 ### 5.8 Battle setup
-- Reference: `battle_setup_screen.png`, `_alternative_2.png`.
-- Layout: title "Stage 3-7 · Normal · Thornwood Crossing"; left half: team slots — 3 in campaign,
-  4 in boss fights — (leader slot marked, aura text), team power, presets, and the stand's
-  three-star conditions with its defeat limit; right half: enemy waves preview (tabs Wave 1/2/3)
-  with element sigils, levels and scaled HP, the *Auto-repeat ×N* selector with how many runs the
-  energy pays for, the manual/auto switch and **Start battle · ⚡cost**; bottom: roster strip
-  (virtualised).
-- Click-to-place; a locked repeat tier says which level opens it; too little energy disables the
-  start button and says what the stand costs (the gem refill arrives with the player-level phase).
+- Reference: `battle_setup_screen.png`, `_alternative_2.png` — a **face-off**: the team on the
+  left, the enemy on the right, the VS mark and what the fight is for between them, the roster
+  underneath and the launch column beside it, so the matchup is read before a button is.
+- **Title** names the fight itself: *Stage 3-7 · Normal · Thornwood Crossing*, *Gargoyle · Easy*,
+  *The Eternal Tower · Floor 12*, *Cindervault · Normal · Stage 1*, a brewery hall's stage.
+- **Your team** (780 px, gold head rule): team power top-right; the seats — three in campaign, four
+  in boss gates, keeps and the tower — share a 732 px row, never wider than 220 px each and always
+  316 px tall, so a four-seat row crops the paintings' sides rather than shrinking the faces. A seat
+  is the champion's painting in a frame of its rarity, the level on a plate in the corner, stars,
+  the name (two lines before it is cut), element, role and power at its foot. The first seat wears
+  the gold **Leader** banner; any other filled seat offers *Make leader* on hover (`team-lead-N`),
+  which moves that champion to the head without shuffling the rest. Pressing a seat empties it (a
+  ✕ shows on hover); an empty seat holds the kit's warrior silhouette and *Choose a champion*.
+  Under the seats, the leader's **aura** — its icon, name and one line of what it does. At the
+  foot, three **presets** on an even grid: the chip of faces loads one, the quill beside it saves
+  the team into it.
+- **Enemies** (780 px, ember head rule): the waves as chips in the head; the chosen wave's enemies
+  as cards the team's measures — each enemy's idle loop facing left on a lit patch of ground, the
+  level plate, the name, element, role (its glyph only below 200 px) and **HP / ATK / SPD** at the
+  encounter's scale; a boss wears the ember **Boss** banner and a slow smoulder. Under them, the
+  **scout's report** across from the aura: the elements strong against the wave and the ones it is
+  strong against (the element wheel, `CHAMPIONS.md` §1), and *a healer stands among them* when a
+  mender does. The foot counts the wave and weighs it.
+- **The seam** between them: the VS diamond on two hairlines; the two powers on one bar — the
+  team's in gold from the left, the strongest wave's in ember from the right, both
+  `power()` (`CHAMPIONS.md` §2) so they are measured with one ruler, and hidden at a boss gate,
+  where a race against authored numbers makes the sum meaningless; the stand's three stars, lit for
+  the ones already earned, with the best clear; and how the fight is lost (*Lost after 40 ally
+  turns*, or *The fight ends after 50 turns* at a boss).
+- **Roster** (the dock's left): every champion strongest first in a virtualised strip of 96 px
+  cards, narrowed by element and role chips in its head; a seated champion is dimmed and carries its
+  seat's number on its shoulder (the leader's in gold).
+- **Launch column** (420 px): *Auto-repeat* where a stand or a keep takes it (a locked tier carries
+  the shackle and says which level opens it; above one run, how many runs the energy covers), the
+  **Manual | Auto** switch — one `role="switch"` with two lit halves — and **Start battle** with the
+  price on it: `6 ⚡`, `1 key`, `One run`. Too little energy disables it and says what the stand
+  costs.
+- Click-to-place, as before: a champion who is not seated takes the next empty seat, or the last
+  seat of a full team.
 
 ### 5.9 Battle
 - Reference: `in_battle_non_boss_screen*.png`, `in_battle_boss_screen*.png`.

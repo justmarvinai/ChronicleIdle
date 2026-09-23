@@ -1,0 +1,181 @@
+/* The enemy's side of the face-off (docs/tech/UI_DESIGN.md §5.8). */
+.panel {
+  composes: surfaceStone from global;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 18px 24px 20px;
+}
+/* The side's colour runs along its head: ember for the enemy. */
+.panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--ember-2) 20%,
+    var(--ember-3) 50%,
+    var(--ember-2) 80%,
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(216, 85, 47, 0.55);
+}
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(216, 85, 47, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.title {
+  margin: 0;
+  font-size: 28px;
+  color: #f2b39a;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* The waves: one chip each, the one on show lit in ember. */
+.waves {
+  display: flex;
+  gap: 6px;
+}
+.wave {
+  height: 36px;
+  padding: 0 16px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  background: linear-gradient(180deg, rgba(40, 26, 22, 0.95), rgba(16, 11, 10, 0.95));
+  border: 1px solid rgba(216, 85, 47, 0.35);
+  transition:
+    filter var(--t-fast),
+    color var(--t-fast),
+    border-color var(--t-fast);
+}
+.wave:hover {
+  filter: brightness(1.25);
+  color: var(--text-1);
+}
+.on {
+  color: #fff1e0;
+  background: linear-gradient(180deg, #a3321f, #561510);
+  border-color: rgba(255, 150, 110, 0.7);
+  box-shadow: 0 0 12px rgba(216, 85, 47, 0.45);
+}
+
+.lineup {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  /* Room above the cards for a boss's banner. */
+  padding: 8px 0 0;
+}
+
+/* The scout's report, across from the leader's aura: what the wave fears, and what it hunts. */
+.scout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 8px 14px;
+  background: rgba(11, 10, 13, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(216, 85, 47, 0.18);
+}
+.scoutIcon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  background: radial-gradient(circle, rgba(216, 85, 47, 0.18), rgba(11, 10, 13, 0.9) 75%);
+  box-shadow: inset 0 0 0 1px rgba(216, 85, 47, 0.45);
+}
+.scoutText {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.scoutTitle {
+  font-size: 18px;
+  color: #f2b39a;
+}
+.scoutLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.edge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.element {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px 1px 4px;
+  font-size: 14px;
+  color: var(--text-1);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--element) 38%, transparent), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--element) 55%, transparent);
+}
+.healer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #a9e3ac;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(216, 85, 47, 0.1), rgba(216, 85, 47, 0.02) 70%, transparent);
+  border-left: 2px solid rgba(216, 85, 47, 0.6);
+}
+.count {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.power {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.powerLabel {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.powerValue {
+  font-size: 26px;
+  line-height: 1;
+  color: #f2b39a;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}

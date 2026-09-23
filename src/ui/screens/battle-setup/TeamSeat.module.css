@@ -1,0 +1,253 @@
+/* One seat of the team (docs/tech/UI_DESIGN.md §5.8). */
+.seat {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--seat-w);
+  /* One height for three seats or four: a narrow seat crops the painting's sides, not the face. */
+  height: var(--seat-h);
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-1);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast);
+}
+.seat:hover .frame {
+  transform: translateY(-4px);
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.65),
+    0 0 22px color-mix(in srgb, var(--rarity, #c9a24a) 35%, transparent);
+}
+/* The leader's seat carries the rarity's light behind it, breathing. */
+.leader::before {
+  content: '';
+  position: absolute;
+  inset: -26px -22px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    color-mix(in srgb, var(--rarity) 26%, transparent) 0%,
+    transparent 72%
+  );
+  pointer-events: none;
+  animation: breathe 5s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  text-align: left;
+}
+.card:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--gold-3);
+}
+
+.portrait {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 12%;
+}
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center 12%;
+  mask-position: center 12%;
+}
+/* Clear through the face, deep at the foot where the name is set. */
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 10, 13, 0.2) 0%,
+    rgba(11, 10, 13, 0) 18%,
+    rgba(11, 10, 13, 0) 50%,
+    rgba(11, 10, 13, 0.88) 78%,
+    rgba(11, 10, 13, 0.97) 100%
+  );
+}
+
+.foot {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.name {
+  font-size: 19px;
+  line-height: 1.05;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+  /* Two lines before a cut: a four-wide row is narrow, and a name should read whole. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.sigil {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle, var(--element) 0%, rgba(11, 10, 13, 0.92) 80%);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.5);
+}
+/* The level on a plate in the painting's corner, where every card in the game carries it. */
+.level {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  min-width: 34px;
+  padding: 2px 6px 1px;
+  font-size: 18px;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--text-1);
+  background: linear-gradient(180deg, rgba(40, 30, 18, 0.95), rgba(14, 11, 8, 0.95));
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(201, 162, 74, 0.7);
+}
+.power {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 16px;
+  color: var(--gold-3);
+}
+
+/* The press empties the seat: a mark in the corner says so while the pointer is on it. */
+.remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 14px;
+  color: var(--text-1);
+  background: rgba(90, 26, 18, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(224, 102, 74, 0.8);
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity var(--t-fast),
+    transform var(--t-fast) var(--ease-snap);
+}
+.card:hover .remove,
+.card:focus-visible .remove {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* The leader's banner, hung across the head of the first seat. */
+.ribbon {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  padding: 3px 16px 4px;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(90, 60, 10, 0.6);
+  pointer-events: none;
+}
+
+/* Any other seat can take the lead: the offer shows while the pointer is on the seat. */
+.lead {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  padding: 3px 12px 4px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--gold-3);
+  background: linear-gradient(180deg, rgba(60, 46, 24, 0.97), rgba(24, 18, 12, 0.97));
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(201, 162, 74, 0.7);
+  opacity: 0;
+  transition:
+    opacity var(--t-fast),
+    filter var(--t-fast);
+}
+.seat:hover .lead,
+.lead:focus-visible {
+  opacity: 1;
+}
+.lead:hover {
+  filter: brightness(1.3);
+}
+
+/* An empty seat: the kit's silhouette, and what to do about it. */
+.silhouette {
+  position: absolute;
+  inset: 12% 18% 22%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  opacity: 0.55;
+  filter: drop-shadow(0 0 1px rgba(201, 162, 74, 0.35));
+}
+.empty .frame {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(201, 162, 74, 0.08), transparent 70%), var(--bg-0);
+}
+.emptyText {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+.empty:hover .emptyText {
+  color: var(--gold-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leader::before {
+    animation: none;
+  }
+}

@@ -1,0 +1,191 @@
+/* The player's side of the face-off (docs/tech/UI_DESIGN.md §5.8). */
+.panel {
+  composes: surfaceStone from global;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 18px 24px 20px;
+}
+/* The side's colour runs along its head: gold for the chronicle's own. */
+.panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-2) 20%,
+    var(--gold-3) 50%,
+    var(--gold-2) 80%,
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(240, 213, 122, 0.45);
+}
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(240, 213, 122, 0.07), transparent 70%);
+  pointer-events: none;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.title {
+  margin: 0;
+  font-size: 28px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.power {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.powerLabel {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.powerValue {
+  font-size: 32px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.9),
+    0 0 14px rgba(240, 213, 122, 0.35);
+}
+
+.seats {
+  display: flex;
+  justify-content: center;
+  /* Room above the seats for the leader's banner, which hangs over the frame's edge. */
+  padding-top: 8px;
+}
+
+/* What the leader brings: the aura's icon, its name and one line of what it does. */
+.aura {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 8px 14px;
+  background: linear-gradient(90deg, rgba(201, 162, 74, 0.1), rgba(201, 162, 74, 0.02) 70%, transparent);
+  border-left: 2px solid rgba(201, 162, 74, 0.6);
+}
+.auraText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.auraName {
+  font-size: 18px;
+  color: var(--gold-3);
+}
+.auraLine {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+.noAura {
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+/* Three presets: a press on the faces loads one, the quill beside it writes the team into it. */
+.presets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+.presetsLabel {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.presetRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.preset {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+.presetLoad,
+.presetSave {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(48, 38, 24, 0.95), rgba(20, 16, 11, 0.95));
+  border: 1px solid rgba(201, 162, 74, 0.45);
+  transition:
+    filter var(--t-fast),
+    border-color var(--t-fast),
+    transform var(--t-fast);
+}
+.presetLoad {
+  flex: 1;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 10px;
+}
+.presetSave {
+  justify-content: center;
+  width: 42px;
+  border-left: 0;
+}
+.presetLoad:hover:not(:disabled),
+.presetSave:hover:not(:disabled) {
+  filter: brightness(1.25);
+  border-color: var(--gold-2);
+}
+.presetLoad:active:not(:disabled),
+.presetSave:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.presetLoad:disabled,
+.presetSave:disabled {
+  opacity: 0.55;
+}
+.presetIndex {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #c9993c);
+}
+.faces {
+  display: flex;
+  gap: 4px;
+}
+/* Square tiles like every portrait in the kit: faces, not pills. */
+.face {
+  display: block;
+  background-size: cover;
+  background-position: center 15%;
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.6);
+}
+.presetEmpty {
+  font-size: 15px;
+  color: var(--text-3);
+}

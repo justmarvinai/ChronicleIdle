@@ -1,196 +1,42 @@
+/* Battle setup (docs/tech/UI_DESIGN.md §5.8): a face-off over a dock. */
 .root {
   position: absolute;
   inset: 0;
   overflow: hidden;
 }
-.heading {
-  margin: 0 0 12px;
-  font-size: 26px;
-  color: var(--gold-3);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
-}
-.team {
-  composes: surfaceStone from global;
+/* The backdrop darkens towards the dock, so the roster reads over any stand's scenery. */
+.shade {
   position: absolute;
-  left: 40px;
-  top: 104px;
-  width: 900px;
-  height: 610px;
+  inset: 0;
+  z-index: var(--z-ambient);
+  background:
+    linear-gradient(to bottom, transparent 55%, rgba(11, 10, 13, 0.55) 80%, rgba(11, 10, 13, 0.75)),
+    radial-gradient(ellipse 30% 45% at 50% 38%, rgba(11, 10, 13, 0.55), transparent 80%);
+  pointer-events: none;
+}
+
+/* Top: the team, the seam, the enemy — the two sides are the same width and mirror each other. */
+.faceoff {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  top: 100px;
+  height: 596px;
   z-index: var(--z-scene);
-  padding: 18px 24px;
-}
-.slots {
-  display: flex;
-  gap: 22px;
-  align-items: flex-start;
-}
-.slotWrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.leaderTag {
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  color: var(--gold-2);
-}
-.aura {
-  margin: 16px 0 6px;
-  font-size: 17px;
-  color: var(--text-2);
-}
-.powerRow,
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 12px 0 4px;
-}
-.label {
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-.power {
-  font-size: 30px;
-  color: var(--gold-3);
-}
-.presets {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 14px;
-}
-.preset {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 780px minmax(0, 1fr) 780px;
   gap: 12px;
 }
-.presetName {
-  width: 110px;
-  font-size: 17px;
-  color: var(--text-1);
-}
-.hint {
-  margin: 14px 0 0;
-  font-size: 14px;
-  color: var(--text-3);
-}
-.enemies {
-  composes: surfaceStone from global;
+
+/* Bottom: the roster, and the column the fight is launched from. */
+.dock {
   position: absolute;
-  right: 40px;
-  top: 104px;
-  width: 900px;
-  height: 610px;
-  z-index: var(--z-scene);
-  padding: 18px 24px;
-  display: flex;
-  flex-direction: column;
-}
-.wavePanel {
-  margin-top: 10px;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-.enemyList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.enemy {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.sigil {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.7);
-}
-.enemyText {
-  display: flex;
-  flex-direction: column;
-}
-.enemyName {
-  font-size: 20px;
-  color: var(--text-1);
-}
-.bossTag {
-  margin-left: 8px;
-  padding: 1px 8px;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--gold-3);
-  border: 1px solid rgba(201, 162, 74, 0.6);
-}
-.enemyMeta {
-  font-size: 14px;
-  color: var(--text-3);
-}
-.error {
-  margin: 8px 0 0;
-  color: var(--debuff);
-}
-.start {
-  margin-top: 8px;
-  display: flex;
-  justify-content: flex-end;
-}
-.roster {
-  composes: surfaceStone from global;
-  position: absolute;
-  left: 40px;
-  right: 40px;
+  left: 32px;
+  right: 32px;
+  top: 712px;
   bottom: 24px;
-  height: 300px;
   z-index: var(--z-scene);
-  padding: 12px 20px;
-}
-
-/* The stand's star conditions sit in the team column's empty right half. */
-.stars {
-  position: absolute;
-  right: 24px;
-  top: 96px;
-  width: 360px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.starList {
-  margin: 0;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 14px;
-  color: var(--text-2);
-}
-.turnLimit {
-  font-size: 12px;
-  color: var(--text-3);
-}
-.repeat {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.affordable {
-  font-size: 14px;
-  color: var(--text-3);
-}
-
-.waveContent {
-  height: 100%;
-  overflow-y: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 16px;
 }
