@@ -71,6 +71,53 @@ export function rateRows(shard: ShardId): RateRow[] {
     .reverse();
 }
 
+/**
+ * How long a chance's bar is drawn, 0–1: on a square-root scale, so a 1 % Legendary is still a
+ * mark you can see beside a 91 % Rare rather than a hairline (the number beside it is exact).
+ */
+export function chanceBar(chance: number): number {
+  return Math.sqrt(Math.max(0, Math.min(100, chance)) / 100);
+}
+
+/** The rarities a shard can answer with, least first: what its nameplate and rail card show. */
+export function shardRange(shard: ShardId): Rarity[] {
+  return rateRows(shard)
+    .map((row) => row.rarity)
+    .reverse();
+}
+
+export interface MercyBar {
+  rarity: Rarity;
+  /** "Legendary in at most 185 more", or the count since the last one when nothing is promised. */
+  sentence: string;
+  /** How far along the promise the counter is, 0–1; null when the shard promises nothing. */
+  fill: number | null;
+  /** "chance climbing: +3 pp per pull" while the soft climb runs. */
+  climbing: string | null;
+}
+
+/**
+ * Mercy as bars (SUMMONING.md §2): each promise with how much of it the counter has walked — the
+ * hard guarantee is `since + within` pulls from the last one.
+ */
+export function mercyBars(lines: readonly MercyView[]): MercyBar[] {
+  return lines.map((line) => {
+    const rarity = t(`rarity.${line.rarity}` as I18nKey);
+    return {
+      rarity: line.rarity,
+      sentence:
+        line.within !== null
+          ? translate('portal.pity.guaranteed', { rarity, count: line.within })
+          : translate('portal.pity.since', { rarity, count: line.since }),
+      fill: line.within !== null ? line.since / (line.since + line.within) : null,
+      climbing:
+        line.bonusPp > 0
+          ? translate('portal.pity.climbing', { rarity, pp: Math.round(line.bonusPp * 10) / 10 })
+          : null,
+    };
+  });
+}
+
 /** Mercy as sentences: the guarantee, then the climb if one is running (SUMMONING.md §2). */
 export function mercySentences(lines: readonly MercyView[]): string[] {
   const out: string[] = [];

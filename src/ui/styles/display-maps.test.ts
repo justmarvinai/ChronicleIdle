@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { RARITIES, STAT_IDS, type StatId } from '@content/champions/types';
 import { PALACE_NODES } from '@content/palace/index';
+import { SHARD_IDS } from '@content/balance/summon';
+import { SHARD_CRYSTALS } from '@render/summon/crystal';
 import { RARITY_TINT } from '@render/summon/ritualScene';
 import { NODE_GLYPH } from '@ui/screens/palace/palace-icons';
-import { RARITY_HEX, STAT_GLYPH } from './display-maps';
+import { RARITY_HEX, SHARD_HEX, STAT_GLYPH } from './display-maps';
 
 describe('rarity colours', () => {
   it('are the same in CSS and on the Pixi stage', () => {
@@ -14,6 +16,14 @@ describe('rarity colours', () => {
 
   it('covers every rarity', () => {
     expect(Object.keys(RARITY_HEX).sort()).toEqual([...RARITIES].sort());
+  });
+});
+
+describe('shard colours', () => {
+  it('are the light the gate draws inside each crystal', () => {
+    // The rail card, the nameplate and the card backs glow with the crystal hanging in the ring.
+    for (const shard of SHARD_IDS)
+      expect(SHARD_HEX[shard]).toBe(`#${SHARD_CRYSTALS[shard].light.toString(16).padStart(6, '0')}`);
   });
 });
 

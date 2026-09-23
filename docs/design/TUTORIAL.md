@@ -66,7 +66,7 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | Step | Trigger | Spotlight | Dialogue | Completes when |
 | --- | --- | --- | --- | --- |
 | 3.1 | Level 4, on hub | Portal | "The Portal reads the shards. I kept one Ancient Shard for this moment." (grants 1 Ancient Shard) | Portal opened |
-| 3.2 | Portal | Ancient Shard → Summon | "Place it. Watch the colour — it tells the rarity before the page turns." | reveal finished (deterministic Epic) |
+| 3.2 | Portal | Ancient Shard → Summon | "Place it and watch the light. Every colour it climbs is a rarer answer." | reveal finished (deterministic Epic) |
 | 3.3 | Reveal | New champion card | "A new name in your chronicle. Add them to your team before the next stand." (**grants 250 Energy**) | Continue |
 
 ## Chapter 5 — Routine (level 5: Quests, Idle Chest)

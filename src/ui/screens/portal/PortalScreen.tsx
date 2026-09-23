@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { duckMusic, playSfx } from '@audio/index';
-import { MULTI_PULL, type ShardId } from '@content/balance/summon';
-import type { Rarity } from '@content/champions/types';
+import type { ShardId } from '@content/balance/summon';
+import { RARITIES, type Rarity } from '@content/champions/types';
 import { content } from '@content/registry';
-import { imageUrl } from '@assets/manifest';
-import { t, translate } from '@i18n/index';
+import { t, translate, type I18nKey } from '@i18n/index';
 import { rotationAt } from '@engine/summon/rotation';
 import { mercyOf, openChampionChoices, type SummonSummary } from '@state/summon';
 import { selectActions, selectPortalUi, selectSave, selectWallet } from '@state/selectors';
@@ -12,18 +11,19 @@ import { useGameStore } from '@state/store';
 import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { RitualLayer, type RitualControl } from '@render/summon/RitualLayer';
-import type { RitualCue } from '@render/summon/ritualScene';
+import { tellRate } from '@render/summon/choreography';
+import { RING, type RitualCue, type RitualCueInfo } from '@render/summon/ritualScene';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
-import { Button } from '@ui/components/Button/Button';
-import { Panel } from '@ui/components/Frame/Panel';
 import { Tabs } from '@ui/components/Tab/Tabs';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
+import { SHARD_HEX } from '@ui/styles/display-maps';
 import { championName, shardViews } from '@ui/summon/portal-view';
 import { BannerPanel } from './BannerPanel';
+import { GatePlate } from './GatePlate';
 import { RevealOverlay } from './RevealOverlay';
 import styles from './PortalScreen.module.css';
 import { ShardRail } from './ShardRail';
@@ -42,7 +42,8 @@ const REVEAL_SOUND = {
 
 /**
  * The Summoning Portal (docs/tech/UI_DESIGN.md §5.12, SUMMONING.md): shards on the left, the gate
- * in the middle, the banner and its mercy on the right, and the two presses along the bottom.
+ * in the middle with the chosen shard's crystal in its ring and the two presses under it, and the
+ * banner — its chances, its mercy, the Exchange — on the right.
  */
 export default function PortalScreen({ route }: ScreenProps) {
   const params = route as PortalRoute;
@@ -72,32 +73,48 @@ export default function PortalScreen({ route }: ScreenProps) {
   const choices = save ? openChampionChoices(save) : [];
   const held = (currency: string): number => wallet?.[currency as 'gold'] ?? 0;
   const shardsHeld = view?.held ?? 0;
-  const shardUrl = view ? imageUrl(view.icon, 256) : '';
 
-  const cue = useCallback((moment: RitualCue, rarity: Rarity): void => {
-    if (moment === 'charge') playSfx('summon.charge');
-    else if (moment === 'crack') playSfx('summon.crack');
-    else {
-      // The rarest pulls get the room to themselves for a moment.
-      if (rarity === 'legendary' || rarity === 'mythic') duckMusic(0.35, 2200);
-      playSfx(REVEAL_SOUND[rarity]);
+  const cue = useCallback((moment: RitualCue, { rarity }: RitualCueInfo): void => {
+    switch (moment) {
+      case 'charge':
+        playSfx('summon.charge');
+        break;
+      case 'tell':
+        // One whole tone per rarity up the ladder: gold always rings the same bright note.
+        playSfx('summon.tell', { rate: tellRate(RARITIES.indexOf(rarity)) });
+        playSfx('summon.crack', { volume: 0.5 });
+        break;
+      case 'stall':
+        // The held breath: the music drops away and the heartbeat is all there is.
+        duckMusic(0.2, 1400);
+        playSfx('summon.stall');
+        break;
+      case 'windup':
+        playSfx('summon.windup');
+        break;
+      case 'burst':
+        // The rarest pulls get the room to themselves for a moment.
+        if (rarity === 'legendary' || rarity === 'mythic') duckMusic(0.35, 2200);
+        playSfx('summon.shatter');
+        playSfx(REVEAL_SOUND[rarity]);
+        break;
     }
   }, []);
 
   // The ritual callback must not change between presses (it drives the overlay's effect), so the
-  // shard's icon is read through a ref rather than captured.
-  const shardUrlRef = useRef(shardUrl);
+  // pressed shard is read through a ref rather than captured.
+  const shardRef = useRef(shard);
   useEffect(() => {
-    shardUrlRef.current = shardUrl;
-  }, [shardUrl]);
+    shardRef.current = shard;
+  }, [shard]);
   const runRitual = useCallback(async (rarity: Rarity): Promise<void> => {
-    await ritual.current?.reveal(rarity, shardUrlRef.current);
+    await ritual.current?.reveal(rarity, shardRef.current);
   }, []);
 
-  // The chosen shard hangs in the ring while the gate waits (SUMMONING.md §5).
+  // The cards are put away: the gate lets its afterglow go and forms the next crystal.
   useEffect(() => {
-    if (shardUrl !== '') ritual.current?.hover(shardUrl);
-  }, [shardUrl, press]);
+    if (press === null) ritual.current?.rest();
+  }, [press]);
 
   const summon = (count: number): void => {
     if (!banner) return;
@@ -127,8 +144,14 @@ export default function PortalScreen({ route }: ScreenProps) {
     actions.toast('reward', 'portal.exchange.bought', { shard: view?.name ?? shard });
   };
 
+  const owed = choices[0];
+
   return (
-    <div className={styles.root} data-testid="screen-portal">
+    <div
+      className={styles.root}
+      data-testid="screen-portal"
+      style={{ ['--ring-x' as string]: `${RING.x}px`, ['--ring-y' as string]: `${RING.y}px` }}
+    >
       <Backdrop asset="bg.bg9" grade="rgba(30, 14, 52, 0.45)" parallax={8} />
       <AmbientLayer preset="interior" glows={PORTAL_GLOWS} />
       <TopBar title={t('portal.title')} onBack={() => actions.pop()} />
@@ -137,11 +160,32 @@ export default function PortalScreen({ route }: ScreenProps) {
         shards={shards}
         selected={shard}
         onSelect={(next: ShardId) => actions.setPortalSelection({ shard: next })}
+        owed={
+          owed ? { reason: translate('portal.choice.owed', { reason: t(owed.reason as I18nKey) }) } : null
+        }
+        onClaim={() => actions.openDialog({ name: 'champion-picker', choiceId: owed?.id ?? '' })}
       />
 
       <div className={styles.gate}>
-        <RitualLayer ref={ritual} hooks={{ cue }} particles={reduced ? 0 : 46} reducedMotion={reduced} />
+        <RitualLayer
+          ref={ritual}
+          hooks={{ cue }}
+          shard={shard}
+          active={press !== null}
+          particles={reduced ? 0 : 46}
+          reducedMotion={reduced}
+        />
       </div>
+
+      {view ? (
+        <GatePlate
+          view={view}
+          status={error ?? translate('portal.status', { shard: view.short, count: shardsHeld })}
+          refused={error !== null}
+          hidden={press !== null}
+          onSummon={summon}
+        />
+      ) : null}
 
       <div className={styles.right}>
         <Tabs
@@ -167,33 +211,6 @@ export default function PortalScreen({ route }: ScreenProps) {
         ) : null}
       </div>
 
-      <Panel kind="ember-wide" padding={14} className={styles.bottom} contentClassName={styles.bottomRow}>
-        {choices[0] ? (
-          <Button
-            variant="secondary"
-            className={styles.choice}
-            onClick={() => actions.openDialog({ name: 'champion-picker', choiceId: choices[0]?.id ?? '' })}
-            data-testid="portal-choice"
-          >
-            {t('portal.choice.take')}
-          </Button>
-        ) : null}
-        <span className={styles.status} data-testid="portal-status">
-          {error ?? translate('portal.status', { shard: view?.short ?? shard, count: shardsHeld })}
-        </span>
-        <Button size="lg" disabled={shardsHeld < 1} onClick={() => summon(1)} data-testid="portal-summon-1">
-          {t('portal.summonOne')}
-        </Button>
-        <Button
-          size="lg"
-          disabled={shardsHeld < MULTI_PULL}
-          onClick={() => summon(MULTI_PULL)}
-          data-testid="portal-summon-10"
-        >
-          {t('portal.summonTen')}
-        </Button>
-      </Panel>
-
       {press ? (
         <RevealOverlay
           key={press.best.instance.instanceId}
@@ -201,6 +218,11 @@ export default function PortalScreen({ route }: ScreenProps) {
           ritual={runRitual}
           skipRitual={() => ritual.current?.skip()}
           shardsLeft={shardsHeld}
+          shard={{
+            icon: view?.icon ?? 'spell.earth_dark_crystal',
+            tint: view?.tint ?? null,
+            glow: SHARD_HEX[shard],
+          }}
           onAgain={() => {
             const count = press.pulls.length;
             setPress(null);
@@ -230,7 +252,7 @@ export default function PortalScreen({ route }: ScreenProps) {
 
 /** The gate's own light: the violet ring and the braziers either side of it. */
 const PORTAL_GLOWS = [
-  { x: 960, y: 470, size: 260, color: 0x9b5de5, flicker: 0.3 },
+  { x: RING.x, y: RING.y, size: 260, color: 0x9b5de5, flicker: 0.3 },
   { x: 560, y: 720, size: 120, color: 0xff9a3c, flicker: 0.5 },
   { x: 1360, y: 720, size: 120, color: 0xff9a3c, flicker: 0.5 },
 ];

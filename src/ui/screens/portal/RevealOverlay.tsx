@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { playSfx } from '@audio/index';
-import { content } from '@content/registry';
+import type { AssetKey } from '@assets/manifest.generated';
+import { RARITIES } from '@content/champions/types';
 import { t, translate } from '@i18n/index';
 import type { SummonSummary } from '@state/summon';
 import { Button } from '@ui/components/Button/Button';
-import { ChampionCard } from '@ui/components/ChampionCard/ChampionCard';
+import { POP_STEP_MS } from '@ui/components/StarRow/StarRow';
 import { RING } from '@render/summon/ritualScene';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
-import { revealOrder } from '@ui/summon/portal-view';
+import { championName, revealOrder } from '@ui/summon/portal-view';
+import { RevealCard } from './RevealCard';
 import styles from './RevealOverlay.module.css';
 
 export interface RevealOverlayProps {
@@ -19,29 +21,54 @@ export interface RevealOverlayProps {
   skipRitual: () => void;
   /** Shards left for another press of the same kind. */
   shardsLeft: number;
+  /** The shard pressed: its icon backs every card of ten until it turns. */
+  shard: { icon: AssetKey; tint: string | null; glow: string };
   onAgain: () => void;
   onView: (instanceId: string) => void;
   onClose: () => void;
 }
 
-type Phase = 'ritual' | 'cards' | 'done';
+type Phase = 'ritual' | 'deal' | 'turn' | 'done';
 
-/** Milliseconds between two cards of a ×10 (SUMMONING.md §5.4). */
-const CARD_STEP = 190;
+/**
+ * The beats of the cards (SUMMONING.md §5.3–§5.4), in milliseconds from the moment the gate lets
+ * them go. Ten are dealt face down, then turned one after another; the best waits a breath longer
+ * and turns last. A single card spins in whole, its stars pop and its rarity is stamped under it.
+ */
+const CARD_BEATS = {
+  /** From the deal to the first card turning. */
+  dealt: 850,
+  turnStep: 170,
+  /** The breath before the best of ten turns. */
+  bestPause: 520,
+  /** The single card has landed and its stars begin. */
+  starsAt: 700,
+  /** The single card's stamp lands (after its stars, before the way out). */
+  stampAt: 1100,
+  /** From the last card turning to the way out. */
+  settle: 420,
+} as const;
 
 /**
  * The longest the cards wait for the gate before landing anyway. The gate caps its own ceremony,
- * so this is the backstop for a ritual that never answers at all — a scene that failed to build,
- * or a shard icon still loading. The shards are spent before the gate lights: the cards are owed
- * either way, and a press that shows nothing is the one outcome a summon may never have.
+ * so this is the backstop for a ritual that never answers at all — a scene that failed to build.
+ * The shards are spent before the gate lights: the cards are owed either way, and a press that
+ * shows nothing is the one outcome a summon may never have.
  */
-const RITUAL_BACKSTOP_MS = 8_000;
+const RITUAL_BACKSTOP_MS = 12_000;
+
+/** Grid of ten: a cell's pitch across and down, to deal each card out of the gate's heart. */
+const GRID_PITCH = { x: 142, y: 250 } as const;
+const GRID_COLUMNS = 5;
+
+/** An Epic or better is stamped with a sound as it turns. */
+const LOUD = RARITIES.indexOf('epic');
 
 /**
  * The reveal (docs/design/SUMMONING.md §5): the ritual plays in the gate behind this overlay, then
- * the cards land in order with the rarest last, then the results panel offers the way out.
+ * the cards come out of it — rarest last — and the results offer the way out.
  *
- * Skipping is allowed throughout: it cuts the ritual to its burst and lands every card at once,
+ * Skipping is allowed throughout: it cuts the ritual to its burst and turns every card at once,
  * which is the player's time being respected rather than a different outcome.
  */
 export function RevealOverlay({
@@ -49,38 +76,61 @@ export function RevealOverlay({
   ritual,
   skipRitual,
   shardsLeft,
+  shard,
   onAgain,
   onView,
   onClose,
 }: RevealOverlayProps) {
   const cards = useMemo(() => revealOrder(summary.pulls, summary.best), [summary]);
   const rarity = summary.best.record.rarity;
+  const single = cards.length === 1;
   const [phase, setPhase] = useState<Phase>('ritual');
-  const [shown, setShown] = useState(0);
+  const [turned, setTurned] = useState(0);
   const skipped = useRef(false);
   const reduced = prefersReducedMotion();
 
-  // One run per press: the ritual, then the cards, then the panel. The overlay is keyed by the
+  // One run per press: the ritual, then the cards, then the way out. The overlay is keyed by the
   // press, so it always starts from its initial state; the flag stops a late timer from writing
-  // into a press that has already been closed.
+  // into a press that has already been closed or skipped.
   useEffect(() => {
     let live = true;
-    let timer: ReturnType<typeof setTimeout> | undefined;
     let landed = false;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const at = (ms: number, run: () => void): void => {
+      timers.push(
+        setTimeout(() => {
+          if (live && !skipped.current) run();
+        }, ms),
+      );
+    };
 
-    const step = (index: number): void => {
-      if (!live) return;
-      if (skipped.current || index >= cards.length) {
-        setShown(cards.length);
-        setPhase('done');
-        return;
-      }
-      setShown(index + 1);
-      if (index + 1 >= cards.length) {
-        setPhase('done');
-        return;
-      }
-      timer = setTimeout(() => step(index + 1), reduced ? 60 : CARD_STEP);
+    const dealTen = (): void => {
+      setPhase('deal');
+      playSfx('summon.flip', { volume: 0.6 });
+      let when = CARD_BEATS.dealt;
+      cards.forEach((pull, index) => {
+        const best = index === cards.length - 1;
+        if (best) when += CARD_BEATS.bestPause;
+        at(when, () => {
+          setPhase('turn');
+          setTurned(index + 1);
+          playSfx('summon.flip');
+          if (RARITIES.indexOf(pull.record.rarity) >= LOUD)
+            playSfx('summon.stamp', { volume: best ? 1 : 0.55 });
+        });
+        when += CARD_BEATS.turnStep;
+      });
+      at(when + CARD_BEATS.settle, () => setPhase('done'));
+    };
+
+    const landOne = (): void => {
+      setPhase('turn');
+      setTurned(1);
+      const stars = cards[0]?.instance.stars ?? 0;
+      for (let i = 0; i < stars; i += 1)
+        at(CARD_BEATS.starsAt + i * POP_STEP_MS, () => playSfx('summon.star', { rate: 1 + i * 0.07 }));
+      if (RARITIES.indexOf(rarity) >= LOUD) at(CARD_BEATS.stampAt, () => playSfx('summon.stamp'));
+      at(CARD_BEATS.stampAt + CARD_BEATS.settle, () => setPhase('done'));
     };
 
     // Whichever comes first: the gate finishing, the gate failing, or the backstop.
@@ -89,8 +139,11 @@ export function RevealOverlay({
       landed = true;
       clearTimeout(backstop);
       if (skipped.current) return;
-      setPhase('cards');
-      step(0);
+      if (reduced) {
+        setTurned(cards.length);
+        setPhase('done');
+      } else if (single) landOne();
+      else dealTen();
     };
 
     // `land` only ever runs from one of these two, so the timer it clears is already assigned.
@@ -101,18 +154,21 @@ export function RevealOverlay({
 
     return () => {
       live = false;
-      if (timer) clearTimeout(timer);
+      for (const timer of timers) clearTimeout(timer);
       clearTimeout(backstop);
     };
-  }, [rarity, cards, ritual, reduced]);
+  }, [rarity, cards, ritual, reduced, single]);
 
   const skip = (): void => {
     skipped.current = true;
     playSfx('ui.tab');
     skipRitual();
-    setShown(cards.length);
+    setTurned(cards.length);
     setPhase('done');
   };
+
+  const shown = phase !== 'ritual';
+  const bestName = championName(summary.best.record.championId);
 
   return (
     <div
@@ -123,60 +179,36 @@ export function RevealOverlay({
     >
       <div className={styles.scrim} />
       {phase !== 'done' ? (
-        <Button
-          variant="secondary"
-          size="sm"
-          className={styles.skip}
-          onClick={skip}
-          data-testid="summon-skip"
-        >
-          {t('summon.reveal.skip')}
-        </Button>
+        <div className={styles.skip}>
+          <Button variant="secondary" size="sm" onClick={skip} data-testid="summon-skip">
+            {t('summon.reveal.skip')}
+          </Button>
+        </div>
       ) : null}
 
-      <div className={[styles.grid, cards.length > 1 ? styles.gridMany : ''].join(' ')}>
-        {cards.slice(0, shown).map((pull, index) => {
-          const def = content.championById(pull.record.championId);
-          if (!def) return null;
-          const isBest = pull === summary.best;
-          return (
-            <motion.div
+      {shown ? (
+        <div className={[styles.grid, single ? '' : styles.gridMany].join(' ')}>
+          {cards.map((pull, index) => (
+            <RevealCard
               key={pull.instance.instanceId}
-              className={styles.cell}
-              initial={reduced ? { opacity: 1 } : { scale: 1.6, opacity: 0, rotate: -3 }}
-              animate={{ scale: 1, opacity: 1, rotate: 0 }}
-              transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 26 }}
-              data-testid={`summon-card-${index}`}
-            >
-              <ChampionCard
-                name={t(def.name as 'champ.anuria.name')}
-                rarity={def.rarity}
-                element={def.element}
-                role={def.role}
-                stars={pull.instance.stars}
-                level={pull.instance.level}
-                avatar={def.art.avatar}
-                tint={def.art.tint}
-                placeholder={def.art.placeholder}
-                placeholderLabel={t('champions.placeholder')}
-                size={cards.length > 1 ? 128 : 192}
-                testId={`summon-champion-${pull.instance.instanceId}`}
-              />
-              <span className={styles.name}>{t(def.name as 'champ.anuria.name')}</span>
-              <span className={styles.note}>
-                {pull.copiesBefore === 0 ? (
-                  <strong className={styles.new}>{t('summon.reveal.new')}</strong>
-                ) : (
-                  t('summon.reveal.duplicate')
-                )}
-              </span>
-              {isBest && cards.length > 1 ? (
-                <span className={styles.best}>{t('summon.result.best')}</span>
-              ) : null}
-            </motion.div>
-          );
-        })}
-      </div>
+              pull={pull}
+              index={index}
+              size={single ? 192 : 128}
+              faceUp={index < turned}
+              best={!single && pull === summary.best}
+              shardIcon={shard.icon}
+              shardTint={shard.tint}
+              shardGlow={shard.glow}
+              dealFrom={{
+                x: -((index % GRID_COLUMNS) - (GRID_COLUMNS - 1) / 2) * GRID_PITCH.x,
+                y: -(Math.floor(index / GRID_COLUMNS) - 0.5) * GRID_PITCH.y,
+              }}
+              reduced={reduced}
+              {...(single ? { starsPopAfter: CARD_BEATS.starsAt } : {})}
+            />
+          ))}
+        </div>
+      ) : null}
 
       {phase === 'done' ? (
         <motion.div
@@ -187,19 +219,9 @@ export function RevealOverlay({
           data-testid="summon-results"
         >
           <p className={styles.summary}>
-            {cards.length > 1
-              ? translate('summon.toast.many', {
-                  best: t(
-                    (content.championById(summary.best.record.championId)?.name ??
-                      'champ.anuria.name') as 'champ.anuria.name',
-                  ),
-                })
-              : translate('summon.toast.one', {
-                  name: t(
-                    (content.championById(summary.best.record.championId)?.name ??
-                      'champ.anuria.name') as 'champ.anuria.name',
-                  ),
-                })}
+            {single
+              ? translate('summon.toast.one', { name: bestName })
+              : translate('summon.toast.many', { best: bestName })}
           </p>
           <div className={styles.buttons}>
             <Button onClick={onClose} data-testid="summon-continue">

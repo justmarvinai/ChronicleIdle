@@ -4,3 +4,11 @@
   z-index: var(--z-ambient);
   pointer-events: none;
 }
+
+/*
+ * While a press plays out, the gate rises over the Portal's own panels and top bar — above the
+ * reveal's scrim, below its cards — so a burst's rings, rays and pillar cross the whole screen.
+ */
+.layer[data-active='true'] {
+  z-index: calc(var(--z-chrome) + 2);
+}

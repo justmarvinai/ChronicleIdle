@@ -38,8 +38,8 @@ test.describe('the Summoning Portal', () => {
       const l = layer.getBoundingClientRect();
       // `RING` in `@render/summon/ritualScene`, in the scene's own 1920×1080 stage pixels.
       return {
-        dx: c.left + c.width / 2 - (l.left + (900 / 1920) * l.width),
-        dy: c.top + c.height / 2 - (l.top + (470 / 1080) * l.height),
+        dx: c.left + c.width / 2 - (l.left + (908 / 1920) * l.width),
+        dy: c.top + c.height / 2 - (l.top + (440 / 1080) * l.height),
       };
     });
     expect(Math.abs(offset?.dx ?? 999)).toBeLessThan(2);

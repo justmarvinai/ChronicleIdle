@@ -20,6 +20,24 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_8.name': 'The Cask and the Crystal',
+  'release.0_9_8.summoning':
+    'Summoning is a ritual worth watching now. Your shard hangs in the gate as a crystal; press, and the runes kindle and light pours into it, then the gate shows its colours one by one — every colour it climbs is a rarer answer — and before gold it holds its breath. Then the crystal shatters, and the rarer the champion, the bigger the burst: a pillar of light for a Legendary, and slow motion for a Mythic.',
+  'release.0_9_8.brewery':
+    'The Brewery has a new look: the four halls as cards showing how deep you have gone and how many of their brews you hold, and a hall’s five stages side by side as a descent, with the guards standing on each, their power against your best team, and what a clear pays.',
+  'release.0_9_8.portal':
+    'The Summoning Portal is built around its gate: the crystal in the middle, its name, what it can give and both summon buttons right under it, the shards on the left each showing what they can give and how many you hold, and the chances and your mercy drawn as bars.',
+  'release.0_9_8.cards':
+    'Summoned champions arrive with ceremony: a single card spins out of the gate, its stars pop in one by one and its rarity is stamped beneath it; ten cards are dealt face down and turned over one after another, with the best of them last.',
+  'release.0_9_8.sounds':
+    'Summoning has new sounds: a rising charge, a note for every colour — gold always rings the same bright one — a heartbeat before gold, the crystal breaking, and a flip, a ping and a stamp for the cards.',
+  'release.0_9_8.brewery_week':
+    'Each Brewery hall shows the days of the week it opens with today marked, and the Brewery tells you how much the runs you have left today could still pour.',
+  'release.0_9_8.tutorial_strip':
+    'When Eldric asks you to press something low on the screen, his reminder moves to the top, so it never covers what he is asking for.',
+  'release.0_9_8.owed':
+    'A champion the campaign owes you now waits on its own card under the shards, where you cannot miss it.',
+
   'release.0_9_7.name': 'The Crest and the Climb',
   'release.0_9_7.results':
     'The end of every fight has been rebuilt. A victory rises in gold with its stars landing one by one; your champions stand as cards showing what each of them did, with the fight’s best marked MVP; and everything the fight paid is laid out as tiles.',

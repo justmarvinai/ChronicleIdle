@@ -4,6 +4,7 @@
  */
 import type { GlyphKey } from '@assets/manifest.generated';
 import type { BoostId } from '@content/balance/boosts';
+import type { ShardId } from '@content/balance/summon';
 import type { Element, GearSlot, Rarity, Role, StatId } from '@content/champions/types';
 
 export type { Element, GearSlot, Rarity, Role, StatId };
@@ -24,6 +25,16 @@ export const RARITY_HEX: Record<Rarity, string> = {
   epic: '#a35de3',
   legendary: '#f2a93b',
   mythic: '#ff4d6d',
+};
+/**
+ * The light inside each shard, as the gate draws it (`SHARD_CRYSTALS` in the ritual scene): the
+ * Portal's rail, nameplate and card backs glow in it. `display-maps.test.ts` keeps them in step.
+ */
+export const SHARD_HEX: Record<ShardId, string> = {
+  faded: '#7fe05a',
+  ancient: '#ffb640',
+  sacred: '#ffe27a',
+  primordial: '#4ff0c0',
 };
 export const ELEMENT_COLOR: Record<Element, string> = {
   justice: 'var(--el-justice)',

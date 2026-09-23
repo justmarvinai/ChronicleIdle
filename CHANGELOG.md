@@ -11,6 +11,81 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.8] — 2026-09-23 — The Cask and the Crystal
+
+The owner's ninth batch: the Brewery redesigned, and the Summoning Portal — "the heart piece of this
+game" — rebuilt around its gate, with a new summoning ritual that makes the wait tense and the answer
+land. The tutorial's Portal lessons were walked against the new screen: their targets hold, and the
+line about the colour now describes the climb. `docs/tech/UI_DESIGN.md` §5.12, §5.23;
+`docs/design/SUMMONING.md` §5; `docs/tech/ARCHITECTURE.md` §5.
+
+### Added
+
+- **The Brewery's parts** (`ui/screens/brewery`):
+  - `RunsCard`: the day's runs as a numeral over a rack of twenty flasks, and the reset;
+  - `HallCard`: a hall's place as art, its element as a medallion, its doors, how deep it has been
+    taken and how many of its brew the purse holds;
+  - `HallBanner`: the chosen hall in its element, its week as seven day-stones with today ringed,
+    what to bring, and why a shut hall is shut;
+  - `StageCard`: a stage as a card in the descent — its place, its guards stood on its floor (the
+    captain flanked on stage 5), their power against the roster's best three, and its pay;
+  - `brewery-view.ts`: `weekStrip`, `stageGuards`, `hallGuards`, `formation`, `stageBackdrop`,
+    `bestTeamPower`, `powerStanding`.
+- A 640 px card cut of every backdrop (`tools/assets/steps/backdrops.ts`, `imageUrl(key, 640)`), so
+  a screen of art cards decodes a sixth of the wallpaper pixels.
+- **The summoning ritual, rebuilt** (`render/summon`):
+  - `choreography.ts`: the beat sheet — `ritualPlan` (the charge, a tell per rarity from the shard's
+    floor up to the answer, a held breath before gold and before rose, the wind-up, the burst, the
+    settle), `tellsFor`, `shardFloor`, `RITUAL_TIMING`, `BURST_WEIGHT`, `tellRate`;
+  - `crystal.ts`: the shard as a drawn crystal — six facets round a drifting ridge, veins, cracks, a
+    sheen — and `SHARD_CRYSTALS`, the four shards cut and coloured after their icons;
+  - `gate.ts`: the rune ring, and the swirl, rays, beam, streak and shockwave textures;
+  - `sparks.ts`: pooled `Inflow` (light spiralling in), `Sparks`, `Waves`, and `Fragments` (the
+    crystal's own facets, thrown);
+  - `color.ts`: `mixColor`.
+- Seven generated sounds: `sfx.summon.tell` (pitched a whole tone per rarity by the Portal),
+  `stall` (two heartbeats), `windup`, `shatter`, and for the cards `flip`, `star` and `stamp`.
+- **The Portal's parts** (`ui/screens/portal`): `GatePlate` (the nameplate and the two presses with
+  their cost), `RarityRange`, `RevealCard` (a card's entrance, its turn, its stamp and labels);
+  `portal-view.ts`: `chanceBar`, `shardRange`, `mercyBars`; `SHARD_HEX` in the display maps.
+- `StarRow.popAfter` and `ChampionCard.starsPopAfter`: stars that pop in one by one.
+
+### Changed
+
+- **The Brewery screen** (`BreweryScreen`): the rail is the runs, the four halls as cards and the way
+  to the Tavern; the chosen hall opens on its banner and its five stages side by side as a descent;
+  the haul under them counts what the runs still in hand would pour.
+- **The ritual scene** (`ritualScene.ts`) runs off its own clock and the beat sheet instead of a GSAP
+  timeline. Its handle is `setShard`, `reveal(rarity, shard)`, `rest`, `skip`, `busy`, `setPaused`,
+  `destroy`; its cues are `charge`, `tell`, `stall`, `windup` and `burst`, each with the rarity and
+  its place in the climb. A starved ritual is landed at its burst three seconds past its own length.
+  `RING` moves to the middle of the new layout (908, 420; radius 236).
+- `RitualLayer` takes the shard and an `active` flag, and rises over the Portal's panels (under the
+  reveal's cards) while a press plays out.
+- **The reveal** (`RevealOverlay`): one card spins in, pops its stars and is stamped with its rarity;
+  ten are dealt face down out of the gate and turned in order, the best last after a breath. The
+  results take the nameplate's place under the gate. The backstop for a gate that never answers is
+  twelve seconds. The overlay no longer makes a stacking context, so its scrim, the rising gate and
+  its cards interleave.
+- **The Portal screen** (`PortalScreen`): the gate is the middle of the screen with the nameplate
+  and the presses under it (the bottom bar is gone); the rail's cards carry a lit socket, the
+  rarity range and the count as a plaque, and the owed champion as a card of its own; the banner
+  panel draws chances and mercy as bars and the Exchange with its coin. The shard blurbs no longer
+  repeat the range the card now shows.
+- The charge is re-cut as a riser that stops short of a hit: the first tell is the hit.
+- The Portal's tutorial line (4.2): "Place it and watch the light. Every colour it climbs is a rarer
+  answer."
+- The tutorial's strip waits under the top bar (`data-dock="top"`) when a lesson's target stands
+  where the strip would — the Portal's presses now stand under the gate rather than in a bottom
+  bar, and the strip must never cover what it asks the player to press.
+- `tests/e2e/portal.spec.ts` measures the card against the new ring.
+
+### Fixed
+
+- The old ritual could throw when a shard's hover and a press raced: a tween was still running on
+  the hovering icon when the press destroyed it. The new scene keeps one crystal per shard for the
+  life of the screen and tweens nothing.
+
 ## [0.9.7] — 2026-09-23 — The Crest and the Climb
 
 The owner's eighth batch: a fight from the screen before it to the screen after it, the Eternal Tower,

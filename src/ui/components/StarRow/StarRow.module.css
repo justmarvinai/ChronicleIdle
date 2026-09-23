@@ -15,3 +15,23 @@
   filter: grayscale(1) brightness(0.35);
   opacity: 0.8;
 }
+
+/* A star earned on the spot: out of nothing, past full size, and back. */
+.pop {
+  animation: star-pop 360ms var(--ease-snap, cubic-bezier(0.2, 1.4, 0.4, 1)) both;
+}
+
+@keyframes star-pop {
+  0% {
+    transform: scale(0) rotate(-40deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.5) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}

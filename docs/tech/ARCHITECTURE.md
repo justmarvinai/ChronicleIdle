@@ -124,8 +124,8 @@ speed lines and the ability name — the only place the 1254² avatars are shown
 package). GSAP's lag smoothing treats a frame longer than half a second as a stall and advances by
 33 ms rather than by the time that really passed, which turns a machine that cannot hold the frame
 rate into one that plays the fight in slow motion — §5.6 of `CLAUDE.md` asks for frames to be
-dropped instead. It is off; the gap a hidden tab leaves is never played back because the stage and
-the ritual both pause their timelines on `visibilitychange`.
+dropped instead. It is off; the gap a hidden tab leaves is never played back because the stage
+pauses its timelines and the ritual stops its ticker on `visibilitychange`.
 
 **The fight is never hostage to the stage.** The controller holds the first turn until a presenter
 attaches, so nothing resolves off-screen, but a WebGL context that hangs rather than fails would
@@ -453,7 +453,12 @@ interface SaveGame {
 
 - One Pixi `Application` per stage (battle, summon — `render/summon/ritualScene.ts`, mounted by
   `RitualLayer` as a full-stage layer so the ring stays a circle at every window size); created on
-  screen entry, destroyed on exit;
+  screen entry, destroyed on exit. The ritual runs off its own clock rather than a GSAP timeline: a
+  beat sheet (`choreography.ts`, pure and tested) says when each tell, stall, wind-up and burst
+  lands, and the scene eases every value towards what the current beat asks — so skipping is
+  moving one number to the burst, a starved frame rate is landed by a cap, and nothing tweens an
+  object that has gone. The crystal (`crystal.ts`), the gate's furniture (`gate.ts`) and the moving
+  light (`sparks.ts`) are drawn and pooled in code;
   shared texture cache via `Assets`.
 - Renderer preference: WebGPU → WebGL2; `roundPixels: true`; nearest-neighbour scaling for
   pixel-art atlases; sprites positioned at integer virtual pixels scaled by the viewport factor.

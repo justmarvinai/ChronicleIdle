@@ -50,6 +50,8 @@ export interface ChampionCardProps {
   compact?: boolean;
   /** Test hook for e2e specs (`roster-card-<instanceId>` in the Champions index). */
   testId?: string;
+  /** Milliseconds before the stars pop in one by one (a card fresh from the Portal). */
+  starsPopAfter?: number;
 }
 
 /**
@@ -77,6 +79,7 @@ export const ChampionCard = memo(function ChampionCard({
   onClick,
   compact = false,
   testId,
+  starsPopAfter,
 }: ChampionCardProps) {
   const color = RARITY_HEX[rarity];
   const interactive = !!onClick;
@@ -139,7 +142,14 @@ export const ChampionCard = memo(function ChampionCard({
       ) : null}
       {compact ? null : (
         <div className={styles.stars}>
-          <StarRow stars={stars} max={6} size={Math.max(10, size * 0.11)} tone="rarity" tint={color} />
+          <StarRow
+            stars={stars}
+            max={6}
+            size={Math.max(10, size * 0.11)}
+            tone="rarity"
+            tint={color}
+            {...(starsPopAfter !== undefined ? { popAfter: starsPopAfter } : {})}
+          />
         </div>
       )}
       <span

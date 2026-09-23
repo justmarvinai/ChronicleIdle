@@ -583,23 +583,43 @@ The team for a mode's fight is set on the mode's own screen.
 
 ### 5.12 Summoning Portal
 - Reference: `summoning_screen.png` (rail of shards + centre ritual + right tabs),
-  `summoning_screen_alternative_2.png` (chances panel). Shipped in `0.0.8`.
-- Layout: left rail: four shard cards with counts, blurb and selection frame; centre: the Pixi
-  ritual layer over `bg9` (full-stage, so the ring is a circle at every size) with the chosen shard
-  hanging in the ring; right column: *Standard* / *Featured* tabs over a stone panel with the
-  banner's name, the rotation (number, countdown, three featured champions as idle sprites, and the
-  Primordial Rotation marked), the selected shard's **Chances**, its **Mercy** lines, *Rates* and
-  *The last summons*, and the **Exchange** (Gold→Faded, Gems→Ancient/Sacred, Primordial never
-  sold); bottom bar: the shard and count, **Summon ×1** / **Summon ×10**, and *Claim your Epic*
-  while the campaign owes a champion choice.
-- Reveal: the press dims the scene, the ritual plays in the gate, then the cards land — one at
-  192 px, ten in a 5×2 grid in sequence with the rarest last and marked *Best of the ten*. Each
-  card carries the champion's name and either a "NEW" ribbon or "Duplicate — rank-up material".
-  The cards land **on the ring's own centre** (`RING` in `ritualScene.ts`, passed to the overlay as
-  CSS variables), not in the middle of the window: the champion steps *through* the gate, and the
-  gate hangs off to one side of it. Out of the overlay's flow, the card also stays put when the
-  results row lands instead of shifting up. *Skip* is offered throughout; the results row
-  (*Continue* / *Summon again* / *View champion*) sits clear of the bottom bar.
+  `summoning_screen_alternative_2.png` (chances panel). Shipped in `0.0.8`, rebuilt around the
+  gate in `0.9.8`.
+- **The gate is the screen.** The Pixi ritual layer covers the whole stage (so the ring stays a
+  circle at every size) and hangs the ring in the open middle (`RING` in `ritualScene.ts`, passed
+  to the DOM as `--ring-x`/`--ring-y`). In it the chosen shard's crystal turns — drawn, not painted,
+  cut and coloured after its icon (`SHARD_CRYSTALS`) — over a slow vortex, with runes glinting round
+  the ring. Choosing another shard dissolves the crystal and forms the next out of light.
+- **Under the gate, the nameplate and the presses** (`GatePlate`): the shard's name in large type
+  glowing in its light, what it can answer with (`RarityRange`: a lit diamond per rarity, then the
+  least and the most by name in their colours), and the two presses side by side — *Summon ×1*
+  (stone) and *Summon ×10* (ember) — each with the shard's icon and its cost, disabled while the
+  purse cannot pay. Under them, the count held, or why a press was refused.
+- **Left rail** (`ShardRail`): a card a shard — its icon in a diamond socket lit with the shard's
+  light, the name, the rarity range and a one-line blurb, and a plaque with the count held in large
+  numerals (greyed at none). The chosen card takes the gold frame, a bar of its light down the left
+  edge and a pulsing socket. While the campaign owes a champion choice, a gold card under the
+  shards names the debt and carries *Claim your Epic*.
+- **Right column:** *Standard* / *Featured* tabs over a stone panel with the banner's name, the
+  rotation (number, countdown, three featured champions as idle sprites, and the Primordial
+  Rotation marked), the shard's **Chances** as bars in the rarities' colours (on a square-root
+  scale, so a 1 % Legendary is still a mark you can see; the exact number beside each), its
+  **Mercy** as bars filling towards each guarantee (`since / (since + within)`) with the climb
+  noted while soft pity runs, *Rates* and *The last summons*, and the **Exchange** with the price's
+  coin (Gold→Faded, Gems→Ancient/Sacred, Primordial never sold).
+- **The press** (SUMMONING.md §5 for the ceremony itself). A scrim fades in over the panels and the
+  top bar, the ritual layer rises above it (and under the reveal's own cards and buttons), the
+  nameplate steps aside, and the gate charges, tells, holds its breath before gold, and bursts.
+  The overlay makes no stacking context of its own so its scrim, the rising gate and its cards
+  interleave with the screen.
+- **The cards** land **on the ring's own centre**, not in the middle of the window: the champion
+  steps *through* the gate. One card (192 px) spins in, its stars pop, its rarity is stamped under
+  it (a seal for an Epic or better), then its name and "NEW" or "Duplicate — rank-up material".
+  Ten (128 px) are dealt face down in a 5×2 grid, backed with the shard that bought them, then
+  turned in order with the best last after a breath, marked *Best of the ten*; in the grid a
+  second copy just says "Duplicate". Out of the overlay's flow, the cards stay put when the results
+  land. *Skip* is offered throughout; the results (*Continue* / *Summon again* / *View champion*)
+  take the nameplate's place under the gate.
 - Dialogs: *Rates* (all four shards: the rarity rows, the pool size behind each and the mercy
   owed), *The last summons* (the save's bounded history, newest first, each row opening the
   champion it became) and the champion picker (every summonable champion of the owed rarity).
@@ -867,7 +887,9 @@ Eldric's onboarding (`docs/design/TUTORIAL.md`, ADR-042). Two shapes, one per be
   screen still takes every press but the panel's — 1.9 lights the crest's stars and the spoils,
   1.11 the energy pill as it counts up.
 - **While the player acts.** The panel shrinks to a strip — his face at 56 px, the line, the skip —
-  above the bottom bar, so the lesson never sits on top of what it is teaching. The scrim gains one
+  above the bottom bar, so the lesson never sits on top of what it is teaching; when a target
+  stands where the strip would (the Portal's presses stand under its gate, not in a bottom bar),
+  the strip waits under the top bar instead (`data-dock="top"`). The scrim gains one
   cut-out per allowed target (`clip-path: path(evenodd, …)`, which decides what is drawn *and* what
   is hit, so the dim and the block cannot disagree), a gold ring pulses on the spotlight with a
   bobbing caret, and everything else eats the click.

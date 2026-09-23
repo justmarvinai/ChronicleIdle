@@ -1,30 +1,56 @@
+/*
+ * The overlay makes no stacking context of its own (no z-index): its scrim sits over the Portal's
+ * panels and top bar, the ritual rises over the scrim while it plays (`RitualLayer`), and the cards
+ * and buttons sit over both.
+ */
 .overlay {
   position: absolute;
   inset: 0;
-  z-index: var(--z-chrome);
   pointer-events: none;
+}
+
+.overlay > * {
+  z-index: calc(var(--z-chrome) + 3);
+}
+
+.overlay > .scrim {
+  z-index: calc(var(--z-chrome) + 1);
 }
 
 .scrim {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 42%, rgba(8, 6, 12, 0.15), rgba(6, 5, 9, 0.82) 72%);
+  background: radial-gradient(ellipse at 47% 40%, rgba(8, 6, 12, 0.2), rgba(6, 5, 9, 0.84) 70%);
+  animation: scrim-in 420ms ease-out both;
 }
 
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Skip waits under the gate, where the way out will stand when the cards are down. */
 .skip {
   position: absolute;
-  top: 100px;
-  right: 32px;
+  left: calc(var(--ring-x) - 200px);
+  width: 400px;
+  top: calc(var(--ring-y) + 330px);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.skip > * {
   pointer-events: auto;
 }
 
 /*
- * The cards land *in the gate*, not in the middle of the window: the ring hangs off-centre, in the
- * open space between the shard rail and the banner column (`RING` in `ritualScene.ts`), and the
- * champion steps through it. `--ring-x`/`--ring-y` come from that constant, so there is no second
- * copy of the number here.
+ * The cards land *in the gate*, not in the middle of the window: the ring hangs where the Portal
+ * leaves room for it (`RING` in `ritualScene.ts`), and the champion steps through it.
+ * `--ring-x`/`--ring-y` come from that constant, so there is no second copy of the number here.
  *
- * Being out of the overlay's flow also means the card does not shift when the results panel lands.
+ * Being out of the overlay's flow also means the cards do not shift when the results land.
  */
 .grid {
   position: absolute;
@@ -33,77 +59,42 @@
   transform: translate(-50%, -50%);
   display: grid;
   gap: 14px;
-  place-items: center;
+  place-items: start center;
+  perspective: 1200px;
 }
 
 .gridMany {
-  grid-template-columns: repeat(5, auto);
-}
-
-.cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.name {
-  font-family: var(--font-display);
-  font-size: 15px;
-  line-height: 1.1;
-  color: var(--text-1);
-  text-align: center;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-.note {
-  font-size: 13px;
-  color: var(--text-3);
-}
-
-.new {
-  font-family: var(--font-display);
-  font-size: 15px;
-  letter-spacing: 0.1em;
-  color: var(--gold-3);
-  text-shadow: 0 0 10px rgba(240, 213, 122, 0.55);
-}
-
-.best {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-2);
+  grid-template-columns: repeat(5, 128px);
+  column-gap: 14px;
+  row-gap: 18px;
 }
 
 .actions {
   /*
-   * Clear of the Portal's own bottom bar, centred on the window: the way out is chrome, not
-   * ceremony. 150px is where the overlay's old bottom padding held it.
+   * Under the gate, where the shard's nameplate stands while it waits, centred on the ring. 300px
+   * clears a single card's labels and the lower row of ten.
    *
-   * Centred by margin rather than `left: 50%` + `translateX(-50%)`: this block is animated in, and
-   * the animation writes its own `transform`, which took the centring half of that pair with it and
-   * left the buttons hanging off to the right (the owner's fourth batch).
+   * Centred by a fixed-width box rather than `translateX(-50%)`: this block is animated in, and the
+   * animation writes its own `transform`, which would take the centring with it (the owner's fourth
+   * batch).
    */
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 150px;
-  width: fit-content;
-  margin: 0 auto;
+  left: calc(var(--ring-x) - 480px);
+  width: 960px;
+  top: calc(var(--ring-y) + 300px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   pointer-events: auto;
 }
 
 .summary {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 26px;
   color: var(--text-1);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
 }
 
 .buttons {

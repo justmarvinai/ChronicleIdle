@@ -4,6 +4,7 @@ import { content } from '@content/registry';
 import { t, translate } from '@i18n/index';
 import type { RotationView } from '@engine/summon/rotation';
 import type { MercyView } from '@engine/summon/pity';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { Button } from '@ui/components/Button/Button';
 import { Divider } from '@ui/components/Divider/Divider';
 import { Glyph } from '@ui/components/Glyph/Glyph';
@@ -11,7 +12,7 @@ import { Panel } from '@ui/components/Frame/Panel';
 import { SpriteView } from '@ui/components/SpriteView/SpriteView';
 import { Timer } from '@ui/components/Timer/Timer';
 import { RARITY_HEX } from '@ui/styles/display-maps';
-import { mercySentences, rateRows, type ShardView } from '@ui/summon/portal-view';
+import { chanceBar, mercyBars, rateRows, type ShardView } from '@ui/summon/portal-view';
 import styles from './BannerPanel.module.css';
 
 export interface BannerPanelProps {
@@ -40,12 +41,12 @@ export function BannerPanel({
   onExchange,
   held,
 }: BannerPanelProps) {
-  const sentences = mercySentences(mercy);
+  const bars = mercyBars(mercy);
   const price = shard.price;
   const canBuy = (count: number): boolean => price !== null && held(price.currency) >= price.amount * count;
 
   return (
-    <Panel kind="stone" padding={18} className={styles.panel} contentClassName={styles.content}>
+    <Panel kind="stone" padding={18} contentClassName={styles.content}>
       <header className={styles.head}>
         <h2 className={`display ${styles.title}`}>{t(banner.name as 'banner.standard.name')}</h2>
         <p className={styles.blurb}>{t(banner.description as 'banner.standard.description')}</p>
@@ -101,9 +102,15 @@ export function BannerPanel({
         <h3 className={`display ${styles.heading}`}>{t('portal.chances')}</h3>
         <ul className={styles.rates}>
           {rateRows(shard.shard).map((row) => (
-            <li key={row.rarity} className={styles.rate}>
-              <span className={styles.rateName} style={{ color: RARITY_HEX[row.rarity] }}>
-                {t(`rarity.${row.rarity}`)}
+            <li
+              key={row.rarity}
+              className={styles.rate}
+              style={{ ['--rarity' as string]: RARITY_HEX[row.rarity] }}
+              data-testid={`portal-chance-${row.rarity}`}
+            >
+              <span className={styles.rateName}>{t(`rarity.${row.rarity}`)}</span>
+              <span className={styles.track} aria-hidden="true">
+                <span className={styles.fill} style={{ width: `${chanceBar(row.chance) * 100}%` }} />
               </span>
               <span className={`num ${styles.rateValue}`}>
                 {translate('portal.rates.chance', { chance: row.chance })}
@@ -117,13 +124,23 @@ export function BannerPanel({
 
       <section className={styles.mercy} data-testid="portal-mercy">
         <h3 className={`display ${styles.heading}`}>{t('portal.pity')}</h3>
-        {sentences.length === 0 ? (
+        {bars.length === 0 ? (
           <p className={styles.none}>{t('portal.pity.none')}</p>
         ) : (
           <ul className={styles.lines}>
-            {sentences.map((line) => (
-              <li key={line} className={styles.line}>
-                {line}
+            {bars.map((bar) => (
+              <li
+                key={bar.rarity}
+                className={styles.line}
+                style={{ ['--rarity' as string]: RARITY_HEX[bar.rarity] }}
+              >
+                <span className={styles.sentence}>{bar.sentence}</span>
+                {bar.fill !== null ? (
+                  <span className={styles.track} aria-hidden="true">
+                    <span className={styles.fill} style={{ width: `${bar.fill * 100}%` }} />
+                  </span>
+                ) : null}
+                {bar.climbing ? <span className={styles.climbing}>{bar.climbing}</span> : null}
               </li>
             ))}
           </ul>
@@ -147,6 +164,12 @@ export function BannerPanel({
         ) : (
           <>
             <p className={styles.price}>
+              <AssetImage
+                asset={content.currencyById[price.currency].icon}
+                size={64}
+                className={styles.priceIcon}
+                alt=""
+              />
               {translate('portal.exchange.price', {
                 shard: shard.name,
                 cost: `${price.amount} ${t(content.currencyById[price.currency].name as 'currency.gold.name')}`,

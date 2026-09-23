@@ -1,0 +1,51 @@
+.range {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.pips {
+  display: inline-flex;
+  gap: 3px;
+}
+
+/* A cut gem in the rarity's colour: a diamond with a lit upper facet. */
+.pip {
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--pip) 45%, white) 0 35%, var(--pip) 35%);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--pip) 70%, transparent);
+}
+
+.words {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.to {
+  color: var(--text-3);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  letter-spacing: 0;
+}
+
+.lg {
+  gap: 12px;
+}
+
+.lg .pip {
+  width: 12px;
+  height: 12px;
+}
+
+.lg .pips {
+  gap: 6px;
+}
+
+.lg .words {
+  font-size: 19px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}

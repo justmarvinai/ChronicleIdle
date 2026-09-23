@@ -33,7 +33,7 @@ vi.mock('@render/summon/RitualLayer', async () => {
         ref,
         () => ({
           reveal: () => (gate.silent ? new Promise<void>(() => undefined) : Promise.resolve()),
-          hover: () => undefined,
+          rest: () => undefined,
           skip: () => undefined,
           busy: () => false,
         }),
@@ -123,7 +123,8 @@ describe('the Portal', () => {
     expect(held('shard_faded')).toBe(before - 1);
     expect(save().summon.history).toHaveLength(1);
     expect(save().summon.unseen).toHaveLength(1);
-    const results = await screen.findByTestId('summon-results');
+    // A single card spins in, its stars pop and its rarity is stamped before the way out opens.
+    const results = await screen.findByTestId('summon-results', {}, { timeout: 4_000 });
     expect(within(results).getByTestId('summon-continue')).toBeInTheDocument();
 
     await user.click(screen.getByTestId('summon-continue'));
@@ -158,7 +159,7 @@ describe('the Portal', () => {
       expect(screen.queryByTestId('summon-card-0')).toBeNull();
 
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(9_000);
+        await vi.advanceTimersByTimeAsync(14_000);
       });
 
       expect(screen.getByTestId('summon-card-0')).toBeInTheDocument();
@@ -166,6 +167,59 @@ describe('the Portal', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('deals ten cards face down and turns them in order, the best of them last', async () => {
+    vi.useFakeTimers();
+    try {
+      render(stage(<PortalScreen route={PORTAL} />));
+      act(() => {
+        fireEvent.click(screen.getByTestId('portal-shard-ancient'));
+      });
+      act(() => {
+        fireEvent.click(screen.getByTestId('portal-summon-10'));
+      });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(100);
+      });
+      const cells = screen.getAllByTestId(/^summon-card-/);
+      expect(cells).toHaveLength(10);
+      expect(cells.every((cell) => cell.dataset['face'] === 'down')).toBe(true);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_200);
+      });
+      const faces = screen.getAllByTestId(/^summon-card-/).map((cell) => cell.dataset['face']);
+      // The first have turned; the best still waits its breath.
+      expect(faces[0]).toBe('up');
+      expect(faces[9]).toBe('down');
+      expect(screen.queryByTestId('summon-results')).toBeNull();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3_000);
+      });
+      const last = screen.getByTestId('summon-card-9');
+      expect(last.dataset['face']).toBe('up');
+      expect(within(last).getByText('Best of the ten')).toBeInTheDocument();
+      expect(screen.getByTestId('summon-results')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('names the shard in the ring and what it can answer with', async () => {
+    const user = userEvent.setup();
+    render(stage(<PortalScreen route={PORTAL} />));
+    expect(screen.getByTestId('portal-gate-shard')).toHaveTextContent('Faded Shard');
+    await user.click(screen.getByTestId('portal-shard-primordial'));
+    expect(screen.getByTestId('portal-gate-shard')).toHaveTextContent('Primordial Shard');
+    // Its chances and its mercy, as bars: Primordial promises a Mythic within fifty.
+    expect(screen.getByTestId('portal-chance-mythic')).toHaveTextContent('5 %');
+    expect(
+      within(screen.getByTestId('portal-mercy')).getByText(/Mythic in at most 50 more/),
+    ).toBeInTheDocument();
+    // Nothing held: the presses say so rather than fail.
+    expect(screen.getByTestId('portal-summon-1')).toBeDisabled();
   });
 
   it('will not offer a ×10 the purse cannot pay for', async () => {
@@ -225,7 +279,7 @@ describe('the Portal', () => {
       ),
     );
     await user.click(screen.getByTestId('portal-summon-1'));
-    await screen.findByTestId('summon-results');
+    await screen.findByTestId('summon-results', {}, { timeout: 4_000 });
     await user.click(screen.getByTestId('summon-continue'));
 
     await user.click(screen.getByTestId('portal-history'));

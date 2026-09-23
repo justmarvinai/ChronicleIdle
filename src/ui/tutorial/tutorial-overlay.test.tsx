@@ -177,6 +177,51 @@ describe('the tutorial overlay', () => {
     expect(await screen.findByTestId('tutorial-continue')).toBeInTheDocument();
   });
 
+  it('moves its strip to the top when the thing to press stands where the strip would', async () => {
+    const user = userEvent.setup();
+    // 4.2 — the Portal's presses stand under the gate, low on the screen, not in a bottom bar.
+    walkTo('tut.4.2', { name: 'portal' });
+    act(() => {
+      useGameStore.setState((state) => {
+        if (state.save) state.save.profile.level = 4;
+        return state;
+      });
+    });
+    layOut({
+      'portal-shard-ancient': { x: 24, y: 276, width: 348, height: 124 },
+      'portal-summon-1': { x: 600, y: 800, width: 300, height: 84 },
+    });
+    render(
+      stage(
+        <>
+          <div data-testid="portal-shard-ancient" />
+          <div data-testid="portal-summon-1" />
+          <TutorialOverlay />
+        </>,
+      ),
+    );
+    await pressContinue(user);
+    const hint = await screen.findByTestId('tutorial-hint');
+    // The cut-outs are measured once the lesson turns to its action.
+    await waitFor(() => expect(hint).toHaveAttribute('data-dock', 'top'));
+  });
+
+  it('keeps its strip above the bottom bar when the lesson points elsewhere', async () => {
+    const user = userEvent.setup();
+    walkTo('tut.1.3', { name: 'hub' });
+    layOut({ 'hotspot-campaign': { x: 200, y: 400, width: 180, height: 120 } });
+    render(
+      stage(
+        <>
+          <div data-testid="hotspot-campaign" />
+          <TutorialOverlay />
+        </>,
+      ),
+    );
+    await pressContinue(user);
+    expect(await screen.findByTestId('tutorial-hint')).toHaveAttribute('data-dock', 'bottom');
+  });
+
   it('hands over the Provisions as Eldric names them, once', async () => {
     walkTo('tut.1.11', { name: 'hub' });
     render(stage(<TutorialOverlay />));

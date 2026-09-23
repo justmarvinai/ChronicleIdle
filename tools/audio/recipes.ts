@@ -452,41 +452,52 @@ export const RECIPES: Recipe[] = [
     },
   },
   {
-    // The ritual charging: the shard falls, the ring's runes light one after another. A rising
-    // filtered swell under four ascending taps (SUMMONING.md §5.1).
+    // The ritual charging: light spiralling into the gate, the runes kindling. A riser that swells
+    // for as long as the charge lasts and stops short of a hit — the first tell is the hit
+    // (SUMMONING.md §5.1).
     key: 'sfx.summon.charge',
     loop: false,
     quality: 0.5,
     render: () => {
-      const seconds = 1.5;
+      const seconds = 1.3;
+      const rise = (t: number): number => Math.pow(Math.min(1, t / seconds), 1.6);
       const swell = mul(
         mix([
-          { sig: osc('saw', (t) => 110 + t * 90, seconds) },
-          { sig: osc('saw', (t) => 110.4 + t * 90, seconds), gain: 0.8 },
-          { sig: osc('triangle', (t) => 220 + t * 180, seconds), gain: 0.5 },
+          { sig: osc('saw', (t) => 82 + rise(t) * 140, seconds) },
+          { sig: osc('saw', (t) => 82.6 + rise(t) * 141, seconds), gain: 0.8 },
+          { sig: osc('sine', (t) => 41 + rise(t) * 70, seconds), gain: 0.9 },
         ]),
-        adsr(seconds, { a: 0.7, d: 0.2, s: 0.85, r: 0.5 }),
+        adsr(seconds, { a: 1.05, d: 0.05, s: 0.9, r: 0.2 }),
       );
-      const runes = [0.15, 0.45, 0.75, 1.05].map((at, i) => ({
-        at,
-        gain: 0.26 + i * 0.03,
-        sig: chime(81 + i * 4, 0.5, 1.2),
-      }));
+      const air = mul(
+        bandpass(noise(seconds, 71), (t) => 600 + rise(t) * 5200, 1.4),
+        adsr(seconds, { a: 1.1, d: 0.02, s: 1, r: 0.18 }),
+      );
+      const shimmer = mul(
+        mix([
+          { sig: osc('sine', (t) => note(88) + rise(t) * 600, seconds) },
+          { sig: osc('sine', (t) => note(95) + rise(t) * 900, seconds), gain: 0.6 },
+        ]),
+        mul(
+          adsr(seconds, { a: 1, d: 0.05, s: 0.8, r: 0.25 }),
+          osc('sine', (t) => 7 + rise(t) * 16, seconds).map((v) => 0.55 + 0.45 * v),
+        ),
+      );
       return stereo(
         normalize(
           reverb(
             mix([
-              { sig: lowpass(swell, (t) => 300 + t * 2600, 1.2), gain: 0.42 },
-              ...runes,
-              { at: 0.05, sig: mul(lowpass(noise(0.5, 23), 1800, 0.8), expDecay(0.5, 0.1)), gain: 0.18 },
+              { sig: lowpass(swell, (t) => 220 + rise(t) * 3200, 1.3), gain: 0.45 },
+              { sig: air, gain: 0.3 },
+              { sig: shimmer, gain: 0.08 },
             ]),
-            0.7,
-            0.32,
-            1.4,
+            0.6,
+            0.28,
+            0.9,
           ),
           -4,
         ),
-        0.35,
+        0.4,
       );
     },
   },
@@ -521,6 +532,208 @@ export const RECIPES: Recipe[] = [
         0.3,
       );
     },
+  },
+  {
+    // A tell: the gate shows one more rarity. A struck crystal over a soft thump; the Portal plays it
+    // a whole tone higher for every rarity up the ladder, so gold always rings the same bright note
+    // (SUMMONING.md §5.2).
+    key: 'sfx.summon.tell',
+    loop: false,
+    quality: 0.5,
+    render: () =>
+      stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: chime(76, 0.9, 1.3), gain: 0.5 },
+              { sig: chime(83, 0.8, 1.1), gain: 0.28 },
+              {
+                sig: mul(
+                  osc('sine', (t) => 110 - t * 160, 0.22),
+                  expDecay(0.22, 0.05),
+                ),
+                gain: 0.55,
+              },
+              { sig: burst(0.06, 6000, 1.1, 37, 0.01), gain: 0.2 },
+            ]),
+            0.55,
+            0.3,
+            1,
+          ),
+          -4,
+        ),
+        0.35,
+      ),
+  },
+  {
+    // The held breath before gold: two heartbeats under a dark hum, and nothing else. The thumps
+    // land where the crystal's pulses do (0.1 s and 0.34 s into the stall).
+    key: 'sfx.summon.stall',
+    loop: false,
+    quality: 0.5,
+    render: () => {
+      const beat = (at: number, g: number, pitch: number) => ({
+        at,
+        gain: g,
+        sig: mul(
+          mix([
+            { sig: osc('sine', (t) => pitch - t * 90, 0.3) },
+            { sig: lowpass(noise(0.3, 211), 180, 0.9), gain: 0.4 },
+          ]),
+          expDecay(0.3, 0.07),
+        ),
+      });
+      const hum = mul(
+        mix([{ sig: osc('saw', 55, 0.75) }, { sig: osc('saw', 55.4, 0.75), gain: 0.8 }]),
+        adsr(0.75, { a: 0.08, d: 0.2, s: 0.6, r: 0.3 }),
+      );
+      return stereo(
+        normalize(
+          mix([beat(0.07, 1, 72), beat(0.31, 0.75, 64), { sig: lowpass(hum, 240, 1.1), gain: 0.16 }]),
+          -3,
+        ),
+        0.15,
+      );
+    },
+  },
+  {
+    // The wind-up: everything drawn back into the crystal in the last breath before it gives. A
+    // reversed swell, cut off dead where the burst begins.
+    key: 'sfx.summon.windup',
+    loop: false,
+    quality: 0.45,
+    render: () => {
+      const seconds = 0.32;
+      const envelope = new Float32Array(Math.round(seconds * SR)).map((_, i) =>
+        Math.pow(i / (seconds * SR), 2.6),
+      );
+      return stereo(
+        normalize(
+          mix([
+            {
+              sig: mul(
+                bandpass(noise(seconds, 97), (t) => 900 + (t / seconds) * 6000, 1.6),
+                envelope,
+              ),
+              gain: 0.6,
+            },
+            {
+              sig: mul(
+                osc('sine', (t) => 180 + Math.pow(t / seconds, 2) * 900, seconds),
+                envelope,
+              ),
+              gain: 0.35,
+            },
+          ]),
+          -5,
+        ),
+        0.45,
+      );
+    },
+  },
+  {
+    // The crystal giving way: an impact, a spray of glass and the pieces ringing as they fall. It
+    // plays under every burst, and the rarity's own reveal plays over it.
+    key: 'sfx.summon.shatter',
+    loop: false,
+    quality: 0.5,
+    render: () => {
+      const shards = Array.from({ length: 14 }, (_, i) => ({
+        at: 0.01 + ((i * 37) % 23) / 100,
+        gain: 0.18 + ((i * 13) % 7) / 40,
+        sig: mul(highpass(noise(0.14, 400 + i), 3800 + ((i * 53) % 9) * 600, 1.2), expDecay(0.14, 0.018)),
+      }));
+      const tinkles = [96, 101, 103, 108, 99, 105].map((midi, i) => ({
+        at: 0.08 + i * 0.07,
+        gain: 0.12 - i * 0.012,
+        sig: chime(midi, 0.6, 1.5),
+      }));
+      const impact = mul(
+        mix([
+          { sig: osc('sine', (t) => 140 - t * 260, 0.35) },
+          { sig: lowpass(noise(0.35, 5), 900, 0.8), gain: 0.5 },
+        ]),
+        expDecay(0.35, 0.08),
+      );
+      return stereo(
+        normalize(reverb(mix([{ sig: impact, gain: 0.6 }, ...shards, ...tinkles]), 0.5, 0.26, 1), -3),
+        0.6,
+      );
+    },
+  },
+  {
+    // A card of the ten turning over: a short swish and a snap.
+    key: 'sfx.summon.flip',
+    loop: false,
+    quality: 0.4,
+    render: () =>
+      stereo(
+        normalize(
+          mix([
+            {
+              sig: mul(
+                bandpass(noise(0.16, 61), (t) => 3200 - t * 12_000, 1.4),
+                adsr(0.16, { a: 0.05, d: 0.06, s: 0.3, r: 0.05 }),
+              ),
+              gain: 0.6,
+            },
+            { at: 0.11, sig: burst(0.04, 2600, 1.4, 67, 0.006), gain: 0.5 },
+          ]),
+          -6,
+        ),
+        0.2,
+      ),
+  },
+  {
+    // A star landing on a card: a small bright ping, climbing a step for each star after it.
+    key: 'sfx.summon.star',
+    loop: false,
+    quality: 0.4,
+    render: () =>
+      stereo(
+        normalize(
+          reverb(
+            mix([
+              { sig: chime(93, 0.45, 1.6), gain: 0.5 },
+              { sig: burst(0.03, 8000, 1, 43, 0.006), gain: 0.2 },
+            ]),
+            0.3,
+            0.25,
+            0.6,
+          ),
+          -7,
+        ),
+        0.3,
+      ),
+  },
+  {
+    // The rarity stamped under an Epic, a Legendary or a Mythic card: a heavy seal pressed down.
+    key: 'sfx.summon.stamp',
+    loop: false,
+    quality: 0.45,
+    render: () =>
+      stereo(
+        normalize(
+          reverb(
+            mix([
+              {
+                sig: mul(
+                  osc('sine', (t) => 95 - t * 110, 0.45),
+                  expDecay(0.45, 0.11),
+                ),
+                gain: 0.7,
+              },
+              { sig: mul(lowpass(noise(0.2, 83), 1500, 0.9), expDecay(0.2, 0.03)), gain: 0.45 },
+              { at: 0.01, sig: chime(62, 0.7, 0.7), gain: 0.18 },
+            ]),
+            0.45,
+            0.22,
+            0.8,
+          ),
+          -3,
+        ),
+        0.3,
+      ),
   },
   {
     // Reveal, Common/Uncommon: a short two-note chime — the ritual answered, modestly.

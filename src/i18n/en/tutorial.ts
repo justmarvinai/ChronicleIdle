@@ -55,7 +55,7 @@ export const tutorial = {
 
   // Chapter 4 — The Binding
   'tut.4.1.text': 'The Portal reads the shards. I kept one Ancient Shard for this moment.',
-  'tut.4.2.text': 'Place it. Watch the colour — it tells the rarity before the page turns.',
+  'tut.4.2.text': 'Place it and watch the light. Every colour it climbs is a rarer answer.',
   'tut.4.3.text': 'A new name in your chronicle. Add them to your team before the next stand.',
 
   // Chapter 5 — Routine

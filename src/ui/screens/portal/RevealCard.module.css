@@ -1,0 +1,205 @@
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/*
+ * Three faces of one card in 3-D: the spinner carries the entrance (a single card turns twice on
+ * its way in), the flipper turns a dealt card over, and front and back each hide when turned away.
+ */
+.spinner {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 460ms cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+
+.flipper[data-face='down'] {
+  transform: rotateY(180deg);
+}
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
+/* The light an Epic or better throws as it turns: a burst of its colour behind the frame. */
+.flare {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rarity) 70%, transparent) 0%, transparent 62%);
+  animation: flare 900ms ease-out both;
+  pointer-events: none;
+}
+
+@keyframes flare {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0.35;
+  }
+}
+
+/*
+ * The back: dark stone with the shard's light at its heart and a gold hairline inside a bevelled
+ * edge — every card of ten reads as the same shard until it turns.
+ */
+.back {
+  display: grid;
+  place-items: center;
+  transform: rotateY(180deg);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  background:
+    radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--shard) 45%, transparent) 0%, transparent 58%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0 6px, transparent 6px 12px),
+    linear-gradient(180deg, #2a1d3a, #120c1a);
+  box-shadow:
+    inset 0 0 0 2px rgba(201, 162, 74, 0.75),
+    inset 0 0 0 5px rgba(12, 9, 16, 0.9),
+    inset 0 0 0 6px rgba(201, 162, 74, 0.35),
+    inset 0 0 28px rgba(0, 0, 0, 0.8);
+}
+
+.sigil {
+  position: absolute;
+  width: 72%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(232, 207, 138, 0.35);
+  transform: rotate(45deg);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--shard) 35%, transparent);
+}
+
+.backIcon {
+  position: relative;
+  width: 52%;
+  height: auto;
+  aspect-ratio: 1;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  filter: saturate(1.2) brightness(1.1);
+}
+
+.labels {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease;
+}
+
+.labels[data-shown='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* A single card's words wait for it to finish its spin. */
+.labels[data-single='true'][data-shown='true'] {
+  transition-delay: 600ms;
+}
+
+.stamp {
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  line-height: 1.1;
+  color: var(--rarity);
+  text-transform: uppercase;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--rarity) 60%, transparent);
+}
+
+/* An Epic or better is pressed in like a seal. */
+.labels[data-shown='true'] .stamp[data-loud='true'] {
+  animation: stamp 420ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+.stamp[data-single='true'] {
+  font-size: 22px;
+}
+
+.stamp[data-single='true'][data-loud='true'] {
+  font-size: 34px;
+  letter-spacing: 0.2em;
+  text-shadow:
+    0 0 14px var(--rarity),
+    0 0 36px color-mix(in srgb, var(--rarity) 70%, transparent),
+    0 2px 0 rgba(0, 0, 0, 0.8);
+  animation-delay: 380ms;
+}
+
+@keyframes stamp {
+  0% {
+    transform: scale(2.6);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  70% {
+    transform: scale(0.94);
+    opacity: 1;
+    filter: none;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.1;
+  color: var(--text-1);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.stamp[data-single='true'] ~ .name {
+  font-size: 22px;
+}
+
+.note {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.new {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--gold-3);
+  text-shadow: 0 0 10px rgba(240, 213, 122, 0.55);
+}
+
+.best {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}

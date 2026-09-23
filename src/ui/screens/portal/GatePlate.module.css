@@ -1,0 +1,106 @@
+/*
+ * Centred under the ring (`RING.x` in the ritual scene); its top sits just clear of the ring's
+ * lower rim.
+ */
+.plate {
+  position: absolute;
+  left: calc(var(--ring-x) - 460px);
+  width: 920px;
+  top: calc(var(--ring-y) + 272px);
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.plate > * {
+  pointer-events: auto;
+}
+
+.plate {
+  transition:
+    opacity var(--t-base) var(--ease-out),
+    visibility var(--t-base);
+}
+
+.plate[data-hidden='true'] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.nameplate {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.rule {
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 74, 0.8));
+}
+
+.rule:last-child {
+  background: linear-gradient(270deg, transparent, rgba(201, 162, 74, 0.8));
+}
+
+.name {
+  margin: 0;
+  font-size: 36px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--text-1);
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--shard) 65%, transparent),
+    0 3px 10px rgba(0, 0, 0, 0.9);
+}
+
+.presses {
+  display: flex;
+  gap: 22px;
+  margin-top: 10px;
+}
+
+.press {
+  min-width: 300px;
+}
+
+.pressInner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pressLabel {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--gold-3);
+}
+
+.costIcon {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 0 6px var(--shard));
+}
+
+.status {
+  min-height: 20px;
+  font-size: 15px;
+  color: var(--text-2);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.status[data-refused='true'] {
+  color: var(--danger);
+}

@@ -41,9 +41,18 @@ export const SOUNDS = {
   'gate.portcullis': s('sfx.doors.portcullis_gate', 0.8, 0.02, 500),
   'torch.light': s('sfx.torch.light_torch', 0.6, 0.05, 200),
   'forge.hammer': s('sfx.mining.mine', 0.8, 0.06, 80),
-  // The summoning ritual (SUMMONING.md §5): the charge, the cracking, and one reveal per tier.
+  // The summoning ritual (SUMMONING.md §5): the charge, a tell per rarity climbed (pitched by the
+  // Portal), the held breath before gold, the wind-up, the shatter, and one reveal per tier; then
+  // the cards: a flip for each of ten, a ping per star, a stamp under the rarest.
   'summon.charge': s('sfx.summon.charge', 0.7, 0, 200),
   'summon.crack': s('sfx.summon.crack', 0.8, 0.03, 80),
+  'summon.tell': s('sfx.summon.tell', 0.75, 0, 60),
+  'summon.stall': s('sfx.summon.stall', 0.95, 0, 300),
+  'summon.windup': s('sfx.summon.windup', 0.7, 0, 200),
+  'summon.shatter': s('sfx.summon.shatter', 0.75, 0.03, 200),
+  'summon.flip': s('sfx.summon.flip', 0.55, 0.06, 40),
+  'summon.star': s('sfx.summon.star', 0.5, 0, 30),
+  'summon.stamp': s('sfx.summon.stamp', 0.8, 0.02, 200),
   'summon.reveal.common': s('sfx.summon.reveal_common', 0.8, 0.02, 120),
   'summon.reveal.rare': s('sfx.summon.reveal_rare', 0.85, 0.02, 120),
   'summon.reveal.epic': s('sfx.summon.reveal_epic', 0.85, 0, 200),

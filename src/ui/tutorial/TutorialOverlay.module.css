@@ -158,6 +158,12 @@
     inset 0 0 26px rgba(216, 85, 47, 0.1);
 }
 
+/* …unless what they are doing stands where the strip would: then it waits under the top bar. */
+.strip[data-dock='top'] {
+  top: calc(var(--topbar-h) + 14px);
+  bottom: auto;
+}
+
 .stripFace {
   width: 56px;
   height: 56px;

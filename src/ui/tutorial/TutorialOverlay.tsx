@@ -30,6 +30,29 @@ import styles from './TutorialOverlay.module.css';
 /** Above this the caret sits over the spotlight; below it, under (there is no room above). */
 const CARET_ABOVE_FROM = 140;
 
+/**
+ * Where the strip stands above the bottom bar, in virtual px (`.strip` in the stylesheet: 1080
+ * wide, centred, its foot 134 px up, about 84 px tall). A lesson whose target falls inside it —
+ * the Portal's presses stand under the gate, not in a bottom bar — moves the strip to the top.
+ */
+const STRIP_BOX = {
+  left: (VIRTUAL_WIDTH - 1080) / 2,
+  right: (VIRTUAL_WIDTH + 1080) / 2,
+  top: VIRTUAL_HEIGHT - 134 - 84,
+  bottom: VIRTUAL_HEIGHT - 134,
+} as const;
+
+/** True when a target, with its spotlight's pad, reaches under the strip's usual place. */
+function underStrip(rect: Rect): boolean {
+  const pad = TUTORIAL_SPOTLIGHT_PAD;
+  return (
+    rect.x - pad < STRIP_BOX.right &&
+    rect.x + rect.width + pad > STRIP_BOX.left &&
+    rect.y - pad < STRIP_BOX.bottom &&
+    rect.y + rect.height + pad > STRIP_BOX.top
+  );
+}
+
 const round = (value: number): number => Math.round(value * 10) / 10;
 
 /** The scrim, with one rectangle punched out per allowed target (`evenodd` makes them holes). */
@@ -107,6 +130,8 @@ export function TutorialOverlay() {
   // While the line is being read the screen is held; afterwards only what the lesson allows is.
   const free = acting && holes.length === 0;
   const lit = !acting && marks.length > 0;
+  // A lesson must never be hidden by the line that asks for it.
+  const docked = holes.some(underStrip) ? 'top' : 'bottom';
 
   return (
     <AnimatePresence>
@@ -167,6 +192,7 @@ export function TutorialOverlay() {
              */
             <motion.aside
               className={styles.strip}
+              data-dock={docked}
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
