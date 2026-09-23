@@ -1,132 +1,481 @@
-.head {
+/* The Idle Chest (docs/tech/UI_DESIGN.md §5.2): the vault on the left, what it holds on the right. */
+.layout {
   display: grid;
-  grid-template-columns: 132px 1fr;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 16px;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 26px;
+  min-height: 568px;
 }
 
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+/* Over the rays, which reach past the vault on a full chest. */
+.subtitle {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 4px;
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+/* The chest in its vault: the fill drawn round it, a glow under it that warms as it fills. */
+.vault {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 300px;
+  height: 300px;
+}
+.glow {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(99, 201, 106, 0.22) 0%,
+    rgba(40, 60, 40, 0.18) 45%,
+    rgba(11, 10, 13, 0.9) 72%
+  );
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.85),
+    0 0 0 2px rgba(201, 162, 74, 0.35);
+}
+.vault[data-state='brimming'] .glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 214, 120, 0.5) 0%,
+    rgba(200, 140, 40, 0.22) 45%,
+    rgba(11, 10, 13, 0.9) 72%
+  );
+  animation: brim 2.4s ease-in-out infinite;
+}
+.vault[data-state='opened'] .glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 214, 120, 0.2) 0%,
+    rgba(60, 44, 20, 0.2) 45%,
+    rgba(11, 10, 13, 0.9) 72%
+  );
+}
+/* Before the first boss falls: the vault is cold and the chest sits in shadow. */
+.vault[data-state='dormant'] .glow {
+  background: radial-gradient(
+    circle,
+    rgba(150, 150, 170, 0.14) 0%,
+    rgba(34, 32, 40, 0.3) 45%,
+    rgba(11, 10, 13, 0.92) 72%
+  );
+}
+@keyframes brim {
+  0%,
+  100% {
+    filter: brightness(0.9);
+  }
+  50% {
+    filter: brightness(1.25);
+  }
+}
+
+/* A full chest throws light: slow-turning rays behind it, reaching a little past the ring. */
+.rays {
+  position: absolute;
+  inset: -16%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 214, 120, 0.34) 0deg 5deg,
+    rgba(255, 214, 120, 0) 5deg 20deg
+  );
+  mask-image: radial-gradient(circle, transparent 20%, #000 34%, rgba(0, 0, 0, 0.55) 52%, transparent 70%);
+  animation: turn 40s linear infinite;
+  pointer-events: none;
+}
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.ring {
+  position: absolute;
+  inset: 12px;
+}
 .chest {
   position: relative;
   display: grid;
   place-items: center;
-  height: 132px;
+}
+.chestArt {
+  width: 176px;
+  height: 176px;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.7));
+}
+.vault[data-state='brimming'] .chestArt {
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 16px rgba(255, 200, 90, 0.55));
+}
+.vault[data-state='dormant'] .chestArt {
+  filter: grayscale(0.7) brightness(0.62) drop-shadow(0 12px 18px rgba(0, 0, 0, 0.7));
 }
 
-.chestIcon {
-  width: 112px;
-  height: 112px;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
-}
-
-.fullMark {
+/* Four-point glints catching the light on a full chest, each on its own beat. */
+.glint {
   position: absolute;
-  bottom: 0;
+  width: var(--glint);
+  height: var(--glint);
+  translate: -50% -50%;
+  scale: 0;
+  background: radial-gradient(circle, #fff 0%, #ffe8a8 30%, rgba(255, 200, 90, 0) 72%);
+  clip-path: polygon(50% 0%, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0% 50%, 42% 42%);
+  animation: glint 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glint {
+  0%,
+  100% {
+    scale: 0;
+    rotate: 0deg;
+  }
+  18% {
+    scale: 1;
+    rotate: 45deg;
+  }
+  34% {
+    scale: 0;
+    rotate: 90deg;
+  }
+}
+
+/* The chest bursting open: the white star sheet warmed to the chest's gold. */
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  filter: sepia(0.9) saturate(2.4) brightness(1.1) drop-shadow(0 0 12px rgba(255, 200, 90, 0.8));
+}
+.percent {
+  position: absolute;
+  bottom: 18px;
   padding: 1px 10px;
-  background: linear-gradient(180deg, rgba(240, 213, 122, 0.95), rgba(138, 107, 42, 0.95));
-  color: #1a1206;
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.1em;
+  font-size: 16px;
+  color: var(--text-1);
+  background: rgba(11, 10, 13, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
 }
-
-.headText {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
+.readout {
+  margin: 4px 0 0;
+  font-size: 20px;
+  color: var(--text-1);
 }
-
-.subtitle {
+.readoutFull {
+  color: var(--gold-3);
+}
+.fillLine {
   margin: 0;
-  font-size: 14px;
-  color: var(--text-3);
-}
-
-.timer,
-.tier {
-  margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-2);
 }
 
-.tier {
-  color: var(--gold-2);
-}
-
-.warn {
-  margin: 0;
-  font-size: 14px;
-  color: var(--warn);
-}
-
-/* The band line teaches that levelling widens the chest, so it stays quiet under the tier. */
-.capacity {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-3);
-}
-
-.scroll {
-  margin-top: 4px;
-}
-
-.section {
-  margin-bottom: 16px;
-}
-
-.sectionTitle {
-  margin: 0 0 6px;
-  font-size: 19px;
-  letter-spacing: 0.06em;
-  color: var(--gold-3);
-}
-
-.rewards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px 18px;
-  margin: 0;
-  padding: 0;
+/* The capacity bands as a road: passed, held, ahead. */
+.track {
   list-style: none;
-}
-
-.rewards li {
+  margin: 14px 0 0;
+  padding: 0;
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  padding: 5px 10px;
-  background: linear-gradient(180deg, rgba(31, 28, 37, 0.7), rgba(11, 10, 13, 0.7));
-  font-size: 15px;
-  color: var(--text-1);
+  width: 100%;
+  position: relative;
 }
-
-.rewards .num,
-.rewards li span:last-child {
-  color: var(--gold-3);
+.track::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 7px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-1), rgba(138, 107, 42, 0.3));
 }
-
-.lucky {
+.band {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.lucky li {
-  display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 15px;
-  color: var(--text-1);
+  gap: 4px;
+  width: 44px;
 }
-
-.empty,
-.hint {
+.notch {
+  width: 12px;
+  height: 12px;
+  margin-top: 1px;
+  rotate: 45deg;
+  background: var(--bg-1);
+  border: 1px solid rgba(201, 162, 74, 0.5);
+}
+.band[data-state='past'] .notch {
+  background: var(--gold-1);
+}
+.band[data-state='now'] .notch {
+  background: var(--gold-3);
+  box-shadow: 0 0 10px rgba(240, 213, 122, 0.8);
+}
+.bandHours {
+  font-size: 15px;
+  color: var(--text-3);
+}
+.band[data-state='past'] .bandHours {
+  color: var(--text-2);
+}
+.band[data-state='now'] .bandHours {
+  color: var(--gold-3);
+  font-size: 17px;
+}
+.bandLevel {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.capacity {
   margin: 6px 0 0;
   font-size: 14px;
   color: var(--text-3);
+}
+
+.contents {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* The farm: the settlement in its element's colour, and the tier that sets the pace. */
+.farm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 6px 8px 6px 14px;
+  font-size: 16px;
+  color: var(--text-1);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--element) 24%, rgba(16, 13, 10, 0.92)),
+    rgba(16, 13, 10, 0.35)
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.35),
+    inset 3px 0 0 var(--element);
+}
+.farmMark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin: 3px 2px;
+  rotate: 45deg;
+  background: rgba(8, 7, 10, 0.85);
+  box-shadow:
+    inset 0 0 0 1px var(--element),
+    0 0 10px color-mix(in srgb, var(--element) 45%, transparent);
+}
+.farmMark > * {
+  rotate: -45deg;
+}
+.farmName {
+  flex: 1;
+  min-width: 0;
+}
+.tierChip {
+  flex: 0 0 auto;
+  padding: 2px 12px 3px;
+  font-size: 17px;
+  letter-spacing: 0.04em;
+  color: var(--gold-3);
+  background: rgba(8, 7, 10, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.55);
+}
+
+.scroll {
+  margin-right: -8px;
+}
+.heading {
+  margin: 4px 0 10px;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--gold-2);
+}
+.empty {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+/* What the chest holds, as cards: the icon, the name with its pace, and the amount. */
+.rewards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(34, 27, 20, 0.92), rgba(13, 11, 9, 0.94));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.cardIcon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  background: radial-gradient(circle, rgba(240, 180, 80, 0.2) 0%, transparent 70%);
+}
+.xpIcon {
+  width: 42px;
+  height: 42px;
+}
+.cardText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cardName {
+  font-size: 15px;
+  color: var(--text-1);
+}
+.cardNote {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.cardAmount {
+  font-size: 20px;
+  color: var(--ok);
+}
+
+/* The luck it may turn up — or, once opened, the luck it did. */
+.luck {
+  margin-top: 16px;
+}
+.luckList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.luckRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 10px;
+  font-size: 15px;
+  color: var(--text-1);
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.6), rgba(16, 13, 10, 0.25));
+}
+.luckHit {
+  background: linear-gradient(90deg, rgba(92, 66, 22, 0.72), rgba(16, 13, 10, 0.25));
+  box-shadow: inset 3px 0 0 var(--gold-2);
+}
+.luckIcon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+}
+.luckName {
+  flex: 1;
+}
+.luckChance {
+  font-size: 16px;
+  color: var(--gold-3);
+}
+.hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-3);
+}
+/* It sat full: the hours past its capacity are gone, said once and plainly. */
+.overflow {
+  margin: 14px 0 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--warn);
+  background: rgba(60, 44, 20, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(224, 179, 65, 0.3);
+}
+
+/* Before the first farm: why the docks are quiet, what the first farm pays, and the way to it. */
+.quiet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 26px 8px 0;
+  text-align: center;
+}
+.quietMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+}
+.quietDisc {
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(70, 52, 24, 0.7) 0%, rgba(11, 10, 13, 0.95) 72%);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.8);
+}
+.quietRing {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.quietGlyph {
+  position: relative;
+}
+.quietTitle {
+  margin: 4px 0 0;
+  font-size: 28px;
+  color: var(--gold-3);
+}
+.quietBody {
+  margin: 0 0 6px;
+  max-width: 480px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+.quietHeading {
+  align-self: stretch;
+  margin-top: 22px;
+  text-align: left;
+}
+.quiet .rewards {
+  align-self: stretch;
+  text-align: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault[data-state='brimming'] .glow,
+  .rays {
+    animation: none;
+  }
 }

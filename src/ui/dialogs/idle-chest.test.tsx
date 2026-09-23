@@ -6,8 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { IDLE_GOLD_BASE } from '@content/balance/idle';
+import { CURRENCY_BY_ID } from '@content/currencies/index';
+import { content } from '@content/registry';
 import { progressKey, stageIdOf } from '@engine/campaign/progress';
+import { idleGoldPerHour } from '@engine/economy/idle';
+import { BREW_OF_ELEMENT } from '@engine/progression/tavern-level';
 import { MS_PER_HOUR } from '@engine/time/clock';
+import { translate } from '@i18n/index';
 import { useGameStore } from '@state/store';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
 import { IdleChestDialog } from './IdleChestDialog';
@@ -81,17 +86,71 @@ describe('the Idle Chest dialog', () => {
     expect(screen.getByTestId('idle-claim')).toBeEnabled();
   });
 
+  it('lists the luck it may turn up, with each roll’s chance an hour', () => {
+    chronicle({ hours: 3, boss: 4 });
+    render(stage(<IdleChestDialog onClose={() => undefined} />));
+    const dialog = screen.getByTestId('dialog-idle-chest');
+    expect(dialog).toHaveTextContent('Gems8% an hour');
+    // Tier 4 is below the band that improves the Ancient Shard's odds.
+    expect(dialog).toHaveTextContent('Ancient Shard1% an hour');
+    // The brew is named by the one the farm turns up: the fourth settlement's own element.
+    const element = content.settlementByIndex(4)?.element;
+    expect(element).toBeDefined();
+    const brew = translate(CURRENCY_BY_ID[BREW_OF_ELEMENT[element!]].name);
+    expect(dialog).toHaveTextContent(`${brew}6% an hour`);
+  });
+
+  it('shows the pace each line fills at, and the farm’s tier', () => {
+    chronicle({ hours: 3, boss: 4 });
+    render(stage(<IdleChestDialog onClose={() => undefined} />));
+    const perHour = Math.floor(idleGoldPerHour(4)).toLocaleString('en-US');
+    expect(screen.getByTestId('idle-rewards')).toHaveTextContent(`Gold${perHour} an hour`);
+    expect(screen.getByTestId('idle-tier')).toHaveTextContent(/^Farming .+tier 4$/);
+  });
+
+  it('lights the vault by the chest’s state', () => {
+    chronicle({ hours: 3, boss: 4 });
+    const { unmount } = render(stage(<IdleChestDialog onClose={() => undefined} />));
+    expect(screen.getByTestId('idle-vault')).toHaveAttribute('data-state', 'filling');
+    unmount();
+
+    chronicle({ hours: 30, boss: 4 });
+    render(stage(<IdleChestDialog onClose={() => undefined} />));
+    expect(screen.getByTestId('idle-vault')).toHaveAttribute('data-state', 'brimming');
+  });
+
+  it('draws the capacity bands as a road, the one it holds lit', () => {
+    chronicle({ hours: 3, boss: 4 });
+    render(stage(<IdleChestDialog onClose={() => undefined} />));
+    const band = (hours: string): HTMLElement | null => screen.getByText(hours).closest('li');
+    expect(band('3h')).toHaveAttribute('data-state', 'past');
+    expect(band('6h')).toHaveAttribute('data-state', 'now');
+    expect(band('12h')).toHaveAttribute('data-state', 'ahead');
+  });
+
   it('will not open an empty chest', () => {
     chronicle({ hours: 0, boss: 2 });
     render(stage(<IdleChestDialog onClose={() => undefined} />));
     expect(screen.getByTestId('idle-claim')).toBeDisabled();
   });
 
-  it('says what to do when no boss has fallen', () => {
-    chronicle({ hours: 4 });
+  it('says what to do when no boss has fallen, and shows the way there', async () => {
+    const user = userEvent.setup();
+    // Past the six-hour chest a level-10 chronicle holds, so the dormant chest is full.
+    chronicle({ hours: 8 });
     render(stage(<IdleChestDialog onClose={() => undefined} />));
     expect(screen.getByTestId('idle-no-farm')).toBeInTheDocument();
     expect(screen.getByTestId('idle-claim')).toBeDisabled();
+    // The vault sleeps, and a full chest says when it will pay rather than urging an opening.
+    expect(screen.getByTestId('idle-vault')).toHaveAttribute('data-state', 'dormant');
+    expect(screen.getByTestId('idle-timer')).toHaveTextContent('once the first boss falls');
+    // What the first farm pays an hour, so the wait has a point.
+    const first = screen.getByTestId('idle-first-farm');
+    expect(first).toHaveTextContent(`Goldan hour+${Math.floor(idleGoldPerHour(1)).toLocaleString('en-US')}`);
+
+    await user.click(screen.getByTestId('idle-to-campaign'));
+    const stack = useGameStore.getState().ui.stack;
+    expect(stack[stack.length - 1]).toEqual({ name: 'campaign' });
   });
 
   it('pays the chest and reports the haul', async () => {

@@ -44,6 +44,8 @@ export function FillRing({
           r={R}
           strokeWidth={stroke}
           stroke={color}
+          // A round cap would draw a dot at zero; an empty ring shows only its groove.
+          strokeOpacity={clamped > 0 ? 1 : 0}
           strokeDasharray={`${clamped * CIRCUMFERENCE} ${CIRCUMFERENCE}`}
         />
       </svg>
