@@ -1,8 +1,8 @@
 import { t } from '@i18n/index';
 import type { TowerFloorSummary } from '@state/tower';
 import { ResultBanner } from './ResultBanner';
-import { currencyTile, xpTile } from './reward-tile';
-import { RewardTiles } from './RewardTiles';
+import { currencyTile, xpTile } from '@ui/components/RewardTiles/reward-tile';
+import { RewardTiles } from '@ui/components/RewardTiles/RewardTiles';
 import panel from './ResultPanel.module.css';
 
 /**

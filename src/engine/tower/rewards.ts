@@ -57,19 +57,20 @@ export function rollTowerShards(floor: number, rng: Rng): { currency: CurrencyId
   return shards;
 }
 
-/** Everything a cleared floor pays. `element` is the holding faction's, for the boss-floor brew. */
-export function towerFloorRewards(input: { floor: number; element: Element }, rng: Rng): TowerFloorRewards {
+/**
+ * What a cleared floor pays for certain — everything but the shard roll. The tower screen shows it
+ * before the key is spent; `towerFloorRewards` adds the roll. `element` is the holding faction's,
+ * for the boss-floor brew.
+ */
+export function towerFloorPayout(input: { floor: number; element: Element }): TowerFloorRewards {
   const { floor, element } = input;
   const boss = isBossFloor(floor);
   const currencies: { currency: CurrencyId; amount: number }[] = [
     { currency: 'gold', amount: towerGold(floor, boss) },
     { currency: 'brew_universal', amount: towerBrews(floor) },
   ];
-  if (boss) {
-    const brew = TOWER_ELEMENT_BREW[element];
-    if (brew) currencies.push({ currency: brew, amount: TOWER_BREW_BOSS_ELEMENT });
-    currencies.push(...rollTowerShards(floor, rng));
-  }
+  const brew = boss ? TOWER_ELEMENT_BREW[element] : undefined;
+  if (brew) currencies.push({ currency: brew, amount: TOWER_BREW_BOSS_ELEMENT });
   return {
     floor,
     boss,
@@ -78,4 +79,11 @@ export function towerFloorRewards(input: { floor: number; element: Element }, rn
     currencies,
     energy: towerEnergy(floor),
   };
+}
+
+/** Everything a cleared floor pays: the certain payout, and on a boss floor the shard roll. */
+export function towerFloorRewards(input: { floor: number; element: Element }, rng: Rng): TowerFloorRewards {
+  const payout = towerFloorPayout(input);
+  if (!payout.boss) return payout;
+  return { ...payout, currencies: [...payout.currencies, ...rollTowerShards(input.floor, rng)] };
 }

@@ -7,8 +7,8 @@ import { PieceThumb } from '@ui/components/PieceThumb/PieceThumb';
 import { pieceArtwork, pieceName } from '@ui/gear/gear-view';
 import { BOOST_GLYPH, BOOST_TINT, RARITY_COLOR, RARITY_HEX } from '@ui/styles/display-maps';
 import { ResultBanner } from './ResultBanner';
-import { currencyTile, xpTile } from './reward-tile';
-import { RewardTiles } from './RewardTiles';
+import { currencyTile, xpTile } from '@ui/components/RewardTiles/reward-tile';
+import { RewardTiles } from '@ui/components/RewardTiles/RewardTiles';
 import styles from './SpoilsPanel.module.css';
 
 /**

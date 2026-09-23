@@ -33,6 +33,8 @@ export interface EnemyCardProps {
   /** Stage pixels: the team's seats use the same measures, so the two sides line up. */
   width: number;
   height: number;
+  /** A shorter card draws its sprite smaller, so the enemy stays clear of its name. */
+  spriteMax?: number;
 }
 
 /**
@@ -40,7 +42,14 @@ export interface EnemyCardProps {
  * lit ground, facing the team across the screen, then its name, element, role and level, and the
  * three numbers that decide a plan — health, attack and speed — at this encounter's scale.
  */
-export function EnemyCard({ def, encounter, statMult, width, height }: EnemyCardProps) {
+export function EnemyCard({
+  def,
+  encounter,
+  statMult,
+  width,
+  height,
+  spriteMax = SPRITE_MAX,
+}: EnemyCardProps) {
   const stats = scaledEnemyStats(def, encounter, statMult);
   const boss = Boolean(def.boss);
   const name = translate(def.name);
@@ -48,7 +57,7 @@ export function EnemyCard({ def, encounter, statMult, width, height }: EnemyCard
   useFitText(nameRef, NAME_SIZES, name);
   // Whole quarter-steps keep the pixel art on an even grid. A frame's own margins are transparent,
   // so the frame may be as wide as the card.
-  const scale = Math.min(SPRITE_MAX, Math.max(1, Math.floor((width / MODEL_FRAME) * 4) / 4));
+  const scale = Math.min(spriteMax, Math.max(1, Math.floor((width / MODEL_FRAME) * 4) / 4));
   const tone = {
     '--seat-w': `${width}px`,
     '--seat-h': `${height}px`,

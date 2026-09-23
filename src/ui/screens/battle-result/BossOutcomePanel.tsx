@@ -4,8 +4,8 @@ import type { BossFightSummary } from '@state/bosses';
 import { Bar } from '@ui/components/Bar/Bar';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ResultBanner } from './ResultBanner';
-import { xpTile } from './reward-tile';
-import { RewardTiles } from './RewardTiles';
+import { xpTile } from '@ui/components/RewardTiles/reward-tile';
+import { RewardTiles } from '@ui/components/RewardTiles/RewardTiles';
 import panel from './ResultPanel.module.css';
 import styles from './BossOutcomePanel.module.css';
 

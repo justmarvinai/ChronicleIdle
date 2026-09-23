@@ -1,7 +1,7 @@
-/* What a fight paid, one tile each (docs/tech/UI_DESIGN.md §5.10). */
+/* What a fight pays, one tile each (docs/tech/UI_DESIGN.md §5.10). */
 .tiles {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
   gap: 10px;
   margin: 0;
   padding: 0;

@@ -30,6 +30,7 @@ import {
   shardOdds,
   spendKeys,
   towerEncounterId,
+  towerFloorPayout,
   towerFloorRewards,
   withFloorCleared,
   type TowerSave,
@@ -245,5 +246,25 @@ describe('what a floor pays', () => {
     expect([1, 21, 41, 61, 81, 100].map(towerEnergy)).toEqual([1, 2, 3, 4, 5, 5]);
     for (let floor = 2; floor <= TOWER_FLOORS; floor += 1)
       expect(towerGold(floor, false)).toBeGreaterThan(towerGold(floor - 1, false));
+  });
+
+  it('previews exactly what a clear pays, less the shards it may roll', () => {
+    for (const floor of [1, 9, 10, 50, 100]) {
+      const payout = towerFloorPayout({ floor, element: 'faith' });
+      const paid = towerFloorRewards({ floor, element: 'faith' }, createRng(`preview:${floor}`));
+      expect(paid.championXp).toBe(payout.championXp);
+      expect(paid.playerXp).toBe(payout.playerXp);
+      expect(paid.energy).toBe(payout.energy);
+      // Whatever a boss floor rolls comes after the certain part, and is only ever shards.
+      expect(paid.currencies.slice(0, payout.currencies.length)).toEqual(payout.currencies);
+      expect(
+        paid.currencies.slice(payout.currencies.length).every((c) => c.currency.startsWith('shard_')),
+      ).toBe(true);
+    }
+    expect(towerFloorPayout({ floor: 10, element: 'faith' }).currencies.map((c) => c.currency)).toEqual([
+      'gold',
+      'brew_universal',
+      'brew_faith',
+    ]);
   });
 });

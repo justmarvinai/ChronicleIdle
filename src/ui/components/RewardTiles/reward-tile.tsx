@@ -1,4 +1,4 @@
-/** The tiles a result draws its spoils as (docs/tech/UI_DESIGN.md §5.10), built from what a fight paid. */
+/** The tiles a result draws its spoils as (docs/tech/UI_DESIGN.md §5.10), and a tower floor its pay. */
 import type { ReactNode } from 'react';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyId } from '@content/currencies/types';

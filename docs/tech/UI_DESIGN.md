@@ -654,34 +654,71 @@ that open on different clocks.
   *Back to the gate* as the primary press.
 
 ### 5.13a The Eternal Tower (`docs/design/ETERNAL_TOWER.md`)
-- Reference: `different_content_battles_screen.png` for the card that leads here, the boss gate
-  (§5.13) for the shape — a standing panel on the left, the content itself on the right. Backdrop
-  `bg.bg1` graded to near-black with the interior ambient preset, because the tower is somewhere
-  the campaign's own factions are stacked up inside.
-- Left rail (440 px, `ember-tall`): **The Climb**. A blurb saying what the tower is, then four
-  hairline rows — *Season* (`No. 1`, or *Not begun*), *Resets in*, *Climbed* (`7 of 100`) and
-  *Best ever*. The keys sit at the foot of the panel, pushed there by `margin-top: auto` so the
-  panel reads top-down whatever the numbers are: the shackle glyph, `9 / 10` in gold (**ember when
-  the count is over the cap**, because 16/10 is a state worth seeing), *Next in 14m 35s* on the
-  right, a stamina `Bar` clamped to the cap under them, and the primary **Climb floor N** —
-  disabled, with the reason, when no key is held. When every floor is behind the player the button
-  is replaced by the line that says the tower begins again when the season turns.
-- Right (a stone surface, 488 px to the right edge): **the ladder**. One hundred rungs in a
-  `ScrollArea`, *reversed* so floor 1 sits at the bottom and the climb runs upward like the tower
-  does. Six columns hold the whole ladder in line: the floor number, the boss glyph (a flaming
-  skull, ember) or a gap, who holds the floor (its faction's settlement), the shard odds on a boss
-  floor, the floor's state, and the **Fight** button on the two states that take a key.
-- Rung states carry their own weight: the one open floor wears a gold frame and an ember gradient,
-  a boss floor a blood-red one, cleared floors sit at 55 % opacity and sealed floors at 38 % — so
-  the eye lands on the next fight without reading a word. The screen opens scrolled to that floor
-  (or to the floor the route named, which is how the result screen sends the player back).
-- The floor's fight is an ordinary battle: it goes through battle setup, so a team may be rebuilt
-  between floors. The key is charged when the fight starts (`ETERNAL_TOWER.md` §6).
-- The result screen (§5.10) swaps the campaign's stars and spoils for a **tower panel**: the floor
-  and whether it was the keeper's, whether the climb advanced (and whether it is the highest the
-  chronicle has ever stood), the currencies the floor paid as a spoils list with their icons, and
-  the keeper's shards on their own line as `CurrencyChip`s. *Back to the tower* is the only press; a defeat says the floor held and
-  the key is spent, and does not offer a retry the player may not be able to afford.
+- **Reference.** `different_content_battles_screen.png` for the card that leads here. The backdrop
+  is `bg.bg1` graded to near-black, with the interior ambient preset and a cool vignette.
+- **Layout.** Three columns under the top bar:
+  - on the left (470 px), the tower itself;
+  - in the middle, the **dossier** of the selected floor;
+  - on the right (420 px), the season.
+- **Opening floor.** The screen opens on the floor that matters: the next one to climb, or the one
+  the route named.
+
+**The tower (left, `TowerLadder`).** It is a stone arch (`panel_arch`) holding a hundred floors as
+stone slabs in a `ScrollArea`, *reversed* so floor 1 sits at the foot and the climb runs upward.
+- **Each slab** carries:
+  - a number plate;
+  - the settlement whose faction holds the floor.
+- **A keeper's floor** is taller and cut from redder stone. It names its keeper beside a flaming
+  skull, with the shard odds under the name (`tower-odds-N`).
+- **States:**
+  - Sealed floors are dark, at 55 % opacity.
+  - Cleared floors light their plate in gold and say *Cleared* in green.
+  - The one open floor is an ember band in a gold frame that breathes.
+  - A keeper beaten this season wears an ember rim.
+- **Selecting a floor.** Pressing a slab reads that floor in the dossier. The selected slab gets a
+  bright rim and a pointer toward the dossier. The ladder follows the selection when it changes
+  from elsewhere.
+- **Fighting from the ladder.** The two states a key may open (the next floor, and a keeper beaten
+  this season) carry their own **Fight** on the slab.
+
+**The dossier (middle, `FloorDossier`).** One floor, read before a key is spent.
+- **Header.** The place that holds the floor is the header's art, drifting slowly. Over it:
+  - a kicker: *Floor*, or *The floor's keeper*;
+  - the floor's number, large, in gold (in ember for a keeper);
+  - the settlement or the keeper's name, with the element's sigil and who holds the floor;
+  - a ribbon in the corner with the floor's state.
+- **Terms**, as chips: the enemy level, the turn limit, and how many champions may go.
+- ***Who holds it*.** The floor's one wave as the setup screen's enemy cards: its idle loop, level,
+  element, role, and HP, ATK and SPD at this floor's scale. A keeper's floor shows the keeper and
+  its two escorts.
+- ***What a clear pays*.** The result screen's reward tiles (§5.10), built from
+  `towerFloorPayout`: gold, brews, energy, and champion and chronicle XP. A keeper's floor adds its
+  element's brew and its shard odds as purple tiles (*0.25 % · Ancient Shard chance*).
+- **The press at its foot**, with the key it costs beside it:
+  - **Climb floor N** on the next floor;
+  - **Fight floor N again** on a keeper beaten this season;
+  - both disabled, saying so, when no key is held;
+  - a line instead of a press on a cleared floor (only keepers may be fought again), or a sealed
+    one (which floor to clear first).
+
+**The season (right, `ClimbPanel`, `ember-tall`).**
+- ***The Climb*** and its blurb.
+- **A ring of the season's climb.** It holds the floor number and *of 100*, with the best ever as
+  a violet notch on the ring. Beside it are *Season*, *Resets in* and *Best ever*.
+- ***Eternal Keys***:
+  - the count (**ember when over the cap**, because 16 / 10 is worth seeing);
+  - a row of ten kit keys, one lit per key held;
+  - *Next in 14m 35s*, or *Full*.
+- ***The keepers***: a board of the ten keepers' floors with their shard odds.
+  - Those beaten this season are lit gold with a trophy; the next one burns ember; the rest wait
+    dark.
+  - A press reads that keeper's floor in the dossier, however far up the tower it stands.
+- **At the top of the tower**, a gold line says the tower begins again when the season turns.
+
+**The fight.** It is an ordinary battle: it goes through battle setup, so a team may be rebuilt
+between floors. The key is charged when the fight starts (`ETERNAL_TOWER.md` §6). The result screen
+(§5.10) draws the floor's own panel: the climb as a banner, the pay as tiles, and a keeper's shards
+under a purple banner of their own.
 
 ### 5.14 Quests — The Chronicler's Ledger (`QUESTS_MISSIONS.md` §2–§3)
 - Reference: the RSL missions/quests layout (`progress_missions_screen.png` for the track).

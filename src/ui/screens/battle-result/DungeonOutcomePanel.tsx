@@ -7,8 +7,8 @@ import { Glyph } from '@ui/components/Glyph/Glyph';
 import { mainStatLine, pieceArtwork } from '@ui/gear/gear-view';
 import { pieceTooltip } from '@ui/gear/piece-tooltip';
 import { ResultBanner } from './ResultBanner';
-import { currencyTile, xpTile } from './reward-tile';
-import { RewardTiles } from './RewardTiles';
+import { currencyTile, xpTile } from '@ui/components/RewardTiles/reward-tile';
+import { RewardTiles } from '@ui/components/RewardTiles/RewardTiles';
 import panel from './ResultPanel.module.css';
 import styles from './DungeonOutcomePanel.module.css';
 

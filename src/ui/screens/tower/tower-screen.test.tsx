@@ -5,12 +5,13 @@
  */
 import { readFileSync } from 'node:fs';
 import type { ReactNode } from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { STAGES_PER_SETTLEMENT, SETTLEMENT_COUNT } from '@content/balance/campaign';
+import { towerGold } from '@content/balance/tower';
 import { progressKey, stageIdOf } from '@engine/campaign/progress';
 import { useGameStore } from '@state/store';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
@@ -186,5 +187,104 @@ describe('the climb', () => {
     // The boss floors are still worth a key, which is the point of them.
     expect(screen.getByTestId('tower-fight-100')).toBeEnabled();
     expect(screen.getByTestId('tower-floor-99')).toHaveAttribute('data-state', 'cleared');
+  });
+});
+
+describe('the dossier', () => {
+  beforeEach(() => climber());
+
+  it('reads the next floor on arrival: who holds it, the four it fields, and what a clear pays', () => {
+    render(stage(<TowerScreen route={TOWER} />));
+
+    const dossier = screen.getByTestId('tower-dossier');
+    expect(dossier).toHaveAttribute('data-floor', '1');
+    expect(screen.getByTestId('tower-dossier-state')).toHaveTextContent('Open');
+    expect(within(screen.getByTestId('tower-dossier-enemies')).getAllByRole('listitem')).toHaveLength(4);
+    const pays = screen.getByTestId('tower-dossier-pays');
+    expect(pays).toHaveTextContent(`+${towerGold(1, false).toLocaleString('en-US')}`);
+    expect(pays).toHaveTextContent('Universal Brew');
+    expect(pays).not.toHaveTextContent('chance');
+  });
+
+  it('reads any floor pressed on the ladder, and a sealed one says which floor to clear', async () => {
+    const user = userEvent.setup();
+    render(stage(<TowerScreen route={TOWER} />));
+
+    await user.click(screen.getByTestId('tower-pick-7'));
+    expect(screen.getByTestId('tower-dossier')).toHaveAttribute('data-floor', '7');
+    expect(screen.getByTestId('tower-floor-7')).toHaveAttribute('data-selected', 'true');
+    expect(screen.getByTestId('tower-dossier-state')).toHaveTextContent('Sealed');
+    expect(screen.getByTestId('tower-dossier-note')).toHaveTextContent('Clear floor 1');
+    expect(screen.queryByTestId('tower-climb-next')).not.toBeInTheDocument();
+  });
+
+  it('shows a keeper’s floor with its keeper, two escorts and the shard odds among the pay', async () => {
+    const user = userEvent.setup();
+    render(stage(<TowerScreen route={TOWER} />));
+
+    await user.click(screen.getByTestId('tower-pick-50'));
+    expect(within(screen.getByTestId('tower-dossier-enemies')).getAllByRole('listitem')).toHaveLength(3);
+    const pays = screen.getByTestId('tower-dossier-pays');
+    expect(pays).toHaveTextContent(`+${towerGold(50, true).toLocaleString('en-US')}`);
+    expect(pays).toHaveTextContent('1 %Ancient Shard chance');
+    expect(pays).toHaveTextContent('0.05 %Sacred Shard chance');
+  });
+
+  it('offers a keeper beaten this season again, straight to its own fight', async () => {
+    const user = userEvent.setup();
+    climbed(12);
+    render(stage(<TowerScreen route={TOWER} />));
+
+    await user.click(screen.getByTestId('tower-pick-10'));
+    expect(screen.getByTestId('tower-dossier-state')).toHaveTextContent('Repeatable');
+    await user.click(screen.getByTestId('tower-dossier-fight'));
+    expect(useGameStore.getState().ui.stack.at(-1)).toEqual({
+      name: 'battle-setup',
+      encounterId: 'encounter.tower.010',
+    });
+  });
+
+  it('says a floor behind the climb is done with, and offers nothing on it', async () => {
+    const user = userEvent.setup();
+    climbed(12);
+    render(stage(<TowerScreen route={TOWER} />));
+
+    await user.click(screen.getByTestId('tower-pick-11'));
+    expect(screen.getByTestId('tower-dossier-state')).toHaveTextContent('Cleared');
+    expect(screen.getByTestId('tower-dossier-note')).toHaveTextContent('Only the keepers’ floors');
+    expect(screen.queryByTestId('tower-dossier-fight')).not.toBeInTheDocument();
+  });
+});
+
+describe('the season panel', () => {
+  beforeEach(() => climber());
+
+  it('lights one key per key held', () => {
+    act(() => {
+      useGameStore.setState((state) => {
+        if (state.save) state.save.tower.keys = { value: 7, lastTickAt: Date.now() };
+        return state;
+      });
+    });
+    render(stage(<TowerScreen route={TOWER} />));
+
+    const keys = within(screen.getByTestId('tower-keys')).getAllByRole('listitem');
+    expect(keys).toHaveLength(10);
+    expect(keys.filter((key) => key.className.includes('keyOn'))).toHaveLength(7);
+  });
+
+  it('boards the ten keepers — beaten, next, sealed — and reads a keeper’s floor on a press', async () => {
+    const user = userEvent.setup();
+    climbed(12);
+    render(stage(<TowerScreen route={TOWER} />));
+
+    expect(screen.getByTestId('tower-keeper-10')).toHaveAttribute('data-state', 'beaten');
+    expect(screen.getByTestId('tower-keeper-20')).toHaveAttribute('data-state', 'next');
+    expect(screen.getByTestId('tower-keeper-100')).toHaveAttribute('data-state', 'sealed');
+    expect(screen.getByTestId('tower-keeper-100')).toHaveTextContent('Sacred 0.65 %');
+
+    await user.click(screen.getByTestId('tower-keeper-100'));
+    expect(screen.getByTestId('tower-dossier')).toHaveAttribute('data-floor', '100');
+    expect(screen.getByTestId('tower-keeper-100')).toHaveAttribute('aria-pressed', 'true');
   });
 });

@@ -1,0 +1,199 @@
+/* The tower's floors (docs/tech/UI_DESIGN.md §5.13a): stone slabs stacked under an arch. */
+.ladder {
+  min-height: 0;
+}
+.frame {
+  height: 100%;
+}
+.inner {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.scroll {
+  flex: 1;
+  min-height: 0;
+}
+.floors {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 14px 10px 4px;
+  list-style: none;
+}
+
+/* A slab: cut stone, a number plate on its left end, who holds it, and what state it is in. */
+.slab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 58px;
+  padding-right: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 40%),
+    linear-gradient(90deg, #2a2724, #1d1b19 60%, #181614);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+  transition:
+    filter var(--t-fast),
+    box-shadow var(--t-fast),
+    opacity var(--t-fast);
+}
+.slab:hover {
+  filter: brightness(1.18);
+}
+.pick {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+  padding: 0 0 0 8px;
+  text-align: left;
+  color: inherit;
+}
+.pick:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: -2px;
+}
+.number {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 42px;
+  font-size: 20px;
+  color: var(--text-2);
+  background: linear-gradient(180deg, #3a3631, #221f1c);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.place {
+  overflow: hidden;
+  font-size: 16px;
+  color: var(--text-1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.keeper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  font-size: 17px;
+  color: #ffb49a;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.odds {
+  font-size: 13px;
+  color: #d9b8ff;
+}
+.state {
+  flex: 0 0 auto;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.fight {
+  flex: 0 0 auto;
+}
+
+/* A keeper's floor: taller, and cut from darker, redder stone. */
+.boss {
+  min-height: 70px;
+  background:
+    linear-gradient(180deg, rgba(255, 140, 100, 0.07), transparent 45%),
+    linear-gradient(90deg, #3a1d17, #24130f 60%, #1b0f0c);
+}
+.boss .number {
+  color: #ffd2c2;
+  background: linear-gradient(180deg, #6e2a1c, #3a150e);
+}
+
+/* Behind the climb: lit, with the plate in gold. */
+.cleared .number {
+  color: var(--gold-3);
+}
+.cleared .state {
+  color: #8fd18a;
+}
+/* Above the climb: dark and quiet. */
+.locked {
+  opacity: 0.55;
+}
+.locked .place,
+.locked .keeper {
+  color: var(--text-3);
+}
+/* The one floor a key opens: an ember band in a gold frame, breathing. */
+.next {
+  background:
+    radial-gradient(ellipse 60% 120% at 20% 50%, rgba(240, 160, 80, 0.22), transparent 70%),
+    linear-gradient(90deg, #4a2a14, #2a1a0e 70%, #1e140c);
+  box-shadow:
+    inset 0 0 0 2px var(--gold-2),
+    0 0 16px rgba(240, 190, 90, 0.35),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+  animation: breathe 2.6s ease-in-out infinite;
+}
+.next .number {
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c);
+}
+.repeatable {
+  box-shadow:
+    inset 0 0 0 1px rgba(224, 102, 74, 0.8),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+@keyframes breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.14);
+  }
+}
+
+/* The slab the dossier is reading: a bright rim whatever its state, and a pointer towards it. */
+.selected {
+  opacity: 1;
+  filter: brightness(1.12);
+  box-shadow:
+    inset 0 0 0 2px #fff1c2,
+    0 0 0 1px rgba(0, 0, 0, 0.8),
+    0 0 18px rgba(240, 213, 122, 0.45);
+}
+.selected::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -9px;
+  width: 0;
+  height: 0;
+  translate: 0 -50%;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-left: 9px solid #fff1c2;
+  filter: drop-shadow(0 0 4px rgba(240, 213, 122, 0.7));
+}
+.selected .place,
+.selected .keeper {
+  color: var(--gold-3);
+}
