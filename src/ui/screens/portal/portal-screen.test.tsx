@@ -207,6 +207,21 @@ describe('the Portal', () => {
     }
   });
 
+  it('lands every card face up at once under reduced motion', async () => {
+    document.documentElement.dataset['reducedMotion'] = 'true';
+    try {
+      const user = userEvent.setup();
+      render(stage(<PortalScreen route={PORTAL} />));
+      await user.click(screen.getByTestId('portal-shard-ancient'));
+      await user.click(screen.getByTestId('portal-summon-10'));
+      await screen.findByTestId('summon-results');
+      const faces = screen.getAllByTestId(/^summon-card-/).map((cell) => cell.dataset['face']);
+      expect(faces).toEqual(Array.from({ length: 10 }, () => 'up'));
+    } finally {
+      delete document.documentElement.dataset['reducedMotion'];
+    }
+  });
+
   it('names the shard in the ring and what it can answer with', async () => {
     const user = userEvent.setup();
     render(stage(<PortalScreen route={PORTAL} />));
