@@ -86,7 +86,13 @@ line about the colour now describes the climb. `docs/tech/UI_DESIGN.md` §5.12, 
 - The tutorial's strip waits under the top bar (`data-dock="top"`) when a lesson's target stands
   where the strip would — the Portal's presses now stand under the gate rather than in a bottom
   bar, and the strip must never cover what it asks the player to press.
-- `tests/e2e/portal.spec.ts` measures the card against the new ring.
+- `tests/e2e/portal.spec.ts` measures the card against the new ring, and presses Skip on the ten
+  while the gate is still telling (then checks all ten land face up): pressed after the first card
+  showed, it raced a deal that turns the ten in three and a half seconds, which a click through
+  swiftshader could spend just finding the button.
+- `tests/e2e/tutorial.spec.ts` counts an ability while it is pressable (`data-ready`) instead of
+  asking a counted button whether it is disabled — the second question waited fifteen seconds for
+  a button the turn had already taken away.
 
 ### Fixed
 

@@ -99,6 +99,16 @@ async function spend(page: Page, ability: ReturnType<Page['getByTestId']>): Prom
   await page.waitForTimeout(500);
 }
 
+/**
+ * The ability in `slot` while it can be pressed. Counting this is a snapshot of the bar as it
+ * stands; asking a button whether it is disabled waits for the button, and the bar changes hands
+ * between two such questions often enough — the turn passes to a champion with fewer abilities,
+ * or a lesson opens — that a wait for a button that had gone once ran out a whole walk.
+ */
+function pressable(page: Page, slot: 'a1' | 'a2' | 'a3' | 'a4') {
+  return page.locator(`[data-testid="ability-${slot}"][data-ready="true"]`);
+}
+
 /** Spends the acting champion's turn on the ability the lesson is about. */
 async function spendTurn(page: Page, slot: 'a1' | 'a2'): Promise<void> {
   const ability = page.getByTestId(`ability-${slot}`);
@@ -120,8 +130,8 @@ async function spendTurn(page: Page, slot: 'a1' | 'a2'): Promise<void> {
 async function playUntilLesson(page: Page, step: string, slot: 'a1' | 'a2'): Promise<void> {
   for (let turn = 0; turn < 24; turn += 1) {
     if ((await currentLesson(page)) === step) return;
-    const taught = page.getByTestId(`ability-${slot}`);
-    if ((await taught.count()) > 0 && !(await taught.isDisabled())) await spend(page, taught);
+    const taught = pressable(page, slot);
+    if ((await taught.count()) > 0) await spend(page, taught);
     else await spendAnyTurn(page);
   }
 }
@@ -129,8 +139,8 @@ async function playUntilLesson(page: Page, step: string, slot: 'a1' | 'a2'): Pro
 /** Spends whatever the champion whose turn it is has ready. */
 async function spendAnyTurn(page: Page): Promise<void> {
   for (const slot of ['a1', 'a2', 'a3', 'a4'] as const) {
-    const ability = page.getByTestId(`ability-${slot}`);
-    if ((await ability.count()) === 0 || (await ability.isDisabled())) continue;
+    const ability = pressable(page, slot);
+    if ((await ability.count()) === 0) continue;
     await spend(page, ability);
     return;
   }

@@ -48,12 +48,15 @@ test.describe('the Summoning Portal', () => {
     await page.getByTestId('summon-continue').click();
     await expect(page.getByTestId('summon-reveal')).toBeHidden();
 
-    // Ten pulls on an Ancient Shard, skipped part-way: every card still lands.
+    // Ten pulls on an Ancient Shard, skipped while the gate is still telling: every card lands at
+    // once, face up. (Skip is pressed during the ritual, not the deal: the deal turns its ten in a
+    // few seconds of wall-clock, which a click through swiftshader can take just to find the
+    // button.)
     await page.getByTestId('portal-shard-ancient').click();
     await page.getByTestId('portal-summon-10').click();
-    await expect(page.getByTestId('summon-card-0')).toBeVisible({ timeout: 30_000 });
     await page.getByTestId('summon-skip').click();
-    await expect(page.getByTestId('summon-card-9')).toBeVisible();
+    await expect(page.getByTestId('summon-card-9')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-testid^="summon-card-"][data-face="up"]')).toHaveCount(10);
     await expect(page.getByTestId('portal-held-ancient')).toContainText('30');
     await page.getByTestId('summon-continue').click();
 
