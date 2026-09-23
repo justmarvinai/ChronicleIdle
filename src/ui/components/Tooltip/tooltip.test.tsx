@@ -63,4 +63,24 @@ describe('a tooltip near the foot of the stage', () => {
     expect(top).toBe(pointerY - TALL - 12);
     expect(top + TALL).toBeLessThanOrEqual(VIRTUAL_HEIGHT);
   });
+
+  it('opens above when asked to, and below when there is no room above', () => {
+    render(
+      stage(
+        <Tooltip content="What the building is for" prefer="above">
+          <button type="button">Tavern</button>
+        </Tooltip>,
+      ),
+    );
+    const trigger = screen.getByRole('button', { name: 'Tavern' }).parentElement!;
+    fireEvent.pointerEnter(trigger, { clientX: 400, clientY: 600 });
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+    // The name plate under the building stays readable: the card sits over the pointer.
+    expect(Number.parseFloat(screen.getByRole('tooltip').style.top)).toBe(600 - TALL - 12);
+
+    fireEvent.pointerMove(trigger, { clientX: 400, clientY: 200 });
+    expect(Number.parseFloat(screen.getByRole('tooltip').style.top)).toBe(200 + 22);
+  });
 });

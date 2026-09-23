@@ -237,6 +237,15 @@
   flex: 1;
   min-width: 0;
 }
+.skillHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.skillHead strong {
+  flex: 1;
+  min-width: 0;
+}
 .skillText strong {
   font-size: 17px;
   color: var(--text-1);

@@ -20,10 +20,22 @@ export interface TooltipProps {
   children: ReactElement<{ 'aria-describedby'?: string | undefined }>;
   delayMs?: number;
   maxWidth?: number;
+  /**
+   * The side of the pointer the box opens on first — below by default; above where what sits
+   * under the trigger is the thing being read (a hub building's name). It flips to the other side
+   * when the stage has no room.
+   */
+  prefer?: 'below' | 'above';
 }
 
 /** Hover/focus tooltip rendered into the stage's tooltip layer so it scales with the game. */
-export function Tooltip({ content, children, delayMs = 200, maxWidth = 360 }: TooltipProps) {
+export function Tooltip({
+  content,
+  children,
+  delayMs = 200,
+  maxWidth = 360,
+  prefer = 'below',
+}: TooltipProps) {
   const id = useId();
   const viewport = useViewport();
   const [open, setOpen] = useState(false);
@@ -39,13 +51,16 @@ export function Tooltip({ content, children, delayMs = 200, maxWidth = 360 }: To
       const stage = toStageCoords(viewport, clientX, clientY);
       const w = box.current?.offsetWidth ?? maxWidth;
       const h = box.current?.offsetHeight ?? 80;
+      const below = stage.y + 22;
+      const above = stage.y - h - 12;
       let x = stage.x + 18;
-      let y = stage.y + 22;
+      let y = prefer === 'above' ? above : below;
       if (x + w > VIRTUAL_WIDTH - 16) x = stage.x - w - 18;
-      if (y + h > VIRTUAL_HEIGHT - 16) y = stage.y - h - 12;
+      if (prefer === 'above' && y < 8) y = below;
+      else if (prefer === 'below' && y + h > VIRTUAL_HEIGHT - 16) y = above;
       setPos({ x: Math.max(8, x), y: Math.max(8, y) });
     },
-    [viewport, maxWidth],
+    [viewport, maxWidth, prefer],
   );
 
   const show = (clientX: number, clientY: number): void => {

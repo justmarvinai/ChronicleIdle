@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { motion } from 'motion/react';
 import type { ChampionDef } from '@content/champions/types';
 import type { ChampionInstance } from '@engine/champions/instance';
@@ -9,6 +9,7 @@ import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
+import { useFitText } from '@ui/hooks/useFitText';
 import { ELEMENT_COLOR, ELEMENT_GLYPH, RARITY_HEX } from '@ui/styles/display-maps';
 import { kitBorder } from '@ui/styles/kit';
 import { elementLabel, rarityLabel } from '@ui/screens/champions/roster-view';
@@ -21,6 +22,9 @@ export interface TavernHeroProps {
   flash: { id: number; kind: 'level' | 'rank' } | null;
 }
 
+/** The name's sizes, largest first, for names too long for the frame's foot at the stylesheet's. */
+const NAME_SIZES = [28, 26, 24, 22] as const;
+
 /**
  * The champion on the stool (docs/tech/UI_DESIGN.md §5.5): the painting in a frame of its
  * rarity, the rarity on a banner at its head, and the name, element, stars and level set into
@@ -30,6 +34,9 @@ export function TavernHero({ def, instance, flash }: TavernHeroProps) {
   const art = championAvatar(def, 512);
   const color = RARITY_HEX[def.rarity];
   const tone = { '--rarity': color, '--element': ELEMENT_COLOR[def.element] } as CSSProperties;
+  const name = translate(def.name);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  useFitText(nameRef, NAME_SIZES, name);
   return (
     <div className={styles.hero} style={tone}>
       <div className={styles.aura} aria-hidden="true" />
@@ -80,7 +87,9 @@ export function TavernHero({ def, instance, flash }: TavernHeroProps) {
             <span className={styles.sigil} title={elementLabel(def.element)}>
               <Glyph glyph={ELEMENT_GLYPH[def.element]} size={20} color="var(--text-1)" />
             </span>
-            <h2 className={`display ${styles.name}`}>{translate(def.name)}</h2>
+            <h2 ref={nameRef} className={`display ${styles.name}`}>
+              {name}
+            </h2>
           </span>
           <span className={styles.rank}>
             <StarRow stars={instance.stars} max={6} size={20} tone="rarity" tint={color} />

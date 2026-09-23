@@ -66,6 +66,8 @@ export function HubHotspot({ def, onOpen, gate, status, progress }: HubHotspotPr
         </span>
       }
       maxWidth={300}
+      // The card opens away from the name plate, so it never covers the words it repeats.
+      prefer={def.labelBelow === false ? 'below' : 'above'}
     >
       <button
         type="button"

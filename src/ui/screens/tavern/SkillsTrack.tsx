@@ -65,16 +65,19 @@ export function SkillsTrack({ def, instance, tomesHeld, onUpgradeSkill }: Skills
                 </span>
               </Tooltip>
               <span className={styles.skillText}>
-                <strong className="display">
-                  <span className={styles.slot}>{ability.slot.toUpperCase()}</span> {name}
-                </strong>
-                <span className={styles.skillBody}>{translate(ability.description, { ...numbers })}</span>
-                <span className={styles.skillStep}>
+                {/* The steps taken sit by the name, so the next step and its press share a line. */}
+                <span className={styles.skillHead}>
+                  <strong className="display">
+                    <span className={styles.slot}>{ability.slot.toUpperCase()}</span> {name}
+                  </strong>
                   <span className={styles.dots} aria-hidden="true">
                     {Array.from({ length: status.max }, (_, i) => (
                       <span key={i} className={i < status.steps ? styles.dotOn : styles.dot} />
                     ))}
                   </span>
+                </span>
+                <span className={styles.skillBody}>{translate(ability.description, { ...numbers })}</span>
+                <span className={styles.skillStep}>
                   <em>
                     {status.next
                       ? t('tavern.skills.next', { effect: upgradeLabel(status.next) })
