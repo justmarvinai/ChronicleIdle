@@ -76,11 +76,13 @@ Q62 answered. `docs/tech/UI_DESIGN.md` §4, §5.3, §5.4, §5.5, §5.6, §5.7, �
     XP lines under the boosts' marks), a tower floor's rewards and its keeper's shards as chips, the
     level-up dialog, the Forge's tier and strike costs and the refine cost, the dismantle yield,
     the Tavern's cost and a boss chest's contents. `costLine` and `setsText` went with the text
-    they built.
+    they built, and `raritiesLabel` became `bandRarities`, which hands the rarities over rather
+    than a sentence.
 - Strings: `settlement.dropGear` / `dropMaterials` became captions, with `dropChance`, `dropRange`
   and `dropPercent` new; `dropShard` and `dropBrew` went. `dungeons.card.sets` → `dungeons.card.holds`,
   `dungeon.drops` lost its placeholder, `tower.result.shards` its list (`tower.result.shardCount`
-  new), `forge.refine.cost` and `champions.stat.gearHint` went.
+  new), `forge.refine.cost` and `champions.stat.gearHint` went; `champions.stat.base` / `gear` /
+  `palace`, `champions.kit.more`, `champions.worn` and `champions.worn.times` are new.
 - The component gallery shows the chips and the currency label.
 
 ### Fixed
