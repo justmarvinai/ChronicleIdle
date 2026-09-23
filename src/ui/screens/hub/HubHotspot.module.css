@@ -1,98 +1,205 @@
+/* A building on the Emberhold artwork (docs/tech/UI_DESIGN.md §5.2). */
 .hotspot {
   position: absolute;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(var(--size) / -2));
   z-index: var(--z-scene);
   color: var(--text-1);
+}
+/* The medallion sits on the building's point whichever side its plate is on. */
+.plateAbove {
+  transform: translate(-50%, calc(-100% + var(--size) / 2));
+}
+.hotspot:hover,
+.hotspot:focus-visible {
+  z-index: calc(var(--z-scene) + 1);
 }
 /* The bob runs on an inner wrapper so the button's hit box (and pointer targeting) stays still. */
 .body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  animation: bob 4.5s ease-in-out infinite;
+  gap: 4px;
+  animation: bob 5s ease-in-out infinite;
 }
 .hotspot:nth-child(2n) .body {
-  animation-delay: -1.3s;
+  animation-delay: -1.6s;
 }
 .hotspot:nth-child(3n) .body {
-  animation-delay: -2.6s;
-}
-.hotspot:hover {
-  z-index: calc(var(--z-scene) + 1);
+  animation-delay: -3.1s;
 }
 .hotspot:hover .body {
   animation-play-state: paused;
 }
-.ring {
+
+/* The medallion: the kit's metal ring around a dark disc, lit from inside in the building's colour. */
+.medallion {
   position: relative;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
-  box-shadow:
-    0 0 0 6px color-mix(in srgb, var(--accent) 12%, transparent),
-    0 0 28px color-mix(in srgb, var(--accent) 45%, transparent),
-    inset 0 0 24px color-mix(in srgb, var(--accent) 30%, transparent);
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--accent) 22%, transparent) 0%,
-    rgba(11, 10, 13, 0.15) 70%
-  );
+  width: var(--size);
+  height: var(--size);
   transition:
     transform var(--t-base) var(--ease-snap),
-    box-shadow var(--t-base),
     filter var(--t-base);
 }
-.ringInner {
+.halo {
   position: absolute;
-  inset: 8px;
+  inset: -34%;
   border-radius: 50%;
-  border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent);
-  animation: spin 18s linear infinite;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 45%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 16%, transparent) 42%,
+    transparent 68%
+  );
+  animation: breathe 3.6s ease-in-out infinite;
+  pointer-events: none;
 }
-.hotspot:hover .ring {
-  transform: scale(1.08);
-  filter: brightness(1.25);
+/* A flipbook behind the medallion (the Portal's rune ring), tinted by the building's light. */
+.aura {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 14px var(--accent));
+}
+.disc {
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 38%,
+      color-mix(in srgb, var(--accent) 42%, transparent) 0%,
+      transparent 62%
+    ),
+    radial-gradient(circle, rgba(18, 15, 22, 0.92) 0%, rgba(8, 7, 10, 0.96) 100%);
   box-shadow:
-    0 0 0 8px color-mix(in srgb, var(--accent) 18%, transparent),
-    0 0 44px color-mix(in srgb, var(--accent) 65%, transparent),
-    inset 0 0 30px color-mix(in srgb, var(--accent) 40%, transparent);
+    inset 0 0 18px rgba(0, 0, 0, 0.8),
+    0 6px 16px rgba(0, 0, 0, 0.6);
 }
-.hotspot:active .ring {
-  transform: scale(0.97);
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 55%, transparent));
+  pointer-events: none;
 }
-.locked .ring {
-  border-style: dashed;
-  box-shadow: 0 0 0 4px rgba(141, 133, 119, 0.12);
-  background: radial-gradient(circle, rgba(60, 56, 66, 0.5) 0%, rgba(11, 10, 13, 0.35) 70%);
-}
-.locked .ringInner {
-  animation: none;
+.glyph {
+  position: relative;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 80%, transparent));
 }
 .fill {
   position: absolute;
-  inset: 5px;
+  inset: 7px;
 }
-.sublabel {
-  font-size: 14px;
-  color: var(--gold-3);
-  white-space: nowrap;
+.badge {
+  position: absolute;
+  top: 2%;
+  right: 2%;
 }
-.banner {
+.hotspot:hover .medallion,
+.hotspot:focus-visible .medallion {
+  transform: scale(1.1);
+  filter: brightness(1.25);
+}
+.hotspot:hover .halo {
+  inset: -44%;
+}
+.hotspot:active .medallion {
+  transform: scale(0.96);
+}
+/* Something waits inside: a ring of the building's light keeps rolling outward from the medallion. */
+.calling::after {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+  animation: ripple 2.4s ease-out infinite;
+}
+@keyframes ripple {
+  from {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+.locked .halo {
+  animation: none;
+  opacity: 0.25;
+}
+.locked .medallion {
+  filter: grayscale(0.85) brightness(0.8);
+}
+
+/* The name, set on a patch of ink rather than a box, with a hairline of the building's colour. */
+.plate {
+  position: relative;
+  /* Over the medallion's aura, so a rune ring never runs through the words. */
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 190px;
-  padding: 8px 26px 10px;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+  gap: 3px;
+  padding: 8px 34px 10px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(8, 7, 10, 0.86) 0%,
+    rgba(8, 7, 10, 0.66) 45%,
+    rgba(8, 7, 10, 0) 100%
+  );
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.9),
+    0 0 12px rgba(0, 0, 0, 0.9);
+  transition: filter var(--t-base);
 }
 .above {
   order: -1;
 }
 .label {
-  font-size: 22px;
+  font-size: 23px;
+  line-height: 1;
   white-space: nowrap;
+  color: var(--text-1);
+  letter-spacing: 0.03em;
+}
+.hotspot:hover .label {
+  color: var(--gold-3);
+}
+.rule {
+  position: relative;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.rule::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  translate: -50% -50%;
+  rotate: 45deg;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+.line {
+  font-size: 15px;
+  white-space: nowrap;
+  color: var(--text-2);
+}
+/* Something is owed behind this door: the line wears the building's light. */
+.ready {
+  color: color-mix(in srgb, var(--accent) 60%, white 40%);
+  font-weight: 700;
 }
 .locked .label {
   color: var(--text-3);
@@ -102,6 +209,31 @@
   color: var(--text-3);
   white-space: nowrap;
 }
+
+/* The hover card: what the building is for, and what it says now. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cardName {
+  font-size: 18px;
+  color: var(--gold-3);
+}
+.cardHint {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.cardLine {
+  font-size: 15px;
+  color: var(--text-1);
+}
+.cardLock {
+  font-size: 14px;
+  color: var(--warn);
+}
+
 @keyframes bob {
   0%,
   100% {
@@ -111,8 +243,21 @@
     transform: translateY(-5px);
   }
 }
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .body,
+  .halo,
+  .calling::after {
+    animation: none;
   }
 }

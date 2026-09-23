@@ -1,13 +1,11 @@
 import { playSfx } from '@audio/index';
 import { t } from '@i18n/index';
-import { formatDuration } from '@engine/time/clock';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
 import { missionsClaimable } from '@state/missions';
 import { loginView } from '@state/login';
 import { isPalaceUnlocked } from '@state/palace';
 import { questsClaimable } from '@state/quests';
-import { openChampionChoices } from '@state/summon';
 import { selectActions, selectFeatureUnlocked, selectSave, selectUnseen } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -22,6 +20,7 @@ import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { HubHotspot } from './HubHotspot';
+import { hubStatuses } from './hub-status';
 import { HUB_GLOWS, HUB_HOTSPOTS, type HubHotspotDef } from './hotspots';
 import styles from './HubScreen.module.css';
 
@@ -63,13 +62,8 @@ export default function HubScreen(_props: ScreenProps) {
   // One dot when today's tile is still there — a day owed is the calendar's only live state.
   const rewards = save && loginView(save, now).claimable ? 1 : 0;
 
-  // Dots on the buildings that owe the player something: copies not looked at yet, and a
-  // champion choice the campaign still owes (CAMPAIGN.md §7).
-  const notices: Record<string, boolean> = {
-    champions: unseen.length > 0,
-    portal: save ? openChampionChoices(save).length > 0 : false,
-    idle: chest?.fill.full ?? false,
-  };
+  // What each building says about itself: the next stage, a countdown, what is owed inside.
+  const statuses = save ? hubStatuses(save, now, { unseen: unseen.length, chest, palaceOpen: palace }) : {};
 
   const open = (def: HubHotspotDef, unlocked: boolean): void => {
     if (unlocked && def.dialog) actions.openDialog(def.dialog);
@@ -94,14 +88,9 @@ export default function HubScreen(_props: ScreenProps) {
           key={def.id}
           def={def}
           onOpen={open}
-          notify={notices[def.id] ?? false}
+          status={statuses[def.id]}
           {...(def.id === 'palace' ? { gate: palace } : {})}
-          {...(def.id === 'idle' && chest
-            ? {
-                progress: chest.fill.fraction,
-                sublabel: chest.fill.full ? t('hub.idleChest.full') : formatDuration(chest.fill.msToFull),
-              }
-            : {})}
+          {...(def.id === 'idle' && chest ? { progress: chest.fill.fraction } : {})}
         />
       ))}
 

@@ -1,5 +1,5 @@
 import type { FeatureId } from '@content/balance/unlocks';
-import type { GlyphKey } from '@assets/manifest.generated';
+import type { FxKey, GlyphKey } from '@assets/manifest.generated';
 import type { I18nKey } from '@i18n/index';
 import type { GlowPoint } from '@render/ambient/presets';
 import type { DialogRoute, Route } from '@state/ui-types';
@@ -8,9 +8,11 @@ import type { DialogRoute, Route } from '@state/ui-types';
 export interface HubHotspotDef {
   id: string;
   labelKey: I18nKey;
+  /** What the building is for, on the hover card under its name. */
+  hintKey: I18nKey;
   x: number;
   y: number;
-  /** Ring diameter in px. */
+  /** The medallion's diameter in px: the grander the building, the larger its mark. */
   size: number;
   glyph: GlyphKey;
   feature: FeatureId | 'later-phase';
@@ -23,8 +25,10 @@ export interface HubHotspotDef {
    * level (`isPalaceUnlocked`). The Locked screen prints the same line.
    */
   reasonKey?: I18nKey;
-  /** Accent colour of the ring/glow. */
+  /** Accent colour of the medallion's light and the plate's hairline. */
   color: string;
+  /** A flipbook turning behind the medallion once the building is open: the Portal's runes. */
+  aura?: FxKey;
   labelBelow?: boolean;
 }
 
@@ -32,9 +36,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'campaign',
     labelKey: 'hub.campaign',
+    hintKey: 'hub.hint.campaign',
     x: 1330,
     y: 262,
-    size: 150,
+    size: 108,
     glyph: 'glyph.crossed_swords',
     feature: 'campaign',
     route: { name: 'game-modes' },
@@ -44,21 +49,24 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'portal',
     labelKey: 'hub.portal',
+    hintKey: 'hub.hint.portal',
     x: 804,
     y: 545,
-    size: 150,
+    size: 108,
     glyph: 'glyph.arcane_symbol',
     feature: 'summoning',
     route: { name: 'portal' },
     color: '#9b5de5',
+    aura: 'fx.gen.rune_ring',
     labelBelow: false,
   },
   {
     id: 'tavern',
     labelKey: 'hub.tavern',
+    hintKey: 'hub.hint.tavern',
     x: 1770,
     y: 470,
-    size: 140,
+    size: 100,
     glyph: 'glyph.health_potion',
     feature: 'tavern_level',
     route: { name: 'tavern' },
@@ -68,9 +76,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'forge',
     labelKey: 'hub.forge',
+    hintKey: 'hub.hint.forge',
     x: 170,
     y: 395,
-    size: 130,
+    size: 96,
     glyph: 'glyph.hammer_hit',
     feature: 'forge',
     route: { name: 'forge' },
@@ -80,9 +89,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'champions',
     labelKey: 'hub.champions',
+    hintKey: 'hub.hint.champions',
     x: 470,
     y: 560,
-    size: 130,
+    size: 96,
     glyph: 'glyph.cloaked_figure',
     feature: 'champions',
     route: { name: 'champions' },
@@ -93,9 +103,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     /* The lit keep on the hill, top right of the Emberhold artwork. */
     id: 'palace',
     labelKey: 'hub.palace',
+    hintKey: 'hub.hint.palace',
     x: 1615,
     y: 232,
-    size: 132,
+    size: 100,
     glyph: 'glyph.eagle_staff',
     feature: 'glorious_palace',
     route: { name: 'palace' },
@@ -106,9 +117,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'hall',
     labelKey: 'hub.chroniclersHall',
+    hintKey: 'hub.hint.hall',
     x: 1030,
     y: 520,
-    size: 130,
+    size: 96,
     glyph: 'glyph.spell_book',
     feature: 'missions',
     route: { name: 'missions' },
@@ -118,9 +130,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'market',
     labelKey: 'hub.market',
+    hintKey: 'hub.hint.market',
     x: 1650,
     y: 690,
-    size: 120,
+    size: 92,
     glyph: 'glyph.trophy_cup',
     feature: 'market',
     route: { name: 'market' },
@@ -130,9 +143,10 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
   {
     id: 'idle',
     labelKey: 'hub.idleChest',
+    hintKey: 'hub.hint.idle',
     x: 250,
     y: 800,
-    size: 130,
+    size: 100,
     glyph: 'glyph.hourglass',
     feature: 'idle_chest',
     dialog: { name: 'idle-chest' },
