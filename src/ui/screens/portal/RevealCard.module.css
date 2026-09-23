@@ -152,7 +152,8 @@
     0 0 14px var(--rarity),
     0 0 36px color-mix(in srgb, var(--rarity) 70%, transparent),
     0 2px 0 rgba(0, 0, 0, 0.8);
-  animation-delay: 380ms;
+  /* After the card's spin and its stars (RevealOverlay's beats): the seal falls last. */
+  animation-delay: var(--stamp-delay, 0ms);
 }
 
 @keyframes stamp {

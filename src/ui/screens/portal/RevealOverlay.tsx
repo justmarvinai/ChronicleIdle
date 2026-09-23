@@ -43,8 +43,11 @@ const CARD_BEATS = {
   bestPause: 520,
   /** The single card has landed and its stars begin. */
   starsAt: 700,
-  /** The single card's stamp lands (after its stars, before the way out). */
-  stampAt: 1100,
+  /** From the last star to the single card's stamp starting its fall. */
+  stampGap: 120,
+  /** The stamp's fall (`@keyframes stamp` in RevealCard.module.css), and when in it the seal meets the page. */
+  stampLength: 420,
+  stampImpact: 290,
   /** From the last card turning to the way out. */
   settle: 420,
 } as const;
@@ -84,6 +87,8 @@ export function RevealOverlay({
   const cards = useMemo(() => revealOrder(summary.pulls, summary.best), [summary]);
   const rarity = summary.best.record.rarity;
   const single = cards.length === 1;
+  // A single card's stamp falls once its last star has popped.
+  const stampAfter = CARD_BEATS.starsAt + (cards[0]?.instance.stars ?? 0) * POP_STEP_MS + CARD_BEATS.stampGap;
   const [phase, setPhase] = useState<Phase>('ritual');
   const [turned, setTurned] = useState(0);
   const skipped = useRef(false);
@@ -129,8 +134,10 @@ export function RevealOverlay({
       const stars = cards[0]?.instance.stars ?? 0;
       for (let i = 0; i < stars; i += 1)
         at(CARD_BEATS.starsAt + i * POP_STEP_MS, () => playSfx('summon.star', { rate: 1 + i * 0.07 }));
-      if (RARITIES.indexOf(rarity) >= LOUD) at(CARD_BEATS.stampAt, () => playSfx('summon.stamp'));
-      at(CARD_BEATS.stampAt + CARD_BEATS.settle, () => setPhase('done'));
+      // The seal is heard as it meets the page, not as it starts to fall.
+      if (RARITIES.indexOf(rarity) >= LOUD)
+        at(stampAfter + CARD_BEATS.stampImpact, () => playSfx('summon.stamp'));
+      at(stampAfter + CARD_BEATS.stampLength + CARD_BEATS.settle, () => setPhase('done'));
     };
 
     // Whichever comes first: the gate finishing, the gate failing, or the backstop.
@@ -157,7 +164,7 @@ export function RevealOverlay({
       for (const timer of timers) clearTimeout(timer);
       clearTimeout(backstop);
     };
-  }, [rarity, cards, ritual, reduced, single]);
+  }, [rarity, cards, ritual, reduced, single, stampAfter]);
 
   const skip = (): void => {
     skipped.current = true;
@@ -204,7 +211,7 @@ export function RevealOverlay({
                 y: -(Math.floor(index / GRID_COLUMNS) - 0.5) * GRID_PITCH.y,
               }}
               reduced={reduced}
-              {...(single ? { starsPopAfter: CARD_BEATS.starsAt } : {})}
+              {...(single ? { starsPopAfter: CARD_BEATS.starsAt, stampAfter } : {})}
             />
           ))}
         </div>

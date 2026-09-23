@@ -158,8 +158,9 @@ describe('the Portal', () => {
       });
       expect(screen.queryByTestId('summon-card-0')).toBeNull();
 
+      // The backstop (twelve seconds), then the card's own beats: its spin, its stars, its stamp.
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(14_000);
+        await vi.advanceTimersByTimeAsync(15_000);
       });
 
       expect(screen.getByTestId('summon-card-0')).toBeInTheDocument();

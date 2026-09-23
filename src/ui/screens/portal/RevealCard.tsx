@@ -27,8 +27,9 @@ export interface RevealCardProps {
   shardGlow: string;
   /** Where the card starts from, relative to where it lands: the heart of the gate. */
   dealFrom: { x: number; y: number };
-  /** Milliseconds after it lands that a single card's stars pop in. */
+  /** Milliseconds after it lands that a single card's stars pop in, and its stamp falls. */
   starsPopAfter?: number;
+  stampAfter?: number;
   reduced: boolean;
 }
 
@@ -48,6 +49,7 @@ export function RevealCard({
   shardGlow,
   dealFrom,
   starsPopAfter,
+  stampAfter,
   reduced,
 }: RevealCardProps) {
   const def = content.championById(pull.record.championId);
@@ -115,7 +117,12 @@ export function RevealCard({
           </div>
         </div>
       </motion.div>
-      <div className={styles.labels} data-shown={faceUp} data-single={single}>
+      <div
+        className={styles.labels}
+        data-shown={faceUp}
+        data-single={single}
+        style={stampAfter !== undefined ? { ['--stamp-delay' as string]: `${stampAfter}ms` } : undefined}
+      >
         <span className={`display ${styles.stamp}`} data-loud={loud} data-single={single}>
           {t(`rarity.${rarity}`)}
         </span>
