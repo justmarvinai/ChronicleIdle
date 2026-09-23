@@ -455,9 +455,9 @@ interface SaveGame {
   `RitualLayer` as a full-stage layer so the ring stays a circle at every window size); created on
   screen entry, destroyed on exit. The ritual runs off its own clock rather than a GSAP timeline: a
   beat sheet (`choreography.ts`, pure and tested) says when each tell, stall, wind-up and burst
-  lands, and the scene eases every value towards what the current beat asks — so skipping is
-  moving one number to the burst, a starved frame rate is landed by a cap, and nothing tweens an
-  object that has gone. The crystal (`crystal.ts`), the gate's furniture (`gate.ts`) and the moving
+  lands, the lean (`lean.ts`, pure and tested) says what the gate leans towards at each of them,
+  and the scene eases every value towards that lean — so skipping is moving one number to the
+  burst, a starved frame rate is landed by a cap, and nothing tweens an object that has gone. The crystal (`crystal.ts`), the gate's furniture (`gate.ts`) and the moving
   light (`sparks.ts`) are drawn and pooled in code;
   shared texture cache via `Assets`.
 - Renderer preference: WebGPU → WebGL2; `roundPixels: true`; nearest-neighbour scaling for

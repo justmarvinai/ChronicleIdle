@@ -543,8 +543,10 @@ Each constant has a doc comment: what it does, what it affects, safe range.
 - Owner-provided sounds live under `/game/assets/music_and_sounds/{sfx,ambience_sounds,background_music}`
   and VFX sheets under `/game/assets/music_and_sounds/vfx`. They are never renamed; the pipeline
   sanitises names into manifest keys.
-- Generated sounds are recipes in `tools/audio/recipes.ts` (synth graph + envelope + effects);
-  generated VFX are recipes in `tools/vfx/recipes.ts` (one `VfxRecipe` per key, painted frame by
+- Generated sounds are recipes in `tools/audio/recipes.ts`, the Portal's in
+  `tools/audio/summon-recipes.ts` (synth graph + envelope + effects; the shared `Recipe` type and
+  `chime` in `tools/audio/recipe.ts`); a new recipe file joins `RECIPE_SOURCES` in
+  `tools/audio/build.ts`, so an edit to it re-renders. Generated VFX are recipes in `tools/vfx/recipes.ts` (one `VfxRecipe` per key, painted frame by
   frame with the soft shapes of `tools/vfx/painter.ts`, rendered as `fx.gen.<name>` strips).
   Recipes are source; rendered files are build artifacts.
 - Map game events to assets in `src/audio/registry.ts` (sound keys → variants) and

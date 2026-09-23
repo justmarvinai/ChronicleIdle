@@ -41,6 +41,16 @@ const REVEAL_SOUND = {
 } as const satisfies Record<Rarity, string>;
 
 /**
+ * Where the ritual's sounds sit in the mix: a tell's crack under its chime, the music all but gone
+ * for the held breath, and pulled back under a Legendary or Mythic burst so it has the room.
+ */
+const RITUAL_MIX = {
+  crack: 0.5,
+  stall: { factor: 0.2, ms: 1400 },
+  rarest: { factor: 0.35, ms: 2200 },
+} as const;
+
+/**
  * The Summoning Portal (docs/tech/UI_DESIGN.md §5.12, SUMMONING.md): shards on the left, the gate
  * in the middle with the chosen shard's crystal in its ring and the two presses under it, and the
  * banner — its chances, its mercy, the Exchange — on the right.
@@ -82,11 +92,11 @@ export default function PortalScreen({ route }: ScreenProps) {
       case 'tell':
         // One whole tone per rarity up the ladder: gold always rings the same bright note.
         playSfx('summon.tell', { rate: tellRate(RARITIES.indexOf(rarity)) });
-        playSfx('summon.crack', { volume: 0.5 });
+        playSfx('summon.crack', { volume: RITUAL_MIX.crack });
         break;
       case 'stall':
         // The held breath: the music drops away and the heartbeat is all there is.
-        duckMusic(0.2, 1400);
+        duckMusic(RITUAL_MIX.stall.factor, RITUAL_MIX.stall.ms);
         playSfx('summon.stall');
         break;
       case 'windup':
@@ -94,7 +104,8 @@ export default function PortalScreen({ route }: ScreenProps) {
         break;
       case 'burst':
         // The rarest pulls get the room to themselves for a moment.
-        if (rarity === 'legendary' || rarity === 'mythic') duckMusic(0.35, 2200);
+        if (rarity === 'legendary' || rarity === 'mythic')
+          duckMusic(RITUAL_MIX.rarest.factor, RITUAL_MIX.rarest.ms);
         playSfx('summon.shatter');
         playSfx(REVEAL_SOUND[rarity]);
         break;

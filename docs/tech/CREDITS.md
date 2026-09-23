@@ -24,5 +24,5 @@ external credit.
 
 | Set | Origin | Licence | Added |
 | --- | --- | --- | --- |
-| Summon ritual sounds (`sfx.summon.charge`, `crack`, `reveal_common/rare/epic/legendary/mythic`) | Generated in-house by `tools/audio/recipes.ts` | Original work of this project | Phase 8 (`0.0.8`); the charge re-cut in `0.9.8` |
-| Summon ritual sounds, second set (`sfx.summon.tell`, `stall`, `windup`, `shatter`, `flip`, `star`, `stamp`) | Generated in-house by `tools/audio/recipes.ts` | Original work of this project | `0.9.8` |
+| Summon ritual sounds (`sfx.summon.charge`, `crack`, `reveal_common/rare/epic/legendary/mythic`) | Generated in-house by `tools/audio/summon-recipes.ts` | Original work of this project | Phase 8 (`0.0.8`); the charge re-cut in `0.9.8` |
+| Summon ritual sounds, second set (`sfx.summon.tell`, `stall`, `windup`, `shatter`, `flip`, `star`, `stamp`) | Generated in-house by `tools/audio/summon-recipes.ts` | Original work of this project | `0.9.8` |

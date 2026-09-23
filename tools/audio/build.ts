@@ -10,7 +10,9 @@ import { rmsDb } from '../assets/lib/wav.ts';
 import { SR } from './synth.ts';
 import { RECIPES } from './recipes.ts';
 
-const RECIPE_SOURCES = [join(import.meta.dirname, 'recipes.ts'), join(import.meta.dirname, 'synth.ts')];
+const RECIPE_SOURCES = ['recipes.ts', 'summon-recipes.ts', 'recipe.ts', 'synth.ts'].map((file) =>
+  join(import.meta.dirname, file),
+);
 
 export async function buildGeneratedAudio(ctx: BuildContext): Promise<void> {
   for (const recipe of RECIPES) {

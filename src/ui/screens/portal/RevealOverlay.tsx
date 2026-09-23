@@ -68,6 +68,12 @@ const GRID_COLUMNS = 5;
 const LOUD = RARITIES.indexOf('epic');
 
 /**
+ * The cards in the mix: the deal is softer than a turn, a lesser seal among ten softer than the
+ * best's, and each of a single card's stars rings a step higher than the last.
+ */
+const CARD_MIX = { deal: 0.6, lesserSeal: 0.55, starStep: 0.07 } as const;
+
+/**
  * The reveal (docs/design/SUMMONING.md §5): the ritual plays in the gate behind this overlay, then
  * the cards come out of it — rarest last — and the results offer the way out.
  *
@@ -111,7 +117,7 @@ export function RevealOverlay({
 
     const dealTen = (): void => {
       setPhase('deal');
-      playSfx('summon.flip', { volume: 0.6 });
+      playSfx('summon.flip', { volume: CARD_MIX.deal });
       let when = CARD_BEATS.dealt;
       cards.forEach((pull, index) => {
         const best = index === cards.length - 1;
@@ -121,7 +127,7 @@ export function RevealOverlay({
           setTurned(index + 1);
           playSfx('summon.flip');
           if (RARITIES.indexOf(pull.record.rarity) >= LOUD)
-            playSfx('summon.stamp', { volume: best ? 1 : 0.55 });
+            playSfx('summon.stamp', { volume: best ? 1 : CARD_MIX.lesserSeal });
         });
         when += CARD_BEATS.turnStep;
       });
@@ -133,7 +139,9 @@ export function RevealOverlay({
       setTurned(1);
       const stars = cards[0]?.instance.stars ?? 0;
       for (let i = 0; i < stars; i += 1)
-        at(CARD_BEATS.starsAt + i * POP_STEP_MS, () => playSfx('summon.star', { rate: 1 + i * 0.07 }));
+        at(CARD_BEATS.starsAt + i * POP_STEP_MS, () =>
+          playSfx('summon.star', { rate: 1 + i * CARD_MIX.starStep }),
+        );
       // The seal is heard as it meets the page, not as it starts to fall.
       if (RARITIES.indexOf(rarity) >= LOUD)
         at(stampAfter + CARD_BEATS.stampImpact, () => playSfx('summon.stamp'));

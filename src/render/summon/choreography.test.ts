@@ -3,7 +3,15 @@
  * the answer, the gate holds its breath before gold and rose, and a rarer pull is a longer wait.
  */
 import { describe, expect, it } from 'vitest';
-import { BURST_WEIGHT, RITUAL_TIMING, ritualPlan, shardFloor, tellRate, tellsFor } from './choreography';
+import {
+  BURST_WEIGHT,
+  RITUAL_TIMING,
+  ritualMoments,
+  ritualPlan,
+  shardFloor,
+  tellRate,
+  tellsFor,
+} from './choreography';
 
 describe('the ritual’s beat sheet', () => {
   it('tells every rarity from the shard’s floor up to the answer', () => {
@@ -47,6 +55,32 @@ describe('the ritual’s beat sheet', () => {
     const reduced = ritualPlan('epic', 'mythic', true);
     expect(reduced.beats.every((beat) => !beat.stalled)).toBe(true);
     expect(reduced.total).toBeLessThan(ritualPlan('epic', 'mythic').total / 2);
+    const moments = ritualMoments(reduced, RITUAL_TIMING.reduced);
+    expect(moments.some((moment) => moment.kind === 'stall')).toBe(false);
+  });
+
+  it('plays the charge, a stall just before the held tell, the tells, the wind-up, the burst, the end', () => {
+    const { full } = RITUAL_TIMING;
+    const plan = ritualPlan('rare', 'legendary');
+    const moments = ritualMoments(plan, full);
+    expect(moments.map((moment) => moment.kind)).toEqual([
+      'charge',
+      'tell',
+      'tell',
+      'stall',
+      'tell',
+      'windup',
+      'burst',
+      'end',
+    ]);
+    const gold = plan.beats[2];
+    expect(moments[3]?.beat).toBe(gold);
+    expect(moments[3]?.at).toBeCloseTo((gold?.at ?? 0) - full.stall);
+    expect(moments[5]?.at).toBeCloseTo(plan.burstAt - full.windup);
+    expect(moments[6]?.at).toBe(plan.burstAt);
+    expect(moments[7]?.at).toBe(plan.total);
+    // The wind-up, the burst and the end all belong to the answer's tell.
+    expect(moments.slice(-3).map((moment) => moment.index)).toEqual([2, 2, 2]);
   });
 
   it('gives each rarer burst more of everything, and a pillar only to gold and rose', () => {

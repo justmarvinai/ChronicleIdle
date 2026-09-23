@@ -11,9 +11,9 @@
  * for a Legendary or a Mythic, and slow motion for a Mythic alone.
  *
  * Presentation only: it is told a shard and a rarity and plays them. Nothing here reads game state,
- * and the cues it fires are sounds the caller owns. The ceremony runs off its own clock and the beat
- * sheet in `choreography.ts`, so skipping, pausing and a starved frame rate are arithmetic on one
- * number rather than surgery on a timeline.
+ * and the cues it fires are sounds the caller owns. The ceremony runs off its own clock, the beat
+ * sheet in `choreography.ts` and the lean each moment asks of the gate in `lean.ts`, so skipping,
+ * pausing and a starved frame rate are arithmetic on one number rather than surgery on a timeline.
  */
 import { Application, Container, Graphics, Sprite, type Texture } from 'pixi.js';
 import type { ShardId } from '@content/balance/summon';
@@ -23,13 +23,15 @@ import { ParticleField, makeGlowTexture } from '@render/ambient/particles';
 import {
   BURST_WEIGHT,
   RITUAL_TIMING,
+  ritualMoments,
   ritualPlan,
   shardFloor,
   type RitualBeat,
-  type RitualPlan,
+  type RitualMoment,
 } from './choreography';
 import { mixColor } from './color';
 import { Crystal, SHARD_CRYSTALS } from './crystal';
+import { backOut, ease, smooth } from './easing';
 import {
   RuneRing,
   makeBeamTexture,
@@ -38,6 +40,7 @@ import {
   makeSwirlTexture,
   makeWaveTexture,
 } from './gate';
+import { AT_REST, RESTING, ritualLean, spentLean, type GateLean, type RitualState } from './lean';
 import { Fragments, Inflow, Sparks, Waves } from './sparks';
 
 export const STAGE_W = 1920;
@@ -78,8 +81,6 @@ const SLOW_SECONDS = 0.55;
 /** The veins a crystal shows before any tell, and how far the tells spread them. */
 const VEINS_AT_REST = 0.25;
 const VEINS_TOLD = 0.65;
-/** Runes round the ring (`RuneRing`), kindled one after another by the charge. */
-const RUNE_COUNT = 24;
 
 /** The moments the ritual asks for a sound (SUMMONING.md §5). */
 export type RitualCue = 'charge' | 'stall' | 'tell' | 'windup' | 'burst';
@@ -122,70 +123,14 @@ export interface RitualHandle {
 
 type Mode = 'resting' | 'ritual' | 'spent';
 
-interface Moment {
-  at: number;
-  kind: 'charge' | 'stall' | 'tell' | 'windup' | 'burst' | 'end';
-  beat: RitualBeat | null;
-  index: number;
-}
-
-interface Run {
-  rarity: Rarity;
-  plan: RitualPlan;
-  moments: Moment[];
+/** A ritual being played: where it is on its beat sheet, and the promise it keeps. */
+interface Run extends RitualState {
+  moments: RitualMoment[];
+  /** The next moment to play. */
   next: number;
-  /** Seconds of ritual played. */
-  t: number;
-  told: number;
-  /** When the breath being held began, while one is. */
-  stallAt: number | null;
-  windupAt: number | null;
-  burst: boolean;
   resolve: () => void;
   cap: ReturnType<typeof setTimeout> | undefined;
 }
-
-/** What the gate leans towards this frame; the scene eases every value to it. */
-interface Targets {
-  zoom: number;
-  vortexSpeed: number;
-  vortexAlpha: number;
-  ringSpeed: number;
-  /** Brightness of the kindled runes, and how many are kindled. */
-  runes: number;
-  kindled: number;
-  /** Motes drawn in a second. */
-  inflow: number;
-  charge: number;
-  dim: number;
-  rays: number;
-  halo: number;
-  pillar: number;
-}
-
-const RESTING: Targets = {
-  zoom: 1,
-  vortexSpeed: 0.07,
-  vortexAlpha: 0.2,
-  ringSpeed: 0.025,
-  runes: 0,
-  kindled: 0,
-  inflow: 0,
-  charge: 0,
-  dim: 0,
-  rays: 0,
-  halo: 0,
-  pillar: 0,
-};
-
-/** The build of a curve: quick out of the start, easing in to its end. */
-const smooth = (x: number): number => x * x * (3 - 2 * x);
-const backOut = (x: number): number => 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2);
-/** Moves `value` towards `target` at `rate` per second, frame-rate independent. */
-const ease = (value: number, target: number, rate: number, dt: number): number =>
-  value + (target - value) * (1 - Math.exp(-rate * dt));
-/** A heartbeat's thump: a narrow swell centred on `at` seconds. */
-const thump = (s: number, at: number): number => Math.exp(-Math.pow((s - at) / 0.055, 2));
 
 export async function createRitualScene(host: HTMLElement, options: RitualOptions): Promise<RitualHandle> {
   const app = new Application();
@@ -365,7 +310,7 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
   };
 
   // Eased values and the impulses the moments kick.
-  const now: Targets = { ...RESTING };
+  const now: GateLean = { ...RESTING };
   let kick = 0;
   let shake = 0;
   let flashLevel = 0;
@@ -402,19 +347,6 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     tintTo(incoming.look.light);
     waves.emit({ color: incoming.look.light, from: 30, to: RING.radius * 1.15, life: 0.6, peak: 0.5 });
     inflow.rush(scaled(24), incoming.look.light);
-  }
-
-  function momentsOf(plan: RitualPlan): Moment[] {
-    const moments: Moment[] = [{ at: 0, kind: 'charge', beat: null, index: 0 }];
-    plan.beats.forEach((beat, index) => {
-      if (beat.stalled) moments.push({ at: beat.at - timing.stall, kind: 'stall', beat, index });
-      moments.push({ at: beat.at, kind: 'tell', beat, index });
-    });
-    const last = plan.beats.length - 1;
-    moments.push({ at: plan.burstAt - timing.windup, kind: 'windup', beat: null, index: last });
-    moments.push({ at: plan.burstAt, kind: 'burst', beat: null, index: last });
-    moments.push({ at: plan.total, kind: 'end', beat: null, index: last });
-    return moments.sort((a, b) => a.at - b.at);
   }
 
   function tell(current: Run, beat: RitualBeat, index: number): void {
@@ -519,7 +451,7 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     if (rarity === 'mythic' && !reduced) slowUntil = realClock + SLOW_SECONDS;
   }
 
-  function play(current: Run, moment: Moment): void {
+  function play(current: Run, moment: RitualMoment): void {
     switch (moment.kind) {
       case 'charge':
         hooks.cue('charge', { rarity: current.plan.beats[0]?.rarity ?? current.rarity, index: 0 });
@@ -585,108 +517,6 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     }
   }
 
-  /** Where the gate leans while a ritual plays, read off the beat sheet and the moment it is at. */
-  function ritualTargets(current: Run): Targets & { heart: number; squeeze: number } {
-    const { t, plan } = current;
-    const beats = plan.beats.length;
-    const heavy = BURST_WEIGHT[current.rarity].pillar;
-    if (current.burst)
-      return {
-        ...RESTING,
-        vortexSpeed: 0.6,
-        vortexAlpha: 0.5,
-        ringSpeed: 0.12,
-        runes: 0.55,
-        kindled: RUNE_COUNT,
-        rays: 0.5,
-        halo: 0.75,
-        pillar: heavy ? 0.5 : 0,
-        heart: 0,
-        squeeze: 0,
-      };
-    if (current.windupAt !== null) {
-      const w = Math.min(1, (t - current.windupAt) / Math.max(0.01, timing.windup));
-      return {
-        ...RESTING,
-        zoom: 1 + motion(0.1),
-        vortexSpeed: 2.8,
-        vortexAlpha: 0.72,
-        ringSpeed: 1,
-        runes: 1,
-        kindled: RUNE_COUNT,
-        inflow: 380,
-        charge: 1,
-        dim: 0.34,
-        heart: 0,
-        squeeze: w * w,
-      };
-    }
-    if (current.stallAt !== null) {
-      const s = t - current.stallAt;
-      return {
-        ...RESTING,
-        zoom: 1 + motion(0.06 + 0.02 * current.told + 0.06 * Math.min(1, s / Math.max(0.01, timing.stall))),
-        vortexSpeed: 0.1,
-        vortexAlpha: 0.12,
-        ringSpeed: 0.01,
-        runes: 0.12,
-        kindled: RUNE_COUNT,
-        inflow: 0,
-        charge: 0.14,
-        dim: 0.46,
-        heart: thump(s, 0.1) + 0.75 * thump(s, 0.34),
-        squeeze: 0,
-      };
-    }
-    if (current.told > 0) {
-      const q = current.told / beats;
-      return {
-        ...RESTING,
-        zoom: 1 + motion(0.045 + 0.025 * q),
-        vortexSpeed: 1.2 + 0.6 * q,
-        vortexAlpha: 0.48 + 0.14 * q,
-        ringSpeed: 0.35 + 0.25 * q,
-        runes: 0.9,
-        kindled: RUNE_COUNT,
-        inflow: 220 + 90 * q,
-        charge: 0.38 + 0.42 * q,
-        dim: 0.2 + 0.08 * q,
-        heart: 0,
-        squeeze: 0,
-      };
-    }
-    const p = Math.min(1, t / Math.max(0.01, timing.charge));
-    return {
-      ...RESTING,
-      zoom: 1 + motion(0.045 * smooth(p)),
-      vortexSpeed: 0.07 + 1.1 * p,
-      vortexAlpha: 0.2 + 0.28 * p,
-      ringSpeed: 0.025 + 0.3 * p,
-      runes: 0.85,
-      kindled: p * RUNE_COUNT,
-      inflow: 50 + 170 * p,
-      charge: 0.08 + 0.3 * p,
-      dim: 0.18 * p,
-      heart: 0,
-      squeeze: 0,
-    };
-  }
-
-  function spentTargets(): Targets {
-    const heavy = spentRarity !== null && BURST_WEIGHT[spentRarity].pillar;
-    return {
-      ...RESTING,
-      vortexSpeed: 0.12,
-      vortexAlpha: 0.3,
-      ringSpeed: 0.05,
-      runes: 0.4,
-      kindled: RUNE_COUNT,
-      rays: 0.32,
-      halo: 0.5,
-      pillar: heavy ? 0.2 : 0,
-    };
-  }
-
   const frame = (): void => {
     const realDt = app.ticker.deltaMS / 1000;
     realClock += realDt;
@@ -698,8 +528,10 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     const current = run;
     const winding = current !== null && current.windupAt !== null && !current.burst;
     const lean = current
-      ? ritualTargets(current)
-      : { ...(mode === 'spent' ? spentTargets() : RESTING), heart: 0, squeeze: 0 };
+      ? ritualLean(current, timing, reduced)
+      : mode === 'spent'
+        ? spentLean(spentRarity)
+        : AT_REST;
 
     now.zoom = ease(now.zoom, lean.zoom, winding ? 7 : 2.6, dt);
     now.vortexSpeed = ease(now.vortexSpeed, lean.vortexSpeed, 3.5, dt);
@@ -746,7 +578,7 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
     }
     const runeTint = mixColor(color, 0xffffff, runeFlare * 0.5);
     runeLights.forEach((light, i) => {
-      const lit = i < now.kindled ? 1 : 0;
+      const lit = i < now.kindled * runeLights.length ? 1 : 0;
       glints[i] = (glints[i] ?? 0) * Math.exp(-2.5 * dt);
       const want = Math.max(lit * (now.runes + lean.heart * 0.3), lit * runeFlare, glints[i] ?? 0);
       const alpha = ease(runeAlpha[i] ?? 0, want, 14, dt);
@@ -826,7 +658,7 @@ export async function createRitualScene(host: HTMLElement, options: RitualOption
         const current: Run = {
           rarity,
           plan,
-          moments: momentsOf(plan),
+          moments: ritualMoments(plan, timing),
           next: 0,
           t: 0,
           told: 0,

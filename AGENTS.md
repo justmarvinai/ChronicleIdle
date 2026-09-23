@@ -90,7 +90,7 @@ Documentation
 | an idle-chest reward | edit `src/content/balance/idle.ts` (capacity bands, per-hour yields, the chance rolls and their per-fill caps); the engine tests check the table and the caps | `docs/design/ECONOMY.md` §6 |
 | a craft tier or forge cost | edit `src/content/balance/forge.ts` (materials, gold, rarity/star weights, set pool); the 10k-craft test guards the bands | `docs/design/GEAR.md` §6 |
 | a balance tweak | edit `src/content/balance/*.ts`, run `pnpm sim:balance`, note in CHANGELOG "Balance" | `docs/design/*` tables |
-| a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes/`; map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
+| a sound | owner file under `/game/assets/music_and_sounds/**` or a synth recipe in `tools/audio/recipes.ts` (the Portal's in `summon-recipes.ts`); map a key in `src/audio/registry.ts`; add a credits row | `docs/tech/ASSETS.md` §2, `docs/tech/UI_DESIGN.md` §7 |
 | a visual effect | owner sheet under `/game/assets/music_and_sounds/vfx/**` or a procedural recipe in `tools/vfx/recipes.ts`; register in `src/render/battle/fx/registry.ts`; add a credits row | `docs/tech/UI_DESIGN.md` §6.3 |
 
 ## 4.1 A fixture must be able to do what its chronicle has done

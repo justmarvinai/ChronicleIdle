@@ -36,7 +36,12 @@ line about the colour now describes the climb. `docs/tech/UI_DESIGN.md` §5.12, 
 - **The summoning ritual, rebuilt** (`render/summon`):
   - `choreography.ts`: the beat sheet — `ritualPlan` (the charge, a tell per rarity from the shard's
     floor up to the answer, a held breath before gold and before rose, the wind-up, the burst, the
-    settle), `tellsFor`, `shardFloor`, `RITUAL_TIMING`, `BURST_WEIGHT`, `tellRate`;
+    settle), `ritualMoments` (the sheet as the moments the scene plays, in order), `tellsFor`,
+    `shardFloor`, `RITUAL_TIMING`, `BURST_WEIGHT`, `tellRate`;
+  - `lean.ts`: what the gate leans towards at each moment — `ritualLean` (the charge kindling the
+    runes, each tell building, the held breath's drain and heartbeat, the wind-up's squeeze, the
+    afterglow), `spentLean`, `RESTING`, `AT_REST` — pure, and tested like the beat sheet;
+  - `easing.ts`: the curves both use (`smooth`, `backOut`, `ease`, `thump`);
   - `crystal.ts`: the shard as a drawn crystal — six facets round a drifting ridge, veins, cracks, a
     sheen — and `SHARD_CRYSTALS`, the four shards cut and coloured after their icons;
   - `gate.ts`: the rune ring, and the swirl, rays, beam, streak and shockwave textures;
@@ -44,7 +49,10 @@ line about the colour now describes the climb. `docs/tech/UI_DESIGN.md` §5.12, 
     crystal's own facets, thrown);
   - `color.ts`: `mixColor`.
 - Seven generated sounds: `sfx.summon.tell` (pitched a whole tone per rarity by the Portal),
-  `stall` (two heartbeats), `windup`, `shatter`, and for the cards `flip`, `star` and `stamp`.
+  `stall` (two heartbeats), `windup`, `shatter`, and for the cards `flip`, `star` and `stamp`. The
+  Portal's fourteen recipes move to `tools/audio/summon-recipes.ts`, the shared `Recipe` type and
+  `chime` to `tools/audio/recipe.ts`; `RECIPE_SOURCES` lists all four files, and every sound
+  renders to the same bytes as before.
 - **The Portal's parts** (`ui/screens/portal`): `GatePlate` (the nameplate and the two presses with
   their cost), `RarityRange`, `RevealCard` (a card's entrance, its turn, its stamp and labels);
   `portal-view.ts`: `chanceBar`, `shardRange`, `mercyBars`; `SHARD_HEX` in the display maps.
@@ -59,7 +67,7 @@ line about the colour now describes the climb. `docs/tech/UI_DESIGN.md` §5.12, 
   timeline. Its handle is `setShard`, `reveal(rarity, shard)`, `rest`, `skip`, `busy`, `setPaused`,
   `destroy`; its cues are `charge`, `tell`, `stall`, `windup` and `burst`, each with the rarity and
   its place in the climb. A starved ritual is landed at its burst three seconds past its own length.
-  `RING` moves to the middle of the new layout (908, 420; radius 236).
+  `RING` moves to the middle of the new layout (908, 440; radius 236).
 - `RitualLayer` takes the shard and an `active` flag, and rises over the Portal's panels (under the
   reveal's cards) while a press plays out.
 - **The reveal** (`RevealOverlay`): one card spins in, pops its stars and is stamped with its rarity;

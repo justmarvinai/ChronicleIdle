@@ -14,11 +14,25 @@ import { RARITIES, type Rarity } from '@content/champions/types';
 /** The rarities worth a held breath: the gate stalls before telling either. */
 const STALLED: ReadonlySet<Rarity> = new Set(['legendary', 'mythic']);
 
-/** Seconds, at full ceremony and under reduced motion. */
-export const RITUAL_TIMING = {
+/** The lengths of a ritual's parts, in seconds. */
+export interface RitualTiming {
+  /** From the press to the first tell. */
+  charge: number;
+  /** From one tell to the next. */
+  step: number;
+  /** The held breath before gold, and before rose. */
+  stall: number;
+  /** The last draw before the crystal gives. */
+  windup: number;
+  /** From the burst to the cards. */
+  tail: number;
+}
+
+/** At full ceremony and under reduced motion. */
+export const RITUAL_TIMING: Readonly<Record<'full' | 'reduced', RitualTiming>> = {
   full: { charge: 1.15, step: 0.46, stall: 0.62, windup: 0.3, tail: 0.75 },
   reduced: { charge: 0.4, step: 0.18, stall: 0, windup: 0.1, tail: 0.3 },
-} as const;
+};
 
 export interface RitualBeat {
   rarity: Rarity;
@@ -66,6 +80,33 @@ export function ritualPlan(floor: Rarity, rarity: Rarity, reduced = false): Ritu
   }
   const burstAt = at + timing.windup;
   return { beats, burstAt, total: burstAt + timing.tail };
+}
+
+/** A point on the beat sheet where the scene acts: a sound, a tell, the burst, the end. */
+export interface RitualMoment {
+  at: number;
+  kind: 'charge' | 'stall' | 'tell' | 'windup' | 'burst' | 'end';
+  /** The tell a stall holds back, or the tell played; null for the rest. */
+  beat: RitualBeat | null;
+  /** Its tell's place in the climb; the last tell's for the wind-up, the burst and the end. */
+  index: number;
+}
+
+/**
+ * The beat sheet as the scene plays it, in order: the charge at the press, a stall `timing.stall`
+ * before each held tell, the tells, the wind-up `timing.windup` before the burst, and the end.
+ */
+export function ritualMoments(plan: RitualPlan, timing: RitualTiming): RitualMoment[] {
+  const moments: RitualMoment[] = [{ at: 0, kind: 'charge', beat: null, index: 0 }];
+  plan.beats.forEach((beat, index) => {
+    if (beat.stalled) moments.push({ at: beat.at - timing.stall, kind: 'stall', beat, index });
+    moments.push({ at: beat.at, kind: 'tell', beat, index });
+  });
+  const last = plan.beats.length - 1;
+  moments.push({ at: plan.burstAt - timing.windup, kind: 'windup', beat: null, index: last });
+  moments.push({ at: plan.burstAt, kind: 'burst', beat: null, index: last });
+  moments.push({ at: plan.total, kind: 'end', beat: null, index: last });
+  return moments.sort((a, b) => a.at - b.at);
 }
 
 /**
