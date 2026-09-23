@@ -4,9 +4,13 @@
  * Its own module so the screen files export only their components — the react-refresh rule — and
  * so the Bag and the Market can say the same things about the same item.
  */
-import type { CurrencyAmount } from '@content/currencies/types';
+import { BOOST_HOURS } from '@content/balance/boosts';
+import { GOLD_MARKET_POOL } from '@content/balance/market';
+import type { ConsumableDef } from '@content/consumables/types';
+import type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 import type { Grant } from '@content/grants';
 import { grantCurrencies } from '@content/grants';
+import type { GemShelfEntry } from '@content/market/types';
 import { content } from '@content/registry';
 import { formatDuration } from '@engine/time/clock';
 import { t, translate, type I18nKey } from '@i18n/index';
@@ -31,6 +35,69 @@ export function contentsLines(grants: readonly Grant[]): readonly string[] {
       ? itemLine(grant.item, grant.count)
       : `${translate(content.currencyById[grant.currency].name)} ${t('bag.count', { count: grant.amount })}`,
   );
+}
+
+/** A gem shelf entry's id without its namespace — what its test ids and keys are built from. */
+export function shelfSlug(entry: GemShelfEntry): string {
+  return entry.id.replace('shelf.', '');
+}
+
+/** Whether a stall slot carries one of the pool's rare finds (MARKET.md §1.1). */
+export function isRareFind(currency: CurrencyId): boolean {
+  return GOLD_MARKET_POOL.some((row) => row.currency === currency && row.rareFind === true);
+}
+
+/**
+ * What a consumable is for, in a few words over its name ("Boost · 24 h"). Exhaustive over the
+ * effect union, like `outcomeLine`, so a new kind of item cannot reach the shelf unlabelled.
+ */
+export function consumableKind(def: ConsumableDef): string {
+  const effect = def.effect;
+  switch (effect.kind) {
+    case 'boost':
+      return t('market.kind.boost', { hours: BOOST_HOURS[effect.boost] });
+    case 'brewery_runs':
+      return t('market.kind.brewery');
+    case 'quest_reset':
+      return t(effect.period === 'daily' ? 'market.kind.daily' : 'market.kind.weekly');
+    case 'mission_skip':
+      return t('market.kind.path');
+    case 'champion_level':
+    case 'champion_stars':
+      return t('market.kind.champion');
+  }
+}
+
+/** The single a shelf sells an item as, if it sells it on its own. */
+function singleOf(item: string, shelf: readonly GemShelfEntry[]): GemShelfEntry | undefined {
+  return shelf.find(
+    (entry) =>
+      entry.once !== true &&
+      entry.contents.length === 1 &&
+      entry.contents[0]?.kind === 'consumable' &&
+      entry.contents[0].item === item,
+  );
+}
+
+/**
+ * What a bundle's parts would cost bought one by one off the same shelf (MARKET.md §2.2), or
+ * `null` when a part is not sold singly — the Quartermaster's Crate pays currencies — because a
+ * saving is only worth printing where the player can check it against the shelf.
+ */
+export function bundleWorth(entry: GemShelfEntry, shelf: readonly GemShelfEntry[]): number | null {
+  let worth = 0;
+  for (const grant of entry.contents) {
+    if (grant.kind !== 'consumable') return null;
+    const single = singleOf(grant.item, shelf);
+    if (!single) return null;
+    worth += single.price * grant.count;
+  }
+  return worth;
+}
+
+/** The share of `worth` a price saves, as a whole percentage. */
+export function bundleSaving(price: number, worth: number): number {
+  return worth > 0 ? Math.round((1 - price / worth) * 100) : 0;
 }
 
 /**

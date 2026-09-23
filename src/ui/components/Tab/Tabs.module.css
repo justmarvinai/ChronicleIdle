@@ -52,6 +52,17 @@
   opacity: 1;
   filter: drop-shadow(0 0 6px rgba(240, 213, 122, 0.55));
 }
+.icon {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  filter: grayscale(0.5) brightness(0.8);
+  transition: filter var(--t-fast);
+}
+.active .icon,
+.tab:hover .icon {
+  filter: drop-shadow(0 0 8px rgba(240, 213, 122, 0.5));
+}
 .badge {
   min-width: 24px;
   height: 24px;

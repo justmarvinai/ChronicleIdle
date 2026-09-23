@@ -32,6 +32,11 @@ export interface GoldMarketRow {
   min: number;
   max: number;
   unitGold: number;
+  /**
+   * The rows worth setting an alarm for (MARKET.md §1.1): drawn so seldom that the stall marks the
+   * slot as a rare find, so a player skimming it does not walk past the one thing it is carrying.
+   */
+  rareFind?: true;
 }
 
 /**
@@ -59,9 +64,9 @@ export const GOLD_MARKET_POOL: readonly GoldMarketRow[] = [
   { currency: 'tome_epic', weight: 22, min: 1, max: 2, unitGold: 9_000 },
   { currency: 'shard_faded', weight: 20, min: 1, max: 3, unitGold: 6_500 },
   { currency: 'mat_glyph_sigil', weight: 12, min: 1, max: 1, unitGold: 18_000 },
-  { currency: 'tome_legendary', weight: 7, min: 1, max: 1, unitGold: 34_000 },
-  { currency: 'shard_ancient', weight: 5, min: 1, max: 1, unitGold: 45_000 },
-  { currency: 'shard_sacred', weight: 1, min: 1, max: 1, unitGold: 260_000 },
+  { currency: 'tome_legendary', weight: 7, min: 1, max: 1, unitGold: 34_000, rareFind: true },
+  { currency: 'shard_ancient', weight: 5, min: 1, max: 1, unitGold: 45_000, rareFind: true },
+  { currency: 'shard_sacred', weight: 1, min: 1, max: 1, unitGold: 260_000, rareFind: true },
 ];
 
 /** The pool's total weight; the roll reads it once per slot. */

@@ -1,0 +1,129 @@
+/* One of the gem shelf's bundles (docs/tech/UI_DESIGN.md §5.25), in gold and knotted corners. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 18px 22px 16px;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, rgba(226, 176, 78, 0.16), transparent 72%),
+    linear-gradient(180deg, rgba(40, 28, 16, 0.95), rgba(13, 10, 7, 0.96));
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast);
+}
+.card:hover:not(.taken) {
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(226, 176, 78, 0.22);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.name {
+  font-size: 25px;
+  line-height: 1.1;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+}
+/* Once per chronicle: gold on a dark ember ribbon, legible at a glance. */
+.once {
+  flex: 0 0 auto;
+  padding: 4px 14px 5px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: #ffd98a;
+  background: linear-gradient(180deg, rgba(120, 40, 22, 0.95), rgba(70, 20, 12, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 190, 110, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.what {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+.holds {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.holdsLabel {
+  flex: 0 0 auto;
+  padding-top: 7px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.contents {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* What the parts cost singly and what the bundle saves; then the price and the press. */
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(226, 176, 78, 0.22);
+}
+.worth {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+.saving {
+  padding: 2px 10px 3px;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  color: #1c2a12;
+  background: linear-gradient(180deg, #9fe07a, #5fae48);
+  box-shadow: inset 0 0 0 1px rgba(20, 60, 10, 0.5);
+}
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 24px;
+  color: var(--gold-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Taken: it keeps its place on the shelf, quiet, with a stamp across it. */
+.taken > :not(.stamp) {
+  filter: grayscale(0.85) brightness(0.55);
+}
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 3;
+  translate: -50% -50%;
+  rotate: -8deg;
+  padding: 4px 26px 6px;
+  font-size: 40px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  color: #e3b456;
+  border: 3px double rgba(227, 180, 86, 0.85);
+  background: rgba(14, 10, 6, 0.72);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}

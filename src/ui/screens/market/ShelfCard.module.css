@@ -1,0 +1,124 @@
+/* One single on the gem shelf (docs/tech/UI_DESIGN.md §5.25), framed and lit in its rarity. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 14px 18px 14px 14px;
+  background:
+    radial-gradient(
+      ellipse 50% 70% at 12% 38%,
+      color-mix(in srgb, var(--rarity) 18%, transparent),
+      transparent 72%
+    ),
+    linear-gradient(180deg, rgba(26, 22, 30, 0.94), rgba(11, 10, 13, 0.95));
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast);
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.5),
+    0 0 18px color-mix(in srgb, var(--rarity) 25%, transparent);
+}
+
+.top {
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+.stand {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+}
+.halo {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 44% 15% at 50% 86%,
+      color-mix(in srgb, var(--rarity) 45%, transparent) 0%,
+      transparent 100%
+    ),
+    radial-gradient(circle, color-mix(in srgb, var(--rarity) 34%, transparent) 0%, transparent 64%);
+  transition: filter var(--t-base);
+}
+.card:hover .halo {
+  filter: brightness(1.35);
+}
+.icon {
+  position: relative;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.75));
+  transition: transform var(--t-base) var(--ease-out);
+}
+.card:hover .icon {
+  transform: translateY(-4px) scale(1.05);
+}
+.gain {
+  position: absolute;
+  top: 34%;
+  z-index: 3;
+  font-size: 24px;
+  color: var(--ok);
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.9),
+    0 0 12px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.name {
+  font-size: 21px;
+  line-height: 1.1;
+  color: color-mix(in srgb, var(--rarity) 70%, white 30%);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--rarity) 35%, transparent);
+}
+.kind {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+.what {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+/* What the Bag already holds, the price, and the press. */
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--rarity) 22%, transparent);
+}
+.held {
+  flex: 1;
+  font-size: 14px;
+  color: var(--ok);
+}
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 21px;
+  color: var(--gold-3);
+  font-variant-numeric: tabular-nums;
+}

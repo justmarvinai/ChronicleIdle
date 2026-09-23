@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { playSfx } from '@audio/index';
 import type { GlyphKey } from '@assets/manifest.generated';
 import { Glyph } from '@ui/components/Glyph/Glyph';
@@ -9,6 +10,8 @@ export interface TabItem<K extends string> {
   label: string;
   /** A mark before the label, for tabs that name a kind of work (the Tavern's three tracks). */
   glyph?: GlyphKey;
+  /** A painted mark instead of a glyph — the coin and the gem over the Market's two shelves. */
+  icon?: ReactNode;
   badge?: number;
   disabled?: boolean;
   testId?: string;
@@ -55,7 +58,11 @@ export function Tabs<K extends string>({
               onChange(item.key);
             }}
           >
-            {item.glyph ? <Glyph glyph={item.glyph} size={24} className={styles.glyph} /> : null}
+            {item.icon ? (
+              <span className={styles.icon}>{item.icon}</span>
+            ) : item.glyph ? (
+              <Glyph glyph={item.glyph} size={24} className={styles.glyph} />
+            ) : null}
             <span className={`display ${styles.label}`}>{item.label}</span>
             {item.badge ? <span className={`num ${styles.badge}`}>{item.badge}</span> : null}
           </button>

@@ -9,6 +9,16 @@
   padding-right: 22px;
   overscroll-behavior: contain;
 }
+/* The content fades out only at an edge it runs on past; the scrollbar stays crisp. */
+.fade .viewport {
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent 100%
+  );
+}
 /*
  * A flex column so a tab can stretch to the viewport: `min-height: 100%` gives this box a used
  * height but leaves its computed height `auto`, against which a child's percentage height would
