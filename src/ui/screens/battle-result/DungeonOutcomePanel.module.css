@@ -1,27 +1,11 @@
 /*
- * What a keep gave up (docs/tech/UI_DESIGN.md §5.24). The pieces are the panel: each one lands in
+ * What a keep gave up (docs/tech/UI_DESIGN.md §5.24). The pieces lead the panel: each one lands in
  * turn, framed by its rarity, because a haul of six is read by looking at it rather than counting.
  */
-.panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 20px;
-  text-align: center;
-}
-.title {
-  margin: 0;
-  font-size: 22px;
-  letter-spacing: 0.06em;
-  color: var(--gold-1);
-}
 .pieces {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  max-width: 420px;
+  gap: 10px;
 }
 .piece {
   display: inline-flex;
@@ -37,41 +21,4 @@
     opacity: 1;
     transform: none;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .piece {
-    animation: none;
-    opacity: 1;
-  }
-}
-.count {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: 0.04em;
-  color: var(--text-1);
-}
-.none {
-  margin: 0;
-  font-size: 16px;
-  color: var(--text-3);
-}
-.note {
-  margin: 0;
-  font-size: 15px;
-  color: var(--gold-2);
-}
-.held {
-  margin: 0;
-  font-size: 16px;
-  color: var(--ember-2);
-}
-.full {
-  margin: 0;
-  font-size: 14px;
-  color: var(--ember-2);
-}
-.runs {
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-3);
 }

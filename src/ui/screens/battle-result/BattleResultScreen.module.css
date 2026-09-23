@@ -1,3 +1,4 @@
+/* Battle result (docs/tech/UI_DESIGN.md §5.10): the crest over the team and the spoils. */
 .root {
   position: absolute;
   inset: 0;
@@ -8,312 +9,98 @@
   inset: 0;
   z-index: var(--z-scene);
   pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.6) 100%);
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 12%, rgba(240, 213, 122, 0.1), transparent 70%),
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.62) 100%);
 }
 .defeat .vignette {
-  background: radial-gradient(ellipse at center, rgba(60, 0, 10, 0) 35%, rgba(70, 0, 12, 0.7) 100%);
-}
-.header {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  right: 0;
-  z-index: var(--z-scene);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.title {
-  margin: 0;
-  font-size: 84px;
-  letter-spacing: 0.06em;
-  color: var(--gold-3);
-  text-shadow:
-    0 4px 0 rgba(0, 0, 0, 0.9),
-    0 0 40px rgba(240, 213, 122, 0.4);
-  animation: pop 0.6s var(--ease-out) both;
-}
-.defeat .title {
-  color: var(--debuff);
-  text-shadow:
-    0 4px 0 rgba(0, 0, 0, 0.9),
-    0 0 40px rgba(255, 77, 109, 0.35);
-}
-.subtitle {
-  margin: 0;
-  font-size: 22px;
-  color: var(--text-2);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
-}
-.columns {
-  position: absolute;
-  top: 300px;
-  /* Stops short of the buttons (bottom 48 px, ~76 px tall), so nothing can run in under them. */
-  bottom: 150px;
-  left: 120px;
-  right: 120px;
-  z-index: var(--z-scene);
-  display: grid;
-  grid-template-columns: 560px 1fr;
-  grid-template-rows: minmax(0, 1fr);
-  gap: 40px;
-}
-.stats,
-.report {
-  min-height: 0;
-}
-/* The spoils scroll inside their panel; the panel's own frame never moves. */
-.statsContent {
-  height: 100%;
-  min-height: 0;
-}
-.heading {
-  margin: 0 0 12px;
-  font-size: 24px;
-  color: var(--gold-3);
-}
-.statList {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 0;
-}
-.statList div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.statList dt {
-  font-size: 14px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-.statList dd {
-  margin: 4px 0 0;
-  font-size: 36px;
-  color: var(--text-1);
-}
-.enemyHp {
-  margin: 18px 0 0;
-  font-size: 18px;
-  color: var(--debuff);
-}
-.hints {
-  margin: 14px 0 0;
-  padding-left: 20px;
-  font-size: 16px;
-  line-height: 1.45;
-  color: var(--text-2);
-}
-.noRewards {
-  margin: 20px 0 0;
-  font-size: 15px;
-  color: var(--text-3);
-}
-.seed {
-  margin: 8px 0 0;
-  font-size: 13px;
-  color: var(--text-3);
-}
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 18px;
-}
-.table th {
-  padding: 8px 10px;
-  text-align: right;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  border-bottom: 1px solid rgba(201, 162, 74, 0.3);
-}
-.table td {
-  padding: 10px;
-  text-align: right;
-  color: var(--text-1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.champ {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-align: left !important;
-}
-.avatar {
-  width: 48px;
-  height: 48px;
-  background-size: cover;
-  background-position: center top;
-  border: 1px solid rgba(201, 162, 74, 0.5);
-}
-.champName {
-  font-size: 20px;
-}
-.fallen td {
-  color: var(--text-3);
-}
-.fallenTag {
-  padding: 1px 8px;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--debuff);
-  border: 1px solid rgba(255, 77, 109, 0.5);
-}
-.actions {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 48px;
-  z-index: var(--z-scene);
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-}
-@keyframes pop {
-  from {
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 12%, rgba(224, 74, 58, 0.1), transparent 70%),
+    radial-gradient(ellipse at center, rgba(60, 0, 10, 0) 35%, rgba(70, 0, 12, 0.72) 100%);
 }
 
-.starsRow {
+/* The team on the left, what the fight paid on the right; both stop above the buttons. */
+.body {
+  position: absolute;
+  top: 300px;
+  bottom: 128px;
+  left: 80px;
+  right: 80px;
+  z-index: var(--z-scene);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 760px;
+  gap: 40px;
+}
+
+.side {
+  composes: surfaceStone from global;
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 14px;
-  margin-bottom: 14px;
+  min-height: 0;
+  padding: 18px 20px 14px;
 }
-.starsRow > [role='img'] {
-  filter: drop-shadow(0 0 10px rgba(242, 169, 59, 0.45));
+.side::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-2) 20%,
+    var(--gold-3) 50%,
+    var(--gold-2) 80%,
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(240, 213, 122, 0.4);
 }
-.batch {
-  font-size: 16px;
-  color: var(--text-2);
+.defeat .side::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--ember-2) 20%,
+    var(--danger) 50%,
+    var(--ember-2) 80%,
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(224, 74, 58, 0.45);
 }
-.record {
-  padding: 4px 12px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #1a1206;
-  background: linear-gradient(180deg, var(--gold-3), var(--gold-1));
-  border: 1px solid rgba(0, 0, 0, 0.5);
+.sideScroll {
+  flex: 1;
+  min-height: 0;
 }
-.rewards {
+.sideContent {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 18px;
+  padding-right: 6px;
 }
-.rewardTitle {
-  margin: 4px 0 0;
-  font-size: 19px;
-  color: var(--gold-3);
+/* The seed sits at the panel's foot, however little the fight paid above it. */
+.seed {
+  margin: auto 0 0;
+  font-size: 12px;
+  color: var(--text-3);
 }
-.rewardList {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 15px;
-  color: var(--text-2);
-}
-.rewardList li {
+
+/* One row of presses: the ways out on the left, the one that matters on the right. */
+.actions {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  bottom: 36px;
+  z-index: var(--z-scene);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 24px;
 }
-.xpLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding-left: 1px;
-}
-.rewardList li span:last-child {
-  color: var(--gold-3);
-}
-.bonus {
-  margin: 0;
-  font-size: 14px;
-  color: var(--buff);
-}
-/* The run's drops, two to a row: painting and emblem first, the name in its rarity beside. */
-.drops {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px 14px;
-  margin: 4px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.drop {
+.secondary {
   display: flex;
   align-items: center;
-  gap: 9px;
-  min-width: 0;
-}
-.dropName {
-  overflow: hidden;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
-}
-.gear {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-3);
-}
-
-/*
- * A skill point earned. It is a button rather than a line: the point is no use where it was won,
- * and the Palace is two screens away from here.
- */
-.palace {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  border: 0;
-  color: var(--text-1);
-  background: linear-gradient(90deg, rgba(163, 93, 227, 0.22), rgba(163, 93, 227, 0.05));
-  box-shadow: inset 0 0 0 1px rgba(163, 93, 227, 0.55);
-  cursor: pointer;
-  transition:
-    background var(--t-fast),
-    transform var(--t-fast) var(--ease-out);
-}
-.palace:hover {
-  background: linear-gradient(90deg, rgba(163, 93, 227, 0.34), rgba(163, 93, 227, 0.1));
-  transform: translateY(-2px);
-}
-.palace:focus-visible {
-  outline: 2px solid var(--gold-3);
-  outline-offset: 2px;
-}
-.palaceLabel {
-  font-size: 19px;
-  color: var(--gold-3);
-}
-.palaceValue {
-  font-size: 19px;
-  font-weight: 700;
-  text-align: right;
-  color: var(--r-epic);
+  gap: 14px;
 }

@@ -119,9 +119,8 @@ export const dungeons = {
   'dungeon.outcome.noPieces': 'Nothing left the racks.',
   'dungeon.outcome.first': 'First clear — stage {stage} opens.',
   'dungeon.outcome.hardOpen': 'Hard opens.',
-  'dungeon.outcome.full': 'The armoury is full. {count} pieces were left behind.',
+  'dungeon.outcome.full': 'The armoury is full — {count} left behind on the keep’s floor.',
   'dungeon.outcome.runs': '{count} runs',
-  'dungeon.outcome.spoils': '{gold} gold · {xp} champion XP',
   'dungeon.outcome.back': 'Back to the keep',
 
   /** Game Modes. */

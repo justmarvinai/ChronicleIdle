@@ -1,0 +1,33 @@
+/* The fight in three numbers, one line (docs/tech/UI_DESIGN.md §5.10). */
+.stats {
+  display: flex;
+  align-items: baseline;
+  margin: 0;
+}
+.stats > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 14px;
+}
+.stats > div:last-child {
+  padding-right: 2px;
+}
+/* A gold hairline between the numbers. */
+.stats > div + div {
+  box-shadow: inset 1px 0 0 rgba(201, 162, 74, 0.35);
+}
+.stats dt {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+}
+.stats dd {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}

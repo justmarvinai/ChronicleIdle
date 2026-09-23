@@ -1,0 +1,245 @@
+/* The team's cards on the result (docs/tech/UI_DESIGN.md §5.10). */
+.report {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.heading {
+  margin: 0;
+  font-size: 24px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.row {
+  display: flex;
+  padding-top: 10px;
+}
+
+.card {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: var(--card-w);
+  background: linear-gradient(180deg, rgba(20, 17, 22, 0.94), rgba(11, 10, 13, 0.96));
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(201, 162, 74, 0.2);
+  animation: land 0.35s ease-out both;
+}
+@keyframes land {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The fight's best dealer: its rarity's light behind it. */
+.mvp::before {
+  content: '';
+  position: absolute;
+  inset: -24px -20px;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 40%,
+    color-mix(in srgb, var(--rarity) 30%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+}
+.fallen .frame,
+.fallen .stats {
+  filter: grayscale(0.85) brightness(0.6);
+}
+
+.frame {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  background: var(--bg-1);
+}
+.portrait {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 12%;
+}
+.tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center 12%;
+  mask-position: center 12%;
+}
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 10, 13, 0) 50%,
+    rgba(11, 10, 13, 0.92) 84%,
+    rgba(11, 10, 13, 0.98)
+  );
+}
+.level {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  min-width: 34px;
+  padding: 2px 6px 1px;
+  font-size: 18px;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--text-1);
+  background: linear-gradient(180deg, rgba(40, 30, 18, 0.95), rgba(14, 11, 8, 0.95));
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(201, 162, 74, 0.7);
+}
+.levelUp {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 10px 4px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: #0e2a10;
+  background: linear-gradient(180deg, #b8f5a8, #56b04a);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 0 14px rgba(99, 201, 106, 0.55);
+}
+.fallenTag {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  translate: -50% -50%;
+  rotate: -8deg;
+  padding: 3px 16px 5px;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: #e0664a;
+  border: 3px double rgba(224, 102, 74, 0.85);
+  background: rgba(14, 8, 6, 0.7);
+}
+.foot {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.name {
+  font-size: 19px;
+  line-height: 1.05;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.xp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.xpBar {
+  flex: 1;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.xpBar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #3f8fe6, #8fd0ff);
+  box-shadow: 0 0 8px rgba(143, 208, 255, 0.5);
+}
+.xpBar > .xpFull {
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+}
+.xpText {
+  font-size: 14px;
+  color: #a8d8ff;
+  white-space: nowrap;
+}
+
+.mvpRibbon {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  padding: 3px 18px 4px;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(90, 60, 10, 0.6);
+}
+
+/* What the champion did, one line each; damage carries a bar against the team's best. */
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 0;
+  padding: 12px 12px 14px;
+}
+.line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 8px;
+}
+.line dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.line dd {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-1);
+}
+.share {
+  grid-column: 1 / -1;
+  height: 4px;
+  margin-top: 3px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.share > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ember-2), var(--ember-3));
+  box-shadow: 0 0 6px rgba(216, 85, 47, 0.5);
+}

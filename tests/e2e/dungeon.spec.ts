@@ -90,7 +90,7 @@ test.describe('the Dungeons', () => {
     await expect(outcome).toContainText('Normal 1');
     // Every clear pays a piece, always — a gear farm that sometimes pays nothing is one nobody runs.
     await expect(page.getByTestId('dungeon-outcome-count')).toContainText('piece');
-    await expect(page.getByTestId('dungeon-outcome-spoils')).toContainText('gold');
+    await expect(page.getByTestId('dungeon-outcome-spoils')).toContainText('Gold');
     await expect(page.getByTestId('dungeon-outcome-first')).toHaveText('First clear — stage 2 opens.');
 
     // Back into the keep, on the tab the run was spent on: one rung behind, the next open.

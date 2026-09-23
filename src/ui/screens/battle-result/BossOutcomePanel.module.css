@@ -1,40 +1,68 @@
-.panel {
+/* What a key bought (docs/tech/UI_DESIGN.md §5.10). */
+.hero {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
 }
-
-.title {
-  margin: 0;
-  font-size: 19px;
-  letter-spacing: 0.06em;
-  color: var(--gold-3);
-}
-
 .damage {
   margin: 0;
-  font-size: 40px;
+  font-size: 44px;
   line-height: 1;
-  color: var(--ember-3);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+  background: linear-gradient(180deg, #ffd9b0, var(--ember-3) 55%, var(--ember-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.8)) drop-shadow(0 0 12px rgba(216, 85, 47, 0.35));
 }
 
-.total,
-.xp {
-  margin: 0;
-  font-size: 15px;
-  color: var(--text-2);
+/* The pool: the bar, a notch at every chest, and the chests' marks under it. */
+.pool {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-
-.record {
-  margin: 0;
-  font-size: 16px;
-  color: var(--gold-2);
+.track {
+  position: relative;
 }
-
-.unlocked {
+.notch {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  translate: -1px 0;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.notchOn {
+  background: var(--gold-3);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 0 8px rgba(240, 213, 122, 0.8);
+}
+.chests {
+  position: relative;
+  height: 18px;
   margin: 0;
-  font-size: 15px;
+  padding: 0;
+  list-style: none;
+}
+.chests li {
+  position: absolute;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  translate: -50% 0;
+  font-size: 13px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+/* The last chest sits at the bar's end, so it reads leftwards from there. */
+.chests li:last-child {
+  translate: -100% 0;
+}
+.chests .chestOn {
   color: var(--gold-3);
 }

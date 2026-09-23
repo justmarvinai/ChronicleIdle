@@ -1,0 +1,66 @@
+/* What a stand paid (docs/tech/UI_DESIGN.md §5.10). */
+.spoils {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.heading {
+  margin: 0;
+  font-size: 24px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.subheading {
+  margin: 0;
+  font-size: 18px;
+  color: var(--gold-2);
+}
+
+/* First clear, star chests, a champion owed, a chronicle level: the lines worth a banner. */
+.banners {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* The run's drops, two to a row: painting and emblem first, the name in its rarity beside. */
+.dropsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+.drops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.drop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px 8px 4px 4px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--rarity) 16%, transparent), transparent 80%);
+}
+.dropName {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+.more {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.lost {
+  margin: 0;
+  font-size: 14px;
+  color: #ffb4a6;
+}

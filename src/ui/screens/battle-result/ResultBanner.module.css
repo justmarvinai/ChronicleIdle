@@ -1,0 +1,51 @@
+/* A line worth a banner on a result (docs/tech/UI_DESIGN.md §5.10). */
+.banner {
+  --tone: var(--gold-3);
+  --tone-rule: var(--gold-2);
+  --tone-wash: rgba(240, 213, 122, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 7px 12px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 0.03em;
+  color: var(--tone);
+  background: linear-gradient(90deg, var(--tone-wash), transparent 80%);
+  border-left: 2px solid var(--tone-rule);
+  animation: rise 0.4s var(--ease-out) both;
+}
+.purple {
+  --tone: #d9b8ff;
+  --tone-rule: var(--r-epic);
+  --tone-wash: rgba(163, 92, 255, 0.2);
+}
+.ember {
+  --tone: #ffb4a6;
+  --tone-rule: rgba(224, 102, 74, 0.85);
+  --tone-wash: rgba(224, 74, 58, 0.2);
+}
+.plain {
+  --tone: var(--text-1);
+  --tone-rule: rgba(201, 162, 74, 0.45);
+  --tone-wash: rgba(255, 255, 255, 0.05);
+}
+.glyph {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+.text {
+  min-width: 0;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

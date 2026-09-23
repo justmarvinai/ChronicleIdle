@@ -1,0 +1,139 @@
+/* The head of the result (docs/tech/UI_DESIGN.md §5.10). */
+.crest {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  z-index: var(--z-scene);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+/* A crown of light behind the word, turning slowly: gold for a win, a cold red for a loss. */
+.rays {
+  position: absolute;
+  top: -260px;
+  left: 50%;
+  width: 880px;
+  height: 880px;
+  translate: -50% 0;
+  background: repeating-conic-gradient(from 0deg, var(--ray) 0deg 5deg, transparent 5deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.5) 30%, transparent 62%);
+  mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.5) 30%, transparent 62%);
+  animation: turn 60s linear infinite;
+  opacity: 0.8;
+}
+.won {
+  --ray: rgba(240, 213, 122, 0.22);
+}
+.lost {
+  --ray: rgba(224, 74, 58, 0.14);
+}
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.emblem {
+  position: relative;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.8));
+}
+.title {
+  position: relative;
+  margin: 0;
+  font-size: 96px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  background: linear-gradient(180deg, #fff6d2 0%, #f0d57a 48%, #b8862f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.9)) drop-shadow(0 0 24px rgba(240, 213, 122, 0.4));
+}
+.lost .title {
+  background: linear-gradient(180deg, #ffe0d8 0%, #ff8a74 48%, #a8321f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.9)) drop-shadow(0 0 24px rgba(224, 74, 58, 0.4));
+}
+.subtitle {
+  position: relative;
+  margin: 0;
+  font-size: 21px;
+  color: var(--text-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* The stand's three stars, landing one by one. */
+.stars {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.star {
+  width: 58px;
+  height: 58px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: grayscale(1) brightness(0.35);
+}
+.starOn {
+  filter: drop-shadow(0 0 12px rgba(242, 169, 59, 0.75));
+}
+.record {
+  margin-left: 10px;
+  padding: 4px 14px 5px;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(90, 60, 10, 0.6);
+}
+.batch {
+  position: relative;
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* How close a lost fight came: what was left of the enemy, in red. */
+.close {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.closeLabel {
+  font-size: 17px;
+  color: #ffb4a6;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.closeBar {
+  width: 360px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(224, 74, 58, 0.5);
+}
+.closeBar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ember-2), var(--danger));
+  box-shadow: 0 0 10px rgba(224, 74, 58, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays {
+    animation: none;
+  }
+}

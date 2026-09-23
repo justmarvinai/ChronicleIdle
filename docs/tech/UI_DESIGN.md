@@ -438,17 +438,89 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Motion: per `ARCHITECTURE.md` §3.4; ultimates cut-in; kill slow-mo; wave transition slide.
 
 ### 5.10 Battle result
-- Victory: the stand's stars and a "New record" badge on the stats panel, stage name and
-  settlement, turns and waves, the spoils list (gold, materials, shards, brews, gems, energy —
-  each by its icon, `CurrencyLabel` — and champion and chronicle XP under the boosts' own marks)
-  with first-clear, star-chest and level-up lines and the drops — each
-  piece a chip of its painting with its set's emblem, named in its rarity's colour, two to a row
-  and a dozen at most (a longer batch counts the rest, as the dungeons do) — the
-  per-champion report, and buttons *Emberhold*, *Campaign*, *Team*, *Replay*, **Next stand**.
-  An auto-repeat batch shows the merged spoils and how the batch ended (done, stopped, defeated,
-  out of energy). The two panels stop above the buttons and the spoils scroll inside theirs, so a
-  long batch never runs underneath them. Defeat: red vignette, enemy HP left, tips, *Team*, *Emberhold* — and the energy
-  stays spent.
+One layout for every fight. The result is laid out in three bands: the crest at the top, the team
+and the side panel in the middle, and one row of presses along the bottom.
+
+**The crest.** It sits at the top centre.
+- The emblem sits over the word: a trophy for Victory, a skull wreath for Defeat and Time's up, a
+  shield for Retreat.
+- The word itself: Victory in gold on a slowly turning crown of light rays; Defeat, Time's up and
+  Retreat in red on a cold one.
+- The subtitle, which names the fight: stage, settlement and difficulty for a stand, boss and tier
+  for a boss race, the mode's name for a tower, brewery or dungeon fight.
+- A stand's three stars land one by one with a small chime each; the **New record** badge follows
+  them.
+- A batch adds a line under the stars: how many runs, and how the batch ended (done, stopped,
+  defeated, out of energy).
+- After a lost fight, how close it came: the enemy's health that was left, as a bar under the
+  subtitle.
+
+**The team.** It takes the left of the middle band (`ChampionReport`).
+- Each champion who fought is a card, one after another; four cards fill the row.
+- The painting sits in the champion's rarity frame and carries:
+  - a level plate;
+  - a green **Level up** badge when the fight earned one;
+  - the name;
+  - an XP bar showing where the champion now stands, with what the fight added (**Max level** at
+    the cap).
+- Under the painting, what the champion did:
+  - damage dealt, as a bar against the team's best;
+  - damage taken;
+  - healing;
+  - kills.
+- The top dealer wears a gold **MVP** ribbon over a glow in their rarity's colour.
+- A champion who fell is greyed out and stamped *Fallen*.
+- The *Champions* heading is exactly as wide as the cards. The fight in three numbers sits at its
+  other end: ally turns, total turns, waves cleared.
+
+**The side panel.** It is a stone panel on the right under a gold rule (an ember rule after a
+loss). It stops above the buttons and scrolls inside itself, so a long batch never runs underneath
+them.
+- Every mode draws its spoils in the same two pieces:
+  - **Banners**: a glyph and a sentence on a band of their tone. Gold for a first clear, a star
+    chest, a chronicle level, a record or a chest earned; purple for a champion owed at the Portal
+    or a boss floor's shards; red for a floor, run or keep that held.
+  - **Reward tiles**, four to a row, landing one after another: the currency's icon, what came in,
+    and its name. Champion XP and chronicle XP get blue tiles under their boosts' marks; shards get
+    a purple tile in their own light.
+- Each mode fills the panel its own way:
+
+  | Fight | What the side panel shows |
+  | --- | --- |
+  | Campaign stand | *Spoils*: the banners, the tiles, then the drops. Each drop is a chip of its painting with its set's emblem, named in its rarity's colour, two to a row. A dozen at most are drawn and a longer batch counts the rest. |
+  | Tower floor | The floor, the climb as a banner, then the tiles. A boss floor's shards come last, under their own purple banner. |
+  | Boss race | The damage this key did, large. The period's pool as a bar notched at every chest's threshold, each notch lit once reached, with the chests marked under it. Then the record and the chests this fight earned as banners, and the chronicle XP. |
+  | Brewery run | The casks, one per brew, pouring in beside the count. Then the first clear as a banner and the runs left today. |
+  | Dungeon batch | The pieces as gear cards in their rarity frames, then the first clear and Hard opening as banners (the armoury being full in red). Then gold and XP as tiles, and the runs. |
+
+- Wherever a Glorious Palace point was paid, the Palace plate follows with a press straight to the
+  Palace.
+- The seed sits at the panel's foot.
+
+**After a loss.** The side panel turns to *What to try next* (`adviceFor`, `result-view.ts`).
+- Each reason the fight went badly is a card of its own, and only when it is true:
+  - out-sped (the enemy took well over 1.4 turns to each of the team's);
+  - a mender left standing with waves still to clear;
+  - the turn limit;
+  - a champion below the enemy's level.
+- A card carries a glyph and the advice. Where the fix lives, it adds a press straight there:
+  *To the Champions* or *To the Tavern*.
+- A boss race is judged as a race instead: the turn limit is a normal ending, then damage over time
+  and curses until the boss falls.
+- A lost stand adds the line that the energy is spent either way.
+- Any loss that is not a boss race ends in **Grow stronger**: three shortcut cards to the Tavern,
+  the Champions and the Portal.
+
+**The buttons.** The ways out sit on the left, the one press that matters on the right, and the
+team is never offered twice.
+
+| After | Left | Right |
+| --- | --- | --- |
+| A won stand | *Emberhold*, *Campaign*, *Team*, *Replay · cost ⚡* | **Next stand** |
+| A lost stand or a retreat | *Emberhold*, *Campaign*, *Try again · cost ⚡* | **Team** |
+| A mode's fight | *Emberhold* | The mode's own way back (**Back to the tower**, **the gate**, **the keep**, **the Brewery**) |
+
+The team for a mode's fight is set on the mode's own screen.
 
 ### 5.11 Forge & Armoury
 - Reference: `tavern` layout language + right column pattern.
