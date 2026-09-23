@@ -1,0 +1,86 @@
+/* The day's runs (docs/tech/UI_DESIGN.md §5.23). */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.title {
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.value {
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-1);
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.85);
+}
+.total {
+  font-size: 24px;
+  color: var(--text-3);
+}
+
+/* Twenty flasks on two shelves; a spent one keeps its place, dark, so the day's shape stays. */
+.rack {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px 2px;
+  margin: 0;
+  padding: 8px 8px 6px;
+  list-style: none;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 46%,
+      rgba(201, 162, 74, 0.28) 47%,
+      rgba(201, 162, 74, 0.28) 49%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 94%,
+      rgba(201, 162, 74, 0.28) 95%,
+      rgba(201, 162, 74, 0.28) 97%,
+      transparent 98%
+    ),
+    rgba(8, 6, 8, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.18);
+}
+.flask {
+  display: grid;
+  place-items: center;
+  transition:
+    opacity var(--t-base) var(--ease-out),
+    transform var(--t-base) var(--ease-out);
+}
+.flask[data-full='true'] {
+  filter: drop-shadow(0 0 6px rgba(240, 213, 122, 0.35));
+}
+.flask[data-full='false'] {
+  opacity: 0.32;
+  transform: scale(0.86);
+}
+
+.line {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-1);
+}
+/* A day with nothing left says so in the colour the rest of the game uses for "not now". */
+.line[data-empty='true'] {
+  color: var(--warn);
+}
+.resets {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-3);
+}

@@ -4,7 +4,6 @@
  */
 export const brewery = {
   'brewery.title': 'The Brewery',
-  'brewery.subtitle': 'Where champions’ brews are made. Twenty runs a day, across all four halls.',
 
   /** The four halls. */
   'brewery.justice.name': 'The Gilded Cask',
@@ -25,6 +24,12 @@ export const brewery = {
   'brewery.runsNone': 'No runs left today',
   'brewery.resets': 'Resets in {time}',
   'brewery.spent': 'Every hall draws on the same twenty runs.',
+  'brewery.runsTitle': 'Today’s runs',
+  'brewery.halls': 'The four halls',
+  'brewery.hallBrew': '{count} held',
+  'brewery.opens': 'Opens {day}',
+  'brewery.week': 'Its week',
+  'brewery.today': 'Today',
 
   /** A hall's doors. */
   'brewery.open': 'Open today',
@@ -40,17 +45,29 @@ export const brewery = {
   'brewery.guards': '{count} guards · level {level}',
   'brewery.guardsBoss': 'Their captain and {count} guards · level {level}',
   'brewery.heldBy': 'Held by {faction}',
-  'brewery.reward': '{count} × {brew}',
   'brewery.cleared': 'Cleared',
   'brewery.next': 'Next',
   'brewery.locked': 'Clear stage {stage} first',
   'brewery.enter': 'Brew',
+  'brewery.descent': 'The descent',
+  'brewery.descentHint':
+    'Five cellars, each held deeper than the last. A stage opens when the one above it falls.',
+  'brewery.power': 'Guard power',
+  'brewery.team': 'Your best three',
+  'brewery.standing.ahead': 'Your best three are stronger',
+  'brewery.standing.close': 'An even fight',
+  'brewery.standing.behind': 'They are stronger than your best three',
+  'brewery.pays': 'Pays',
+  'brewery.limit': '{count} ally turns',
+  'brewery.captain': 'Captain',
+  'brewery.tavern': 'Pour at the Tavern',
+  'brewery.tavernHint': 'A brew raises a champion of its own element at the Tavern.',
   'brewery.runCost': 'One run',
   'brewery.bring': 'Bring {element} champions — they have the advantage here.',
   'brewery.bringNothing': 'No element has the advantage over Eclipse. Bring your strongest.',
 
   /** What the hall is worth, so a day's runs can be placed before they are spent. */
-  'brewery.holdings': 'Your brews',
+  'brewery.haul': 'The best haul left today',
   'brewery.deepest':
     'Your deepest cellar here is stage {stage} — all {runs} runs on it would pour {brews} brews.',
   'brewery.deepestNone': 'Nothing brewed here yet. Stage 1 is open, and it pays one brew a run.',

@@ -140,6 +140,69 @@ describe('the Brewery', () => {
       expect(screen.getByTestId(`brewery-tab-${element}`)).toHaveAttribute('data-open', 'true');
   });
 
+  it('shows each hall’s depth and the brew it pays already held, on the hall’s card', () => {
+    useGameStore.setState((state) => {
+      if (state.save) {
+        state.save.wallet.brew_valor = 7;
+        state.save.brewery.cleared['brewery.valor'] = 2;
+      }
+      return state;
+    });
+    render(stage(<BreweryScreen route={VALOR} />));
+
+    expect(screen.getByTestId('brewery-progress-valor')).toHaveTextContent('2/5');
+    expect(screen.getByTestId('brewery-held-valor')).toHaveTextContent('7 held');
+    expect(row('valor', 2)).toHaveAttribute('data-state', 'cleared');
+    expect(row('valor', 3)).toHaveAttribute('data-state', 'next');
+  });
+
+  it('draws the Waning Cellar’s week with its three days lit and today marked', () => {
+    brewer(MONDAY);
+    render(stage(<BreweryScreen route={{ name: 'brewery', hall: 'eclipse' }} />));
+
+    const days = screen.getAllByRole('listitem').filter((item) => item.hasAttribute('data-today'));
+    expect(days).toHaveLength(7);
+    const open = days.filter((day) => day.getAttribute('data-open') === 'true').map((day) => day.textContent);
+    expect(open).toEqual(['Wed', 'Sat', 'Sun']);
+    expect(days.find((day) => day.getAttribute('data-today') === 'true')).toHaveTextContent('Mon');
+  });
+
+  it('counts the best haul from the runs still in hand, at the deepest cellar taken', () => {
+    useGameStore.setState((state) => {
+      if (state.save) {
+        state.save.brewery.cleared['brewery.valor'] = 3;
+        state.save.brewery = {
+          ...state.save.brewery,
+          periodKey: dailyKey(WEDNESDAY, DAILY_RESET_HOUR),
+          runs: 9,
+        };
+      }
+      return state;
+    });
+    render(stage(<BreweryScreen route={VALOR} />));
+
+    // Eleven runs left at stage 3, three brews a run.
+    expect(screen.getByTestId('brewery-haul')).toHaveTextContent('×33');
+    // The planning line still speaks for a whole day's twenty.
+    expect(screen.getByTestId('brewery-deepest')).toHaveTextContent(`all ${BREWERY_DAILY_RUNS} runs`);
+  });
+
+  it('reads every stage’s guards against the roster’s best three', () => {
+    render(stage(<BreweryScreen route={VALOR} />));
+
+    // A fresh chronicle out-powers stage 1 and is out-powered at the captain's stage.
+    expect(row('valor', 1).querySelector('[data-standing]')).toHaveAttribute('data-standing', 'ahead');
+    expect(row('valor', 5).querySelector('[data-standing]')).toHaveAttribute('data-standing', 'behind');
+  });
+
+  it('leads to the Tavern, where the brews are poured', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(stage(<BreweryScreen route={VALOR} />));
+
+    await user.click(screen.getByTestId('brewery-tavern'));
+    expect(useGameStore.getState().ui.stack.at(-1)).toEqual({ name: 'tavern' });
+  });
+
   it('stops offering runs once the day’s twenty are gone', () => {
     // The ledger is stamped with today's key, or the screen reads it as a fresh day's twenty.
     useGameStore.setState((state) => {

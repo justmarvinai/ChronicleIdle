@@ -1,0 +1,176 @@
+/* The chosen hall's head (docs/tech/UI_DESIGN.md §5.23). */
+.banner {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 26px 16px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(201, 162, 74, 0.28);
+}
+/* The hall's place, drifting, under a grade in its element that fades into the stone below. */
+.art {
+  position: absolute;
+  inset: -6px;
+  background:
+    radial-gradient(
+      ellipse 60% 120% at 8% 30%,
+      color-mix(in srgb, var(--el) 26%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgba(10, 8, 10, 0.35) 0%, rgba(10, 8, 10, 0.72) 60%, rgba(14, 12, 14, 0.97) 100%),
+    var(--art) center 38% / cover no-repeat;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  from {
+    transform: scale(1.04) translateX(-10px);
+  }
+  to {
+    transform: scale(1.04) translateX(10px);
+  }
+}
+.banner[data-open='false'] .art {
+  filter: grayscale(0.7) brightness(0.85);
+}
+
+.top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.medallion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 86px;
+  height: 86px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--el) 40%, #1b1712) 0%, #100d0a 74%);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--el) 75%, transparent);
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--el) 45%, transparent));
+}
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.name {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--el) 60%, #fff4d6);
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.9),
+    0 0 24px color-mix(in srgb, var(--el) 40%, transparent);
+}
+.days {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-2);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* The hall's week as seven day-stones: its open days lit in its colour, today ringed in gold. */
+.week {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.day {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 40px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+  background: rgba(8, 6, 8, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.18);
+  clip-path: polygon(
+    6px 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    0 calc(100% - 6px),
+    0 6px
+  );
+}
+.day[data-open='true'] {
+  color: var(--text-1);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--el) 42%, #15110d),
+    color-mix(in srgb, var(--el) 16%, #0e0b09)
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--el) 70%, transparent);
+}
+.day[data-today='true'] {
+  color: #fff6d8;
+  box-shadow:
+    inset 0 0 0 2px var(--gold-3),
+    inset 0 0 12px rgba(240, 213, 122, 0.35);
+}
+
+.doors {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding: 7px 14px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ok);
+  background: rgba(8, 20, 12, 0.8);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok) 70%, transparent);
+}
+.doors[data-open='false'] {
+  color: var(--warn);
+  background: rgba(28, 16, 6, 0.85);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 70%, transparent);
+}
+
+.blurb {
+  position: relative;
+  margin: 4px 0 0;
+  max-width: 1100px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-1);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+}
+.bring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin: 0;
+  padding: 6px 14px 6px 10px;
+  font-size: 15px;
+  color: var(--text-1);
+  background: rgba(8, 6, 8, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.barred {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 0;
+  padding: 9px 14px;
+  font-size: 15px;
+  color: #ffd9a8;
+  background: linear-gradient(90deg, rgba(90, 44, 8, 0.72), rgba(40, 20, 6, 0.4));
+  box-shadow: inset 3px 0 0 var(--warn);
+}

@@ -1,0 +1,314 @@
+/*
+ * One stage of the descent (docs/tech/UI_DESIGN.md §5.23). Five of these stand side by side; each
+ * wears the place its cellar is cut under, and `data-state` says where the player stands with it:
+ * *next* glows gold, *cleared* keeps a bronze frame and a trophy, *locked* goes dark behind a
+ * shackle — but still shows what it pays, because that is the reason to reach it.
+ */
+.cell {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  background: linear-gradient(180deg, rgba(20, 16, 14, 0.96), rgba(10, 8, 9, 0.98));
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out);
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+}
+.card[data-state='next'] {
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(240, 213, 122, 0.3),
+    0 0 44px color-mix(in srgb, var(--el) 22%, transparent);
+  animation: beckon 2.8s ease-in-out infinite;
+}
+@keyframes beckon {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.08);
+  }
+}
+
+/* The place, the number and what the stage is pitched at. */
+.head {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: end;
+  gap: 10px;
+  height: 128px;
+  padding: 10px 12px;
+  overflow: hidden;
+}
+.art {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 8, 10, 0.15) 0%, rgba(10, 8, 10, 0.6) 58%, rgba(16, 13, 12, 0.98) 100%),
+    var(--art) center 40% / cover no-repeat;
+}
+.card[data-state='locked'] .art {
+  filter: grayscale(0.9) brightness(0.62);
+}
+.number {
+  position: relative;
+  font-size: 58px;
+  font-weight: 700;
+  line-height: 0.9;
+  background: linear-gradient(180deg, #fff3c4, var(--gold-3) 45%, var(--gold-1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.85));
+}
+.card[data-state='locked'] .number {
+  background: linear-gradient(180deg, #d8d2c6, #8f877a);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.titles {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+.tier {
+  font-size: 19px;
+  line-height: 1.05;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.card[data-state='locked'] .tier {
+  color: var(--text-2);
+}
+.holder {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--text-2);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.state {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-3);
+  background: rgba(10, 8, 8, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.5);
+}
+.state[data-state='next'] {
+  color: #1a1206;
+  background: linear-gradient(180deg, #ffe7a3, var(--gold-3));
+  box-shadow: 0 0 14px rgba(240, 213, 122, 0.55);
+}
+.state[data-state='locked'] {
+  padding: 5px 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+/* The guards on their floor: a lit patch of ground in the hall's colour, the captain in the middle. */
+.floor {
+  position: relative;
+  flex: 1 1 128px;
+  min-height: 118px;
+  max-height: 170px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+.ground {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 8px;
+  height: 34px;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--el) 34%, transparent) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+.back,
+.front {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+/*
+ * The row behind stands a step up and in shadow, so the front row reads as nearer; its guards stand
+ * apart, so each shows round the shoulders of the row in front. Behind a captain they flank them.
+ */
+.back {
+  bottom: 34px;
+  gap: 40px;
+  filter: brightness(0.66) saturate(0.85);
+}
+.floor[data-led='true'] .back {
+  bottom: 22px;
+  gap: 96px;
+}
+.front {
+  bottom: 6px;
+}
+.guard {
+  display: block;
+  margin: 0 -16px;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.6));
+}
+.guard[data-captain='true'] {
+  filter: drop-shadow(0 0 10px rgba(216, 85, 47, 0.55)) drop-shadow(0 4px 4px rgba(0, 0, 0, 0.6));
+}
+.card[data-state='locked'] .back,
+.card[data-state='locked'] .front {
+  filter: brightness(0.5) saturate(0.45);
+}
+
+.facts {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 14px 6px;
+  border-top: 1px solid rgba(201, 162, 74, 0.16);
+}
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-1);
+}
+.fact + .fact {
+  color: var(--text-3);
+}
+
+/* The guards' power, read against the roster's best three: green ahead, amber even, red behind. */
+.power {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 12px 0;
+  padding: 7px 10px;
+  background: rgba(8, 6, 8, 0.6);
+  box-shadow: inset 3px 0 0 var(--standing, var(--ok));
+}
+.power[data-standing='ahead'] {
+  --standing: var(--ok);
+}
+.power[data-standing='close'] {
+  --standing: var(--warn);
+}
+.power[data-standing='behind'] {
+  --standing: var(--danger);
+}
+.powerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.powerLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.powerValue {
+  font-size: 18px;
+  color: var(--text-1);
+}
+.standing {
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--standing);
+}
+
+/* What a clear pays: the brew itself and the count in gold, large enough to compare at a glance. */
+.pay {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 12px 0;
+  padding: 4px 10px;
+  background: radial-gradient(
+    ellipse at 70% 50%,
+    color-mix(in srgb, var(--el) 16%, transparent),
+    transparent 75%
+  );
+}
+.payLabel {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.payValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.payAmount {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.9),
+    0 0 14px rgba(240, 213, 122, 0.35);
+}
+
+.foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 62px;
+  padding: 8px 12px 12px;
+}
+.enter {
+  width: 100%;
+}
+.lockedLine {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-3);
+  text-align: center;
+}

@@ -1079,31 +1079,51 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   when a clear paid skill points; pressing it goes to the Palace.
 
 ### 5.23 The Brewery (`docs/design/BREWERY.md`)
-- **Two columns, and the number that governs the mode over both.** A 420 px rail on the left holds
-  the day's runs — a 40 px numeral over a stamina bar, the sentence that bar is too slim to carry
-  ("20 of 20 runs left today", in warn amber when there are none), the reset countdown and the line
-  that says every hall draws on the same twenty. Then the four hall tabs, then **Your brews**: the
-  four elemental brews with what the player holds, which is the whole basis of choosing a hall
-  today. The right panel is the chosen hall.
+- **The rail: the day, then the halls.** A 420 px ember panel on the left. At its head, **Today's
+  runs**: a 46 px numeral over a rack of twenty flasks on two gold-hairline shelves — a spent run
+  keeps its place, dark — then the sentence the rack cannot say ("20 of 20 runs left today", in warn
+  amber when there are none), the reset countdown and the line that every hall draws on the same
+  twenty. Under it **The four halls** as cards: the hall's own place as art faded into the stone
+  where the words sit, its element as a bevelled diamond medallion, its name, its doors (*Open today*
+  in `--ok`, or *Opens Wednesday* with the broken shackle in `--warn` and the art greyed), how deep
+  it has been taken as five diamonds lit in its element beside `3/5`, and how many of its brew the
+  purse already holds — everything a day's choice of hall turns on, before it is opened. The chosen
+  card takes a gold border, a wash of its element and a thick left rail. The rail ends with where
+  the brews go: one line and **Pour at the Tavern**.
 - **A hall wears its own place.** The backdrop is the settlement its deepest cellar is cut under,
-  under a grade in the hall's element (amber, ember, ice, violet), so walking from the Ember Vats
-  to the Waning Cellar is walking somewhere else. The hall's name takes its element's colour; the
-  tabs take it as a left rail and a wash when selected.
-- **The doors.** A badge at the head of the panel reads *Open today* in `--ok` or *Closed today* in
-  `--warn`, with the hall's days under its name ("Open Wed, Sat, Sun", ordered from the game's own
-  week start rather than `getDay`'s Sunday). A barred hall adds one amber banner saying when it
-  opens and how long that is, and every Brew button in it is disabled — a closed door never costs a
-  run.
-- **A stage row says the four things a player decides on**: its number, what it is pitched at
-  ("Mid game"), what it fields ("4 guards · level 34", or the captain on stage 5) and who holds it
-  ("Held by the Ashen Legion"). What it pays sits in its own column at 30 px — a cask in the brew's
-  tint and `×3` in gold — big enough to compare five rows at a glance, because the brews are the
-  point. Rows stagger in on open (Framer Motion, skipped under reduced motion); `data-state` styles
-  them: *cleared* keeps its element's rail, *next* takes a gold rail and an element wash, *locked*
-  drops to 55 % and shows a shackle where its button would be.
-- **The planning line** under the ladder: "Your deepest cellar here is stage 3 — all 20 runs on it
-  would pour 60 brews", or, before anything is cleared, that stage 1 is open and pays one a run.
-  Twenty runs are a choice; this is what this hall pays for them.
+  under a grade in the hall's element (amber, ember, ice, violet), so walking from the Ember Vats to
+  the Waning Cellar is walking somewhere else. The right panel opens on the hall's **banner**: the
+  same place drifting behind a grade in the element, an 86 px medallion, the name at 44 px in the
+  element's colour, its days ("Open Wed, Sat, Sun", ordered from the game's own week start), its
+  week as **seven day-stones** — open days lit in the element, today ringed in gold — the doors badge
+  (*Open today* / *Closed today*), the blurb, and the element wheel's advice as a chip with the
+  counter element's sigil ("Bring Faith champions — they have the advantage here"). A barred hall
+  adds an amber strip saying when it opens and how long that is, and every Brew button in it is
+  disabled — a closed door never costs a run.
+- **The descent: five stages side by side**, left to right as the hall goes down, each a framed
+  card (`StageCard`):
+  - its head is the place its cellar is cut under (the backdrop's 640 px card cut), the stage's
+    number at 58 px in gold, what it is pitched at ("Mid game"), who holds it, and its state as a
+    chip — *Next* in gold, *Cleared* with a trophy, or the shackle;
+  - its **guards stand on its floor** (`SpriteView` idles on a lit patch of ground in the hall's
+    colour), in a formation that fits a narrow card: a captain alone at the front at 1.75×, flanked
+    by their guards a step behind; otherwise the first two at 1.25× with the rest a row back in
+    shadow;
+  - what it fields ("4 guards · level 34", or the captain) and its ally-turn limit;
+  - the guards' **power** against the roster's best three, measured with the same ruler a
+    champion's power is: a green rail when the three are clearly stronger (≥ 115 %), amber for an
+    even fight, red when the guards are stronger (< 85 %) — the stage to farm is readable before a
+    run is spent;
+  - what a clear **pays** at 34 px — the brew and `×3` in gold — because the brews are the point;
+  - the press: **Brew** in red on the next stage, stone on the cleared ones, and on a locked stage
+    the line that says which stage opens it. The next card glows and breathes; a cleared one wears a
+    bronze frame; a locked one goes dark and grey but still shows what it pays, because that is the
+    reason to reach it. Cards rise in one after another when a hall opens (Framer Motion, skipped
+    under reduced motion).
+- **The haul** under the descent: *The best haul left today* — the brew and what the runs still in
+  hand would pour at the deepest cellar taken — beside the planning sentence for a whole day ("Your
+  deepest cellar here is stage 3 — all 20 runs on it would pour 60 brews"), or, before anything is
+  cleared, that stage 1 is open and pays one a run.
 - **What a run says.** The battle result (§5.10) carries a Brewery panel beside the boss's and the
   tower's: the hall and stage, one cask per brew filling in sequence, the first clear that opened
   the next stage, and the runs left today. Its primary button goes back to the hall the run was

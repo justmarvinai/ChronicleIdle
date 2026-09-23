@@ -189,6 +189,10 @@ See `ARCHITECTURE.md` §8. Manifest keys: `model.<id>`, `avatar.<id>`, `bg.<id>`
 loudness-normalised; VFX grids/strips become frame atlases with JSON frame data; generated assets
 from `tools/audio` and `tools/vfx` land in the same groups.
 
+A backdrop (`bg.<id>`) is emitted twice: the full wallpaper for a screen's own backdrop, and a
+640 px **card cut** (`imageUrl(key, 640)`) for art drawn on a card — the Brewery's halls and stages
+— so a screen of cards decodes a sixth of the pixels it would from the wallpapers themselves.
+
 ## 5. Conventions for new owner assets
 
 - A new model: add its facing to `src/content/champions/models.ts` (look at the art, do not guess)

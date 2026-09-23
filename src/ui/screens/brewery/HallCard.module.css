@@ -1,0 +1,164 @@
+/*
+ * A hall on the rail (docs/tech/UI_DESIGN.md §5.23): the hall's own place behind it, faded into
+ * the stone on the left where the words sit, its element as the medallion's colour and the rail
+ * that marks the chosen one.
+ */
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 112px;
+  padding: 12px 14px 12px 12px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 162, 74, 0.22);
+  background: rgba(12, 10, 12, 0.9);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: var(--cursor-pointer);
+  box-shadow:
+    inset 3px 0 0 color-mix(in srgb, var(--el) 55%, transparent),
+    0 4px 14px rgba(0, 0, 0, 0.45);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow var(--t-fast) var(--ease-out);
+}
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(240, 213, 122, 0.5);
+}
+.card:focus-visible {
+  outline: 2px solid var(--gold-3);
+  outline-offset: 2px;
+}
+.card[data-selected='true'] {
+  border-color: var(--gold-3);
+  box-shadow:
+    inset 5px 0 0 var(--el),
+    inset 0 0 40px color-mix(in srgb, var(--el) 26%, transparent),
+    0 0 0 1px rgba(240, 213, 122, 0.35),
+    0 6px 22px rgba(0, 0, 0, 0.55),
+    0 0 26px color-mix(in srgb, var(--el) 30%, transparent);
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(12, 10, 12, 0.97) 0%,
+      rgba(12, 10, 12, 0.86) 42%,
+      rgba(12, 10, 12, 0.35) 100%
+    ),
+    var(--art) right center / cover no-repeat;
+  opacity: 0.85;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.card:hover .art,
+.card[data-selected='true'] .art {
+  opacity: 1;
+}
+.card[data-open='false'] .art {
+  filter: grayscale(0.85) brightness(0.8);
+}
+
+/* The element as a medallion: a bevelled diamond of stone with the sigil in the element's colour. */
+.medallion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--el) 34%, #1b1712) 0%, #120f0c 72%), #120f0c;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--el) 70%, transparent);
+}
+.medallion::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  box-shadow: inset 0 0 12px color-mix(in srgb, var(--el) 60%, transparent);
+  pointer-events: none;
+}
+.card[data-open='false'] .medallion {
+  filter: grayscale(0.7);
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.name {
+  overflow: hidden;
+  font-size: 21px;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.card[data-selected='true'] .name {
+  color: color-mix(in srgb, var(--el) 55%, #fff4d6);
+}
+.doors {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--ok);
+}
+.doors[data-open='false'] {
+  color: var(--warn);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+.depth {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+/* How deep the hall has been taken: five small diamonds, lit in the element for each stage cleared. */
+.pips {
+  display: inline-flex;
+  gap: 4px;
+}
+.pip {
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+}
+.pip[data-on='true'] {
+  background: var(--el);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    0 0 8px color-mix(in srgb, var(--el) 70%, transparent);
+}
+.progress {
+  font-size: 15px;
+  color: var(--text-2);
+}
+.held {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+  color: var(--text-1);
+}
