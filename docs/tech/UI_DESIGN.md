@@ -861,7 +861,11 @@ Eldric's onboarding (`docs/design/TUTORIAL.md`, ADR-042). Two shapes, one per be
   the line typed out at ~16 ms a character with a blinking block, *Continue* (armed a beat late so
   a press held over from the last lesson cannot answer this one) and, from chapter 2 on, *Skip this
   lesson*. Clicking the panel reveals the rest of the line at once; `prefers-reduced-motion` starts
-  there. Continue takes focus, so the whole beat is one key.
+  there. Continue takes focus, so the whole beat is one key. A lesson that only asks to be read
+  (Continue finishes it, so there is no second beat) lights what it names while he speaks: each
+  target is cut out of the dim with the pulsing gold ring and no caret, and a clear layer over the
+  screen still takes every press but the panel's — 1.9 lights the crest's stars and the spoils,
+  1.11 the energy pill as it counts up.
 - **While the player acts.** The panel shrinks to a strip — his face at 56 px, the line, the skip —
   above the bottom bar, so the lesson never sits on top of what it is teaching. The scrim gains one
   cut-out per allowed target (`clip-path: path(evenodd, …)`, which decides what is drawn *and* what

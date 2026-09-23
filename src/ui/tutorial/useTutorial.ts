@@ -45,6 +45,11 @@ export interface TutorialUi {
   spotlight: Rect | null;
   /** Rectangles that stay clickable; everything else is swallowed by the scrim. */
   holes: Rect[];
+  /**
+   * What a lesson that only asks to be read names, lit while Eldric speaks — one rectangle per
+   * element on screen. Empty in every other beat: a lesson with an action points with the ring.
+   */
+  marks: Rect[];
   /** The line has been read — the Continue press. */
   acknowledge(): void;
   /** "Skip this lesson" (owner's answer Q4). */
@@ -108,10 +113,11 @@ function useTargetRects(
   spotlightTargets: readonly TutorialTarget[],
   allowTargets: 'all' | readonly TutorialTarget[],
   active: boolean,
-): { spotlight: Rect | null; holes: Rect[] } {
+): { spotlight: Rect | null; holes: Rect[]; marks: Rect[] } {
   const info = useViewport();
   const [spotlight, setSpotlight] = useState<Rect | null>(null);
   const [holes, setHoles] = useState<Rect[]>(EMPTY);
+  const [marks, setMarks] = useState<Rect[]>(EMPTY);
 
   useEffect(() => {
     if (!active) return;
@@ -129,16 +135,19 @@ function useTargetRects(
         allowTargets === 'all'
           ? EMPTY
           : allowTargets.flatMap((target) => elementRects(info, targetElements(target)));
+      // Every target a lesson names, where the pointer only rests on one of them.
+      const named = spotlightTargets.flatMap((target) => elementRects(info, targetElements(target)));
       setSpotlight((current) => (sameRect(current, next) ? current : next));
       setHoles((current) => (sameRects(current, openings) ? current : openings));
+      setMarks((current) => (sameRects(current, named) ? current : named));
       frame = requestAnimationFrame(measure);
     };
     frame = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(frame);
   }, [active, allowTargets, spotlightTargets, info]);
 
-  // While no step is acting the last measurements are stale, so they are not handed out.
-  return active ? { spotlight, holes } : { spotlight: null, holes: EMPTY };
+  // While no step is showing the last measurements are stale, so they are not handed out.
+  return active ? { spotlight, holes, marks } : { spotlight: null, holes: EMPTY, marks: EMPTY };
 }
 
 export function useTutorial(): TutorialUi {
@@ -215,11 +224,16 @@ export function useTutorial(): TutorialUi {
   }, [save, over, world, actions]);
 
   const isClickStep = held?.complete.type === 'clicked';
-  const { spotlight, holes } = useTargetRects(
+  // A lesson that only asks to be read has no action beat, so what it names is lit while he speaks.
+  const readOnly = held?.complete.type === 'acknowledged';
+  const measured = useTargetRects(
     held?.spotlight ?? NO_TARGETS,
     held?.allow ?? NO_TARGETS,
-    held !== null && acting,
+    held !== null && (acting || readOnly),
   );
+  const spotlight = acting ? measured.spotlight : null;
+  const holes = acting ? measured.holes : EMPTY;
+  const marks = !acting && readOnly ? measured.marks : EMPTY;
 
   // "Use the thing" steps: the overlay is the only witness of a press that changes nothing in the
   // save (choosing whom to raise, pouring a brew), so it watches for one on the spotlit element.
@@ -254,5 +268,5 @@ export function useTutorial(): TutorialUi {
     actions.toast('info', 'tut.skipped');
   }, [view, actions]);
 
-  return { view, acting, spotlight, holes, acknowledge, skip };
+  return { view, acting, spotlight, holes, marks, acknowledge, skip };
 }

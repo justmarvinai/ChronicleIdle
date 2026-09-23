@@ -5,10 +5,12 @@ Related: `GAME_DESIGN.md` §6 (unlock levels), `docs/tech/UI_DESIGN.md` §5.18 (
 The tutorial is an **interactive, scripted overlay** driven by data (`src/content/tutorial/*.ts`):
 Eldric Lorekeeper (portrait `tutorial_npc_avatar.jpg`) speaks in a dialogue panel; the rest of
 the screen is dimmed except a **spotlight** cut-out around the element the player must use; a
-pointer hand pulses on it. Each step declares: `when` (trigger), `spotlight` (element id),
-`dialogue`, `allow` (which interactions are enabled), `complete` (event that finishes the step),
-`skippable`. Steps are grouped into **chapters** that are triggered by unlocks, so the tutorial
-teaches each feature when it appears, not all at once.
+pointer hand pulses on it. A step that only asks to be read (*Continue* finishes it) has no
+element to use, so every element it names is lit while he speaks instead — cut out of the dim and
+ringed, to be seen rather than pressed. Each step declares: `when` (trigger), `spotlight`
+(element id), `dialogue`, `allow` (which interactions are enabled), `complete` (event that
+finishes the step), `skippable`. Steps are grouped into **chapters** that are triggered by
+unlocks, so the tutorial teaches each feature when it appears, not all at once.
 
 Design rules: never more than three consecutive dialogue boxes; every step ends with the player
 doing the thing; the whole first chapter takes < 6 minutes; the tutorial state is saved per step so

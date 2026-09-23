@@ -41,6 +41,7 @@ export const RELEASES: readonly ReleaseDef[] = [
     { kind: 'changed', slug: 'profile' },
     { kind: 'changed', slug: 'settings' },
     { kind: 'changed', slug: 'pause' },
+    { kind: 'changed', slug: 'tutorial_marks' },
     { kind: 'fixed', slug: 'ability_numbers' },
     { kind: 'fixed', slug: 'team_button' },
     { kind: 'fixed', slug: 'first_team' },

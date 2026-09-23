@@ -15,9 +15,10 @@ Campaign" in the drop-rarity note meant the difficulty or the early settlements)
 
 The owner's eighth batch: a fight from the screen before it to the screen after it, the Eternal Tower,
 the profile chip and its page, and every settings menu, each reworked on a better screen. The
-tutorial was walked against the new screens: its targets and lines hold, lesson 1.9 now points at
-the crest's stars as well as the spoils, and the first stand seats the companions Eldric names.
-`docs/tech/UI_DESIGN.md` §5.8, §5.9, §5.10, §5.13a, §5.17; `docs/design/TUTORIAL.md` 1.9.
+tutorial was walked against the new screens: its targets and lines hold, a lesson that only asks
+to be read now lights what it names (1.9: the crest's stars and the spoils), and the first stand
+seats the companions Eldric names. `docs/tech/UI_DESIGN.md` §5.8, §5.9, §5.10, §5.13a, §5.17,
+§5.18; `docs/design/TUTORIAL.md`.
 
 ### Added
 
@@ -74,6 +75,8 @@ the crest's stars as well as the spoils, and the first stand seats the companion
   - `profile-dialogs.test.tsx`: every title chip, the XP and power.
   - `settings-dialog.test.tsx`: the rail, the arrows, switches, volumes, earned and chained speeds.
   - `tower.test.ts`: the payout against the roll.
+  - `tutorial-overlay.test.tsx`: a read-only lesson's rings and hold while Eldric speaks; none
+    while a lesson with an action is spoken.
 
 ### Changed
 
@@ -88,8 +91,12 @@ the crest's stars as well as the spoils, and the first stand seats the companion
   - The footer puts the one press that matters on the right.
 - **The Eternal Tower** is three columns (the ladder, the dossier, the season) instead of a
   sealed-row list beside a stats panel.
-- **Tutorial 1.9** spotlights the crest's stars (`result.stars`, a new `TUTORIAL_TARGETS` entry)
-  as well as the spoils panel, since the stars moved into the crest.
+- **The tutorial overlay** lights what a read-only lesson names while Eldric speaks. These are
+  the eleven lessons that *Continue* finishes, which have no action beat to point in. Each target
+  is cut out of the dim and ringed without the caret, and a clear layer (`tutorial-hold`) keeps
+  the screen unpressable. `useTutorial` measures their targets in the dialogue beat and hands
+  them out as `marks`. Lesson 1.9 names the crest's stars (`result.stars`, a new
+  `TUTORIAL_TARGETS` entry) as well as the spoils, since the stars moved into the crest.
 - Strings: the new screens' strings are added. `battleResult.stars`, `battleResult.levelUp`,
   `battle.enemyTurn`, `profile.noTitles` and `dungeon.outcome.spoils` are retired.
   `dungeon.outcome.full` no longer says "1 pieces".

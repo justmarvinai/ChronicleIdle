@@ -37,6 +37,8 @@ export const changelog = {
     'Settings are arranged in sections with a short line explaining every option, new switches, and the battle speed as a row of plates you can press.',
   'release.0_9_7.pause':
     'The pause menu shows where the fight stands, and asks once, clearly, before you retreat.',
+  'release.0_9_7.tutorial_marks':
+    'When Eldric only asks you to read, what he is talking about now lights up while he speaks — the stars and the spoils after your first victory, the energy he hands you, and each new feature as he introduces it.',
   'release.0_9_7.ability_numbers':
     'An ability’s description in battle now shows its numbers with your skill upgrades counted in.',
   'release.0_9_7.team_button':

@@ -8,9 +8,10 @@ import { readFileSync } from 'node:fs';
 import type { ReactNode } from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
+import { TUTORIAL_SPOTLIGHT_PAD } from '@content/balance/tutorial';
 import { content } from '@content/registry';
 import { useGameStore } from '@state/store';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
@@ -64,10 +65,26 @@ function walkTo(stepId: string, screen: Parameters<ReturnType<typeof actions>['r
   });
 }
 
+/** Lays the elements with these test ids out at these boxes; everything else is not laid out. */
+function layOut(boxes: Record<string, { x: number; y: number; width: number; height: number }>): void {
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    const box = boxes[this.dataset['testid'] ?? ''] ?? { x: 0, y: 0, width: 0, height: 0 };
+    return {
+      ...box,
+      left: box.x,
+      top: box.y,
+      right: box.x + box.width,
+      bottom: box.y + box.height,
+      toJSON: () => ({}),
+    };
+  });
+}
+
 describe('the tutorial overlay', () => {
   beforeEach(() => {
     act(() => actions().resetGame());
   });
+  afterEach(() => vi.restoreAllMocks());
 
   it('speaks the lesson, then waits for the player to do the thing', async () => {
     const user = userEvent.setup();
@@ -108,6 +125,56 @@ describe('the tutorial overlay', () => {
     render(stage(<TutorialOverlay />));
     await pressContinue(user);
     expect(tutorial().completedSteps).toContain('tut.1.9');
+  });
+
+  it('lights what a line that only asks to be read names, and holds the screen until Continue', async () => {
+    const user = userEvent.setup();
+    // 1.9 names the stars in the result's crest and the spoils beside the team.
+    walkTo('tut.1.9', { name: 'battle-result' });
+    layOut({
+      'result-stars': { x: 790, y: 236, width: 340, height: 56 },
+      'result-rewards': { x: 1080, y: 300, width: 760, height: 650 },
+    });
+    render(
+      stage(
+        <>
+          <div data-testid="result-stars" />
+          <div data-testid="result-rewards" />
+          <TutorialOverlay />
+        </>,
+      ),
+    );
+
+    // Both are ringed while he speaks — no pointer, since there is nothing to press but Continue.
+    const marks = await screen.findAllByTestId('tutorial-mark');
+    expect(marks).toHaveLength(2);
+    expect(marks[0]).toHaveStyle({ left: `${790 - TUTORIAL_SPOTLIGHT_PAD}px` });
+    expect(screen.getByTestId('tutorial-overlay').dataset['phase']).toBe('dialogue');
+    expect(screen.queryByTestId('tutorial-spotlight')).toBeNull();
+    // They are cut out of the dim to be seen, and the clear layer over them keeps them unpressable.
+    expect(screen.getByTestId('tutorial-hold')).toBeInTheDocument();
+
+    await pressContinue(user);
+    expect(tutorial().completedSteps).toContain('tut.1.9');
+    await waitFor(() => expect(screen.queryByTestId('tutorial-mark')).toBeNull());
+  });
+
+  it('lights nothing while a lesson with an action is spoken: the ring waits for the action', async () => {
+    // 1.3 points at the campaign gate, but only once the line is read.
+    walkTo('tut.1.3', { name: 'hub' });
+    layOut({ 'hotspot-campaign': { x: 200, y: 400, width: 180, height: 120 } });
+    render(
+      stage(
+        <>
+          <div data-testid="hotspot-campaign" />
+          <TutorialOverlay />
+        </>,
+      ),
+    );
+    await screen.findByTestId('tutorial-overlay');
+    expect(screen.queryByTestId('tutorial-mark')).toBeNull();
+    expect(screen.queryByTestId('tutorial-hold')).toBeNull();
+    expect(await screen.findByTestId('tutorial-continue')).toBeInTheDocument();
   });
 
   it('hands over the Provisions as Eldric names them, once', async () => {

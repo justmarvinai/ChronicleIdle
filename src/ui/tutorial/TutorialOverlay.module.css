@@ -28,6 +28,16 @@
   background: linear-gradient(to top, rgba(8, 7, 10, 0.55) 0%, rgba(8, 7, 10, 0) 38%);
 }
 
+/*
+ * While a lesson that only asks to be read is spoken, what it names is cut out of the scrim to be
+ * seen — and this clear layer over everything but Eldric's panel still holds every press.
+ */
+.hold {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
 @keyframes tut-fade {
   from {
     opacity: 0;

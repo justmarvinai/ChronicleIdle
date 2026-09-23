@@ -9,7 +9,7 @@
  * screen (a screen still loading, a rack with nothing selected) the cut-out is the whole screen:
  * Eldric still speaks, and nothing is ever trapped behind a spotlight that does not exist.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   TUTORIAL_CONTINUE_DELAY_MS,
@@ -48,6 +48,17 @@ function clipFor(holes: readonly Rect[]): string | undefined {
   return `path(evenodd, '${outer} ${inner}')`;
 }
 
+/** A ring's box: the target grown by the spotlight's pad, pulsing at the lesson's beat. */
+function ringBox(rect: Rect): CSSProperties {
+  return {
+    left: rect.x - TUTORIAL_SPOTLIGHT_PAD,
+    top: rect.y - TUTORIAL_SPOTLIGHT_PAD,
+    width: rect.width + TUTORIAL_SPOTLIGHT_PAD * 2,
+    height: rect.height + TUTORIAL_SPOTLIGHT_PAD * 2,
+    ['--tut-pulse' as string]: `${TUTORIAL_PULSE_MS}ms`,
+  };
+}
+
 /**
  * Eldric's line, typed out. It is mounted with the step's id as its `key`, so a new lesson resets
  * it the way React prescribes — by remounting — rather than through an effect that writes state
@@ -71,7 +82,7 @@ function EldricLine({ text, reveal }: { text: string; reveal: boolean }) {
 }
 
 export function TutorialOverlay() {
-  const { view, acting, spotlight, holes, acknowledge, skip } = useTutorial();
+  const { view, acting, spotlight, holes, marks, acknowledge, skip } = useTutorial();
   const step = view?.step ?? null;
   const stepId = step?.id ?? null;
   const line = step ? translate(step.dialogue as I18nKey) : '';
@@ -91,9 +102,11 @@ export function TutorialOverlay() {
     if (armed && !acting) continueRef.current?.focus();
   }, [armed, acting, stepId]);
 
-  const clip = useMemo(() => (acting ? clipFor(holes) : undefined), [acting, holes]);
+  // While a read-only line is spoken its targets are cut out of the dim to be seen, not pressed.
+  const clip = useMemo(() => clipFor(acting ? holes : marks), [acting, holes, marks]);
   // While the line is being read the screen is held; afterwards only what the lesson allows is.
   const free = acting && holes.length === 0;
+  const lit = !acting && marks.length > 0;
 
   return (
     <AnimatePresence>
@@ -109,17 +122,27 @@ export function TutorialOverlay() {
             style={clip ? { clipPath: clip, WebkitClipPath: clip } : undefined}
             aria-hidden="true"
           />
+          {lit ? (
+            <>
+              {/* The cut-outs show; this clear layer keeps them, like the rest, out of reach. */}
+              <div className={styles.hold} data-testid="tutorial-hold" aria-hidden="true" />
+              {/* Keyed by place in the lesson's list, so a target still settling keeps its pulse. */}
+              {marks.map((mark, index) => (
+                <div
+                  key={index}
+                  className={styles.ring}
+                  style={ringBox(mark)}
+                  data-testid="tutorial-mark"
+                  aria-hidden="true"
+                />
+              ))}
+            </>
+          ) : null}
           {acting && spotlight ? (
             <>
               <div
                 className={styles.ring}
-                style={{
-                  left: spotlight.x - TUTORIAL_SPOTLIGHT_PAD,
-                  top: spotlight.y - TUTORIAL_SPOTLIGHT_PAD,
-                  width: spotlight.width + TUTORIAL_SPOTLIGHT_PAD * 2,
-                  height: spotlight.height + TUTORIAL_SPOTLIGHT_PAD * 2,
-                  ['--tut-pulse' as string]: `${TUTORIAL_PULSE_MS}ms`,
-                }}
+                style={ringBox(spotlight)}
                 data-testid="tutorial-spotlight"
                 aria-hidden="true"
               />
