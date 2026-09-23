@@ -32,6 +32,15 @@ function release(version: string, date: string, lines: readonly Line[]): Release
 }
 
 export const RELEASES: readonly ReleaseDef[] = [
+  release('0.9.5', '2026-09-23', [
+    { kind: 'changed', slug: 'tavern', lead: true },
+    { kind: 'changed', slug: 'forge', lead: true },
+    { kind: 'changed', slug: 'tavern_helpers' },
+    { kind: 'changed', slug: 'forge_benches' },
+    { kind: 'changed', slug: 'hub' },
+    { kind: 'changed', slug: 'idle_chest' },
+    { kind: 'fixed', slug: 'chest_ring' },
+  ]),
   release('0.9.4', '2026-09-23', [
     { kind: 'added', slug: 'gear_tooltips', lead: true },
     { kind: 'changed', slug: 'champions', lead: true },

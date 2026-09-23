@@ -11,6 +11,83 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.5] — 2026-09-23 — Hearth and Harbour
+
+The owner's sixth batch: the Tavern, the Forge, the Emberhold hub and the Idle Chest dialog, each
+reworked as the same feature on a better screen — nothing new to learn, more to see.
+`docs/tech/UI_DESIGN.md` §4, §5.2, §5.5, §5.11, `docs/design/ECONOMY.md` §6.
+
+### Added
+
+- **`FxSprite`** (`ui/components/FxSprite`) — a flipbook from the FX library outside the battle
+  stage: one animation-frame loop writes the frame to the element's style, so a playing sprite
+  costs no React render; screen-blended; loops or plays once per `playKey`; under reduced motion a
+  loop holds its middle frame and a one-shot is not drawn. The Forge's hearth and burst, the
+  Portal's rune ring on the hub and the Idle Chest's burst use it.
+- **`xpToCap`** (`@engine/champions/xp`) — the XP a champion still has room for below their star
+  tier's cap. **`brewsToCap`** (`@engine/progression/tavern-level`) — the brews that reach the cap
+  with the least spilled: every count of own-element brews topped off by the fewest universal
+  ones, the cheapest total kept (more own-element brews on a tie), and, when the two cannot reach
+  the cap, everything of both and then the other elements', most plentiful first.
+- Tavern view helpers (`tavern-view.ts`): `isPrecious`, `autoFillLevel` (the cheapest companions
+  that are not precious, stopping once the cap has no more room), `tableXp`, `levelPosition` /
+  `levelPositionAfter`, and `growthPreview` (HP, ATK, DEF and power before → after, through
+  `totalStats` and `power`). Forge view helpers (`forge-view.ts`): `timesAffordable` and
+  `tierOdds`, read from the tier's own rarity and star tables.
+- **`hub-status.ts`** — every building's line, count and dot, derived from the save and the engine
+  (`hubStatuses`), and `coarseDuration` for the hub's countdowns (days, hours and minutes, never
+  seconds: the hub redraws twice a minute).
+- `Tabs` take an optional `glyph` per tab.
+- Tests: `xpToCap`; `brewsToCap` (five cases); the Tavern screen (eleven: the road, the shelf, the
+  ledger, pouring to the cap, filling the seats, the closed table at the cap, the rank larder, the
+  skill rows, the short currency); the Forge screen (twelve: tier odds and strike counts, the
+  storeroom's spends and returns, the named set's card, the struck sheet, the heap, the whetstone);
+  the hub (the statuses, the owed counts, the hover card, the countdown); the Idle Chest (the pace
+  per line, the farm's own brew by name, the vault's states, the quiet docks and the way to the
+  Campaign).
+
+### Changed
+
+- **The Tavern** (`TavernHero`, `OfferingTable`, `LevelGauge`, `BrewShelf`, `RankSpares`,
+  `StatPreview`, `TomeShelf`, the three tracks): the champion framed in their rarity between the
+  seats; a road to the level cap under them (a notch per level, the level held in bronze, the
+  table's reach in gold under a flag, the spill); a shelf of five bottles, the own element first
+  and marked; the Level panel's ledger and **After the upgrade**; *Pour to the cap* and *Fill the
+  seats*, which never seats a Rare-or-better or levelled companion and stops at the cap; the table
+  closing at the cap with a callout to Rank; Rank's pips, larder of spares, the cap it raises and
+  the stats after it; Skills rows with each ability's text; the footer naming a currency the
+  wallet is short of.
+- **The Forge** (`Storeroom`, `TierCard`, `Anvil`, `CraftBench`, `DismantleBench`, `RefineBench`):
+  the grey slab is gone and a storeroom stands beside every bench (each material lit when the
+  recipe draws on it, red when short, `−n` / `+n` against it). *Craft* is three numbered steps —
+  slot tiles in the named set's paintings, tier cards with the rarity odds as a coloured bar, the
+  star odds and "You can strike this n×", the set chooser with the named set's bonus — and an
+  anvil over a burning hearth, the piece to come glowing on the block, the hammer and a burst on
+  the strike, the struck piece's whole sheet beneath. *Dismantle* gathers the pick on a scrap heap
+  with the returns; *Refine* sets the piece before and after on a whetstone.
+- **The hub** (`HubHotspot`, `hotspots.ts`): the red banner boxes became medallions in the kit's
+  metal ring, lit in each building's colour over its name on a patch of ink; the Portal wears a
+  turning rune ring; a live line under every name; a count and a rolling ripple where something is
+  owed; a hover card with what the building is for.
+- **The Idle Chest dialog**: the chest in a vault with its fill drawn round it, rays and glints
+  when it is full and a gold burst when it opens; the capacity bands as a road; the contents as
+  cards with the pace each fills at; the farm in its element's colour with a tier chip; the luck
+  listed as odds, the brew named by the one the farm turns up (`ECONOMY.md` §6 records why the luck
+  is no longer unlisted); the haul arriving card by card; before the first boss, the quiet docks —
+  what the first farm pays an hour and *To the Campaign* — and a readout that says a full chest
+  pays once the boss falls. Everything fits without a scrollbar.
+- Strings: `hub.hint.*` and `hub.status.*` (`ui.ts`); the Tavern's and the Forge's new lines in
+  `tavern.ts` and `gear.ts`, with `tavern.atCap`, `tavern.skills.step` and `forge.refine.cores`
+  retired; the chest's `idle.farming` and `idle.tierChip` replace `idle.tier`, `idle.noFarm` became
+  the quiet docks' title over the new `idle.noFarmBody`, `idle.previewHint` now explains the odds
+  rather than that there are none to show, and `idle.fullNoFarm`, `idle.rate`, `idle.perHour`,
+  `idle.firstFarm`, `idle.toCampaign`, `idle.luck.*`, `idle.bands` and `idle.bandLevel` are new.
+
+### Fixed
+
+- `FillRing` drew a dot at zero — its round cap — on a chest just emptied; an empty ring now
+  shows only its groove.
+
 ## [0.9.4] — 2026-09-23 — Every Mark in Its Place
 
 The owner's fifth batch: a tooltip on every piece of gear, a better header, a rebuilt Champions

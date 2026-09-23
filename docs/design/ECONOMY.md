@@ -186,7 +186,8 @@ the reward for levelling is visible before it arrives.
 `farmTier` = the highest settlement whose boss has fallen, counted across the three difficulties
 end to end (Intro 1–12, Normal 13–24, Hard 25–36) and taking the **best** of the three, so a
 chronicle that has just unlocked a harder difficulty keeps the tier it earned on the easier one
-(ADR-034). Tier 0 — no boss down yet — pays nothing and the chest says so.
+(ADR-034). Tier 0 — no boss down yet — pays nothing and the chest says so; the hours it holds
+meanwhile are kept, and paid at tier 1 once the first boss falls.
 
 The chest is **a small bonus, never a substitute for playing** (owner's steer, ADR-035). Every
 number below is set against what the same hour of campaign play pays: one idle hour is worth about
@@ -217,10 +218,14 @@ the hour the chest out-earned the campaign's own 12 %-per-run drop several times
 exactly the kind of "too much and too strong" the chest must not be. A full chest is one brew more
 often than not and never more than two.
 
-The chest shows fill %, time to full, the settlement and tier it farms, the band line, and a
-preview of the **guaranteed** contents — the luck is deliberately unlisted, because finding it is
-the point of opening it. Offline gains beyond capacity are lost — the "come back in time" tension
-the brief asks for — and the chest says as much when it is opened full.
+The chest shows fill %, time to full, the settlement and tier it farms, the band line, a preview
+of the **guaranteed** contents with the pace each fills at, and the luck **as odds** — each roll's
+chance an hour, never what this chest will turn up. Until `0.9.5` the luck was unlisted, on the
+reasoning that finding it is the point of opening the chest; the dialog's rework lists the odds
+instead, because a chest that hides what it can give reads as one that gives nothing, and the
+find itself is still the surprise of opening it. Offline gains beyond capacity are lost — the
+"come back in time" tension the brief asks for — and the chest says as much when it is opened
+full.
 
 ## 7. Gem budget (sanity)
 

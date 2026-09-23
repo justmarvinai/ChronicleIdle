@@ -20,6 +20,21 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_5.name': 'Hearth and Harbour',
+  'release.0_9_5.tavern':
+    'The Tavern has been rebuilt around the champion you are raising. They stand framed between the seats, a road beneath them shows how far the table takes them towards their level cap, brews sit on a shelf showing what each is worth to them, and the panel shows their health, attack, defence and power before and after.',
+  'release.0_9_5.forge':
+    'The Forge feels like a smithy now. A storeroom beside every bench shows what you hold and what the next strike will take, crafting walks you through slot, tier and set with each tier’s odds and how many times you can afford it, and the anvil burns and rings when you strike.',
+  'release.0_9_5.tavern_helpers':
+    'In the Tavern, Pour to the cap picks the fewest brews that reach the level cap, your champion’s own element first. Filling the seats now leaves out anyone Rare or better or already levelled, and stops once the cap is reached.',
+  'release.0_9_5.forge_benches':
+    'Dismantling gathers what you pick on a scrap heap with everything it gives back, and refining sets the piece before and after side by side on a whetstone.',
+  'release.0_9_5.hub':
+    'Emberhold’s buildings wear lit medallions instead of red banners, and each says what is waiting inside: the next campaign stage, points to spend, missions to claim, when the market restocks. A ripple rolls out from any building with something for you, and resting your cursor on one tells you what it is for.',
+  'release.0_9_5.idle_chest':
+    'The Dockside Chest glows and throws light when it is full, shows how much of each reward it gathers an hour, and lists the odds of its lucky finds. Before your first boss falls, it shows what it will gather and offers the way to the Campaign.',
+  'release.0_9_5.chest_ring': 'An emptied idle chest no longer shows a stray dot at the top of its ring.',
+
   'release.0_9_4.name': 'Every Mark in Its Place',
   'release.0_9_4.gear_tooltips':
     'Rest your cursor on a piece of gear — in the Armoury, on a champion, at the Forge or in a battle’s spoils — and it tells you everything about it: its power, its main stat, each substat with how many times it rolled, and its set’s bonus.',

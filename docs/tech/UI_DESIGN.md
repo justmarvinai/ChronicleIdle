@@ -102,7 +102,7 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `Button.secondary` | `stone-vine/btn-stone-wide` / `btn-stone-med` / `btn-stone-long` | |
 | `Button.icon` | `stone-vine/btn-icon-back` / `btn-icon-close` / `btn-icon-settings`, `dark-ember/btn-ember-round` | 64 px |
 | `Button.square` | `dark-ember/btn-ember-square` (+ `-on`/`-off`) | toggles (Auto, speed) |
-| `Tab` | `dark-ember/banner-plain` / `banner-dark` (active = ember, inactive = dark) | |
+| `Tab` | `dark-ember/banner-plain` / `banner-dark` (active = ember, inactive = dark) | an optional line glyph before the word — the Tavern's three tracks, the Forge's three benches |
 | `CurrencyPill` | the currency's icon cut round inside `dark-ember/frame-round-sm-lit` — the kit's own round frame — at the head of a slim dark bar with the gold hairline, the animated amount in `--font-num`, and `dark-ember/btn-ember-square-on` for "+" | top bar; the Bag and the idle chest are built from the same socket and bar, so the header's right side reads as one row of instruments |
 | `Bar` | `stone-vine/bar-track-stone-*` + `bar-fill-health` / `bar-fill-mana` / `bar-fill-stamina`; `dark-ember/bar-track-ember` + `bar-fill-ember` for boss HP | fills are masked and animated; the carved track is used from 40 px (its rim is 30–40 source px), shorter bars get a hairline frame in the same materials; labels and values only above 20 px |
 | `Slot` | `stone-vine/slot-stone-sm/md/lg/long` (+ `-fill`) | team slots, gear slots, brew slots |
@@ -124,6 +124,8 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `Divider` | `stone-vine/divider-vine`, `deco-frames/deco-divider-NN` | |
 | `RewardBurst` | item cards flying to the wallet with count-up | used everywhere |
 | `NotificationDot` | ember dot with pulse | on hub buildings/buttons |
+| `FxSprite` | a flipbook from the FX library (`fx.*`, §6.3) stepped on one DOM element by a single rAF loop — no React render per frame — and screen-blended over what is behind it | loops (the Forge's hearth flames, the Portal's rune ring on the hub) or plays once per `playKey` (the anvil's burst, the Idle Chest bursting open); under reduced motion a loop holds its middle frame and a one-shot is not drawn |
+| `FillRing` | an SVG arc over a carved groove, exact at any size | the Idle Chest's fill on the hub and in its vault; an empty ring shows only its groove (a round cap would leave a dot) |
 | `Timer` | `--font-num`, hourglass glyph | resets, chest |
 | `Scrollbar` | custom stone channel (14 px, gold hairline) + ember thumb with grip ridges | never native; shown only past 8 px of real overflow and capped so it always reads as a handle |
 | `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters; a dropdown option may carry an icon before its label (a set's emblem in the set choosers); a list opens upward when the stage has no room for it below its control — measured before paint, in stage pixels — so a control at a screen's foot (the campaign's difficulty) never opens a list the stage clips |
@@ -157,8 +159,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   roster gains a level, a rank or a piece of gear; currencies centre-right:
   Energy, Gold, Gems, +; the Idle Chest as a framed pill with its countdown, once it is unlocked;
   the Bag as a square slot; settings right); left edge: Idle Chest at the docks — the hourglass
-  hotspot wearing a gold `FillRing` (an SVG arc, exact at any size) with its countdown under the
-  banner and a dot once it is full.
+  medallion wearing a `FillRing` in its own green, with the time to full under its name and a dot
+  once it is full.
 - **The bottom bar is three weights, not seven buttons.** Far left, the **Rewards** plate: its own
   gold-framed stone, because it is the one thing down here that *gives* rather than leads, and it
   wears the calendar's dot. Centre, one **rail** holding five destinations — Champions, Armoury,
@@ -170,24 +172,51 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   than see: five tiles that differ in hue and silhouette are told apart at a glance, and separating
   the giving button from the going buttons from the fighting button gives the eye somewhere to land.
   The Bag left the bar entirely for the header (§5.26).
-- Hotspots (label banner `banner-plain` + glow ring + dot): Tavern, Forge, Portal (statue replaced
-  with a violet gate overlay), Chronicler's Hall (missions), Campaign gate (world map), Champions
-  barracks, Boss gate.
-- Motion: lantern flicker sprites, fog drift, fireflies, water shimmer, hotspot bob on hover,
-  camera parallax on mouse (±12 px), notification dots pulse; ambient hub SFX loop + music.
+- **The buildings** (`HubHotspot`, placed on the painting in `hotspots.ts`): the Campaign gate
+  (opens Game Modes), the Portal on the statue, the Tavern, the Forge, the Champions barracks, the
+  Glorious Palace, the Chronicler's Hall (the Path), the Market and the Idle Chest at the docks.
+  Each is a **medallion** — the kit's metal ring (`frame-round-lg`) around a dark disc lit from
+  inside in the building's own colour, a soft halo breathing behind it; the Portal also wears a
+  slow-turning rune ring (`FxSprite`) — over its **name on a patch of ink** with a hairline and a
+  diamond in that colour, so the town shows through. Until `0.9.5` they were nine red banner boxes
+  over the painting, which covered the town the hub exists to show.
+- Under each name, **one live line** (`hub-status.ts`, every word derived from the save): the
+  campaign's next stage, a champion to choose or the shards held, the brews on the shelf, new
+  arrivals or the roster's size, Palace points to spend, missions to claim, the market's restock
+  and the chest's fill. When something is owed inside, the line turns to the building's colour,
+  the medallion wears a count (or a dot) and a ring of its light keeps rolling outward from it —
+  the town tells you where to go before you read a word. Hovering a building opens a card that
+  says what it is for and repeats its line; a locked one says what opens it.
+- Motion: lantern flicker sprites, fog drift, fireflies, water shimmer, the medallions bob out of
+  step and swell and brighten on hover, camera parallax on mouse (±12 px), notification dots
+  pulse; ambient hub SFX loop + music.
 
 #### The Idle Chest dialog (`ECONOMY.md` §6)
-- Opened from the hotspot at the docks or the top-bar pill, on any screen. Head: the chest, an
-  ember `Bar` of the fill ("4h 20m of 6h 00m"), the countdown or the word *Full*, and the
-  settlement and tier it farms — or a line saying to fell a settlement boss first — and, quietly
-  under it, the band line: what the chest holds now and what the next chronicle level band holds
-  ("Holds 12h 00m · 16h 00m from chronicle level 30"), which is where the game teaches that
-  levelling widens the chest.
-- Body: **Waiting inside** lists the four owed rewards; the luck is unlisted ("gems, brews and
-  shards turn up on their own"). Opening it swaps the list for **The chest gives up**, adds *A
-  stroke of luck* for each chance that fired, and says when the hours past capacity were lost.
-- The button is *Open the chest* / *Still filling* (disabled while nothing has accrued), then
-  *Continue*. Sound: `chest.open` on the claim, the reward toast with the hours it paid.
+- Opened from the hotspot at the docks or the top-bar pill, on any screen. Two columns.
+- **The vault**, left: the chest in a round vault with its fill drawn round it (`FillRing`, green
+  while it fills, gold when full) and the percentage under it. Full, the vault warms, slow rays
+  turn behind the chest, glints catch on it and it rocks; before the first boss falls the vault is
+  cold and the chest sits in shadow. Under it: the countdown or *Full*, the held time ("4h 20m of
+  6h 00m"), the **capacity road** — every band's hours on a notch with the chronicle level that
+  opens it, the passed ones lit and the held one bright — and the band line ("Holds 12h 00m ·
+  16h 00m from chronicle level 30"), which is where the game teaches that levelling widens the
+  chest.
+- **The contents**, right: the farm — its settlement in the element's colour, with a `tier N`
+  chip — then **Waiting inside** as cards, each with its icon, its name, the pace it fills at
+  ("1,440 an hour") and the amount; then **Now and then**, each luck roll with its chance an hour
+  (the brew named by the one the farm turns up) and one line on how often an opening pays each.
+  Everything fits without a scrollbar.
+- Opening it bursts the chest in gold and swaps the list for **The chest gives up**, the cards
+  arriving one after another; *A stroke of luck* lights each roll that fired, and a note says
+  when the hours past capacity were lost.
+- Before the first settlement boss falls, the contents column is **the quiet docks**: why nothing
+  gathers, that the hours held until then are kept and paid at the first farm's rate, what the
+  first farm pays an hour, and *To the Campaign* (which only closes the dialog when the Campaign
+  is already the screen underneath). A full chest there says it pays out once the boss falls,
+  rather than urging an opening the button refuses.
+- The button is *Open the chest* / *Still filling* (disabled while nothing has accrued, and before
+  a farm), then *Continue*. Sound: `chest.open` on the claim, the reward toast with the hours it
+  paid.
 
 ### 5.3 Champions (Index)
 - Reference: left rail of `champions_gearing_info_screen.png`, `_alternative_3.png`.
@@ -242,25 +271,39 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - Reference: `tavern_champion_upgrade_screen.png` (its fourth tab, *Ascend*, is not ours: Q9 keeps
   ascension in the backlog).
 - Layout: left rail roster (the Champions screen's filter bar and virtual grid, reused) picks who
-  is drinking; centre: `bg5` interior with the champion's portrait, name, stars, level and XP bar,
-  flanked by the offering seats — six on the Level track, exactly as many as the rank-up asks for
-  on the Rank track — with the brew row beneath; right column: vertical tabs *Upgrade Level*,
-  *Upgrade Rank*, *Upgrade Skills* over the track's own panel, and the cost (each amount with its
-  currency's icon, `CurrencyLabel`) + **Upgrade** primary at its foot.
-- Level track: each seat opens the food picker (locked, favourite and already-seated champions
-  never appear; the picker prices each companion in XP), the brew row pours by the glass with the
-  champion's own element listed first, and the panel names the level the offering reaches, the XP
-  it carries and what would spill past the star tier's cap. *Auto-fill* seats the cheapest
-  companions; *Clear the table* empties it.
-- Rank track: the requirement line (`n × n★`), how many seats are filled, and the gold. *Auto-fill*
-  runs the food finder.
-- Skills track: one row per ability — icon, name, the next step in plain English, a dot per step
-  taken, and an **Upgrade** press that spends one tome of the champion's rarity. Rarities without
-  upgrades say so instead of showing dead buttons.
+  is drinking; centre: `bg5` interior with the champion **framed in their rarity** — portrait,
+  rarity plate, element, name, stars and `level / cap` — between the offering seats, three a side
+  on the Level track and exactly as many as the rank-up asks for on the Rank track, with the
+  track's own strip beneath; right column: the three tracks as tabs with their glyphs (*Upgrade
+  Level*, *Upgrade Rank*, *Upgrade Skills*) over the track's panel, and at its foot the cost (each
+  amount with its currency's icon, `CurrencyLabel`), the currency it is short of when it is, and
+  **Upgrade**.
+- **Level track.** Under the champion, the **road to the level cap**: a notch per level up to the
+  star tier's cap, the level held in bronze, the level the table reaches running ahead in gold
+  under a flag, the XP to the next level, and what would spill past the cap. Under that, the
+  **brew shelf**: five bottle cards, the champion's own element first and tagged *Own element*,
+  each with its XP per bottle (×1.5 for the own element), how many are left and a − n + stepper;
+  pressing a bottle pours one. Each seat opens the food picker (locked, favourite and
+  already-seated champions never appear; the picker prices each companion in XP), and a seated
+  guest shows the XP it brings. The panel names the jump (`Level 1 → 9 / 30`), a ledger of what is
+  on the table — brews and companions, each with its count and XP, and the total — and **After the
+  upgrade**: HP, ATK and DEF and the champion's power, before → after. Two helpers sit at its
+  foot: *Pour to the cap* sets the brews that reach the cap with the least spilled, the own element
+  first; *Fill the seats* seats the cheapest companions — never a Rare or better, never anyone
+  levelled — and stops once the cap has no more room. At the cap the table closes, the road says
+  so, and a callout points to the Rank track.
+- **Rank track.** The requirement (`n × n★`) with a pip per seat filled, the free copies of the
+  right star as a larder of cards that seat themselves on a press, the level cap the rank raises
+  (`30 → 40`), the stats after it, and *Auto-fill*, which runs the food finder. At six stars the
+  track says so.
+- **Skills track.** The tomes held for the champion's rarity; one row per ability — icon, name,
+  what it does, a dot per step taken, the next step in plain English, and **Upgrade** with the
+  tome's icon. Rarities without upgrades say so instead of showing dead buttons.
 - Before anyone Rare-or-better, or anyone levelled, is retired, a confirmation names them one by
   one (`tavern-confirm`); a Common at level 1 goes without a question.
-- Motion and sound: seats spring in as they fill, the level flashes with `stinger.levelup`, a new
-  star bursts gold; the table clears itself the moment a press lands.
+- Motion and sound: seats spring in as they fill, the road's preview runs ahead in gold, the level
+  flashes with `stinger.levelup`, a new star bursts gold; the table clears itself the moment a
+  press lands.
 
 ### 5.6 Campaign map
 - Reference: `campaign_settlement_screen.png` (RSL map), `_alternative_2.png` (banners).
@@ -359,24 +402,36 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   *Craft* / *Dismantle* / *Refine*. Each links to the other, so a full rack is two clicks from the
   hammer either way.
 - Forge (`screen-forge`, off the hub's forge hotspot, gated at player level 8): backdrop `bg5`
-  with the hearth's own glows; horizontal tabs and the bench's one-line hint at the top, *Open the
-  Armoury* on the right, and one stone panel holding the bench.
-  - *Craft*: the six slots as `Slot` buttons, three tier cards (name, set pool, one line of what
-    the tier is for, and its material lines — each amount, icon and name, red when the chest is
-    short), and a set chooser
-    whose rows are the tier's pool, each led by the set's emblem, with the Sigils held beside it. Right: the anvil — a stone
-    block over the hearth's light with the hammer falling on every strike, sparks on impact, and
-    the struck piece revealed under it in its rarity colour; below, **Strike** and the recipe's
-    running cost.
-  - *Dismantle*: the quick picks of `GEAR.md` §6 (*Common & Uncommon*, *Never levelled*, *1–2★*),
-    a *Clear the selection* link and the count; a `GearCard` grid of everything free to break
-    (worn and locked pieces are never listed); right, *Returns* with the merged yield (each
-    material by its icon), the level refund line, and **Dismantle n** pinned to the bottom.
-  - *Refine*: two racks — the pieces that can climb, then the twins that may feed the chosen one
-    (same slot, same star, unworn, unlocked) — and a panel with the piece's name, its stars
-    `n★ → n+1★`, the main stat either side, the note that rarity, level and substats survive, the
-    cores and gold by their icons, and **Light the star**. Below player level 18 the tab shows that level
-    instead.
+  with the hearth's own glows; the benches as tabs with their glyphs (*Craft* a hammer,
+  *Dismantle* a bomb, *Refine* stars), the bench's one-line hint, and *Open the Armoury* on the
+  right. Beside every bench stands the **storeroom**: every Forge material and the gold, each with
+  its icon, what it is for and how much is held — lit when the bench's recipe draws on it, red
+  when it is short, with the recipe's `−n` against it (or the `+n` a dismantle would return).
+  Until `0.9.5` the benches sat on one grey slab with the stores out of sight, which read as a
+  form rather than a smithy.
+  - *Craft* — three numbered steps and the anvil. **1 · the slot**: six `Slot` tiles, each showing
+    the named set's painting of that piece (the slot's glyph before a set is named). **2 · the
+    tier**: three cards — name, pool, what the tier is for, its rarity odds as a coloured bar with
+    a legend, its star odds, its material lines by their icons (red when short) and "You can
+    strike this n×". **3 · the set, optional**: the set chooser (each option led by its emblem),
+    the Glyph Sigils held, and the named set's card with its bonus and the Sigil it costs. Right,
+    **the anvil**: the block raised over a burning hearth (flame flipbooks, `FxSprite`), the named
+    set's painting glowing on the block as a ghost of what will be struck (or the slot's glyph),
+    the hammer falling on every press with a burst of sparks, and the struck piece's whole sheet
+    (`GearTooltip`'s) beneath; **Strike** — then *Strike another* — with the recipe's cost under
+    it. Changing the slot, tier or set clears the last piece struck.
+  - *Dismantle* — the rack's head counts what is free to break and what is kept (worn and locked
+    pieces are never listed); the quick picks of `GEAR.md` §6 (*Common & Uncommon*, *Never
+    levelled*, *1–2★*), disabled when nothing matches, and *Clear the selection*; a 128 px
+    `GearCard` grid. Right, **the heap**: `n selected` of the 50 a press takes, a pile of the
+    chosen pieces' paintings, the merged returns by their icons (the storeroom shows them
+    arriving), the level refund, and **Dismantle n** in the danger colour.
+  - *Refine* — two numbered racks: the pieces that can climb, then the twins that may feed the
+    chosen one (same slot, same star, unworn, unlocked). Right, **the whetstone**: the piece before
+    and after, side by side, its stars `n★ → n+1★`, the main stat either side, what survives
+    (rarity, level, substats), the twin to be fed, the cores and gold by their icons with the cores
+    held, and **Light the star**; with nothing chosen the panel reads the rules instead. Below
+    player level 18 the tab shows that level instead.
 - **The Armoury** (`screen-armoury`, reached from the hub's bottom bar, the champion Gear tab and
   the Forge): the racks and the bench. Backdrop `bg5` — the armory interior. Left: the
   filter bar (sort + direction, set — each option led by its emblem — and minimum-star dropdowns,
