@@ -23,6 +23,7 @@ export class BuildContext {
     music: [],
     vfx: [],
     logos: [],
+    gear: [],
   };
   processed = 0;
   reused = 0;

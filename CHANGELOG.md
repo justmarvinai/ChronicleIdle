@@ -11,6 +11,71 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.3] — 2026-09-23 — Marks of the Fourteen
+
+The owner's art for all fourteen gear sets: a painting for each of every set's six pieces, and one
+identifier emblem per set, shown on every piece wherever it turns up. `docs/design/GEAR.md` §5.1,
+`docs/tech/ASSETS.md` §2 (*Gear set art*), §4–§5, `docs/tech/UI_DESIGN.md` §4, §5.4, §5.10,
+§5.11, §5.20, `docs/tech/CONTENT_AUTHORING.md` §5, `docs/tech/ARCHITECTURE.md` §8, §11.
+
+### Added
+
+- **`tools/assets/steps/gear.ts`** reads `game/assets/gear_sets/`: the 84 paintings become
+  `gear.<set>.<slot>` (WebP 256 / 128) and the 14 emblems `emblem.<set>` (WebP with alpha,
+  256 / 128 / 64), in a new manifest group `gear` with typed `GearArtKey` and `EmblemKey` unions.
+  - **Slot spellings** come from a fixed table, because four files spell their slot their own way
+    (`lifedrinker_boot`, `swiftfoot_gauntlet`, `relentless_gauntlents`, `stunlock_sword`) and
+    `/game` is never renamed. An unknown word is skipped with a warning naming the file; a folder
+    missing a slot is warned about; nothing is guessed.
+  - **The emblems arrive as flat colour on black**, and a black square on a piece's painting reads
+    as a hole in it, so the black is keyed out: a pixel's brightest channel against *that
+    emblem's own* fill level (the brightness a quarter of its clearly coloured pixels sit under).
+    Measured per emblem because Executioner's red peaks at 157 where the rest reach 253 — against
+    white it would have come out two-thirds transparent. Rim pixels are lifted back to the fill
+    colour so no black fringe is left; each emblem is trimmed to its shape and re-centred so all
+    fourteen fill a badge alike.
+  - ~2.8 MB in all, runtime-cached rather than precached (`vite.config.ts`), like the avatars.
+- **`SetEmblem`** (bare on a panel, or on a square dark-stone plate with a gold hairline whenever
+  it sits on a painting — a bare Ember Guard emblem vanishes into Ember Guard's own lava) and
+  **`PieceThumb`** (a painting at list size in a hairline of its rarity, optionally badged).
+- Tests: the slot table and the keying (`tools/assets/steps/gear.test.ts`, including a dark
+  emblem keying solid), every set owning its emblem and six paintings plus the three validator
+  refusals (`content.test.ts`), the Armoury drawing each run's cards with that set's painting and
+  emblem (`armoury-screen.test.tsx`), the result screen's drop chips and their cap
+  (`result-drops.test.tsx`), and `pieceArtwork` for a live and a withdrawn set.
+
+### Content
+
+- **Every set names its `emblem` and its six `art` keys** in its file. The schema takes `art` as a
+  record over the six slots (exhaustive, so a missing slot fails), and `pnpm content:validate`
+  refuses a set whose emblem or painting is already another set's, or whose painting in one slot
+  is of another slot's piece: telling sets apart is the whole job of both.
+- A set's spell `icon` stays as the painting its passives carry, as every passive does
+  (`BATTLE.md` §6); it left `GearSetDef`, since nothing draws a set by it any more.
+
+### Changed
+
+- **`GearCard`** fills with the piece's painting and badges the set's emblem bottom-left — the
+  corner that held a slot glyph, which the painting now makes redundant (a helmet is a helmet).
+  A piece whose set has left the content keeps a large slot glyph instead of a picture.
+- **The champion's Gear tab** fills each worn slot with the painting under its rarity ring, with
+  the emblem plate in the corner; the set-bonus rows lead with the emblem.
+- **The Armoury**: each set's run opens under its emblem; the bench shows the painting at 116 px
+  (it was a 96 px crest) with the emblem plate, and its set line leads with the emblem.
+- **The gear picker's** "completes / breaks a set" lines lead with the set's emblem, and so do the
+  sets in the racks' set filter, the Forge's Sigil chooser and a dungeon's set chips —
+  `DropdownOption` takes an optional `icon`, drawn before the label in the list and on the closed
+  control.
+- **The Index's Gear Sets** lead each set with its emblem on a 92 px plate and show its six pieces
+  as paintings, weapon to boots, with each piece's name on hover.
+- **A campaign result's drops** are chips — painting, emblem, name in the rarity's colour — two to
+  a row and a dozen at most, the rest counted (`battleResult.gearDrop` → `battleResult.gearMore`),
+  as the dungeons already did. A ×50 batch used to print one text line per piece, far past the
+  bottom of its panel — and the panel itself had no floor: the result columns now stop above the
+  buttons and the spoils scroll inside their frame, so no batch, however long its spoils, level-ups
+  and drops, runs in underneath *Next stand*.
+- The component gallery (`/?screen=devkit`) shows `SetEmblem` bare and plated and `PieceThumb`.
+
 ## [0.9.2] — 2026-09-22 — Three Faces Out of the Stone
 
 The owner's art for Varkos, the Gargoyle and the Titan, wired in. `docs/tech/ASSETS.md` §2,

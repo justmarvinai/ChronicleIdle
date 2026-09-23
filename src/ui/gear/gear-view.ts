@@ -3,7 +3,7 @@
  * champion. The rules are all in `@engine/gear/*`; this turns their numbers into strings and
  * into the before/after rows the compare panel draws.
  */
-import type { SpellKey } from '@assets/manifest.generated';
+import type { EmblemKey, GearArtKey } from '@assets/manifest.generated';
 import { GEAR_MAX_LEVEL, SUBSTAT_ROLL_LEVELS, type GearStat } from '@content/balance/gear';
 import { STAT_IDS, type ChampionDef, type GearSlot, type StatId } from '@content/champions/types';
 import type { GearSetDef } from '@content/sets/types';
@@ -25,9 +25,18 @@ export function wearerName(wearer: ChampionInstance | null): string | null {
   return def ? translate(def.name) : wearer.instanceId;
 }
 
-/** A piece wears its set's crest; a piece whose set vanished falls back to its slot glyph's kin. */
-export function pieceIcon(piece: GearInstance): SpellKey {
-  return setOf(piece)?.icon ?? 'spell.crest_ember_shield';
+export interface PieceArtwork {
+  art: GearArtKey | null;
+  emblem: EmblemKey | null;
+}
+
+/**
+ * How a piece is drawn: its set's painting of its slot, and its set's emblem (GEAR.md §5.1). A
+ * piece whose set has left the content keeps neither, and the card falls back to its slot glyph.
+ */
+export function pieceArtwork(piece: GearInstance): PieceArtwork {
+  const set = setOf(piece);
+  return { art: set?.art[piece.slot] ?? null, emblem: set?.emblem ?? null };
 }
 
 export const slotLabel = (slot: GearSlot): string => t(`champions.gear.slot.${slot}` as I18nKey);

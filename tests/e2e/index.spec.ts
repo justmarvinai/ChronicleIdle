@@ -49,6 +49,19 @@ test.describe('the Chronicle Index', () => {
     const warcry = page.getByTestId('index-set-gear_set.warcry');
     await expect(warcry).toContainText('2-piece set');
     await expect(warcry).toContainText('ATK');
+    // Led by its emblem — the mark every Warcry piece wears (GEAR.md §5.1) — with its six pieces
+    // beneath, and both are real pictures in the build rather than broken links.
+    const emblem = warcry.locator('[data-emblem="emblem.warcry"] img');
+    await expect(emblem).toBeVisible();
+    await expect
+      .poll(() => emblem.evaluate((img) => (img as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0);
+    const pieces = warcry.locator('[data-testid^="index-set-piece-"]');
+    await expect(pieces).toHaveCount(6);
+    const boots = warcry.getByTestId('index-set-piece-boots').locator('img');
+    await expect
+      .poll(() => boots.evaluate((img) => (img as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0);
 
     // The statuses stand in for the number an ability decides, rather than leaking a placeholder.
     await page.getByTestId('index-tab-statuses').click();

@@ -9,14 +9,34 @@ import { useGameStore } from '@state/store';
 import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Slot } from '@ui/components/Slot/Slot';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
-import { mainStatLine, pieceIcon, pieceName, setLines } from '@ui/gear/gear-view';
+import { mainStatLine, pieceArtwork, pieceName, setLines } from '@ui/gear/gear-view';
 import { rarityLabel } from '@ui/screens/champions/roster-view';
 import styles from './GearTab.module.css';
 
 const selectGearUnlocked = selectFeatureUnlocked('gear');
+
+/** The emblem in a worn slot's corner, in CSS pixels; the recess is ~76 px across. */
+const WORN_EMBLEM = 24;
+/** The emblem beside a set's name in the bonus list. */
+const LINE_EMBLEM = 26;
+
+/** A worn piece in its slot: the painting under a ring of its rarity, its set and its level. */
+function WornPiece({ piece }: { piece: GearInstance }) {
+  const { art, emblem } = pieceArtwork(piece);
+  return (
+    <span className={styles.piece} style={{ ['--rarity' as string]: RARITY_HEX[piece.rarity] }}>
+      {art ? <AssetImage asset={art} size={256} className={styles.pieceArt} /> : null}
+      {emblem ? (
+        <SetEmblem emblem={emblem} size={WORN_EMBLEM} kind="plate" className={styles.pieceEmblem} />
+      ) : null}
+      <span className={`num ${styles.pieceLevel}`}>{t('gear.level', { level: piece.level })}</span>
+    </span>
+  );
+}
 
 export interface GearTabProps {
   entry: RosterEntry;
@@ -60,14 +80,7 @@ export function GearTab({ entry }: GearTabProps) {
                 selected={!!piece}
                 {...(unlocked ? { onClick: open } : {})}
               >
-                {piece ? (
-                  <span className={styles.piece} style={{ ['--rarity' as string]: RARITY_HEX[piece.rarity] }}>
-                    <AssetImage asset={pieceIcon(piece)} size={128} className={styles.pieceArt} />
-                    <span className={`num ${styles.pieceLevel}`}>
-                      {t('gear.level', { level: piece.level })}
-                    </span>
-                  </span>
-                ) : null}
+                {piece ? <WornPiece piece={piece} /> : null}
               </Slot>
               <span className={`display ${styles.slotName}`}>{label}</span>
               {piece ? (
@@ -140,7 +153,10 @@ export function GearTab({ entry }: GearTabProps) {
           {lines.map(({ group, missing }) => (
             <li key={group.set.id} className={styles.set} data-testid={`gear-set-${group.set.id}`}>
               <div className={styles.setHead}>
-                <span className={`display ${styles.setName}`}>{translate(group.set.name)}</span>
+                <span className={styles.setTitle}>
+                  <SetEmblem emblem={group.set.emblem} size={LINE_EMBLEM} />
+                  <span className={`display ${styles.setName}`}>{translate(group.set.name)}</span>
+                </span>
                 {group.groups > 0 ? (
                   <span className={`num ${styles.setActive}`}>
                     {t('champions.gear.sets.active', { count: group.groups })}

@@ -14,13 +14,14 @@ import { Divider } from '@ui/components/Divider/Divider';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { RARITY_COLOR, RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
 import {
   atMaxLevel,
   mainStatLine,
   nextRollLevel,
-  pieceIcon,
+  pieceArtwork,
   pieceName,
   setOf,
   slotLabel,
@@ -30,6 +31,9 @@ import styles from './GearDetail.module.css';
 
 /** The levels an upgrade press buys; "+4" is the doc's running-total button (GEAR.md §3). */
 const STEPS = [1, 4] as const;
+/** The emblem on the painting's corner, and the one leading the set's section, in CSS pixels. */
+const ART_EMBLEM = 30;
+const SET_EMBLEM = 34;
 
 export interface GearDetailProps {
   piece: GearInstance;
@@ -45,6 +49,7 @@ export function GearDetail({ piece, wearer, wearerName, onUnequip, onOpenWearer 
   const wallet = useGameStore(selectWallet);
   const [error, setError] = useState<string | null>(null);
   const set = setOf(piece);
+  const { art, emblem } = pieceArtwork(piece);
   const gold = wallet?.gold ?? 0;
   const maxed = atMaxLevel(piece);
   const nextRoll = nextRollLevel(piece);
@@ -70,7 +75,10 @@ export function GearDetail({ piece, wearer, wearerName, onUnequip, onOpenWearer 
               style={{ ['--rarity' as string]: RARITY_HEX[piece.rarity] }}
               aria-hidden="true"
             >
-              <AssetImage asset={pieceIcon(piece)} size="full" className={styles.icon} />
+              {art ? <AssetImage asset={art} size={256} className={styles.icon} /> : null}
+              {emblem ? (
+                <SetEmblem emblem={emblem} size={ART_EMBLEM} kind="plate" className={styles.artEmblem} />
+              ) : null}
             </div>
             <div className={styles.headText}>
               <h2 className={`display ${styles.name}`} data-testid="gear-detail-name">
@@ -122,7 +130,8 @@ export function GearDetail({ piece, wearer, wearerName, onUnequip, onOpenWearer 
             <>
               <h3 className={`display ${styles.section}`}>{t('armoury.detail.set')}</h3>
               <p className={styles.setName} data-testid="gear-detail-set">
-                {translate(set.name)}
+                <SetEmblem emblem={set.emblem} size={SET_EMBLEM} />
+                <span>{translate(set.name)}</span>
               </p>
               <p className={styles.hint}>{translate(set.description)}</p>
             </>

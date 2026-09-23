@@ -28,6 +28,7 @@ export const indexScreen = {
 
   'index.set.pieces': '{pieces}-piece set',
   'index.set.homes': 'Favoured by: {homes}',
+  'index.set.piecesOf': 'The six pieces of {set}',
 
   'index.status.buffs': 'Buffs',
   'index.status.debuffs': 'Debuffs',

@@ -24,6 +24,10 @@ test.describe('gear', () => {
     const sets = page.locator('[data-testid^="armoury-set-"]');
     await expect(sets.first()).toContainText('Ember Guard');
     await expect(sets.first()).toContainText('2 on the racks');
+    // Each run is headed by its set's emblem, and the piece on the bench is its own painting
+    // with that emblem in the corner (GEAR.md §5.1).
+    await expect(sets.first().locator('[data-emblem="emblem.ember_guard"]')).toBeVisible();
+    await expect(page.getByTestId('gear-detail').locator('[data-emblem]').first()).toBeVisible();
 
     // Upgrading: four levels for the price the button quotes, and the roll at +4.
     await expect(page.getByTestId('gear-detail-level')).toHaveText('+0');
@@ -62,6 +66,8 @@ test.describe('gear', () => {
     await page.getByTestId('gear-equip').click();
     await expect(page.getByTestId('dialog-gear-picker')).toHaveCount(0);
     await expect(page.getByTestId('gear-main-weapon')).toContainText('ATK');
+    // Worn, it still says which set it is: Warcry's emblem on the slot.
+    await expect(page.getByTestId('gear-slot-weapon').locator('[data-emblem="emblem.warcry"]')).toBeVisible();
 
     // The second Warcry piece completes the group, and the tab says so.
     await page.getByTestId('gear-slot-helmet').getByRole('button').first().click();

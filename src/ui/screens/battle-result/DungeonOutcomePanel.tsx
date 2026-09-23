@@ -3,7 +3,7 @@ import { content } from '@content/registry';
 import { t, translate, type I18nKey } from '@i18n/index';
 import type { DungeonSessionState } from '@state/dungeon-session';
 import { GearCard } from '@ui/components/GearCard/GearCard';
-import { mainStatLine, pieceIcon } from '@ui/gear/gear-view';
+import { mainStatLine, pieceArtwork } from '@ui/gear/gear-view';
 import styles from './DungeonOutcomePanel.module.css';
 
 /**
@@ -44,7 +44,7 @@ export function DungeonOutcomePanel({ session }: { session: DungeonSessionState 
                   stars={piece.stars}
                   level={piece.level}
                   slot={piece.slot}
-                  icon={pieceIcon(piece)}
+                  {...pieceArtwork(piece)}
                   mainStat={mainStatLine(piece)}
                   size={96}
                 />

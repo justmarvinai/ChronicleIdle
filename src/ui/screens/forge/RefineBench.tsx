@@ -21,7 +21,7 @@ import { Glyph } from '@ui/components/Glyph/Glyph';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { RARITY_HEX } from '@ui/styles/display-maps';
-import { formatGearValue, mainStatLine, pieceIcon, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
+import { formatGearValue, mainStatLine, pieceArtwork, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
 import styles from './RefineBench.module.css';
 
 const selectRefineUnlocked = selectFeatureUnlocked('gear_refine');
@@ -102,7 +102,7 @@ export function RefineBench() {
                   stars={entry.piece.stars}
                   level={entry.piece.level}
                   slot={entry.piece.slot}
-                  icon={pieceIcon(entry.piece)}
+                  {...pieceArtwork(entry.piece)}
                   mainStat={mainStatLine(entry.piece)}
                   setName={setOf(entry.piece) ? translate(setOf(entry.piece)?.name ?? '') : entry.piece.setId}
                   size={96}
@@ -146,7 +146,7 @@ export function RefineBench() {
                     stars={entry.piece.stars}
                     level={entry.piece.level}
                     slot={entry.piece.slot}
-                    icon={pieceIcon(entry.piece)}
+                    {...pieceArtwork(entry.piece)}
                     mainStat={mainStatLine(entry.piece)}
                     setName={
                       setOf(entry.piece) ? translate(setOf(entry.piece)?.name ?? '') : entry.piece.setId

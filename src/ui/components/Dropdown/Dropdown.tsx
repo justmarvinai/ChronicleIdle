@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { playSfx } from '@audio/index';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { kitBorder } from '@ui/styles/kit';
@@ -7,6 +7,8 @@ import styles from './Dropdown.module.css';
 export interface DropdownOption<V extends string | number> {
   value: V;
   label: string;
+  /** Drawn before the label, in the list and on the closed control — a gear set's emblem, say. */
+  icon?: ReactNode;
 }
 
 export interface DropdownProps<V extends string | number> {
@@ -94,7 +96,10 @@ export function Dropdown<V extends string | number>({
         }}
         onKeyDown={onKey}
       >
-        <span className={styles.value}>{current?.label ?? ''}</span>
+        <span className={styles.value}>
+          {current?.icon}
+          <span className={styles.valueText}>{current?.label ?? ''}</span>
+        </span>
         <Glyph glyph="glyph.magic_arrow" size={18} color="var(--gold-2)" className={styles.chevron} />
       </button>
       {open ? (
@@ -117,6 +122,7 @@ export function Dropdown<V extends string | number>({
               onMouseEnter={() => setHighlight(index)}
               onClick={() => choose(index)}
             >
+              {option.icon}
               {option.label}
             </li>
           ))}

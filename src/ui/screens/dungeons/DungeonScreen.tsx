@@ -16,12 +16,16 @@ import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Tabs } from '@ui/components/Tab/Tabs';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { raritiesLabel, starsLabel } from './dungeons-view';
 import styles from './DungeonScreen.module.css';
+
+/** A set's emblem at the head of its chip in the keep's set list, in CSS pixels. */
+const CHIP_EMBLEM = 22;
 
 type DungeonRoute = Extract<Route, { name: 'dungeon' }>;
 
@@ -96,7 +100,8 @@ export default function DungeonScreen({ route }: ScreenProps) {
                 const set = content.gearSetById(id);
                 return (
                   <li key={id} className={styles.setChip}>
-                    {set ? translate(set.name) : id}
+                    {set ? <SetEmblem emblem={set.emblem} size={CHIP_EMBLEM} /> : null}
+                    <span>{set ? translate(set.name) : id}</span>
                   </li>
                 );
               })}

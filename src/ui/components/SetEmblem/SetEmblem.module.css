@@ -1,0 +1,31 @@
+.emblem {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+
+.emblem > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* On a panel: a hairline of shadow is all it needs to sit on the stone rather than in it. */
+.bare > img {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
+}
+
+/*
+ * On a painting: a square of the kits' dark stone under a gold hairline — square, because corners
+ * are square or bevelled here and never rounded (UI_DESIGN.md §1). The padding is a share of the
+ * plate's own side (a percentage would be a share of the card it sits in).
+ */
+.plate {
+  padding: calc(var(--emblem-side) * 0.09);
+  background: linear-gradient(180deg, rgba(30, 26, 34, 0.94), rgba(10, 9, 13, 0.96));
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.85),
+    inset 0 0 0 2px rgba(201, 162, 74, 0.32),
+    0 1px 4px rgba(0, 0, 0, 0.75);
+}

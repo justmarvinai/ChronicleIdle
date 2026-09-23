@@ -24,6 +24,7 @@ import {
 import { buildAudio } from './steps/audio.ts';
 import { buildAvatars } from './steps/avatars.ts';
 import { buildBackdrops } from './steps/backdrops.ts';
+import { buildGear } from './steps/gear.ts';
 import { buildLogos } from './steps/logos.ts';
 import { buildModels } from './steps/models.ts';
 import { buildUi } from './steps/ui.ts';
@@ -53,6 +54,8 @@ function renderManifestTs(manifest: AssetManifest): string {
     ['SfxKey', 'sfx'],
     ['FxKey', 'fx'],
     ['LogoKey', 'logo'],
+    ['GearArtKey', 'gear'],
+    ['EmblemKey', 'emblem'],
   ];
   const lines = [
     '/* eslint-disable */',
@@ -142,6 +145,7 @@ async function main(): Promise<void> {
       buildBackdrops(ctx),
       buildLogos(ctx),
       buildVfx(ctx),
+      buildGear(ctx),
     ]);
     await buildAudio(ctx);
     await buildGeneratedAudio(ctx);

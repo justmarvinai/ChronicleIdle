@@ -1,18 +1,25 @@
-import type { SpellKey } from '@assets/manifest.generated';
+import type { EmblemKey, GearArtKey } from '@assets/manifest.generated';
 import { playSfx } from '@audio/index';
 import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { StarRow } from '@ui/components/StarRow/StarRow';
 import { RARITY_HEX, SLOT_GLYPH, type GearSlot, type Rarity } from '@ui/styles/display-maps';
 import styles from './GearCard.module.css';
+
+/** The emblem's plate as a share of the card's side: ~33 px on a 128 card, ~25 px on a 96. */
+const EMBLEM_SHARE = 0.26;
 
 export interface GearCardProps {
   rarity: Rarity;
   stars: number;
   level: number;
   slot: GearSlot;
-  icon: SpellKey;
+  /** The piece's own painting; null only for a piece whose set no longer exists. */
+  art: GearArtKey | null;
+  /** Its set's emblem, badged in the corner so a piece names its set wherever it turns up. */
+  emblem: EmblemKey | null;
   mainStat: string;
   setName?: string;
   size?: 96 | 128;
@@ -21,13 +28,18 @@ export interface GearCardProps {
   onClick?: () => void;
 }
 
-/** Gear piece card: rarity frame, painted icon, stars, +level badge and slot glyph. */
+/**
+ * Gear piece card: rarity frame, the piece's painting, stars, +level badge and its set's emblem.
+ * The painting shows the slot by itself — a helmet is a helmet — which is why the corner that used
+ * to carry a slot glyph now carries the set, the one thing the painting cannot say.
+ */
 export function GearCard({
   rarity,
   stars,
   level,
   slot,
-  icon,
+  art,
+  emblem,
   mainStat,
   setName,
   size = 128,
@@ -52,14 +64,24 @@ export function GearCard({
       onMouseEnter={() => interactive && playSfx('ui.hover')}
       onClick={() => interactive && (playSfx('ui.tab'), onClick())}
     >
-      <AssetImage asset={icon} size="full" className={styles.art} />
+      {art ? (
+        // 256 for a card of 96 or 128: the frame scales with the window, so twice the side.
+        <AssetImage asset={art} size={256} className={styles.art} />
+      ) : (
+        <Glyph glyph={SLOT_GLYPH[slot]} size={size * 0.4} color="var(--text-3)" className={styles.orphan} />
+      )}
       <div className={styles.shade} />
       <div className={styles.stars}>
         <StarRow stars={stars} max={6} size={Math.max(10, size * 0.1)} tone="rarity" tint={color} />
       </div>
-      <span className={styles.slot}>
-        <Glyph glyph={SLOT_GLYPH[slot]} size={size * 0.16} color="var(--text-2)" label={slot} />
-      </span>
+      {emblem ? (
+        <SetEmblem
+          emblem={emblem}
+          size={Math.round(size * EMBLEM_SHARE)}
+          kind="plate"
+          className={styles.emblem}
+        />
+      ) : null}
       <span className={`num ${styles.level}`}>+{level}</span>
       <span className={styles.main}>{mainStat}</span>
       {locked ? (

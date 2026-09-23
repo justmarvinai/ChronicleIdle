@@ -50,16 +50,24 @@
 .columns {
   position: absolute;
   top: 300px;
+  /* Stops short of the buttons (bottom 48 px, ~76 px tall), so nothing can run in under them. */
+  bottom: 150px;
   left: 120px;
   right: 120px;
   z-index: var(--z-scene);
   display: grid;
   grid-template-columns: 560px 1fr;
+  grid-template-rows: minmax(0, 1fr);
   gap: 40px;
 }
 .stats,
 .report {
-  min-height: 460px;
+  min-height: 0;
+}
+/* The spoils scroll inside their panel; the panel's own frame never moves. */
+.statsContent {
+  height: 100%;
+  min-height: 0;
 }
 .heading {
   margin: 0 0 12px;
@@ -235,6 +243,29 @@
   margin: 0;
   font-size: 14px;
   color: var(--buff);
+}
+/* The run's drops, two to a row: painting and emblem first, the name in its rarity beside. */
+.drops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.drop {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.dropName {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }
 .gear {
   margin: 0;

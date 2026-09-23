@@ -110,7 +110,9 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `ChampionCard` | `Frame` (rarity) + avatar 256 + star row + level badge (`frame-round-sm`) + element sigil (glyph) + role glyph + lock/favourite marks | sizes: 96 / 128 / 192 / 256 |
 | `ChampionPortrait` | avatar 512/1024 in `panel-arch` with parallax tilt on hover | detail screens |
 | `SpriteView` | Pixi-less DOM sprite: atlas frame stepping via CSS `steps()` animation | idle loops in menus; cheap |
-| `GearCard` | `Frame` (rarity) + spell-icon art per set/slot + star row + `+N` badge + main stat | |
+| `GearCard` | `Frame` (rarity) + the piece's own painting (`gear.<set>.<slot>`) + star row + `+N` badge + main stat + the set's emblem on a stone plate, bottom-left | 96 / 128; the painting shows the slot, so the corner that held a slot glyph names the set |
+| `SetEmblem` | a set's emblem (`emblem.<set>`), bare on a panel or on a square dark-stone plate with a gold hairline | on a painting it always takes the plate — a bare red emblem vanishes into Ember Guard's own lava |
+| `PieceThumb` | a piece's painting at list size in a hairline of its rarity (or gold), optionally with the emblem plate | drop chips, the Index's six pieces |
 | `AbilityIcon` | `dark-ember/frame-round-sm` (+ `-lit` when ready) + spell icon + cooldown overlay + "P" tag | 96 px in battle, 64 px in menus |
 | `StatusIcon` | line-glyph (mask) tinted buff/debuff + duration digit | 28 px |
 | `StarRow` | `stone-vine/icon-star` tinted (gold earned, grey empty) | |
@@ -121,7 +123,7 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `NotificationDot` | ember dot with pulse | on hub buildings/buttons |
 | `Timer` | `--font-num`, hourglass glyph | resets, chest |
 | `Scrollbar` | custom stone channel (14 px, gold hairline) + ember thumb with grip ridges | never native; shown only past 8 px of real overflow and capped so it always reads as a handle |
-| `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters |
+| `Dropdown`, `Toggle`, `Slider` | stone frames + ember indicators | settings, filters; a dropdown option may carry an icon before its label (a set's emblem in the set choosers) |
 | `TopBar`, `BottomBar` | `dark-ember/bg-wide` strips with gold hairline | |
 
 Every component has states: default, hover, active, disabled, focus-visible, and a `motion` prop
@@ -199,11 +201,12 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - **Info**: as 5.3, with a second stat column carrying what the gear and its complete sets add.
   **Gear**: the power with everything worn, then a 3×2 slot grid of the small stone `Slot` on
   `minmax(0, 1fr)` tracks, so a cell can never push the row wider than the panel — each slot shows
-  the piece's crest inside a ring in its **rarity's colour**, its `+level` badge, its main stat,
+  the piece's painting filling the recess under a ring in its **rarity's colour**, its set's emblem
+  on a plate in the corner, its `+level` badge, its main stat,
   the rarity named under it in that same colour and its stars, with *Take off* and *Upgrade* below
   as dark chips with a gold hairline rather than as underlined small print — then
-  the set-bonus rows (a complete group shows how many copies it grants, an incomplete one how
-  many pieces it still needs), then *Open the Armoury*. A slot opens the **gear picker**
+  the set-bonus rows, each led by the set's emblem (a complete group shows how many copies it
+  grants, an incomplete one how many pieces it still needs), then *Open the Armoury*. A slot opens the **gear picker**
   (`dialog-gear-picker`): the racks filtered to that slot on the left, and a compare panel on the
   right that answers before anything is spent — every stat before → after (coloured by the
   delta), the power either side, and the set groups the swap would make or break. A piece worn by
@@ -316,10 +319,13 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 ### 5.10 Battle result
 - Victory: the stand's stars and a "New record" badge on the stats panel, stage name and
   settlement, turns and waves, the spoils list (gold, materials, shards, brews, gems, energy,
-  champion and chronicle XP) with first-clear, star-chest, gear-drop and level-up lines, the
+  champion and chronicle XP) with first-clear, star-chest and level-up lines and the drops — each
+  piece a chip of its painting with its set's emblem, named in its rarity's colour, two to a row
+  and a dozen at most (a longer batch counts the rest, as the dungeons do) — the
   per-champion report, and buttons *Emberhold*, *Campaign*, *Team*, *Replay*, **Next stand**.
   An auto-repeat batch shows the merged spoils and how the batch ended (done, stopped, defeated,
-  out of energy). Defeat: red vignette, enemy HP left, tips, *Team*, *Emberhold* — and the energy
+  out of energy). The two panels stop above the buttons and the spoils scroll inside theirs, so a
+  long batch never runs underneath them. Defeat: red vignette, enemy HP left, tips, *Team*, *Emberhold* — and the energy
   stays spent.
 
 ### 5.11 Forge & Armoury
@@ -332,7 +338,7 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   Armoury* on the right, and one stone panel holding the bench.
   - *Craft*: the six slots as `Slot` buttons, three tier cards (name, set pool, one line of what
     the tier is for, and its material lines — red when the chest is short), and a set chooser
-    whose rows are the tier's pool, with the Sigils held beside it. Right: the anvil — a stone
+    whose rows are the tier's pool, each led by the set's emblem, with the Sigils held beside it. Right: the anvil — a stone
     block over the hearth's light with the hammer falling on every strike, sparks on impact, and
     the struck piece revealed under it in its rarity colour; below, **Strike** and the recipe's
     running cost.
@@ -347,14 +353,16 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
     instead.
 - **The Armoury** (`screen-armoury`, reached from the hub's bottom bar, the champion Gear tab and
   the Forge): the racks and the bench. Backdrop `bg5` — the armory interior. Left: the
-  filter bar (sort + direction, set and minimum-star dropdowns, one-tap chips for slot, rarity and
+  filter bar (sort + direction, set — each option led by its emblem — and minimum-star dropdowns,
+  one-tap chips for slot, rarity and
   locked, a clear link and a "shown of total" count) over a virtualised `GearCard` grid that on the
   default *Set* sort is cut into one run per set, each opening with a heading row — the set's
-  crest, its name, `n-piece` and how many are on the racks — with the capacity band pinned to the
+  emblem, its name, `n-piece` and how many are on the racks — with the capacity band pinned to the
   bottom (`held / 400`, amber warning at
-  90 %, a red band and the overflow note when it is full). Right: the bench — the piece's crest
-  in a rarity-lit frame, its name, slot, rarity, `+level` and stars, its power, its main stat,
-  its substats with the roll count behind each, its set and what the set gives, who wears it (a
+  90 %, a red band and the overflow note when it is full). Right: the bench — the piece's
+  painting in a rarity-lit frame with the emblem plate in its corner, its name, slot, rarity,
+  `+level` and stars, its power, its main stat, its substats with the roll count behind each, its
+  set under its emblem and what the set gives, who wears it (a
   link to that champion's Gear tab) and when it was found; beneath, **+1** and **+4** with the
   gold each would cost, then *Lock* and *Take it off*.
 
@@ -613,9 +621,11 @@ Rules the overlay holds to:
   and the boss that holds the last stand (wearing a **BOSS** tag). Cards are the enemy's own sprite
   over its name; the page beside them prints archetype · element · role, the settlement-1 base
   stats the encounter scales, and the kit.
-- **Gear Sets**: the fourteen crests, each with its piece count, what a complete group gives, and
-  the settlements that favour it. The set's own description *is* its bonus text — printing the
-  passives beside it said the same sentence twice.
+- **Gear Sets**: the fourteen sets, each led by its **emblem** on a stone plate — the mark that
+  names the set on every piece it makes (`GEAR.md` §5.1) — then its name, piece count and what a
+  complete group gives; under that the set's **six pieces**, weapon to boots, as paintings with the
+  piece's name on hover; and the settlements that favour it. The set's own description *is* its
+  bonus text — printing the passives beside it said the same sentence twice.
 - **Statuses**: buffs then debuffs, each with its tinted chip and what it does. A status's text is
   written for one cast ("by {value} %"), and a glossary has no cast, so the amount stands as `X`.
 - Everything here is a read of the content registry, so the Index grows by itself every time the
@@ -815,8 +825,8 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   A mode you cannot enter yet still has to say what it **is**, which is why `ModeCard` renders its
   children shut as well as open.
 - **A keep is the tower's shape, because it is the same kind of climb.** Left rail (460 px): the
-  keep's name in gold, its story, the keeper under a *Keeper* label, the sets it holds as chips,
-  and the deepest rung at the foot. Right: the Normal/Hard tabs, the repeat selector, and the
+  keep's name in gold, its story, the keeper under a *Keeper* label, the sets it holds as chips
+  (each led by the set's emblem), and the deepest rung at the foot. Right: the Normal/Hard tabs, the repeat selector, and the
   **ladder of twenty rungs**. It opens scrolled to the deepest rung the player may enter, so a keep
   twelve stages in does not start at stage 1.
 - **A rung says the four things a run is decided on**, in four columns: its number and the level it

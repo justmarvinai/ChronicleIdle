@@ -22,7 +22,9 @@ import { Panel, type PanelKind } from '@ui/components/Frame/Panel';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { NotificationDot } from '@ui/components/NotificationDot/NotificationDot';
+import { PieceThumb } from '@ui/components/PieceThumb/PieceThumb';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Slider } from '@ui/components/Slider/Slider';
 import { Slot } from '@ui/components/Slot/Slot';
 import { SpriteView } from '@ui/components/SpriteView/SpriteView';
@@ -271,7 +273,8 @@ export default function DevKitScreen(_props: ScreenProps) {
                 stars={5}
                 level={12}
                 slot="weapon"
-                icon="spell.weapon_runeblade"
+                art="gear.warcry.weapon"
+                emblem="emblem.warcry"
                 mainStat="ATK 210"
                 setName="Warcry"
               />
@@ -280,10 +283,26 @@ export default function DevKitScreen(_props: ScreenProps) {
                 stars={6}
                 level={16}
                 slot="boots"
-                icon="spell.crest_stone_guard"
+                art="gear.swiftfoot.boots"
+                emblem="emblem.swiftfoot"
                 mainStat="SPD 45"
                 size={96}
                 locked
+              />
+            </Row>
+          </Section>
+          <Section title="Gear set emblems and piece thumbnails">
+            <Row>
+              <SetEmblem emblem="emblem.ember_guard" size={92} kind="plate" label="Ember Guard" />
+              <SetEmblem emblem="emblem.executioner" size={48} kind="plate" label="Executioner" />
+              <SetEmblem emblem="emblem.keen_eye" size={36} label="Keen Eye" />
+              <SetEmblem emblem="emblem.bulwark" size={22} label="Bulwark" />
+              <PieceThumb art="gear.lifedrinker.helmet" tint="var(--gold-2)" size={78} />
+              <PieceThumb
+                art="gear.stunlock.weapon"
+                emblem="emblem.stunlock"
+                tint="var(--r-legendary)"
+                size={40}
               />
             </Row>
           </Section>

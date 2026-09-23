@@ -4,6 +4,15 @@ export default set({
   slug: 'bulwark',
   pieces: 4,
   icon: 'spell.tech_energy_shield',
+  emblem: 'emblem.bulwark',
+  art: {
+    weapon: 'gear.bulwark.weapon',
+    helmet: 'gear.bulwark.helmet',
+    shield: 'gear.bulwark.shield',
+    gauntlets: 'gear.bulwark.gauntlets',
+    chestplate: 'gear.bulwark.chestplate',
+    boots: 'gear.bulwark.boots',
+  },
   grants: [
     {
       trigger: 'onWaveStart',

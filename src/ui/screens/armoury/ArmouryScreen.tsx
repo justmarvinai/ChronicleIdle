@@ -15,16 +15,16 @@ import {
 import { useGameStore } from '@state/store';
 import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
-import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Bar } from '@ui/components/Bar/Bar';
 import { Button } from '@ui/components/Button/Button';
 import { GearCard } from '@ui/components/GearCard/GearCard';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
-import { mainStatLine, pieceIcon, pieceName, setOf, wearerName } from '@ui/gear/gear-view';
+import { mainStatLine, pieceArtwork, pieceName, setOf, wearerName } from '@ui/gear/gear-view';
 import { GearDetail } from './GearDetail';
 import { GearFilterBar } from './GearFilterBar';
 import styles from './ArmouryScreen.module.css';
@@ -94,7 +94,7 @@ export default function ArmouryScreen({ route }: ScreenProps) {
         stars={entry.piece.stars}
         level={entry.piece.level}
         slot={entry.piece.slot}
-        icon={pieceIcon(entry.piece)}
+        {...pieceArtwork(entry.piece)}
         mainStat={mainStatLine(entry.piece)}
         setName={setName(entry.piece)}
         size={CARD}
@@ -197,15 +197,18 @@ function setName(piece: GearInstance): string {
   return set ? translate(set.name) : piece.setId;
 }
 
+/** The emblem leading a set's heading, in CSS pixels. */
+const HEADING_EMBLEM = 36;
+
 /**
- * What separates one set's run from the next: its crest, its name, how many pieces a complete
+ * What separates one set's run from the next: its emblem, its name, how many pieces a complete
  * group takes, and how many of them are on the racks right now.
  */
 function SetHeading({ setId, count }: { setId: string; count: number }) {
   const set = content.gearSetById(setId);
   return (
     <h3 className={styles.setHead} data-testid={`armoury-set-${setId}`}>
-      <AssetImage asset={set?.icon ?? 'spell.crest_ember_shield'} size={128} className={styles.crest} />
+      {set ? <SetEmblem emblem={set.emblem} size={HEADING_EMBLEM} /> : null}
       <span className={`display ${styles.setName}`}>{set ? translate(set.name) : setId}</span>
       {set ? <span className={styles.setSize}>{t('armoury.set.pieces', { pieces: set.pieces })}</span> : null}
       <span className={`num ${styles.setCount}`}>{t('armoury.set.held', { count })}</span>

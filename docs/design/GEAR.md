@@ -116,6 +116,30 @@ A set bonus applies per complete group; 2-piece sets stack (three groups possibl
 Set bonuses are data (`src/content/sets/*.ts`) using the passive shape from `BATTLE.md` §6.
 Forge recipes can target a set with a Glyph Sigil (§6).
 
+### 5.1 How a set is recognised
+
+Fourteen sets across six slots is eighty-four different pieces, and a player farming for a set
+has to know one when it drops. Since `0.9.3` two things say which set a piece is, both from the
+owner's art (`ASSETS.md` §2, *Gear set art*):
+
+- **The emblem** — one flat, single-colour mark per set: Bulwark's gold tower shield, Ember
+  Guard's flaming sword, Executioner's skull and axe, and so on. It is the set's identifier, and
+  it goes wherever the set does: a small badge in the corner of **every piece**, on every screen a
+  piece turns up (the racks, the champion's slots, the picker, the Forge's benches, a dungeon's
+  haul, a mission gift, and each drop under a campaign result), the heading of the set's run on
+  the racks, the set line on the bench, the set bonuses on a champion, beside its name in the
+  racks' set filter, the Forge's set chooser and a dungeon's list of the sets it holds, and its
+  plate in the Index's *Gear Sets*.
+- **The painting** — each set's six pieces are six different paintings in the set's own palette,
+  so a piece shows its slot by itself (a helmet is a helmet) and its set at a glance. The card's
+  corner that used to carry a slot glyph now carries the emblem, the one thing a painting cannot
+  say on its own.
+
+Neither is ever shared: `pnpm content:validate` refuses a set that wears another set's emblem or
+painting, or whose painting in one slot is of another slot's piece — telling sets apart is the
+whole job of both. A set's content file names its emblem and its six paintings by manifest key,
+so adding a set means adding its art first.
+
 ## 6. Crafting (The Forge)
 
 Unlocked at player level 8. No timers; crafting is instant and animated (hammer strikes, sparks,
@@ -148,13 +172,14 @@ Returns materials by rarity: Common 2 Scrap; Uncommon 4 Scrap; Rare 6 Scrap + 2 
 - Filters: slot, set, rarity, stars, main stat, locked. Sort: set, power, level, rarity, stars,
   newest.
 - **Grouped by set**, which is the sort the racks open on: each set's pieces run together under a
-  heading with the set's crest, its name, how many pieces a complete group takes and how many are
+  heading with the set's emblem, its name, how many pieces a complete group takes and how many are
   on the racks. Any other sort draws one straight grid. Sets run in name order; within a set the
   best piece leads (rarity, then stars, then level).
 - Lock toggle protects from dismantle and refine.
 - Equip flow: from champion screen slot → the slot's spare pieces → compare panel (before/after
   stats, set completion delta) → equip. Nothing here is on another champion, so nothing is taken.
-- Gear piece card: frame by rarity, star row, level badge, main stat, substats, set icon, slot glyph.
+- Gear piece card: frame by rarity, the piece's painting, star row, level badge, main stat and the
+  set's emblem in the corner (§5.1).
 
 ## 8. Gear instance data
 

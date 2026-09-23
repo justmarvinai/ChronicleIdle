@@ -4,7 +4,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
-import { setManifestForTests } from '@assets/manifest';
+import { imageUrl, setManifestForTests } from '@assets/manifest';
 import { INVENTORY_CAPACITY } from '@content/balance/gear';
 import { DEFAULT_GEAR_VIEW } from '@engine/gear/query';
 import type { GearInstance } from '@engine/gear/instance';
@@ -98,7 +98,7 @@ describe('the Armoury', () => {
     expect(screen.getByTestId('armoury-capacity')).toHaveTextContent(`6 / ${INVENTORY_CAPACITY}`);
   });
 
-  it('racks the pieces set by set, each run under its own crest', async () => {
+  it('racks the pieces set by set, each run under its own emblem', async () => {
     const user = userEvent.setup();
     // A fresh chronicle, so only the planted pieces are on the racks.
     const a = actions();
@@ -114,13 +114,26 @@ describe('the Armoury', () => {
     const ember = screen.getByTestId('armoury-set-gear_set.ember_guard');
     const warcry = screen.getByTestId('armoury-set-gear_set.warcry');
     expect(ember).toHaveTextContent('Ember Guard');
-    // Its crest, the group size and how many of it are on the racks.
-    expect(within(ember).getByRole('presentation', { hidden: true })).toBeInTheDocument();
+    // Its emblem, the group size and how many of it are on the racks.
+    expect(ember.querySelector('[data-emblem="emblem.ember_guard"]')).not.toBeNull();
+    expect(warcry.querySelector('[data-emblem="emblem.warcry"]')).not.toBeNull();
     expect(ember).toHaveTextContent('2-piece');
     expect(ember).toHaveTextContent('2');
     expect(warcry).toHaveTextContent('Warcry');
     // Sets run in name order, so a set being assembled is one block rather than a scatter.
     expect(ember.compareDocumentPosition(warcry) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    // Every card is its own set's painting of its own slot, badged with that set's emblem — the
+    // mark that says which set a piece is wherever it turns up (GEAR.md §5.1).
+    const cards = screen.getAllByRole('button', { name: /Ember Guard weapon/ });
+    expect(cards).toHaveLength(2);
+    for (const card of cards) {
+      const painting = card.querySelector('img');
+      expect(painting?.getAttribute('src')).toBe(imageUrl('gear.ember_guard.weapon', 256));
+      expect(card.querySelector('[data-emblem="emblem.ember_guard"]')).not.toBeNull();
+    }
+    const [warcryCard] = screen.getAllByRole('button', { name: /Warcry weapon/ });
+    expect(warcryCard?.querySelector('[data-emblem="emblem.warcry"]')).not.toBeNull();
 
     // Any other sort is one straight grid: a heading per set would fight the order.
     await user.click(screen.getByRole('combobox', { name: 'Sort' }));

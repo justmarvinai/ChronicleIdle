@@ -545,6 +545,8 @@ function validateGearSets(
   const error = (path: string, message: string): void =>
     void issues.push({ path, message, severity: 'error' });
   const seen = new Set<string>();
+  const emblems = new Map<string, string>();
+  const paintings = new Map<string, string>();
   const parsed: GearSetDef[] = [];
   sets.forEach((raw, index) => {
     const result = gearSetSchema.safeParse(raw);
@@ -558,7 +560,19 @@ function validateGearSets(
     seen.add(def.id);
     for (const key of [def.name, def.description])
       if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);
-    if (!refs.assetKeys.has(def.icon)) error(path, `missing icon ${def.icon}`);
+    // The emblem and the paintings are how a player tells one set from another (GEAR.md §5.1), so
+    // each must exist, a slot must show that slot, and neither may be shared with another set.
+    if (!refs.assetKeys.has(def.emblem)) error(path, `missing emblem ${def.emblem}`);
+    const emblemOwner = emblems.get(def.emblem);
+    if (emblemOwner) error(path, `emblem ${def.emblem} is already ${emblemOwner}'s`);
+    emblems.set(def.emblem, def.id);
+    for (const [slot, key] of Object.entries(def.art)) {
+      if (!refs.assetKeys.has(key)) error(`${path}.art.${slot}`, `missing painting ${key}`);
+      if (!key.endsWith(`.${slot}`)) error(`${path}.art.${slot}`, `the ${slot} slot shows ${key}`);
+      const paintingOwner = paintings.get(key);
+      if (paintingOwner) error(`${path}.art.${slot}`, `${key} is already ${paintingOwner}'s`);
+      paintings.set(key, def.id);
+    }
     for (const passive of def.passives) {
       for (const key of [passive.name, passive.description])
         if (!refs.i18nKeys.has(key)) error(path, `missing i18n key ${key}`);

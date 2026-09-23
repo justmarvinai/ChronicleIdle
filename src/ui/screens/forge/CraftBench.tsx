@@ -14,13 +14,17 @@ import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Slot } from '@ui/components/Slot/Slot';
 import { CARD_TINT, RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
-import { mainStatLine, pieceIcon, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
+import { mainStatLine, pieceArtwork, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
 import { CRAFT_TIERS, affordable, costLine, poolLabel, tierBody, tierLabel } from './forge-view';
 import type { CraftTier } from './forge-view';
 import styles from './CraftBench.module.css';
+
+/** A set's emblem beside its name in the Sigil's set chooser, in CSS pixels. */
+const OPTION_EMBLEM = 22;
 
 /** The anvil: slot, tier, an optional Sigil naming the set, and the hammer. */
 export function CraftBench() {
@@ -149,7 +153,11 @@ export function CraftBench() {
               { value: '', label: t('forge.craft.set.any') },
               ...content.gearSets
                 .filter((one) => pool.includes(one.id))
-                .map((one) => ({ value: one.id, label: translate(one.name) })),
+                .map((one) => ({
+                  value: one.id,
+                  label: translate(one.name),
+                  icon: <SetEmblem emblem={one.emblem} size={OPTION_EMBLEM} />,
+                })),
             ]}
             onChange={(next) => setSetId(next)}
           />
@@ -193,7 +201,7 @@ export function CraftBench() {
               stars={struck.stars}
               level={struck.level}
               slot={struck.slot}
-              icon={pieceIcon(struck)}
+              {...pieceArtwork(struck)}
               mainStat={mainStatLine(struck)}
               setName={set ? translate(set.name) : struck.setId}
               size={128}

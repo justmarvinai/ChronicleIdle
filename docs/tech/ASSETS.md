@@ -22,6 +22,8 @@ recorded in `CREDITS.md`.
 | Pixel deco frames | `assets/ui/deco-frames/` | 140 | 32 frames × {line, solid, soft, scrim} 96² + 6 dividers + 6 fade dividers | 9-slice with 32 px insets; `line` is the bare outline, `solid` adds an opaque inner band, `soft`/`scrim` are the 50 % alpha versions |
 | Line glyphs | `assets/ui/line-glyphs/` | 40 | SVG, black | recolourable via CSS mask / Pixi tint |
 | Spell icons | `assets/ui/spell-icons/` | 235 | WebP, painted | families: blood 25, crest 6, earth 40, fire 40, fx 12, hero 15, hunt 25, icon 4, orb 4, rune 19, skill 4, tech 25, weapon 16 |
+| Gear set paintings | `assets/gear_sets/<set>/<set>_<slot>.png` | 14 × 6 = 84 | PNG 1254², RGB, a full painted scene behind each piece (1.3–2.8 MB) | one per slot of every set; four files spell their slot differently (`lifedrinker_boot`, `swiftfoot_gauntlet`, `relentless_gauntlents`, `stunlock_sword`) and are read as they are |
+| Gear set emblems | `assets/gear_sets/!gear_set_identifier_icons/<set>_identifier.png` | 14 | PNG 1254², RGB, a flat single-colour emblem on black (0.7–0.9 MB) | the set's identifier; the black is keyed out at build time |
 | Design references | `design_examples/` | 23 | PNG screenshots | layout references only, never shipped |
 
 Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
@@ -98,7 +100,9 @@ Faith; `midnight`/`phantom`/`vortex`/`felspell` = Eclipse; `PoisonCast`/`PoisonC
   Rattledagger → `hunt-venom-*`/`blood-*`, Sethlurias → `earth-*`, Thordakk → `weapon-*`/`skill-*`,
   Legendaries → `fire-*`/`fx-*`/`blood-*`, Varkos → `fire-void-flame`, `blood-void-lance`).
   The mapping is in each champion file; the validator ensures uniqueness per champion.
-- Gear set icons: `crest-*` (defensive sets), `weapon-*` (offensive), `rune-*` (utility).
+- Gear set passives: `crest-*` (defensive sets), `weapon-*` (offensive), `rune-*` (utility). A
+  set's passives carry a painting as every passive does, but since `0.9.3` that is not how a set
+  is drawn — see *Gear set art* below.
 - Currency icons: see `docs/design/ECONOMY.md` §2. Both bosses wear their own sheets since `0.9.2`;
   the `hero-demon-lord` and `blood-witch` portraits they stood in with are no longer used.
 
@@ -139,6 +143,32 @@ the asset pipeline stamps it into the manifest (for `SpriteView`) and the conten
 without an answer. Five sheets were wrong while the pipeline kept its own guess, and every screen
 that draws a champion showed them facing away.
 
+### Gear set art
+Since `0.9.3` every piece is drawn with its own painting and every set is named by its emblem
+(`GEAR.md` §5.1). `tools/assets/steps/gear.ts` reads both from `assets/gear_sets/`:
+
+| Source | Manifest key | Sizes | What the step does |
+| --- | --- | --- | --- |
+| `<set>/<set>_<slot>.png` | `gear.<set>.<slot>` | 256 · 128 WebP | resizes; the painted ground stays — a card is square and the scene fills it |
+| `!gear_set_identifier_icons/<set>_identifier.png` | `emblem.<set>` | 256 · 128 · 64 WebP with alpha | keys the black to transparency, trims to the shape, re-centres with a 4 % margin |
+
+- **Slot spellings.** The step reads the slot from the file name against a fixed table —
+  `weapon`/`sword`, `helmet`, `shield`, `gauntlets`/`gauntlet`/`gauntlents`, `chestplate`,
+  `boots`/`boot` — because the folders are not uniform and `/game` is never renamed. A word the
+  table does not know is skipped with a warning naming the file, and a folder missing a slot is
+  warned about too; the typecheck then refuses any set that points at the missing key.
+- **Keying.** An emblem pixel's brightest channel is how much of it is emblem, measured against
+  that emblem's own fill level (the brightness a quarter of its clearly coloured pixels sit under):
+  Executioner's blood red peaks at 157 where the rest reach 253, and keyed against white it would
+  have come out two-thirds transparent. Rim pixels are lifted back to the fill colour, so there is
+  no black fringe; the sources' background noise peaks at 5 and keys clear below 8.
+- **Where they are drawn.** A painting fills every piece card, worn slot, drop chip and the
+  Armoury bench; an emblem sits on a small dark-stone plate in a piece's corner (a bare emblem
+  vanishes on its own set's painting — Ember Guard's red on Ember Guard's lava), and bare beside a
+  set's name on panels, which are dark already.
+- They are runtime-cached rather than precached (`vite.config.ts`), like avatars: ~2.8 MB in all,
+  fetched as the screens that show them open.
+
 ## 3. Placeholder tinting
 
 Placeholder champions/enemies are the lizard model with a per-definition tint (multiply colour)
@@ -155,7 +185,7 @@ nothing in the engine or the UI knows which model is standing in for what.
 
 See `ARCHITECTURE.md` §8. Manifest keys: `model.<id>`, `avatar.<id>`, `bg.<id>`, `ui.<kit>.<name>`,
 `deco.<nn>.<variant>`, `glyph.<name>`, `spell.<name>`, `music.<name>`, `ambience.<set>.<variant>`,
-`sfx.<category>.<name>`, `fx.<pack>.<name>`. Audio is transcoded to OGG with MP3 fallback and
+`sfx.<category>.<name>`, `fx.<pack>.<name>`, `gear.<set>.<slot>`, `emblem.<set>`. Audio is transcoded to OGG with MP3 fallback and
 loudness-normalised; VFX grids/strips become frame atlases with JSON frame data; generated assets
 from `tools/audio` and `tools/vfx` land in the same groups.
 
@@ -167,6 +197,11 @@ from `tools/audio` and `tools/vfx` land in the same groups.
   `idle/frame_000…008.png`; optional `attack/`, `cast/`, `hit/`, `death/` folders (same frame
   scheme, any frame count; durations default 100 ms for actions).
 - Enemy: `/game/assets/enemies/<id>/` same layout.
+- Gear set: `/game/assets/gear_sets/<set>/<set>_<slot>.png` for all six slots (`weapon`, `helmet`,
+  `shield`, `gauntlets`, `chestplate`, `boots`), and its emblem as
+  `/game/assets/gear_sets/!gear_set_identifier_icons/<set>_identifier.png` — flat colour on black.
+  A set cannot be added without both: its content file names all seven keys, and the validator
+  refuses one that shares an emblem or a painting with another set.
 - Backdrops: `/game/assets/wallpapers/<slug>.png` ≥ 1920 wide, 16:9.
 - SFX: `/game/assets/music_and_sounds/sfx/<Category>/<Name N>.wav` (current convention) or
   `.ogg`; ambience: `/game/assets/music_and_sounds/ambience_sounds/<Set>/<Set Variant>.wav`.

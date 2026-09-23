@@ -16,7 +16,8 @@ export type AssetGroup =
   | 'ambience'
   | 'music'
   | 'vfx'
-  | 'logos';
+  | 'logos'
+  | 'gear';
 
 export interface ImageVariant {
   url: string;

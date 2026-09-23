@@ -22,14 +22,24 @@ import { openChampionChoices } from '@state/summon';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { championAvatar } from '@ui/champions/art';
-import { pieceName } from '@ui/gear/gear-view';
+import { pieceArtwork, pieceName } from '@ui/gear/gear-view';
+import { RARITY_COLOR, RARITY_HEX } from '@ui/styles/display-maps';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
 import { Panel } from '@ui/components/Frame/Panel';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { PieceThumb } from '@ui/components/PieceThumb/PieceThumb';
+import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import styles from './BattleResultScreen.module.css';
+
+/**
+ * A drop is drawn as its painting badged with its set's emblem, named in its rarity. A ×50 batch
+ * can bring home dozens, so a dozen are drawn and the rest are a count (as the dungeons do).
+ */
+const DROPS_SHOWN = 12;
+const DROP_THUMB = 40;
 
 const TITLE: Record<string, I18nKey> = {
   victory: 'battleResult.victory',
@@ -200,170 +210,190 @@ export default function BattleResultScreen(_props: ScreenProps) {
       </header>
 
       <div className={styles.columns}>
-        <Panel kind="stone" padding={22} className={styles.stats}>
-          {last ? (
-            <div className={styles.starsRow} data-testid="result-stars">
-              <StarRow stars={repeated ? batch.best : last.stars} max={3} size={30} />
-              {repeated ? (
-                <span className={`num ${styles.batch}`}>
-                  {t('campaignRun.summary', { count: campaign.completed })}
-                  {campaign.endedBecause === 'energy'
-                    ? ` · ${t('campaignRun.outOfEnergy', { count: campaign.completed })}`
-                    : campaign.endedBecause === 'defeat'
-                      ? ` · ${t('campaignRun.stoppedOnDefeat')}`
-                      : ''}
-                </span>
-              ) : null}
-              {last.newRecord ? <span className={styles.record}>{t('battleResult.newRecord')}</span> : null}
-            </div>
-          ) : null}
-          <dl className={styles.statList}>
-            <div>
-              <dt>{t('battleResult.turns')}</dt>
-              <dd className="num" data-testid="result-turns">
-                {outcome.allyTurns}
-              </dd>
-            </div>
-            <div>
-              <dt>{t('battleResult.totalTurns')}</dt>
-              <dd className="num">{outcome.turns}</dd>
-            </div>
-            <div>
-              <dt>{t('battleResult.waves')}</dt>
-              <dd className="num">
-                {outcome.wavesCleared} / {outcome.waveCount}
-              </dd>
-            </div>
-          </dl>
-          {!victory && outcome.kind !== 'retreat' ? (
-            <p className={styles.enemyHp}>
-              {t('battleResult.enemyHpLeft', { percent: Math.round(outcome.enemyHpLeft * 100) })}
-            </p>
-          ) : null}
-          {hints.length ? (
-            <ul className={styles.hints}>
-              {hints.map((key) => (
-                <li key={key}>{t(key)}</li>
-              ))}
-            </ul>
-          ) : null}
-          {palacePoints > 0 ? (
-            <button
-              type="button"
-              className={styles.palace}
-              onClick={() => {
-                battleController.end();
-                clearCampaignSession();
-                clearBossSession();
-                clearTowerSession();
-                clearBrewerySession();
-                clearDungeonSession();
-                actions.resetStack({ name: 'hub' });
-                actions.push({ name: 'palace' });
-              }}
-              data-testid="result-palace-points"
-            >
-              <Glyph glyph="glyph.arcane_symbol" size={24} color="var(--r-epic)" />
-              <span className={`display ${styles.palaceLabel}`}>{t('palace.title')}</span>
-              <span className={`num ${styles.palaceValue}`}>
-                {t(palacePoints === 1 ? 'palace.pointsEarned' : 'palace.pointsEarnedPlural', {
-                  count: palacePoints,
-                })}
-              </span>
-            </button>
-          ) : null}
-          {boss.summary ? (
-            <BossOutcomePanel summary={boss.summary} />
-          ) : tower.summary ? (
-            <TowerOutcomePanel summary={tower.summary} />
-          ) : keep.summary ? (
-            <DungeonOutcomePanel session={keep} />
-          ) : brewery.summary ? (
-            <BreweryOutcomePanel summary={brewery.summary} />
-          ) : rewards ? (
-            <div className={styles.rewards} data-testid="result-rewards">
-              <h3 className={`display ${styles.rewardTitle}`}>{t('battleResult.rewards')}</h3>
-              <ul className={styles.rewardList}>
-                {rewards.currencies.map((entry) => (
-                  <li key={entry.currency}>
-                    <span>{translate(CURRENCY_BY_ID[entry.currency].name)}</span>
-                    <span className="num">+{entry.amount.toLocaleString('en-US')}</span>
-                  </li>
+        {/* Bounded above the buttons: a long batch — its spoils, its level-ups, its drops — scrolls
+            inside the panel rather than running on underneath them. */}
+        <Panel kind="stone" padding={22} className={styles.stats} contentClassName={styles.statsContent}>
+          <ScrollArea height="100%" data-testid="result-stats-scroll">
+            {last ? (
+              <div className={styles.starsRow} data-testid="result-stars">
+                <StarRow stars={repeated ? batch.best : last.stars} max={3} size={30} />
+                {repeated ? (
+                  <span className={`num ${styles.batch}`}>
+                    {t('campaignRun.summary', { count: campaign.completed })}
+                    {campaign.endedBecause === 'energy'
+                      ? ` · ${t('campaignRun.outOfEnergy', { count: campaign.completed })}`
+                      : campaign.endedBecause === 'defeat'
+                        ? ` · ${t('campaignRun.stoppedOnDefeat')}`
+                        : ''}
+                  </span>
+                ) : null}
+                {last.newRecord ? <span className={styles.record}>{t('battleResult.newRecord')}</span> : null}
+              </div>
+            ) : null}
+            <dl className={styles.statList}>
+              <div>
+                <dt>{t('battleResult.turns')}</dt>
+                <dd className="num" data-testid="result-turns">
+                  {outcome.allyTurns}
+                </dd>
+              </div>
+              <div>
+                <dt>{t('battleResult.totalTurns')}</dt>
+                <dd className="num">{outcome.turns}</dd>
+              </div>
+              <div>
+                <dt>{t('battleResult.waves')}</dt>
+                <dd className="num">
+                  {outcome.wavesCleared} / {outcome.waveCount}
+                </dd>
+              </div>
+            </dl>
+            {!victory && outcome.kind !== 'retreat' ? (
+              <p className={styles.enemyHp}>
+                {t('battleResult.enemyHpLeft', { percent: Math.round(outcome.enemyHpLeft * 100) })}
+              </p>
+            ) : null}
+            {hints.length ? (
+              <ul className={styles.hints}>
+                {hints.map((key) => (
+                  <li key={key}>{t(key)}</li>
                 ))}
-                {rewards.gems > 0 ? (
-                  <li>
-                    <span>{translate(CURRENCY_BY_ID.gems.name)}</span>
-                    <span className="num">+{rewards.gems}</span>
-                  </li>
-                ) : null}
-                {rewards.energy > 0 ? (
-                  <li>
-                    <span>{translate(CURRENCY_BY_ID.energy.name)}</span>
-                    <span className="num">+{rewards.energy}</span>
-                  </li>
-                ) : null}
-                <li>
-                  <span>{t('battleResult.championXpLabel')}</span>
-                  <span className="num">+{rewards.championXp.toLocaleString('en-US')}</span>
-                </li>
-                <li>
-                  <span>{t('battleResult.playerXpLabel')}</span>
-                  <span className="num">+{rewards.playerXp.toLocaleString('en-US')}</span>
-                </li>
               </ul>
-              {last?.firstClear || batch.firstClear ? (
-                <p className={styles.bonus}>{t('battleResult.firstClear')}</p>
-              ) : null}
-              {(last?.chestThresholds ?? []).map((threshold) => (
-                <p key={threshold} className={styles.bonus}>
-                  {t('battleResult.starChest', { stars: threshold })}
-                </p>
-              ))}
-              {/* The Intro milestone's Epic is taken at the Portal, so the run only says so. */}
-              {owedChoice ? (
-                <p className={styles.bonus} data-testid="result-choice">
-                  {t('battleResult.championChoice')}
-                </p>
-              ) : null}
-              {dropped.map((piece) => (
-                <p
-                  key={piece.instanceId}
-                  className={styles.gear}
-                  data-testid={`result-gear-${piece.instanceId}`}
-                >
-                  {t('battleResult.gearDrop', { piece: pieceName(piece) })}
-                </p>
-              ))}
-              {gearLost > 0 ? (
-                <p className={styles.bonus} data-testid="result-gear-lost">
-                  {t('battleResult.gearLost', { count: gearLost })}
-                </p>
-              ) : null}
-              {(last?.levelUps ?? []).map((up) => {
-                const def = content.championById(
-                  (useGameStore.getState().save?.roster[up.instanceId]?.defId ?? '') as never,
-                );
-                return (
-                  <p key={up.instanceId} className={styles.bonus}>
-                    {t('battleResult.levelUp', {
-                      name: def ? translate(def.name) : up.instanceId,
-                      level: up.level,
+            ) : null}
+            {palacePoints > 0 ? (
+              <button
+                type="button"
+                className={styles.palace}
+                onClick={() => {
+                  battleController.end();
+                  clearCampaignSession();
+                  clearBossSession();
+                  clearTowerSession();
+                  clearBrewerySession();
+                  clearDungeonSession();
+                  actions.resetStack({ name: 'hub' });
+                  actions.push({ name: 'palace' });
+                }}
+                data-testid="result-palace-points"
+              >
+                <Glyph glyph="glyph.arcane_symbol" size={24} color="var(--r-epic)" />
+                <span className={`display ${styles.palaceLabel}`}>{t('palace.title')}</span>
+                <span className={`num ${styles.palaceValue}`}>
+                  {t(palacePoints === 1 ? 'palace.pointsEarned' : 'palace.pointsEarnedPlural', {
+                    count: palacePoints,
+                  })}
+                </span>
+              </button>
+            ) : null}
+            {boss.summary ? (
+              <BossOutcomePanel summary={boss.summary} />
+            ) : tower.summary ? (
+              <TowerOutcomePanel summary={tower.summary} />
+            ) : keep.summary ? (
+              <DungeonOutcomePanel session={keep} />
+            ) : brewery.summary ? (
+              <BreweryOutcomePanel summary={brewery.summary} />
+            ) : rewards ? (
+              <div className={styles.rewards} data-testid="result-rewards">
+                <h3 className={`display ${styles.rewardTitle}`}>{t('battleResult.rewards')}</h3>
+                <ul className={styles.rewardList}>
+                  {rewards.currencies.map((entry) => (
+                    <li key={entry.currency}>
+                      <span>{translate(CURRENCY_BY_ID[entry.currency].name)}</span>
+                      <span className="num">+{entry.amount.toLocaleString('en-US')}</span>
+                    </li>
+                  ))}
+                  {rewards.gems > 0 ? (
+                    <li>
+                      <span>{translate(CURRENCY_BY_ID.gems.name)}</span>
+                      <span className="num">+{rewards.gems}</span>
+                    </li>
+                  ) : null}
+                  {rewards.energy > 0 ? (
+                    <li>
+                      <span>{translate(CURRENCY_BY_ID.energy.name)}</span>
+                      <span className="num">+{rewards.energy}</span>
+                    </li>
+                  ) : null}
+                  <li>
+                    <span>{t('battleResult.championXpLabel')}</span>
+                    <span className="num">+{rewards.championXp.toLocaleString('en-US')}</span>
+                  </li>
+                  <li>
+                    <span>{t('battleResult.playerXpLabel')}</span>
+                    <span className="num">+{rewards.playerXp.toLocaleString('en-US')}</span>
+                  </li>
+                </ul>
+                {last?.firstClear || batch.firstClear ? (
+                  <p className={styles.bonus}>{t('battleResult.firstClear')}</p>
+                ) : null}
+                {(last?.chestThresholds ?? []).map((threshold) => (
+                  <p key={threshold} className={styles.bonus}>
+                    {t('battleResult.starChest', { stars: threshold })}
+                  </p>
+                ))}
+                {/* The Intro milestone's Epic is taken at the Portal, so the run only says so. */}
+                {owedChoice ? (
+                  <p className={styles.bonus} data-testid="result-choice">
+                    {t('battleResult.championChoice')}
+                  </p>
+                ) : null}
+                {dropped.length > 0 ? (
+                  <ul className={styles.drops} data-testid="result-gear">
+                    {dropped.slice(0, DROPS_SHOWN).map((piece) => (
+                      <li
+                        key={piece.instanceId}
+                        className={styles.drop}
+                        data-testid={`result-gear-${piece.instanceId}`}
+                      >
+                        <PieceThumb
+                          {...pieceArtwork(piece)}
+                          tint={RARITY_HEX[piece.rarity]}
+                          size={DROP_THUMB}
+                        />
+                        <span className={styles.dropName} style={{ color: RARITY_COLOR[piece.rarity] }}>
+                          {pieceName(piece)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {dropped.length > DROPS_SHOWN ? (
+                  <p className={styles.gear} data-testid="result-gear-more">
+                    {t('battleResult.gearMore', { count: dropped.length - DROPS_SHOWN })}
+                  </p>
+                ) : null}
+                {gearLost > 0 ? (
+                  <p className={styles.bonus} data-testid="result-gear-lost">
+                    {t('battleResult.gearLost', { count: gearLost })}
+                  </p>
+                ) : null}
+                {(last?.levelUps ?? []).map((up) => {
+                  const def = content.championById(
+                    (useGameStore.getState().save?.roster[up.instanceId]?.defId ?? '') as never,
+                  );
+                  return (
+                    <p key={up.instanceId} className={styles.bonus}>
+                      {t('battleResult.levelUp', {
+                        name: def ? translate(def.name) : up.instanceId,
+                        level: up.level,
+                      })}
+                    </p>
+                  );
+                })}
+                {last && last.playerLevelsGained > 0 ? (
+                  <p className={styles.bonus}>
+                    {t('battleResult.playerLevelUp', {
+                      level: useGameStore.getState().save?.profile.level ?? 0,
                     })}
                   </p>
-                );
-              })}
-              {last && last.playerLevelsGained > 0 ? (
-                <p className={styles.bonus}>
-                  {t('battleResult.playerLevelUp', {
-                    level: useGameStore.getState().save?.profile.level ?? 0,
-                  })}
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <p className={styles.noRewards}>{t('battleResult.noRewards')}</p>
-          )}
-          <p className={`num ${styles.seed}`}>{t('battleResult.seed', { seed: outcome.seed })}</p>
+                ) : null}
+              </div>
+            ) : (
+              <p className={styles.noRewards}>{t('battleResult.noRewards')}</p>
+            )}
+            <p className={`num ${styles.seed}`}>{t('battleResult.seed', { seed: outcome.seed })}</p>
+          </ScrollArea>
         </Panel>
 
         <Panel kind="stone" padding={22} className={styles.report}>

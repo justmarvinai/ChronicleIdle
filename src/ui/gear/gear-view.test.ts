@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GearInstance } from '@engine/gear/instance';
-import { formatGearValue, mainStatLine, pieceIcon, pieceName, setLines, subStatLine } from './gear-view';
+import { formatGearValue, mainStatLine, pieceArtwork, pieceName, setLines, subStatLine } from './gear-view';
 
 const PIECE: GearInstance = {
   instanceId: 'gear-1',
@@ -32,9 +32,15 @@ describe('how a piece reads', () => {
     expect(formatGearValue('hp', 1240)).toBe('+1,240');
   });
 
-  it('names a piece by its set and slot, and wears the set’s crest', () => {
+  it('names a piece by its set and slot, and draws it with that set’s painting and emblem', () => {
     expect(pieceName(PIECE)).toBe('Warcry Gauntlets');
-    expect(pieceIcon(PIECE)).toBe('spell.crest_warmark');
+    expect(pieceArtwork(PIECE)).toEqual({ art: 'gear.warcry.gauntlets', emblem: 'emblem.warcry' });
+    // The painting follows the slot, so two pieces of one set are two different pictures.
+    expect(pieceArtwork({ ...PIECE, slot: 'boots' }).art).toBe('gear.warcry.boots');
+  });
+
+  it('keeps a piece whose set has left the content drawable, with nothing it cannot show', () => {
+    expect(pieceArtwork({ ...PIECE, setId: 'gear_set.withdrawn' })).toEqual({ art: null, emblem: null });
   });
 
   it('reports how many pieces the next group of a set still needs', () => {

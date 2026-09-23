@@ -3,8 +3,8 @@
  * group and the passive joins its unit in battle, using the same shape champions' own passives
  * use, so the engine has nothing new to learn beyond the two mechanics the sets introduce.
  */
-import type { SpellKey } from '@assets/manifest.generated';
-import type { PassiveDef } from '@content/champions/types';
+import type { EmblemKey, GearArtKey } from '@assets/manifest.generated';
+import type { GearSlot, PassiveDef } from '@content/champions/types';
 
 /** Two-piece sets stack (three groups on six slots); four-piece sets take two thirds of a build. */
 export const SET_SIZES = [2, 4] as const;
@@ -16,8 +16,13 @@ export interface GearSetDef {
   /** i18n keys. */
   name: string;
   description: string;
-  /** The set's painted crest: worn by its pieces on every card in the armoury. */
-  icon: SpellKey;
+  /**
+   * The set's identifier: the badge in the corner of every piece it makes, its heading in the
+   * Armoury and its plate in the Index. No two sets share one — telling sets apart is its job.
+   */
+  emblem: EmblemKey;
+  /** The painting of each of the set's six pieces; no two sets share a painting either. */
+  art: Readonly<Record<GearSlot, GearArtKey>>;
   /** Pieces needed for one complete group. */
   pieces: SetSize;
   /**

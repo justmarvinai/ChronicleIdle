@@ -1,0 +1,34 @@
+.thumb {
+  --thumb-tint: var(--gold-2);
+  position: relative;
+  display: inline-block;
+  flex: none;
+  overflow: hidden;
+  background: rgba(12, 11, 15, 0.85);
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The frame sits over the painting, so a bright corner of it never bleeds past the edge. */
+.thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--thumb-tint) 85%, transparent),
+    inset 0 0 8px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+.emblem {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  z-index: 1;
+}

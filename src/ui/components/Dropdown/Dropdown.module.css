@@ -18,7 +18,16 @@
   filter: grayscale(0.6) brightness(0.6);
 }
 .value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
   font-size: var(--fs-body);
+}
+.valueText {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .chevron {
   transform: rotate(90deg);
@@ -42,6 +51,9 @@
   animation: drop var(--t-fast) var(--ease-out);
 }
 .option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 14px;
   color: var(--text-2);
   cursor: var(--cursor-pointer);

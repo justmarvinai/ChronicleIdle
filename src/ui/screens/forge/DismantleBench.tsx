@@ -11,7 +11,7 @@ import { useGameStore } from '@state/store';
 import { Button } from '@ui/components/Button/Button';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
-import { mainStatLine, pieceIcon, setOf } from '@ui/gear/gear-view';
+import { mainStatLine, pieceArtwork, setOf } from '@ui/gear/gear-view';
 import { QUICK_PICKS, breakable, quickPick, quickPickLabel } from './forge-view';
 import styles from './DismantleBench.module.css';
 
@@ -109,7 +109,7 @@ export function DismantleBench() {
                     stars={entry.piece.stars}
                     level={entry.piece.level}
                     slot={entry.piece.slot}
-                    icon={pieceIcon(entry.piece)}
+                    {...pieceArtwork(entry.piece)}
                     mainStat={mainStatLine(entry.piece)}
                     setName={set ? translate(set.name) : entry.piece.setId}
                     size={96}

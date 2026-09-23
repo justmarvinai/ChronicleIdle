@@ -107,15 +107,18 @@
   color: var(--danger);
 }
 
-.gain {
-  margin: 4px 0 0;
+.gain,
+.loss {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 0;
   font-size: 15px;
+}
+.gain {
   color: var(--ok);
 }
-
 .loss {
-  margin: 4px 0 0;
-  font-size: 15px;
   color: var(--danger);
 }
 

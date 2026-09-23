@@ -506,6 +506,8 @@ Input `/game/assets/**` → output `/public/assets/generated/**` + `src/assets/m
 | `ui/spell-icons/*.webp` | copied + 64 px thumbs atlas |
 | `wallpapers/*` | WebP 1920 and 2560 widths + 64 px blurred placeholder |
 | `logos/*` | copied |
+| `gear_sets/<set>/<set>_<slot>.png` (1254²) | `gear.<set>.<slot>`, WebP at 256 / 128 — one painting per piece (`ASSETS.md` §2, *Gear set art*) |
+| `gear_sets/!gear_set_identifier_icons/<set>_identifier.png` | `emblem.<set>`, WebP with alpha at 256 / 128 / 64: black keyed to transparency against the emblem's own fill level, trimmed and re-centred |
 | `music_and_sounds/background_music/*.mp3` | copied; loudness-normalised (−16 LUFS) |
 | `music_and_sounds/ambience_sounds/**` (WAV 60 s loops + MP3) | transcoded to OGG (+ MP3 fallback), loop points trimmed, −20 LUFS; file names sanitised into manifest keys (the MP3 names contain mis-encoded dashes — never renamed in `/game`) |
 | `music_and_sounds/sfx/**/*.wav` | transcoded to OGG (+ MP3 fallback), peak-normalised, grouped into per-category audio sprites |
@@ -552,7 +554,7 @@ later), `FileDialogAdapter` (download/upload now; native dialogs later), `Window
 
 - `vite-plugin-pwa` generates the web manifest (`display: standalone`, dark theme colour, icons
   from the logo mark) and a Workbox service worker that precaches the build (hashed files) and
-  the generated asset manifest group `ui`; large groups (models, VFX, audio) are runtime-cached
+  the generated asset manifest group `ui`; large groups (models, VFX, audio, gear art) are runtime-cached
   on first use (cache-first, versioned by the build hash).
 - Updates: `registerType: 'prompt'` — a new build is downloaded in the background and applied only
   when the player accepts the in-game "Update available — restart" banner or on the next cold

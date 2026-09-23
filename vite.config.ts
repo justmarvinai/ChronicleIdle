@@ -81,6 +81,7 @@ export default defineConfig({
           'assets/generated/avatars/**',
           'assets/generated/vfx/**',
           'assets/generated/spells/**',
+          'assets/generated/gear/**',
         ],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: '/index.html',

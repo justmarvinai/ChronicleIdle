@@ -294,11 +294,26 @@ import { set } from './set';
 export default set({
   slug: 'retaliation',              // the id becomes `gear_set.retaliation`
   pieces: 4,                        // 2 or 4; two-piece groups stack, up to three on six slots
-  icon: 'spell.hero_voidguard',     // the set's crest, worn by every piece of it on every card
+  icon: 'spell.hero_voidguard',     // the painting its passives carry, as every passive does
+  emblem: 'emblem.retaliation',     // the set's identifier on every piece (GEAR.md §5.1)
+  art: {                            // one painting per slot, from /game/assets/gear_sets/<slug>/
+    weapon: 'gear.retaliation.weapon',
+    helmet: 'gear.retaliation.helmet',
+    shield: 'gear.retaliation.shield',
+    gauntlets: 'gear.retaliation.gauntlets',
+    chestplate: 'gear.retaliation.chestplate',
+    boots: 'gear.retaliation.boots',
+  },
   grants: [{ effects: [{ kind: 'counterattack', chance: 30 }] }],
   homes: [6, 11],                   // settlements whose drops favour it (GEAR.md §5)
 })
 ```
+
+- **Art comes first.** Drop the six paintings and the emblem into `/game/assets/gear_sets/`
+  (`ASSETS.md` §5 has the names) and run `pnpm assets:build`; the keys above only typecheck once
+  the manifest has them. `pnpm content:validate` then refuses a set whose emblem or any painting is
+  already another set's, or whose `helmet` shows anything but a helmet — both exist to tell sets
+  apart, so neither is ever shared.
 
 - `grants` is one entry per passive the complete group gives; the trigger defaults to `static`.
 - A `stat_mod` is **only** read off a static passive (`BATTLE.md` §6), so a set that changes a
@@ -308,7 +323,7 @@ export default set({
   `{ effects: [{ kind: 'stat_mod', stat: 'hp', percent: 15 }] }`.
 - Every `homes` entry must name the set in that settlement's `setPool`, and every pool entry must
   name a set that exists — `pnpm content:validate` checks both directions, plus the i18n keys
-  (`gear_set.<slug>.name` / `.description` in `src/i18n/en/sets.ts`) and the crest's asset key.
+  (`gear_set.<slug>.name` / `.description` in `src/i18n/en/sets.ts`) and every asset key.
 - A set needing a mechanic the engine does not have yet gets a new effect kind **with tests**
   first; never an `if (setId === …)` anywhere.
 

@@ -488,7 +488,7 @@ export const ui = {
   'battleResult.playerXpLabel': 'Chronicle XP',
   'battleResult.levelUp': '{name} reached level {level}',
   'battleResult.playerLevelUp': 'Chronicle level {level}',
-  'battleResult.gearDrop': '{piece} dropped.',
+  'battleResult.gearMore': '…and {count} more, all on the Armoury racks.',
   'battleResult.gearLost': '{count} piece(s) left behind — the armoury is full.',
   'battleResult.nextStage': 'Next stand',
   'battleResult.campaign': 'Campaign',

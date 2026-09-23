@@ -18,17 +18,21 @@ import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
 import { GearCard } from '@ui/components/GearCard/GearCard';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import {
   compareEquip,
   formatStat,
   mainStatLine,
-  pieceIcon,
+  pieceArtwork,
   pieceName,
   setOf,
   slotLabel,
   statLabel,
 } from '@ui/gear/gear-view';
 import styles from './GearPickerDialog.module.css';
+
+/** The emblem leading a set the swap makes or breaks, in CSS pixels. */
+const SET_LINE_EMBLEM = 22;
 
 export interface GearPickerDialogProps {
   instanceId: string;
@@ -107,7 +111,7 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
                       stars={entry.piece.stars}
                       level={entry.piece.level}
                       slot={entry.piece.slot}
-                      icon={pieceIcon(entry.piece)}
+                      {...pieceArtwork(entry.piece)}
                       mainStat={mainStatLine(entry.piece)}
                       setName={set ? translate(set.name) : entry.piece.setId}
                       size={128}
@@ -155,12 +159,14 @@ export function GearPickerDialog({ instanceId, slot, onClose }: GearPickerDialog
               </dl>
               {compare.gained.map((set) => (
                 <p key={set.id} className={styles.gain} data-testid={`set-gain-${set.id}`}>
-                  {t('gearPicker.setGain', { set: translate(set.name) })}
+                  <SetEmblem emblem={set.emblem} size={SET_LINE_EMBLEM} />
+                  <span>{t('gearPicker.setGain', { set: translate(set.name) })}</span>
                 </p>
               ))}
               {compare.lost.map((set) => (
                 <p key={set.id} className={styles.loss} data-testid={`set-loss-${set.id}`}>
-                  {t('gearPicker.setLoss', { set: translate(set.name) })}
+                  <SetEmblem emblem={set.emblem} size={SET_LINE_EMBLEM} />
+                  <span>{t('gearPicker.setLoss', { set: translate(set.name) })}</span>
                 </p>
               ))}
             </>

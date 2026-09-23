@@ -310,16 +310,32 @@
 }
 .setHead {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 14px;
 }
-.crest {
-  width: 52px;
-  height: 52px;
-  flex: none;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+.setTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+/* The six pieces of the set, weapon to boots, in the order a champion's rack lists them. */
+.setPieceRow {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.setPiece {
+  display: block;
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    filter var(--t-fast);
+}
+.setPiece:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
 }
 .setName {
   font-size: 19px;
@@ -336,7 +352,7 @@
   color: var(--text-2);
 }
 .setBonus {
-  margin: 0;
+  margin: 4px 0 0;
   font-size: 14px;
   line-height: 1.45;
   color: var(--gold-2);

@@ -20,6 +20,16 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_3.name': 'Marks of the Fourteen',
+  'release.0_9_3.paintings':
+    'Every piece of gear has its own painting now. All fourteen sets were drawn piece by piece — six pictures each, from the weapon down to the boots — so an Ember Guard helmet looks like an Ember Guard helmet, and no two pieces of a set look alike.',
+  'release.0_9_3.emblems':
+    'Every set has its own emblem — Ember Guard’s burning sword, Executioner’s skull and axe, Swiftfoot’s winged boot and the rest — and every piece wears its set’s emblem in the corner wherever it turns up: in the Armoury, on your champions, at the Forge and in whatever a battle drops.',
+  'release.0_9_3.index_sets':
+    'The Gear Sets page of the Chronicle Index leads each set with its emblem and shows all six of its pieces, so you know what you are hunting for before it ever drops.',
+  'release.0_9_3.drops':
+    'After a campaign victory, each piece that dropped is shown as a small picture with its set’s emblem, named in the colour of its rarity. A long auto-repeat shows the first dozen and counts the rest, instead of a list running off the bottom of the panel.',
+
   'release.0_9_2.name': 'Three Faces Out of the Stone',
   'release.0_9_2.varkos':
     'Varkos Sunderking has his own face at last. The Mythic orc king — half grey, half red, under a golden crown — now stands in the Chronicle Index, on the battlefield and anywhere else you meet him, instead of the lizard that was standing in for him.',

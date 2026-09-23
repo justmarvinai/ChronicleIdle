@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { BOSS_STAGE_NUMBER, SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
-import { CHAMPION_IDS, STARTER_IDS } from '@content/champions/types';
+import { CHAMPION_IDS, GEAR_SLOTS, STARTER_IDS } from '@content/champions/types';
 import { MODEL_FACING, PLACEHOLDER_MODEL } from '@content/champions/models';
 import { FACTION_ARCHETYPES } from '@content/enemies/types';
 import { STATUSES } from '@content/statuses/index';
@@ -81,6 +81,33 @@ describe('content registry', () => {
     expect(content.gearSetById('gear_set.immortal')?.passives.map((p) => p.trigger)).toEqual([
       'static',
       'onTurnStart',
+    ]);
+  });
+
+  it('gives every set an emblem and six paintings of its own (GEAR.md §5.1)', () => {
+    // Telling sets apart is the whole job of both, so neither is ever shared.
+    expect(new Set(content.gearSets.map((set) => set.emblem)).size).toBe(content.gearSets.length);
+    const paintings = content.gearSets.flatMap((set) => Object.values(set.art));
+    expect(new Set(paintings).size).toBe(content.gearSets.length * GEAR_SLOTS.length);
+    for (const set of content.gearSets)
+      for (const slot of GEAR_SLOTS)
+        expect(set.art[slot], `${set.id} ${slot}`).toMatch(new RegExp(`\\.${slot}$`));
+
+    // And the validator refuses content that breaks either rule: a set wearing another's emblem or
+    // painting, and a set whose paintings sit in the wrong slots.
+    const [first, second, third, ...rest] = content.gearSets;
+    if (!first || !second || !third) throw new Error('the sets are missing');
+    const swapped = { ...second, art: { ...second.art, helmet: second.art.boots, boots: second.art.helmet } };
+    const borrowed = { ...third, emblem: first.emblem, art: { ...third.art, helmet: first.art.helmet } };
+    const issues = validateContentRegistry(
+      { ...content, gearSets: [first, swapped, borrowed, ...rest] },
+      refs,
+    );
+    expect(issues.filter((i) => i.severity === 'error').map((i) => `${i.path}: ${i.message}`)).toEqual([
+      `sets.${second.id}.art.helmet: the helmet slot shows ${second.art.boots}`,
+      `sets.${second.id}.art.boots: the boots slot shows ${second.art.helmet}`,
+      `sets.${third.id}: emblem ${first.emblem} is already ${first.id}'s`,
+      `sets.${third.id}.art.helmet: ${first.art.helmet} is already ${first.id}'s`,
     ]);
   });
 

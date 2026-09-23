@@ -59,28 +59,46 @@
   color: var(--text-3);
 }
 
-/* The rarity is on the piece as well as under it: a ring in its colour inside the stone frame. */
+/*
+ * The rarity is on the piece as well as under it: a ring in its colour inside the stone frame. The
+ * painting fills the recess, so the ring is drawn over it rather than behind it.
+ */
 .piece {
   --rarity: var(--gold-2);
   position: relative;
-  display: grid;
-  place-items: center;
+  display: block;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+.piece::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   box-shadow:
     inset 0 0 0 2px color-mix(in srgb, var(--rarity) 75%, transparent),
     inset 0 0 14px color-mix(in srgb, var(--rarity) 30%, transparent);
+  pointer-events: none;
 }
 
 .pieceArt {
-  width: 78%;
-  height: 78%;
-  object-fit: contain;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.7));
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pieceEmblem {
+  position: absolute;
+  left: 3px;
+  bottom: 3px;
+  z-index: 1;
 }
 
 .pieceLevel {
   position: absolute;
+  z-index: 1;
   right: 2px;
   bottom: 0;
   padding: 0 4px;
@@ -156,9 +174,16 @@
 
 .setHead {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+
+.setTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .setName {

@@ -6,10 +6,14 @@ import { GEAR_SORTS, type GearSort, type GearView } from '@engine/gear/query';
 import { t, translate, type I18nKey } from '@i18n/index';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { RARITY_COLOR, SLOT_GLYPH } from '@ui/styles/display-maps';
 import { kitBorder } from '@ui/styles/kit';
 import { slotLabel } from '@ui/gear/gear-view';
 import styles from './GearFilterBar.module.css';
+
+/** A set's emblem beside its name in the set filter, in CSS pixels. */
+const OPTION_EMBLEM = 22;
 
 export interface GearFilterBarProps {
   view: GearView;
@@ -69,7 +73,11 @@ export function GearFilterBar({ view, onChange, shown, total }: GearFilterBarPro
           value={filters.sets[0] ?? ''}
           options={[
             { value: '', label: t('armoury.filter.any') },
-            ...content.gearSets.map((set) => ({ value: set.id, label: translate(set.name) })),
+            ...content.gearSets.map((set) => ({
+              value: set.id,
+              label: translate(set.name),
+              icon: <SetEmblem emblem={set.emblem} size={OPTION_EMBLEM} />,
+            })),
           ]}
           onChange={(setId) => setFilters({ sets: setId ? [setId] : [] })}
         />
