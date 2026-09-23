@@ -1,0 +1,112 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: var(--cursor-pointer);
+  background: linear-gradient(180deg, rgba(28, 22, 16, 0.92), rgba(12, 10, 8, 0.94));
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    filter var(--t-fast),
+    box-shadow var(--t-fast);
+}
+.card:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.1);
+}
+.on {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 150, 60, 0.18), transparent 70%),
+    linear-gradient(180deg, rgba(46, 32, 18, 0.95), rgba(16, 12, 8, 0.95));
+  box-shadow: 0 0 26px rgba(240, 160, 70, 0.28);
+}
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.name {
+  font-size: 22px;
+  color: var(--gold-3);
+}
+.pool {
+  font-size: 13px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.body {
+  margin: 0;
+  min-height: 38px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+/* The rarities it may roll, as one bar in their own colours. */
+.odds {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bar {
+  display: flex;
+  height: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.segment {
+  height: 100%;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--rarity) 100%, white 25%), var(--rarity));
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.6);
+}
+.legend,
+.stars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: 13px;
+}
+.legend li,
+.stars li {
+  display: inline-flex;
+  gap: 4px;
+}
+.name2 {
+  font-weight: 700;
+}
+.stars {
+  color: var(--text-2);
+}
+.star {
+  color: var(--gold-3);
+}
+
+.cost {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 14px;
+  color: var(--text-1);
+}
+.short {
+  color: var(--danger);
+}
+.strikes,
+.none {
+  margin: auto 0 0;
+  font-size: 14px;
+}
+.strikes {
+  color: var(--ok);
+}
+.none {
+  color: var(--danger);
+}

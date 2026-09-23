@@ -1,0 +1,7 @@
+/* One frame of a flipbook sheet; the frame is chosen by the component, never by layout. */
+.fx {
+  display: block;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  image-rendering: pixelated;
+}

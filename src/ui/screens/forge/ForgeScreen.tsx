@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { GlyphKey } from '@assets/manifest.generated';
 import { t } from '@i18n/index';
 import { selectActions } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -6,7 +7,6 @@ import type { ForgeTab, Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
 import { Button } from '@ui/components/Button/Button';
-import { Panel } from '@ui/components/Frame/Panel';
 import { Tabs } from '@ui/components/Tab/Tabs';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
@@ -20,10 +20,18 @@ type ForgeRoute = Extract<Route, { name: 'forge' }>;
 
 const TABS: readonly ForgeTab[] = ['craft', 'dismantle', 'refine'];
 
+/** Each bench's mark on its tab. */
+const TAB_GLYPH: Readonly<Record<ForgeTab, GlyphKey>> = {
+  craft: 'glyph.hammer_hit',
+  dismantle: 'glyph.exploding_bomb',
+  refine: 'glyph.shooting_stars',
+};
+
 /**
  * The Forge (docs/tech/UI_DESIGN.md §5.11): three benches around one anvil — strike a piece,
- * break what you will never wear, or feed a twin to light one more star. The racks themselves
- * stay next door in the Armoury (owner's answer Q36).
+ * break what you will never wear, or feed a twin to light one more star — each beside the
+ * storeroom of what the Forge works with. The racks themselves stay next door in the Armoury
+ * (owner's answer Q36).
  */
 export default function ForgeScreen({ route }: ScreenProps) {
   const params = route as ForgeRoute;
@@ -42,6 +50,7 @@ export default function ForgeScreen({ route }: ScreenProps) {
           items={TABS.map((key) => ({
             key,
             label: t(`forge.tab.${key}`),
+            glyph: TAB_GLYPH[key],
             testId: `forge-tab-${key}`,
           }))}
           value={tab}
@@ -59,18 +68,16 @@ export default function ForgeScreen({ route }: ScreenProps) {
         </Button>
       </div>
 
-      <Panel kind="stone" padding={20} className={styles.body} contentClassName={styles.bodyContent}>
-        {tab === 'craft' ? <CraftBench /> : null}
-        {tab === 'dismantle' ? <DismantleBench /> : null}
-        {tab === 'refine' ? <RefineBench /> : null}
-      </Panel>
+      {tab === 'craft' ? <CraftBench /> : null}
+      {tab === 'dismantle' ? <DismantleBench /> : null}
+      {tab === 'refine' ? <RefineBench /> : null}
     </div>
   );
 }
 
-/** The forge's own light: the fire in the hearth and the glow off the anvil. */
+/** The forge's own light: the hearth under the anvil, and embers along the benches. */
 const FORGE_GLOWS = [
-  { x: 300, y: 620, size: 200, color: 0xff7a2f, flicker: 0.6 },
-  { x: 820, y: 700, size: 140, color: 0xffb35c, flicker: 0.45 },
-  { x: 1500, y: 640, size: 120, color: 0xff9a3c, flicker: 0.35 },
+  { x: 1640, y: 560, size: 220, color: 0xff7a2f, flicker: 0.6 },
+  { x: 900, y: 980, size: 160, color: 0xffb35c, flicker: 0.4 },
+  { x: 190, y: 1000, size: 130, color: 0xff9a3c, flicker: 0.35 },
 ];

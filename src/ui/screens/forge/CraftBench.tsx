@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
+import { useState, type ReactNode } from 'react';
 import { playSfx } from '@audio/index';
 import { GEAR_SLOTS, type GearSlot } from '@content/champions/types';
+import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { content } from '@content/registry';
 import { t, translate } from '@i18n/index';
 import { craftPrice } from '@state/forge';
@@ -9,28 +9,25 @@ import { selectActions, selectWallet } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import type { GearInstance } from '@engine/gear/instance';
 import { craftPool } from '@engine/forge/craft';
-import { Button } from '@ui/components/Button/Button';
-import { CurrencyLabel } from '@ui/components/CurrencyLabel/CurrencyLabel';
-import { DecoFrame } from '@ui/components/Frame/DecoFrame';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
+import { TintedIcon } from '@ui/components/AssetImage/TintedIcon';
 import { Dropdown } from '@ui/components/Dropdown/Dropdown';
-import { GearCard } from '@ui/components/GearCard/GearCard';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { SetEmblem } from '@ui/components/SetEmblem/SetEmblem';
 import { Slot } from '@ui/components/Slot/Slot';
-import { CARD_TINT, RARITY_HEX, SLOT_GLYPH } from '@ui/styles/display-maps';
-import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
-import { mainStatLine, pieceArtwork, pieceName, setOf, slotLabel } from '@ui/gear/gear-view';
-import { pieceTooltip } from '@ui/gear/piece-tooltip';
-import { CRAFT_TIERS, affordable, poolLabel, tierBody, tierLabel } from './forge-view';
+import { SLOT_GLYPH } from '@ui/styles/display-maps';
+import { pieceName, slotLabel } from '@ui/gear/gear-view';
+import { Anvil } from './Anvil';
+import { Storeroom } from './Storeroom';
+import { TierCard } from './TierCard';
+import { CRAFT_TIERS, affordable, poolLabel, timesAffordable } from './forge-view';
 import type { CraftTier } from './forge-view';
 import styles from './CraftBench.module.css';
 
 /** A set's emblem beside its name in the Sigil's set chooser, in CSS pixels. */
 const OPTION_EMBLEM = 22;
-/** A cost line's currency icon, in stage pixels. */
-const COST_ICON = 20;
 
-/** The anvil: slot, tier, an optional Sigil naming the set, and the hammer. */
+/** The Craft bench: the recipe in three steps on the left, the anvil on the right. */
 export function CraftBench() {
   const actions = useGameStore(selectActions);
   const wallet = useGameStore(selectWallet);
@@ -38,19 +35,21 @@ export function CraftBench() {
   const [tier, setTier] = useState<CraftTier>('scrap');
   const [setId, setSetId] = useState<string>('');
   const [struck, setStruck] = useState<GearInstance | null>(null);
-  const [strike, setStrike] = useState(0);
+  const [strikes, setStrikes] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const held = (id: string): number => wallet?.[id as 'gold'] ?? 0;
   const pool = craftPool(tier, content.gearSets);
   const named = setId !== '' && pool.includes(setId);
+  const namedSet = named ? content.gearSetById(setId) : undefined;
   const cost = craftPrice(tier, named);
   const canPay = affordable(cost, held);
-  const sigils = held('mat_glyph_sigil');
+  const sigil = CURRENCY_BY_ID.mat_glyph_sigil;
 
   // A tier change can drop the chosen set out of the pool; the recipe never lies about its cost.
   const chooseTier = (next: CraftTier): void => {
     setTier(next);
+    setStruck(null);
     if (setId !== '' && !craftPool(next, content.gearSets).includes(setId)) setSetId('');
   };
 
@@ -65,187 +64,142 @@ export function CraftBench() {
     }
     setError(null);
     setStruck(result.value.piece);
-    setStrike((n) => n + 1);
+    setStrikes((n) => n + 1);
     playSfx('reward.large');
     actions.toast('reward', 'forge.craft.result', { piece: pieceName(result.value.piece) });
   };
 
-  const reduced = prefersReducedMotion();
-  const set = struck ? setOf(struck) : undefined;
-
   return (
-    <div className={styles.bench} data-testid="forge-craft">
-      <section className={styles.choices}>
-        <h3 className={`display ${styles.heading}`}>{t('forge.craft.slot')}</h3>
-        <div className={styles.slots}>
-          {GEAR_SLOTS.map((one) => (
-            <div key={one} className={styles.slotCell}>
-              <Slot
-                size="sm"
-                emptyGlyph={SLOT_GLYPH[one]}
-                label={slotLabel(one)}
-                selected={slot === one}
-                onClick={() => {
-                  playSfx('ui.tab');
-                  setSlot(one);
-                }}
-                data-testid={`craft-slot-${one}`}
-              />
-              <span className={styles.slotName}>{slotLabel(one)}</span>
-            </div>
-          ))}
-        </div>
-
-        <h3 className={`display ${styles.heading}`}>{t('forge.craft.tier')}</h3>
-        <div className={styles.tiers}>
-          {CRAFT_TIERS.map((one) => {
-            const on = tier === one;
-            const price = craftPrice(one, false);
-            return (
-              <DecoFrame
-                key={one}
-                frame={on ? 13 : 16}
-                tint={on ? CARD_TINT.unlocked : CARD_TINT.locked}
-                thickness={12}
-                role="button"
-                tabIndex={0}
-                aria-pressed={on}
-                className={[styles.tier, on ? styles.tierOn : ''].join(' ')}
-                data-testid={`craft-tier-${one}`}
-                onMouseEnter={() => playSfx('ui.hover')}
-                onClick={() => {
-                  playSfx('ui.tab');
-                  chooseTier(one);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    chooseTier(one);
-                  }
-                }}
-              >
-                <div className={styles.tierHead}>
-                  <span className={`display ${styles.tierName}`}>{tierLabel(one)}</span>
-                  <span className={styles.tierPool}>{poolLabel(one)}</span>
+    <>
+      <Storeroom spends={cost} />
+      <div className={styles.bench} data-testid="forge-craft">
+        <section className={styles.recipe}>
+          <Step index={1} title={t('forge.craft.step.slot')}>
+            <div className={styles.slots}>
+              {GEAR_SLOTS.map((one) => (
+                <div key={one} className={styles.slotCell}>
+                  <Slot
+                    size="md"
+                    label={slotLabel(one)}
+                    selected={slot === one}
+                    onClick={() => {
+                      setSlot(one);
+                      setStruck(null);
+                    }}
+                    data-testid={`craft-slot-${one}`}
+                  >
+                    {namedSet ? (
+                      <AssetImage asset={namedSet.art[one]} size={256} className={styles.slotArt} />
+                    ) : (
+                      <Glyph
+                        glyph={SLOT_GLYPH[one]}
+                        size={58}
+                        color={slot === one ? 'var(--gold-3)' : 'rgba(243, 236, 220, 0.45)'}
+                      />
+                    )}
+                  </Slot>
+                  <span className={[styles.slotName, slot === one ? styles.slotNameOn : ''].join(' ')}>
+                    {slotLabel(one)}
+                  </span>
                 </div>
-                <p className={styles.tierBody}>{tierBody(one)}</p>
-                <ul className={styles.tierCost}>
-                  {price.map((entry) => (
-                    <li
-                      key={entry.currency}
-                      className={[
-                        'num',
-                        styles.costRow,
-                        held(entry.currency) < entry.amount ? styles.costShort : '',
-                      ].join(' ')}
-                    >
-                      <CurrencyLabel currency={entry.currency} amount={entry.amount} size={COST_ICON} />
-                    </li>
-                  ))}
-                </ul>
-              </DecoFrame>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          </Step>
 
-        <div className={styles.setRow}>
-          <Dropdown<string>
-            label={t('forge.craft.set')}
-            width={300}
-            value={setId}
-            options={[
-              { value: '', label: t('forge.craft.set.any') },
-              ...content.gearSets
-                .filter((one) => pool.includes(one.id))
-                .map((one) => ({
-                  value: one.id,
-                  label: translate(one.name),
-                  icon: <SetEmblem emblem={one.emblem} size={OPTION_EMBLEM} />,
-                })),
-            ]}
-            onChange={(next) => setSetId(next)}
-          />
-          <span className={styles.sigils} data-testid="craft-sigils">
-            <Glyph glyph="glyph.arcane_symbol" size={20} color="var(--gold-3)" />
-            <span className="num">{t('forge.craft.sigils', { count: sigils })}</span>
-          </span>
-          {named ? <span className={styles.sigilNote}>{t('forge.craft.set.sigil')}</span> : null}
-        </div>
-      </section>
+          <Step index={2} title={t('forge.craft.step.tier')}>
+            <div className={styles.tiers}>
+              {CRAFT_TIERS.map((one) => {
+                const price = craftPrice(one, false);
+                return (
+                  <TierCard
+                    key={one}
+                    tier={one}
+                    selected={tier === one}
+                    price={price}
+                    held={held}
+                    strikes={timesAffordable(price, held)}
+                    onSelect={() => chooseTier(one)}
+                  />
+                );
+              })}
+            </div>
+          </Step>
 
-      <section className={styles.anvilColumn}>
-        <div className={styles.anvil}>
-          <span className={styles.anvilBlock} aria-hidden="true" />
-          <span className={styles.hearth} aria-hidden="true" />
-          {/* The hammer falls on every strike; `key` restarts the animation. */}
-          <motion.span
-            key={strike}
-            className={styles.hammer}
-            initial={reduced || strike === 0 ? false : { rotate: -38, y: -30, opacity: 0.9 }}
-            animate={reduced || strike === 0 ? {} : { rotate: [-38, 8, -38], y: [-30, 6, -30] }}
-            transition={{ duration: 0.42, times: [0, 0.45, 1], ease: 'easeInOut' }}
-            aria-hidden="true"
-          >
-            <Glyph glyph="glyph.hammer_hit" size={96} color="var(--ember-3)" />
-          </motion.span>
-          {strike > 0 && !reduced ? <span key={`spark-${strike}`} className={styles.sparks} /> : null}
-        </div>
+          <Step index={3} title={t('forge.craft.step.set')}>
+            <div className={styles.setRow}>
+              <Dropdown<string>
+                label={t('forge.craft.set')}
+                width={320}
+                value={setId}
+                options={[
+                  { value: '', label: t('forge.craft.set.any') },
+                  ...content.gearSets
+                    .filter((one) => pool.includes(one.id))
+                    .map((one) => ({
+                      value: one.id,
+                      label: translate(one.name),
+                      icon: <SetEmblem emblem={one.emblem} size={OPTION_EMBLEM} />,
+                    })),
+                ]}
+                onChange={(next) => {
+                  setSetId(next);
+                  setStruck(null);
+                }}
+              />
+              <span className={styles.sigils} data-testid="craft-sigils">
+                <TintedIcon asset={sigil.icon} tint={sigil.tint} size={30} />
+                <span className="display">{translate(sigil.name)}</span>
+                <span className="num">{t('forge.craft.sigils', { count: held('mat_glyph_sigil') })}</span>
+              </span>
+            </div>
+            {namedSet ? (
+              <div className={styles.setCard}>
+                <SetEmblem emblem={namedSet.emblem} size={46} />
+                <span className={styles.setText}>
+                  <strong className="display">
+                    {translate(namedSet.name)}{' '}
+                    <span className={styles.setSize}>
+                      {t('armoury.set.pieces', { pieces: namedSet.pieces })}
+                    </span>
+                  </strong>
+                  <span>{translate(namedSet.description)}</span>
+                </span>
+                <span className={`num ${styles.sigilNote}`}>{t('forge.craft.set.sigil')}</span>
+              </div>
+            ) : (
+              <p className={styles.setHint}>
+                {t('forge.craft.set.hint', { pool: poolLabel(tier).toLowerCase() })}
+              </p>
+            )}
+          </Step>
+        </section>
 
-        {struck ? (
-          <motion.div
-            key={struck.instanceId}
-            className={styles.reveal}
-            initial={reduced ? false : { scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3, delay: reduced ? 0 : 0.28, ease: 'easeOut' }}
-            data-testid="craft-result"
-          >
-            <GearCard
-              rarity={struck.rarity}
-              stars={struck.stars}
-              level={struck.level}
-              slot={struck.slot}
-              {...pieceArtwork(struck)}
-              {...pieceTooltip(struck)}
-              mainStat={mainStatLine(struck)}
-              setName={set ? translate(set.name) : struck.setId}
-              size={128}
-            />
-            <span className={`display ${styles.revealName}`} style={{ color: RARITY_HEX[struck.rarity] }}>
-              {pieceName(struck)}
-            </span>
-            <span className={`num ${styles.revealStat}`}>{mainStatLine(struck)}</span>
-          </motion.div>
-        ) : (
-          <p className={styles.hint}>{t('forge.tab.craft.hint')}</p>
-        )}
+        <Anvil
+          slot={slot}
+          tier={tier}
+          named={namedSet}
+          struck={struck}
+          strikes={strikes}
+          cost={cost}
+          held={held}
+          canPay={canPay}
+          error={error}
+          onStrike={craft}
+        />
+      </div>
+    </>
+  );
+}
 
-        <Button
-          variant="primary"
-          size="lg"
-          disabled={!canPay}
-          onClick={craft}
-          data-testid="craft-strike"
-          icon={<Glyph glyph="glyph.hammer_hit" size={26} color="var(--gold-3)" />}
-        >
-          {struck ? t('forge.craft.again') : t('forge.craft.strike')}
-        </Button>
-        <ul className={styles.total} data-testid="craft-cost">
-          {cost.map((entry) => (
-            <li
-              key={entry.currency}
-              className={['num', held(entry.currency) < entry.amount ? styles.costShort : ''].join(' ')}
-            >
-              <CurrencyLabel currency={entry.currency} amount={entry.amount} size={COST_ICON} />
-            </li>
-          ))}
-        </ul>
-        {error ? (
-          <p className={styles.error} role="alert" data-testid="craft-error">
-            {error}
-          </p>
-        ) : null}
-      </section>
+/** One numbered step of the recipe: a medallion, its title, and what it asks for. */
+function Step({ index, title, children }: { index: number; title: string; children: ReactNode }) {
+  return (
+    <div className={styles.step}>
+      <header className={styles.stepHead}>
+        <span className={`num ${styles.stepIndex}`}>{index}</span>
+        <h3 className={`display ${styles.stepTitle}`}>{title}</h3>
+      </header>
+      {children}
     </div>
   );
 }

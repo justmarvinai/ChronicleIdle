@@ -1,120 +1,195 @@
+/* The Dismantle bench (docs/tech/UI_DESIGN.md §5.11): the racks, and the scrap heap beside them. */
 .bench {
-  display: flex;
-  gap: 20px;
-  height: 100%;
-  min-height: 0;
+  position: absolute;
+  left: 370px;
+  right: 24px;
+  top: 168px;
+  bottom: 24px;
+  z-index: var(--z-scene);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 460px;
+  gap: 18px;
 }
 
 .racks {
-  flex: 1 1 auto;
-  min-width: 0;
+  composes: surfaceStone from global;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding: 16px 20px;
+  min-height: 0;
 }
-
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.title {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: 0.06em;
+  color: var(--gold-3);
+}
+.free {
+  font-size: 17px;
+  color: var(--text-2);
+}
+.kept {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text-3);
+}
 .quick {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .quickLabel {
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.clear {
   font-size: 14px;
-  color: var(--text-3);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.clear:hover {
-  color: var(--ember-3);
-}
-
-.count {
-  margin-left: auto;
-  font-size: 17px;
-  color: var(--gold-3);
-}
-
-.scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 2px 0;
-}
-
-.side {
-  composes: surfaceStone from global;
-  flex: 0 0 360px;
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.heading {
-  margin: 0;
-  font-size: 17px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
 }
+.clear {
+  margin-left: 4px;
+  font-size: 15px;
+  color: var(--text-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: var(--cursor-pointer);
+}
+.clear:hover {
+  color: var(--gold-3);
+}
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 128px);
+  gap: 12px;
+  padding: 4px 4px 12px;
+}
 
+/* Nothing free to break: say why, and where pieces come from. */
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+.emptyTitle {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-1);
+}
+.emptyBody {
+  margin: 0;
+  max-width: 460px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-3);
+}
+
+.heap {
+  height: 100%;
+}
+.heapContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+.countRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.count {
+  font-size: 26px;
+  color: var(--gold-3);
+}
+.max {
+  font-size: 16px;
+  color: var(--text-3);
+}
+/* The chosen pieces, piled up as thumbnails. */
+.pile {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+  min-height: 108px;
+  padding: 8px;
+  background: rgba(11, 10, 13, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.2);
+}
+.pileEmpty {
+  align-self: center;
+  margin: auto;
+  font-size: 15px;
+  color: var(--text-3);
+}
+.more {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  font-size: 16px;
+  color: var(--gold-3);
+  background: rgba(40, 32, 20, 0.8);
+}
+.subTitle {
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  color: var(--gold-2);
+}
 .yield {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
-
 .yieldRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 4px 8px;
-  font-size: 16px;
+  gap: 12px;
+  padding: 6px 10px;
+  font-size: 18px;
   color: var(--text-1);
-  background: rgba(16, 14, 20, 0.55);
-  box-shadow: inset 0 0 0 1px rgba(90, 85, 78, 0.35);
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.65), rgba(16, 13, 10, 0.35));
 }
-
+.yieldRow :global(.num) {
+  font-size: 22px;
+  color: var(--ok);
+}
 .refund {
   margin: 0;
-  font-size: 15px;
-  color: var(--gold-3);
+  font-size: 14px;
+  color: var(--text-2);
 }
-
 .hint {
   margin: 0;
   font-size: 14px;
-  line-height: 1.45;
+  line-height: 1.4;
   color: var(--text-3);
 }
-
-.empty {
-  margin: auto;
-  padding: 24px;
-  text-align: center;
-  font-size: 17px;
-  color: var(--text-3);
-}
-
-.side > button:last-child {
+.press {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
 }

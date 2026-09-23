@@ -242,3 +242,60 @@ describe('the Forge — Refine', () => {
     }
   });
 });
+
+describe('the Forge — around the benches', () => {
+  beforeEach(() => chronicle());
+
+  it('quotes each tier’s odds from the engine and how many strikes the storeroom covers', () => {
+    render(stage(<ForgeScreen route={FORGE} />));
+    const scrap = screen.getByTestId('craft-tier-scrap');
+    expect(scrap).toHaveTextContent('Common40%');
+    expect(scrap).toHaveTextContent('Epic5%');
+    expect(scrap).toHaveTextContent('1★30%');
+    // 400 Scrap Iron at 20 and 400 Arcane Dust at 5: the iron runs out first, at 20 strikes.
+    expect(scrap).toHaveTextContent('You can strike this 20×');
+  });
+
+  it('keeps the storeroom beside the bench, marking what the recipe spends', async () => {
+    const user = userEvent.setup();
+    render(stage(<ForgeScreen route={FORGE} />));
+    expect(screen.getByTestId('forge-store-mat_scrap_iron')).toHaveTextContent('−20');
+    await user.click(screen.getByTestId('craft-tier-star'));
+    expect(screen.getByTestId('forge-store-mat_starsteel')).toHaveTextContent('−10');
+    expect(screen.getByTestId('forge-store-mat_scrap_iron')).not.toHaveTextContent('−');
+
+    act(() => {
+      useGameStore.setState((state) => {
+        if (state.save) state.save.wallet.mat_starsteel = 3;
+        return state;
+      });
+    });
+    expect(screen.getByTestId('craft-tier-star')).toHaveTextContent('Not enough in the storeroom');
+  });
+
+  it('reads the named set’s bonus before a Sigil is spent on it, and shows the piece it will strike', async () => {
+    const user = userEvent.setup();
+    render(stage(<ForgeScreen route={FORGE} />));
+    await user.click(screen.getByRole('combobox', { name: 'Set' }));
+    await user.click(screen.getByRole('option', { name: 'Warcry' }));
+    const warcry = content.gearSetById('gear_set.warcry');
+    if (!warcry) throw new Error('no Warcry');
+    expect(screen.getByTestId('forge-craft')).toHaveTextContent('A Warcry Weapon');
+    expect(screen.getByTestId('forge-store-mat_glyph_sigil')).toHaveTextContent('−1');
+
+    await user.click(screen.getByTestId('craft-strike'));
+    // The struck piece's whole sheet stands under the anvil.
+    expect(screen.getByTestId('craft-result')).toHaveTextContent('Warcry');
+    expect(screen.getByTestId('craft-result')).toHaveTextContent('Substats');
+  });
+
+  it('counts a dismantle’s returns in the storeroom before the press', async () => {
+    const user = userEvent.setup();
+    for (let i = 0; i < 2; i += 1) actions().craftGear('scrap', 'helmet');
+    render(stage(<ForgeScreen route={FORGE} />));
+    await user.click(screen.getByTestId('forge-tab-dismantle'));
+    await user.click(screen.getByTestId('dismantle-quick-unlevelled'));
+    expect(screen.getByTestId('dismantle-count')).toHaveTextContent('2 selected');
+    expect(screen.getByTestId('forge-store-mat_scrap_iron')).toHaveTextContent('+');
+  });
+});
