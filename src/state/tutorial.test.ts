@@ -246,11 +246,14 @@ describe('the tutorial in the save', () => {
       actions.newGame('Marvin');
       actions.chooseStarter(starter as ChampionId);
       const roster = store.getState().save?.roster ?? {};
-      // The team of TUTORIAL.md 1.5: the starter leads, Bran holds the line, Wenna heals.
-      const team = Object.values(roster)
-        .filter((instance) => instance.defId !== 'champ.gil_scrapper')
-        .map((instance) => instance.instanceId);
-      expect(team).toHaveLength(3);
+      // The team of TUTORIAL.md 1.5 — the starter leads, Bran holds the line, Wenna heals — is
+      // the one the first setup opens on, because binding the starter records it.
+      const team = store.getState().save?.teams.campaign.lastUsed ?? [];
+      expect(team.map((id) => roster[id]?.defId)).toEqual([
+        starter,
+        'champ.bran_militia',
+        'champ.wenna_novice',
+      ]);
 
       const controller = createBattleController();
       controller.start({

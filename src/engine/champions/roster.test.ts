@@ -69,6 +69,8 @@ describe('roster reducers', () => {
     ]);
     expect(seeded.value.starterInstanceId).toBe('ser_corvin-1');
     expect(seeded.value.state.roster['ser_corvin-1']?.source).toBe('starter');
+    // The first stand's team (TUTORIAL.md 1.5): the starter leads, Bran and Wenna fight, Gil waits.
+    expect(seeded.value.firstTeam).toEqual(['ser_corvin-1', 'bran_militia-2', 'wenna_novice-3']);
     expect(seedStartingRoster(seeded.value.state, content, 'champ.ser_corvin', 500).ok).toBe(false);
     expect(seedStartingRoster(empty, content, 'champ.anuria', 500).ok).toBe(false);
   });

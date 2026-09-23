@@ -28,6 +28,7 @@ export {
   RARITY_FOOD_MULT,
   TAVERN_LEVEL_GOLD_PER_LEVEL,
 } from '@content/balance/xp';
+export { PARTY_SIZE_CAMPAIGN } from '@content/balance/battle';
 export { CURRENCY_IDS } from '@content/currencies/types';
 export type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 export {

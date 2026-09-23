@@ -32,6 +32,19 @@ function release(version: string, date: string, lines: readonly Line[]): Release
 }
 
 export const RELEASES: readonly ReleaseDef[] = [
+  release('0.9.7', '2026-09-23', [
+    { kind: 'changed', slug: 'results', lead: true },
+    { kind: 'changed', slug: 'tower', lead: true },
+    { kind: 'changed', slug: 'defeat' },
+    { kind: 'changed', slug: 'battle_setup' },
+    { kind: 'changed', slug: 'battle_hud' },
+    { kind: 'changed', slug: 'profile' },
+    { kind: 'changed', slug: 'settings' },
+    { kind: 'changed', slug: 'pause' },
+    { kind: 'fixed', slug: 'ability_numbers' },
+    { kind: 'fixed', slug: 'team_button' },
+    { kind: 'fixed', slug: 'first_team' },
+  ]),
   release('0.9.6', '2026-09-23', [
     { kind: 'changed', slug: 'gold_market', lead: true },
     { kind: 'changed', slug: 'gem_market', lead: true },

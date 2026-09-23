@@ -45,6 +45,8 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'battle.units': family('plate-'),
   'battle.auto': testId('battle-auto'),
   'battle.speed': testId('battle-speed'),
+  // The stars sit in the result's crest and the spoils in its side panel: 1.9 points at both.
+  'result.stars': testId('result-stars'),
   'result.rewards': testId('result-rewards'),
 
   'tavern.roster': testId('tavern-rail'),

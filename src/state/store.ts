@@ -783,6 +783,9 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 save.roster = seeded.value.state.roster;
                 save.counters.instances = seeded.value.state.counters.instances;
                 save.profile.avatarChampionId = defId;
+                // The first stand's setup opens on the lesson's team (TUTORIAL.md 1.5), not on the
+                // strongest three, which could seat Gil where Eldric names Bran.
+                save.teams.campaign.lastUsed = seeded.value.firstTeam;
               });
               set((state) => {
                 state.ui.stack = [{ name: 'hub' }];

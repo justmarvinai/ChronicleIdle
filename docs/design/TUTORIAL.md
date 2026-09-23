@@ -30,7 +30,7 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | 1.6 | Battle, first ally turn | Ability A1 | "Speed decides who acts. When it is your turn, choose an ability, then a target." | A1 used |
 | 1.7 | Wave 2, ally turn | A2 button of starter | "Stronger abilities rest between uses — mind the cooldown counter." | A2 used |
 | 1.8 | after 1.7 | Auto + speed buttons | "You need not command every blow. Auto lets your champions decide; ×2 quickens the fight." | Auto toggled |
-| 1.9 | Victory panel | Rewards, stars | "Three stars mark a flawless stand. Gold, experience, spoils — all yours." | Continue |
+| 1.9 | Victory screen | The stars in the crest, and the spoils panel | "Three stars mark a flawless stand. Gold, experience, spoils — all yours." | Continue |
 | 1.10 | Back on map | Stage 1-2 | "Onward. I will speak again when you have earned your second stand." (free play until 1-3 clear) | 1-3 cleared |
 | 1.11 | 1-3 cleared | Energy pill in the top bar | "A Chronicler marches on full provisions. Take these — five hundred measures of energy — and do not ration them; more comes every minute." (**grants 500 Energy**) | Continue |
 

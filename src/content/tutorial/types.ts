@@ -49,6 +49,7 @@ export const TUTORIAL_TARGETS = [
   'battle.units',
   'battle.auto',
   'battle.speed',
+  'result.stars',
   'result.rewards',
   // The Tavern
   'tavern.roster',

@@ -11,6 +11,99 @@ say about a game that never stops animating), Q47 (when a tower season starts co
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
 
+## [0.9.7] — 2026-09-23 — The Crest and the Climb
+
+The owner's eighth batch: a fight from the screen before it to the screen after it, the Eternal Tower,
+the profile chip and its page, and every settings menu, each reworked on a better screen. The
+tutorial was walked against the new screens: its targets and lines hold, lesson 1.9 now points at
+the crest's stars as well as the spoils, and the first stand seats the companions Eldric names.
+`docs/tech/UI_DESIGN.md` §5.8, §5.9, §5.10, §5.13a, §5.17; `docs/design/TUTORIAL.md` 1.9.
+
+### Added
+
+- **Battle setup as a face-off** (`ui/screens/battle-setup`). It is split into:
+  - `TeamSeat` and `TeamPanel`: the seats as framed paintings, the leader's ribbon and aura,
+    presets on a grid;
+  - `EnemyPanel` and `EnemyCard`: a wave's enemies as cards with their idle loops and HP, ATK and
+    SPD at the encounter's scale;
+  - `VersusColumn`: the two powers on one bar, the stars to earn, how the fight is lost;
+  - `LaunchPanel`: repeat, the Manual | Auto switch, the priced Start;
+  - `RosterStrip`: filters by element and role, seat badges;
+  - `setup-view.ts`: `wavePower`, `enemyPower`, `powerShare`, `toggleMember`, `makeLeader`, and
+    `scoutWave` (the scout's report: strong against them, strong against you, a healer).
+- **The battle HUD's instruments** (`ui/screens/battle`):
+  - `HudCounters`: pause, wave pips, the ally-turn budget, the time;
+  - `ControlDock`: info, auto and speed with their keys;
+  - `TurnBanner`, and `WaveBanner` (held until the fight has begun);
+  - plates that flag a low unit, carry the element and glow when the meter is full.
+- **The battle result's parts** (`ui/screens/battle-result`):
+  - `ResultCrest`: the word on a turning crown of light, the stars landing with a chime each, the
+    enemy's health left after a loss;
+  - `ChampionReport`: the team as cards with an XP bar, *Level up*, damage share, *MVP*, *Fallen*;
+  - `ResultStats`, `SpoilsPanel`, `DefeatAdvice`, `PalacePlate`, `ResultBanner`, the shared
+    `ResultPanel.module.css`;
+  - `result-view.ts`: `mvpOf`, `damageShares`, `adviceFor`;
+  - `result-nav.ts`: every exit, each rebuilding the stack a player would have walked.
+- `ui/components/RewardTiles`: `RewardTiles`, `currencyTile` and `xpTile`, used by every result
+  panel and the tower's dossier.
+- **The Eternal Tower's parts** (`ui/screens/tower`):
+  - `TowerLadder`: the floors as stone slabs under an arch, selectable;
+  - `FloorDossier`: the selected floor's place as art, its terms, its enemies, its pay, its press;
+  - `ClimbPanel`: the season ring, the keys as kit keys;
+  - `KeeperBoard`: the ten keepers, a press away;
+  - `tower-view.ts`: `floorDossier`.
+- `towerFloorPayout` (`engine/tower/rewards.ts`): the certain part of a floor's pay.
+  `towerFloorRewards` is now that plus the shard roll, with results unchanged.
+- **The profile chip** as a plate with the level on a gold gem, and **the profile dialog** in two
+  columns: the chronicler's card (portrait, level gem, name, title, XP, Account Power, avatar),
+  then standing tiles, star bars, every title as a chip, and the next gates.
+- **Settings** as a rail of sections (a vertical tab list the arrows walk) and cards with a line
+  per setting. The battle speed is a row of plates with the unearned speeds chained. The pause menu
+  has a fight strip and a red retreat card.
+- `Toggle` and `Slider` take `hideLabel`, so a settings card can say the label while the control
+  keeps its accessible name. The switch is redrawn as a bevelled groove that says *Off* or *On*.
+- `EnemyCard` takes `spriteMax` for shorter cards.
+- **Tests:**
+  - `battle-setup.test.tsx`: 14 tests.
+  - `hud.test.tsx`: 6 tests.
+  - `result-view.test.ts`: MVP, damage bars, every advice rule.
+  - `result-screen.test.tsx`: the presses after a win, a loss, a retreat and a tower floor; advice
+    and grow shortcuts.
+  - `tower-screen.test.tsx`: the dossier, a keeper's odds, repeat fights, the keys, the keepers
+    board.
+  - `profile-dialogs.test.tsx`: every title chip, the XP and power.
+  - `settings-dialog.test.tsx`: the rail, the arrows, switches, volumes, earned and chained speeds.
+  - `tower.test.ts`: the payout against the roll.
+
+### Changed
+
+- **The battle result** is one layout for every fight:
+  - the crest at the top;
+  - the team's cards on the left, under a heading that carries the fight's three numbers;
+  - on the right, a stone panel where every mode draws its pay as banners and reward tiles (the
+    campaign's spoils and drops, the tower's climb and shards, the boss's pool with a notch per
+    chest, the brewery's casks, the dungeon's pieces).
+  - A loss turns the panel to *What to try next*, with a press to where each fix lives, and ends
+    in *Grow stronger* (Tavern, Champions, Portal).
+  - The footer puts the one press that matters on the right.
+- **The Eternal Tower** is three columns (the ladder, the dossier, the season) instead of a
+  sealed-row list beside a stats panel.
+- **Tutorial 1.9** spotlights the crest's stars (`result.stars`, a new `TUTORIAL_TARGETS` entry)
+  as well as the spoils panel, since the stars moved into the crest.
+- Strings: the new screens' strings are added. `battleResult.stars`, `battleResult.levelUp`,
+  `battle.enemyTurn`, `profile.noTitles` and `dungeon.outcome.spoils` are retired.
+  `dungeon.outcome.full` no longer says "1 pieces".
+
+### Fixed
+
+- An ability's tooltip in battle quoted its base numbers; it now counts the champion's Skill Tome
+  steps.
+- The first stand's setup (tutorial 1.5) seated the three strongest champions, which could put
+  Gil where Eldric names Bran. `seedStartingRoster` now returns the lesson's `firstTeam` (the
+  starter, Bran and Wenna) and `chooseStarter` saves it as the campaign's last team.
+- A lost stand's footer showed *Team* twice. A tower, boss, brewery or dungeon result offered a
+  *Team* button that led to the campaign; they now offer only their own way back.
+
 ## [0.9.6] — 2026-09-23 — The Stall and the Shelf
 
 The owner's seventh batch: the Market, Gold and Gem, reworked as the Tavern, the Forge, the hub and

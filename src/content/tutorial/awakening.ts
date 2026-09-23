@@ -85,10 +85,10 @@ export default chapter({
       allow: ['battle.auto', 'battle.speed'],
       complete: { type: 'auto_battle' },
     }),
-    // 1.9 — the spoils.
+    // 1.9 — the stars in the crest, and the spoils beside the team.
     step({
       when: { type: 'screen', screen: 'battle-result' },
-      spotlight: ['result.rewards'],
+      spotlight: ['result.stars', 'result.rewards'],
       complete: { type: 'acknowledged' },
     }),
     // 1.10 — free play until the third stand falls: nothing is dimmed and nothing is blocked.

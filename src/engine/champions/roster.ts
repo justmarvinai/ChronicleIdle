@@ -8,6 +8,7 @@ import {
   type ChampionDef,
   type ChampionId,
   type ObtainSource,
+  PARTY_SIZE_CAMPAIGN,
   STARTER_IDS,
   STARTING_COMPANION_IDS,
 } from './imports';
@@ -49,25 +50,33 @@ export function addChampion(
   });
 }
 
-/** The chosen starter plus the tutorial companions (TUTORIAL.md 1.2 and 1.5), in that order. */
+/**
+ * The chosen starter plus the tutorial companions (TUTORIAL.md 1.2 and 1.5), in that order. The
+ * first stand's team is the starter and the companions ahead of the rest, as many as a campaign
+ * party holds — Bran and Wenna fight, Gil waits — so the lesson's line matches the seats it shows.
+ */
 export function seedStartingRoster(
   state: RosterState,
   content: ChampionLookup,
   starter: ChampionId,
   now: number,
-): Result<{ state: RosterState; starterInstanceId: string }> {
+): Result<{ state: RosterState; starterInstanceId: string; firstTeam: string[] }> {
   if (!(STARTER_IDS as readonly string[]).includes(starter))
     return fail('invalid_argument', `${starter} is not a starter`);
   if (Object.keys(state.roster).length > 0) return fail('invalid_argument', 'roster already seeded');
   let current = state;
-  let starterInstanceId = '';
+  const seeded: string[] = [];
   for (const id of [starter, ...STARTING_COMPANION_IDS]) {
     const added = addChampion(current, content, id, 'starter', now);
     if (!added.ok) return added;
     current = added.value.state;
-    if (id === starter) starterInstanceId = added.value.instance.instanceId;
+    seeded.push(added.value.instance.instanceId);
   }
-  return ok({ state: current, starterInstanceId });
+  return ok({
+    state: current,
+    starterInstanceId: seeded[0] ?? '',
+    firstTeam: seeded.slice(0, PARTY_SIZE_CAMPAIGN),
+  });
 }
 
 function updateInstance(

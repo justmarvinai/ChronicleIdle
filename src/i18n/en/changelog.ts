@@ -20,6 +20,30 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_7.name': 'The Crest and the Climb',
+  'release.0_9_7.results':
+    'The end of every fight has been rebuilt. A victory rises in gold with its stars landing one by one; your champions stand as cards showing what each of them did, with the fight’s best marked MVP; and everything the fight paid is laid out as tiles.',
+  'release.0_9_7.tower':
+    'The Eternal Tower looks like a tower now: a hundred stone floors climbing upward. Pick any floor to see who holds it, their strength and what a clear pays; the season, your keys and all ten keepers sit beside it at a glance.',
+  'release.0_9_7.defeat':
+    'After a loss, the screen shows how close you came and what went wrong — out-sped, a healer left standing, champions below the enemy’s level — with a button straight to where each can be fixed, and quick ways to grow stronger.',
+  'release.0_9_7.battle_setup':
+    'The screen before a fight is a face-off: your team on one side and the enemy on the other, the power of each, a scout’s report on who is strong against whom, the stars there are to earn, and one clear button to begin.',
+  'release.0_9_7.battle_hud':
+    'The battle screen is sharper: clear counters for the wave, the turns and the time, a tidier dock for Auto and speed, and banners that announce each turn and each new wave.',
+  'release.0_9_7.profile':
+    'Your profile in the corner shows your level on a gold gem, your title, your progress to the next level and your power, and opens a new profile page with your standing, your stars and every title there is to earn.',
+  'release.0_9_7.settings':
+    'Settings are arranged in sections with a short line explaining every option, new switches, and the battle speed as a row of plates you can press.',
+  'release.0_9_7.pause':
+    'The pause menu shows where the fight stands, and asks once, clearly, before you retreat.',
+  'release.0_9_7.ability_numbers':
+    'An ability’s description in battle now shows its numbers with your skill upgrades counted in.',
+  'release.0_9_7.team_button':
+    'The end of a lost fight no longer offers the same button twice, and the end of a tower, boss, brewery or dungeon fight no longer offers a Team button that led to the campaign.',
+  'release.0_9_7.first_team':
+    'Your very first fight now seats Bran and Wenna beside your champion, just as Eldric says, instead of whichever companions happened to be strongest.',
+
   'release.0_9_6.name': 'The Stall and the Shelf',
   'release.0_9_6.gold_market':
     'The Gold Market lays its six wares out as proper cards: each on a lit stand with what it is for and how many you already hold, how many are left, and a count to buy — from one to all your purse can reach — with the total before you pay.',

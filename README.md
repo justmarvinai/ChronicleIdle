@@ -3,7 +3,7 @@
 A 2D pixel-art, dark-fantasy, **turn-based idle gacha champion-collection RPG** for desktop
 browsers (and later Steam via Electron). Single player, no accounts, no monetisation.
 
-> Status: **`0.9.6` — The Stall and the Shelf.** Early Access 0.1 shipped as `0.1.0`
+> Status: **`0.9.7` — The Crest and the Climb.** Early Access 0.1 shipped as `0.1.0`
 > with all fifteen phases in: the game shell, 23 champions, deterministic animated battles, the
 > twelve-settlement campaign, chronicle levels and titles, the Tavern, gear and its fourteen sets,
 > the Forge, the Portal, the idle chest, the two period bosses, quests, the Chronicler's Path and
@@ -12,8 +12,9 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 > (`0.8.0`) and the Market, the Bag, the three boosts and the thirty-day Daily Rewards calendar
 > (`0.9.0`) — and the patches since, from the owner's play: every gear piece painted and every set
 > given its emblem (`0.9.3`), then gear tooltips, a rebuilt Champions overview and every drop list
-> shown by its marks (`0.9.4`), then a reworked Tavern, Forge, hub and Idle Chest (`0.9.5`) and
-> Market (`0.9.6`). See `ROADMAP.md` for what is planned and `CHANGELOG.md` for what landed.
+> shown by its marks (`0.9.4`), then a reworked Tavern, Forge, hub and Idle Chest (`0.9.5`),
+> Market (`0.9.6`), and battle setup, battle HUD, battle results, Eternal Tower, profile and settings
+> (`0.9.7`). See `ROADMAP.md` for what is planned and `CHANGELOG.md` for what landed.
 
 ## Documents
 
