@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
+import { imageUrl } from '@assets/manifest';
 import { playSfx } from '@audio/index';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { content } from '@content/registry';
@@ -8,15 +9,18 @@ import { xpToNextLevel } from '@engine/progression/player-level';
 import { t, translate } from '@i18n/index';
 import { selectInventory, selectProfile, selectRoster } from '@state/selectors';
 import { useGameStore } from '@state/store';
-import { Bar } from '@ui/components/Bar/Bar';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { entriesOf } from '@ui/screens/champions/roster-view';
 import { profileAvatar } from '@ui/champions/art';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
-import { imageUrl } from '@assets/manifest';
 import styles from './ProfileChip.module.css';
 
-/** Avatar ring, name, worn title, level and XP bar (clones the reference profile chip). */
+/**
+ * The chronicle in the header (docs/tech/UI_DESIGN.md §5.17): the avatar in the kit's round frame
+ * with the level on a gold gem under it, the name and the worn title, the XP towards the next level
+ * as a lit bar, and the whole roster's power. It is one press to the profile, and the gem flares
+ * each time the level climbs.
+ */
 export function ProfileChip({ onClick }: { onClick: () => void }) {
   const profile = useGameStore(selectProfile);
   const roster = useGameStore(selectRoster);
@@ -37,16 +41,23 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
   const avatar = profileAvatar(profile.avatarChampionId, 128);
   const titleDef = profile.title ? content.titleById(profile.title) : null;
   const maxed = profile.level >= PLAYER_MAX_LEVEL;
+  const toNext = xpToNextLevel(profile.level);
+  const progress = maxed ? 1 : Math.min(1, profile.xp / Math.max(1, toNext));
+  const xpLine = maxed
+    ? t('topbar.xpMax')
+    : t('topbar.xp', { xp: profile.xp.toLocaleString('en-US'), next: toNext.toLocaleString('en-US') });
   return (
     <button
       type="button"
       className={styles.chip}
       aria-label={t('topbar.profile')}
+      title={xpLine}
       data-testid="profile-chip"
       data-avatar={profile.avatarChampionId ?? 'chronicler'}
       onMouseEnter={() => playSfx('ui.hover')}
       onClick={() => (playSfx('ui.tab'), onClick())}
     >
+      <span className={styles.plate} aria-hidden="true" />
       <span className={styles.avatar} style={{ backgroundImage: `url("${avatar.url}")` }}>
         {avatar.tint ? (
           <span
@@ -85,21 +96,19 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
         </motion.span>
       </span>
       <span className={styles.text}>
-        <span className={`display ${styles.name}`}>{profile.name}</span>
-        {titleDef ? (
-          <span className={styles.title} data-testid="profile-chip-title">
-            {translate(titleDef.name)}
-          </span>
-        ) : null}
-        <Bar
-          value={maxed ? 1 : profile.xp}
-          max={maxed ? 1 : xpToNextLevel(profile.level)}
-          kind="xp"
-          height={16}
-          width={190}
-        />
-        <span className={styles.power} title={t('topbar.accountPower')} data-testid="account-power">
-          <Glyph glyph="glyph.crossed_swords" size={13} color="var(--gold-2)" />
+        <span className={styles.nameRow}>
+          <span className={`display ${styles.name}`}>{profile.name}</span>
+          {titleDef ? (
+            <span className={`display ${styles.title}`} data-testid="profile-chip-title">
+              {translate(titleDef.name)}
+            </span>
+          ) : null}
+        </span>
+        <span className={styles.xp} aria-label={xpLine}>
+          <span className={styles.xpFill} style={{ width: `${progress * 100}%` }} />
+        </span>
+        <span className={styles.power} data-testid="account-power">
+          <Glyph glyph="glyph.crossed_swords" size={14} color="var(--gold-2)" />
           <span className={styles.powerLabel}>{t('topbar.accountPower')}</span>
           <span className={`num ${styles.powerValue}`}>{power.toLocaleString('en-US')}</span>
         </span>

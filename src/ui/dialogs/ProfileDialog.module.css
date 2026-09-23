@@ -1,162 +1,373 @@
-.header {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  padding-bottom: 6px;
+/* The chronicle's own page (docs/tech/UI_DESIGN.md §5.17): the chronicler as a card, the rest beside. */
+.layout {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 28px;
+  padding-bottom: 12px;
 }
 
-.identity {
+/* ─── The chronicler's card ─────────────────────────────────────────────────────────── */
+.card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
 }
-
-.scroll {
-  padding-right: 18px;
+.portrait {
+  position: relative;
+  width: 300px;
+  height: 330px;
+  overflow: hidden;
+  background: var(--bg-1);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.55),
+    0 0 26px rgba(217, 165, 60, 0.18);
+}
+.art {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 18%;
+}
+.artTint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center 18%;
+  mask-position: center 18%;
+}
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(11, 10, 13, 0.75));
+}
+/* The level on a gold gem, set into the foot of the portrait. */
+.gem {
+  margin-top: -34px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 22px 5px;
+  font-size: 26px;
+  line-height: 1;
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c 70%, #a8771f);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.7));
+}
+.gemLabel {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .nameRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
 }
-
 .name {
-  font-size: 30px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 32px;
+  line-height: 1.05;
   color: var(--gold-3);
-  line-height: 1.1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
 }
-
+.renameRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+.renameActions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
 .worn {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
+  margin-top: -6px;
+}
+.wornName {
   font-size: 17px;
-  color: var(--text-2);
+  letter-spacing: 0.08em;
+  color: var(--gold-2);
+}
+.wornNone {
+  font-size: 16px;
+  color: var(--text-3);
 }
 
-.levelRow {
+.xp {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.xpHead {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.xpHead .num {
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #a8d8ff;
+}
+.xpBar {
+  position: relative;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+}
+.xpBar > span {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  max-width: calc(100% - 2px);
+  background: linear-gradient(90deg, #3f8fe6, #8fd0ff);
+  box-shadow: 0 0 10px rgba(143, 208, 255, 0.55);
+}
+
+.power {
   display: flex;
   align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background:
+    radial-gradient(ellipse 60% 100% at 10% 50%, rgba(240, 213, 122, 0.14), transparent 70%),
+    linear-gradient(180deg, rgba(34, 28, 22, 0.95), rgba(14, 12, 10, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+}
+.powerLabel {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.powerValue {
+  margin-left: auto;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* ─── The details ───────────────────────────────────────────────────────────────────── */
+.scroll {
+  padding-right: 16px;
+}
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.heading {
+  display: flex;
+  align-items: baseline;
   gap: 14px;
+  margin: 0;
+  font-size: 22px;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.count {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-3);
+  text-shadow: none;
 }
 
-.level {
-  font-size: 19px;
-  color: var(--text-1);
-  white-space: nowrap;
-}
-
+/* The standing: one tile a number, each under its glyph. */
 .stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin: 0;
 }
-
 .stat {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px 12px;
-  background: linear-gradient(180deg, rgba(30, 25, 19, 0.8), rgba(15, 12, 9, 0.8));
-  border: 1px solid rgba(201, 162, 74, 0.24);
-}
-
-.stat dt {
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.stat dd {
-  margin: 0;
-  font-size: 22px;
-  color: var(--gold-3);
-}
-
-.starRows {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.starRows li {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 17px;
-  color: var(--text-1);
+  gap: 10px;
+  min-height: 70px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, rgba(34, 28, 22, 0.92), rgba(14, 12, 10, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.25);
 }
-
-.starRows li .num {
-  margin-left: auto;
-  color: var(--gold-3);
-}
-
-.difficulty {
-  min-width: 110px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 15px;
-  color: var(--text-2);
-}
-
-.count {
-  margin: 6px 0 0;
-  font-size: 14px;
-  color: var(--text-3);
-}
-
-.unlocks {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.unlocks li {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 7px 12px;
-  background: linear-gradient(90deg, rgba(45, 36, 20, 0.55), rgba(16, 13, 10, 0.5));
-  border-left: 3px solid var(--gold-1);
-}
-
-.unlocks li > span:last-child {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.unlockLevel {
+.statGlyph {
+  flex: 0 0 auto;
   display: grid;
   place-items: center;
   width: 38px;
   height: 38px;
-  font-size: 20px;
-  color: var(--gold-3);
-  background: radial-gradient(circle, rgba(90, 70, 30, 0.8), rgba(20, 16, 12, 0.9));
-  border: 1px solid rgba(201, 162, 74, 0.4);
+  background: radial-gradient(circle, rgba(240, 213, 122, 0.14), rgba(11, 10, 13, 0.9) 75%);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
 }
-
-.unlocks li strong {
-  font-size: 18px;
+.statText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.stat dt {
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.stat dd {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.1;
   color: var(--text-1);
 }
 
-.unlocks li em {
+/* The campaign's stars, one row a difficulty; a mastered one burns gold. */
+.starRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.starRows li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 10px;
+  background: rgba(11, 10, 13, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.starRows li[data-full='true'] {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
+}
+.starIcon {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  background: center / contain no-repeat;
+  filter: drop-shadow(0 0 5px rgba(240, 190, 90, 0.45));
+}
+.difficulty {
+  width: 90px;
+  font-size: 17px;
+  color: var(--text-1);
+}
+.starBar {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.starBar > span {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  max-width: calc(100% - 2px);
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+  box-shadow: 0 0 8px rgba(240, 213, 122, 0.5);
+}
+.starCount {
+  min-width: 96px;
+  font-size: 17px;
+  text-align: right;
+  color: var(--gold-3);
+}
+
+/* Every title: earned ones lit, the worn one framed, the rest dark with what earns them. */
+.titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.titleChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px 6px 10px;
+  font-size: 15px;
+  color: var(--text-3);
+  background: rgba(11, 10, 13, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+.titleEarned {
+  color: var(--gold-3);
+  background: linear-gradient(180deg, rgba(48, 38, 20, 0.95), rgba(20, 16, 10, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.5);
+}
+.titleWorn {
+  box-shadow:
+    inset 0 0 0 2px var(--gold-3),
+    0 0 12px rgba(240, 213, 122, 0.35);
+}
+
+/* What the next levels open: three cards under their level. */
+.unlocks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.unlocks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background:
+    radial-gradient(ellipse 50% 80% at 12% 30%, rgba(240, 213, 122, 0.12), transparent 70%),
+    linear-gradient(180deg, rgba(34, 28, 22, 0.95), rgba(14, 12, 10, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.unlockLevel {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+  color: #2a1a06;
+  background: linear-gradient(180deg, #ffe7a0, #d9a53c 70%, #a8771f);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.unlockText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.unlockText strong {
+  font-size: 16px;
+  color: var(--text-1);
+}
+.unlockText em {
+  font-size: 13px;
   font-style: normal;
-  font-size: 14px;
+  line-height: 1.35;
   color: var(--text-3);
 }

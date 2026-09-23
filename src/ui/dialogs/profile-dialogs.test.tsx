@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { xpToNextLevel } from '@engine/progression/player-level';
+import { content } from '@content/registry';
 import { useGameStore } from '@state/store';
 import HubScreen from '@ui/screens/hub/HubScreen';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
@@ -129,6 +130,32 @@ describe('the profile dialog', () => {
     // for the Hard milestone.
     expect(screen.getByTestId('profile-titles')).toHaveTextContent('Gatebreaker');
     expect(screen.getByTestId('profile-next-unlocks')).toHaveTextContent('Tavern: Levelling');
+  });
+
+  it('lists every title, lighting the earned ones and framing the one worn', () => {
+    const { actions } = useGameStore.getState();
+    actions.debugClearCampaign('intro', 3);
+    actions.setTitle('title.gatebreaker');
+    render(stage(<ProfileDialog onClose={() => undefined} />));
+
+    expect(within(screen.getByTestId('profile-titles')).getAllByRole('listitem')).toHaveLength(
+      content.titles.length,
+    );
+    expect(screen.getByTestId('profile-title-title.gatebreaker')).toHaveAttribute('data-earned', 'true');
+    expect(screen.getByTestId('profile-title-title.loremaster')).toHaveAttribute('data-earned', 'false');
+    expect(screen.getByTestId('profile-worn-title')).toHaveTextContent('Gatebreaker');
+  });
+
+  it('shows the XP to the next level and the whole roster’s power on the chronicler’s card', () => {
+    useGameStore.setState((state) => {
+      if (state.save) state.save.profile.xp = 40;
+      return state;
+    });
+    render(stage(<ProfileDialog onClose={() => undefined} />));
+
+    expect(screen.getByTestId('dialog-profile')).toHaveTextContent('40 / ');
+    expect(Number(screen.getByTestId('profile-power').textContent?.replace(/,/g, ''))).toBeGreaterThan(0);
+    expect(screen.getByTestId('profile-level')).toHaveTextContent('1');
   });
 
   it('renames the chronicle', async () => {

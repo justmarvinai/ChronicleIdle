@@ -784,14 +784,32 @@ under a purple banner of their own.
   dialog is specified there.
 
 ### 5.17 Profile & Settings
-- Reference: `player_profile.png` (chip). The chip carries the avatar ring with the level badge,
-  the name, the worn title and the XP bar; the ring flares and the badge pops on a level-up
-  (skipped under `prefers-reduced-motion`).
-- Profile dialog: identity header (avatar, name + *Rename*, worn title + *Choose*, level and XP
-  bar, *Choose avatar*) over a scrolling body — standing grid (energy cap, stands cleared,
-  champions owned, strongest champion, battles, victories, chronicle begun, time played), stars
-  per difficulty, titles earned, and the next three level gates with what each opens. The avatar
-  and title pickers open in place of the profile and return to it when they close.
+- Reference: `player_profile.png` (chip).
+- **The chip** is a dark plate with a gold hairline along its foot, fading out to the right; hover
+  brightens the plate and lights the ring. It carries:
+  - the avatar in the kit's round frame, with the level on a gold gem set into the ring's foot;
+  - the name, and the worn title under it in gold small caps;
+  - the XP toward the next level as a lit blue bar in a dark groove (the numbers in its tooltip);
+  - the **Account Power** row: every owned champion's power summed, in gold numerals.
+
+  On a level-up the ring flares and the gem pops (skipped under `prefers-reduced-motion`).
+- **Profile dialog** (1120 px wide): two columns.
+  - **On the left, the chronicler as a card:**
+    - the portrait in a gold deco frame, with the level on a gold gem set into its foot;
+    - the name with *Rename*;
+    - the worn title with *Choose*;
+    - the experience bar with its numbers;
+    - the Account Power plate;
+    - *Choose avatar*.
+  - **On the right, scrolling:**
+    - the standing as eight glyph tiles (energy cap, stands cleared, champions, strongest
+      champion, battles, victories, chronicle begun, time played);
+    - the campaign's stars, one row per difficulty, with a gold bar (a mastered difficulty gets a
+      gold rim);
+    - every title as a chip: earned ones lit with a trophy, the worn one framed, the rest dark
+      with what earns them in their tooltip;
+    - the next three level gates, as cards under a gold hexagon of their level.
+  - The avatar and title pickers open in place of the profile and return to it when they close.
 - Title picker: two-column list of every title, earned ones in gold with a trophy glyph and
   selectable, locked ones dimmed with a shackle glyph and a "Locked" tag; *No title* is always
   available.
