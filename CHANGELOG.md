@@ -37,14 +37,18 @@ reworked as the same feature on a better screen — nothing new to learn, more t
 - **`hub-status.ts`** — every building's line, count and dot, derived from the save and the engine
   (`hubStatuses`), and `coarseDuration` for the hub's countdowns (days, hours and minutes, never
   seconds: the hub redraws twice a minute).
-- `Tabs` take an optional `glyph` per tab.
+- `Tabs` take an optional `glyph` per tab. `Tooltip` takes `prefer: 'above' | 'below'` — the side
+  it opens on first, flipping when the stage has no room; the hub's cards open away from the name
+  plate they repeat. **`useFitText`** (`ui/hooks`) steps a one-line text's size down, measured
+  before paint, until it fits its box: the Tavern's framed name uses it, so every name in the
+  roster reads whole (the frame had cut Varkos Sunderking to "Varkos Sunder…").
 - Tests: `xpToCap`; `brewsToCap` (five cases); the Tavern screen (eleven: the road, the shelf, the
   ledger, pouring to the cap, filling the seats, the closed table at the cap, the rank larder, the
   skill rows, the short currency); the Forge screen (twelve: tier odds and strike counts, the
   storeroom's spends and returns, the named set's card, the struck sheet, the heap, the whetstone);
   the hub (the statuses, the owed counts, the hover card, the countdown); the Idle Chest (the pace
   per line, the farm's own brew by name, the vault's states, the quiet docks and the way to the
-  Campaign).
+  Campaign); the Tooltip opening above when asked and flipping below at the stage's head.
 
 ### Changed
 
@@ -55,8 +59,8 @@ reworked as the same feature on a better screen — nothing new to learn, more t
   and marked; the Level panel's ledger and **After the upgrade**; *Pour to the cap* and *Fill the
   seats*, which never seats a Rare-or-better or levelled companion and stops at the cap; the table
   closing at the cap with a callout to Rank; Rank's pips, larder of spares, the cap it raises and
-  the stats after it; Skills rows with each ability's text; the footer naming a currency the
-  wallet is short of.
+  the stats after it; Skills rows with each ability's text, the steps taken beside its name and the
+  next step whole on the line with its press; the footer naming a currency the wallet is short of.
 - **The Forge** (`Storeroom`, `TierCard`, `Anvil`, `CraftBench`, `DismantleBench`, `RefineBench`):
   the grey slab is gone and a storeroom stands beside every bench (each material lit when the
   recipe draws on it, red when short, `−n` / `+n` against it). *Craft* is three numbered steps —

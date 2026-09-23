@@ -116,7 +116,7 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `AbilityIcon` | `dark-ember/frame-round-sm` (+ `-lit` when ready) + spell icon + cooldown overlay + "P" tag | 96 px in battle, 64 px in menus; `inspect` makes it pressable whatever it is, a passive included — pressing reads it rather than casts it (the champion's kit strip) |
 | `StatusIcon` | line-glyph (mask) tinted buff/debuff + duration digit | 28 px |
 | `StarRow` | `stone-vine/icon-star` tinted (gold earned, grey empty) | |
-| `Tooltip` | `dark-ember/frame-sm-thin` + `bg-tile-sm` | 200 ms delay, follows pointer; placed again once measured, before paint, so a tall one near the stage's foot opens above the pointer instead of past the edge |
+| `Tooltip` | `dark-ember/frame-sm-thin` + `bg-tile-sm` | 200 ms delay, follows pointer; placed again once measured, before paint, so a tall one near the stage's foot opens above the pointer instead of past the edge; `prefer="above"` opens it over the pointer first, where what sits under the trigger is the thing being read (a hub building's name), flipping below when there is no room |
 | `GearTooltip` | a `Tooltip` holding a piece's sheet: painting and emblem, name in its rarity, slot · rarity · +level, stars, power, main stat, every substat with its rolls, the set's emblem, name, piece count and bonus, and who wears it | on every gear card (racks, picker, Forge benches, dungeon haul, mission gift) and on a champion's worn slots |
 | `Chip` / `SetChip` / `CurrencyChip` | dark stone with the gold hairline, square-cornered: the thing's mark (a set's emblem, a currency's icon), its name, and a count, range or chance in gold | wherever something important is *named*: what a settlement drops, what a keep holds, a tower boss's shards (`sm` 28 px / `md` 34 px) |
 | `CurrencyLabel` | a currency's icon before its name, optionally with an amount in front | every row that lists what was won, spent or paid: a result's rewards, a dismantle's yield, a level-up, Forge and Tavern costs, a boss chest's contents |
@@ -186,7 +186,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   and the chest's fill. When something is owed inside, the line turns to the building's colour,
   the medallion wears a count (or a dot) and a ring of its light keeps rolling outward from it —
   the town tells you where to go before you read a word. Hovering a building opens a card that
-  says what it is for and repeats its line; a locked one says what opens it.
+  says what it is for and repeats its line — above the building, or below the Portal, whose name
+  sits over it, so the card never covers the name it repeats; a locked one says what opens it.
 - Motion: lantern flicker sprites, fog drift, fireflies, water shimmer, the medallions bob out of
   step and swell and brighten on hover, camera parallax on mouse (±12 px), notification dots
   pulse; ambient hub SFX loop + music.
@@ -272,7 +273,9 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   ascension in the backlog).
 - Layout: left rail roster (the Champions screen's filter bar and virtual grid, reused) picks who
   is drinking; centre: `bg5` interior with the champion **framed in their rarity** — portrait,
-  rarity plate, element, name, stars and `level / cap` — between the offering seats, three a side
+  rarity plate, element, name (stepping down a size or four until it fits the frame, measured
+  before paint, so the longest name reads whole), stars and `level / cap` — between the offering
+  seats, three a side
   on the Level track and exactly as many as the rank-up asks for on the Rank track, with the
   track's own strip beneath; right column: the three tracks as tabs with their glyphs (*Upgrade
   Level*, *Upgrade Rank*, *Upgrade Skills*) over the track's panel, and at its foot the cost (each
@@ -296,9 +299,10 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   right star as a larder of cards that seat themselves on a press, the level cap the rank raises
   (`30 → 40`), the stats after it, and *Auto-fill*, which runs the food finder. At six stars the
   track says so.
-- **Skills track.** The tomes held for the champion's rarity; one row per ability — icon, name,
-  what it does, a dot per step taken, the next step in plain English, and **Upgrade** with the
-  tome's icon. Rarities without upgrades say so instead of showing dead buttons.
+- **Skills track.** The tomes held for the champion's rarity; one row per ability — icon, name
+  with a dot per step taken beside it, what it does, and a line of the next step in plain English
+  with **Upgrade** (the tome's icon on it). Rarities without upgrades say so instead of showing dead
+  buttons.
 - Before anyone Rare-or-better, or anyone levelled, is retired, a confirmation names them one by
   one (`tavern-confirm`); a Common at level 1 goes without a question.
 - Motion and sound: seats spring in as they fill, the road's preview runs ahead in gold, the level
