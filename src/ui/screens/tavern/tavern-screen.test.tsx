@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { content } from '@content/registry';
+import { levelCap } from '@engine/champions/stats';
 import { useGameStore } from '@state/store';
 import { DialogHost } from '@ui/dialogs/DialogHost';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
@@ -193,5 +194,110 @@ describe('the Tavern ranks and sharpens', () => {
       return state;
     });
     await vi.waitFor(() => expect(screen.getByTestId(`skill-upgrade-${ability.id}`)).toBeDisabled());
+  });
+});
+
+describe('the reworked Tavern', () => {
+  beforeEach(chronicle);
+
+  it('pours to the cap, its own element first, and previews the road and the sheet', async () => {
+    const user = userEvent.setup();
+    useGameStore.getState().actions.grantCurrency(
+      [
+        { currency: 'brew_justice', amount: 60 },
+        { currency: 'brew_universal', amount: 5 },
+      ],
+      'test',
+    );
+    render(stage(<TavernScreen route={TAVERN} />));
+    await user.click(screen.getByTestId('tavern-pour'));
+    const brews = useGameStore.getState().ui.tavern.offering.brews;
+    // Corvin is Justice: his own brew does the pouring, and the Valor on the shelf stays there.
+    expect(brews.brew_justice ?? 0).toBeGreaterThan(0);
+    expect(brews.brew_valor ?? 0).toBe(0);
+    expect(screen.getByTestId('tavern-level-now')).toHaveTextContent(`Level 1 → ${levelCap(3)}`);
+    expect(screen.getByTestId('tavern-gauge-preview')).toBeInTheDocument();
+    // Brews come whole, so a little may spill — never as much as the smallest brew pours.
+    const spill = screen.queryByTestId('tavern-spill')?.textContent ?? '0';
+    expect(Number(spill.replace(/[^0-9]/g, ''))).toBeLessThan(1_700);
+    expect(screen.getByTestId('tavern-growth')).toHaveTextContent('Power');
+  });
+
+  it('fills the seats with spare companions but never one somebody has levelled', async () => {
+    const user = userEvent.setup();
+    const levelled = Object.keys(save().roster).find((id) => id !== starter()) as string;
+    useGameStore.setState((state) => {
+      const champion = state.save?.roster[levelled];
+      if (champion) champion.level = 5;
+      return state;
+    });
+    render(stage(<TavernScreen route={TAVERN} />));
+    await user.click(screen.getByTestId('tavern-autofill'));
+    const seated = useGameStore.getState().ui.tavern.offering.food;
+    expect(seated.length).toBe(2);
+    expect(seated).not.toContain(levelled);
+    // Each seated guest says what it brings.
+    expect(screen.getByTestId(`seat-${seated[0]}`)).toHaveTextContent('+173');
+  });
+
+  it('shuts the table at the cap and points the way to Upgrade Rank', async () => {
+    const user = userEvent.setup();
+    useGameStore.setState((state) => {
+      const champion = state.save?.roster[starter()];
+      if (champion) champion.level = levelCap(champion.stars);
+      return state;
+    });
+    render(
+      stage(
+        <>
+          <TavernScreen route={TAVERN} />
+          <DialogHost />
+        </>,
+      ),
+    );
+    expect(screen.getByTestId('tavern-at-cap')).toHaveTextContent('Level 30 is the cap for 3★');
+    expect(screen.getByTestId('brew-plus-brew_valor')).toBeDisabled();
+    // An empty seat no longer opens the picker.
+    await user.click(screen.getAllByTestId(/^seat-empty-/)[0] as HTMLElement);
+    expect(screen.queryByTestId('dialog-food-picker')).toBeNull();
+    expect(screen.getByTestId('tavern-upgrade')).toBeDisabled();
+
+    await user.click(screen.getByTestId('tavern-to-rank'));
+    expect(screen.getByTestId('tavern-rank')).toBeInTheDocument();
+    expect(screen.getByTestId('tavern-rank')).toHaveTextContent('Level cap 30 → 40');
+  });
+
+  it('seats rank-up food straight from the larder under the champion', async () => {
+    const user = userEvent.setup();
+    const { actions } = useGameStore.getState();
+    for (let i = 0; i < 3; i += 1) actions.grantChampion('champ.reva_ashblade', 'summon', 'test');
+    render(stage(<TavernScreen route={TAVERN} />));
+    await user.click(screen.getByTestId('tavern-tab-rank'));
+    const larder = screen.getByTestId('tavern-spares');
+    const cards = within(larder).getAllByTestId(/^tavern-spare-/);
+    expect(cards).toHaveLength(3);
+    expect(larder).toHaveTextContent('3 free');
+
+    await user.click(cards[0] as HTMLElement);
+    expect(screen.getByTestId('tavern-rank-seated')).toHaveTextContent('1 of 3');
+    await user.click(cards[0] as HTMLElement);
+    expect(screen.getByTestId('tavern-rank-seated')).toHaveTextContent('0 of 3');
+    // What the star brings is on the panel before anything is spent.
+    expect(screen.getByTestId('tavern-rank-growth')).toHaveTextContent('Power');
+  });
+
+  it('names the currency the wallet is short of instead of refusing after the press', async () => {
+    const user = userEvent.setup();
+    const { actions } = useGameStore.getState();
+    for (let i = 0; i < 3; i += 1) actions.grantChampion('champ.reva_ashblade', 'summon', 'test');
+    useGameStore.setState((state) => {
+      if (state.save) state.save.wallet.gold = 10;
+      return state;
+    });
+    render(stage(<TavernScreen route={TAVERN} />));
+    await user.click(screen.getByTestId('tavern-tab-rank'));
+    await user.click(screen.getByTestId('tavern-autofill-rank'));
+    expect(screen.getByTestId('tavern-short')).toHaveTextContent('Not enough Gold');
+    expect(screen.getByTestId('tavern-upgrade')).toBeDisabled();
   });
 });

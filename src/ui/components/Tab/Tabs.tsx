@@ -1,10 +1,14 @@
 import { playSfx } from '@audio/index';
+import type { GlyphKey } from '@assets/manifest.generated';
+import { Glyph } from '@ui/components/Glyph/Glyph';
 import { kitBorder } from '@ui/styles/kit';
 import styles from './Tabs.module.css';
 
 export interface TabItem<K extends string> {
   key: K;
   label: string;
+  /** A mark before the label, for tabs that name a kind of work (the Tavern's three tracks). */
+  glyph?: GlyphKey;
   badge?: number;
   disabled?: boolean;
   testId?: string;
@@ -51,6 +55,7 @@ export function Tabs<K extends string>({
               onChange(item.key);
             }}
           >
+            {item.glyph ? <Glyph glyph={item.glyph} size={24} className={styles.glyph} /> : null}
             <span className={`display ${styles.label}`}>{item.label}</span>
             {item.badge ? <span className={`num ${styles.badge}`}>{item.badge}</span> : null}
           </button>

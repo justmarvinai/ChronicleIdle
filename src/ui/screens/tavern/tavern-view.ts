@@ -2,14 +2,20 @@
  * Display helpers for the Tavern (docs/tech/UI_DESIGN.md §5.5). Everything here is derived from
  * the roster and the engine's own numbers — the screen never invents a cost or a rule.
  */
-import type { AbilityUpgrade, ChampionDef, Rarity } from '@content/champions/types';
+import type { AbilityUpgrade, ChampionDef, Element, Rarity } from '@content/champions/types';
 import type { CurrencyId } from '@content/currencies/types';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import { content } from '@content/registry';
 import type { ChampionInstance, Roster } from '@engine/champions/instance';
+import { levelCap, power } from '@engine/champions/stats';
+import { addChampionXp, championXpToNext, xpToCap } from '@engine/champions/xp';
+import { totalStats } from '@engine/gear/champion-stats';
+import type { GearInstance } from '@engine/gear/instance';
+import type { PalaceBonus } from '@engine/palace/index';
 import {
   BREW_OF_ELEMENT,
   UNIVERSAL_BREW,
+  brewXp,
   foodXp,
   isEdible,
   type Offering,
@@ -56,6 +62,34 @@ export function brewName(currency: CurrencyId): string {
 /** Rarities worth a second thought before they are eaten (`UI_DESIGN.md` §5.5). */
 const PRECIOUS: readonly Rarity[] = ['rare', 'epic', 'legendary', 'mythic'];
 
+/** A companion the Tavern asks about before eating: a rare guest, or one already levelled. */
+export function isPrecious(def: ChampionDef, instance: ChampionInstance): boolean {
+  return PRECIOUS.includes(def.rarity) || instance.level > 1;
+}
+
+/**
+ * The Level track's auto-fill: the cheapest free companions first, never a precious one (those are
+ * only ever seated by hand), and no more than the cap has room for — seating stops once the brews
+ * already poured and the companions seated reach it.
+ */
+export function autoFillLevel(
+  roster: Roster,
+  target: ChampionInstance,
+  pouredXp: number,
+  seats: number,
+): string[] {
+  const room = xpToCap(target) - pouredXp;
+  const picked: string[] = [];
+  let seated = 0;
+  for (const entry of foodEntries(roster, target.instanceId, 'level')) {
+    if (picked.length >= seats || seated >= room) break;
+    if (isPrecious(entry.def, entry.instance)) continue;
+    picked.push(entry.instance.instanceId);
+    seated += entry.xp;
+  }
+  return picked;
+}
+
 /** Reasons to stop and ask: a rare guest, or one somebody has already spent brews on. */
 export function foodWarnings(roster: Roster, foodIds: readonly string[]): string[] {
   const warnings: string[] = [];
@@ -83,4 +117,75 @@ export function brewList(offering: Offering): { currency: CurrencyId; amount: nu
   return Object.entries(offering.brews)
     .map(([currency, amount]) => ({ currency: currency as CurrencyId, amount: amount ?? 0 }))
     .filter((entry) => entry.amount > 0);
+}
+
+/** What the table holds, by kind, for the Level track's breakdown. */
+export interface TableXp {
+  brews: { count: number; xp: number };
+  food: { count: number; xp: number };
+  total: number;
+}
+
+export function tableXp(offering: Offering, roster: Roster, element: Element): TableXp {
+  const brews = { count: 0, xp: 0 };
+  for (const entry of brewList(offering)) {
+    brews.count += entry.amount;
+    brews.xp += brewXp(entry.currency, element) * entry.amount;
+  }
+  const food = { count: 0, xp: 0 };
+  for (const id of offering.food) {
+    const instance = roster[id];
+    const def = instance ? content.championById(instance.defId) : undefined;
+    if (!instance || !def) continue;
+    food.count += 1;
+    food.xp += foodXp(def, instance);
+  }
+  return { brews, food, total: brews.xp + food.xp };
+}
+
+/**
+ * Where a champion stands on the road from level 1 to its cap, in levels: the level it has plus
+ * the share of the next one its XP already holds (12 and half-way is 12.5). The cap is the end.
+ */
+export function levelPosition(champion: { level: number; xp: number; stars: number }): number {
+  const cap = levelCap(champion.stars);
+  if (champion.level >= cap) return cap;
+  return champion.level + Math.min(1, champion.xp / championXpToNext(champion.level));
+}
+
+/** The same position after `xp` more — where the Level track's preview reaches. */
+export function levelPositionAfter(
+  champion: { level: number; xp: number; stars: number },
+  xp: number,
+): number {
+  const gain = addChampionXp(champion, xp);
+  return levelPosition({ level: gain.level, xp: gain.xp, stars: champion.stars });
+}
+
+/** The three stats a level or a star raises, before and after, with the power they add up to. */
+export interface GrowthPreview {
+  rows: { stat: 'hp' | 'atk' | 'def'; before: number; after: number }[];
+  power: { before: number; after: number };
+}
+
+const GROWING = ['hp', 'atk', 'def'] as const;
+
+/**
+ * What an upgrade changes on the champion's sheet: HP, ATK and DEF (the stats that scale with
+ * level and stars) and the power they add up to, the gear worn and the Palace counted on both
+ * sides so the difference is the Tavern's alone.
+ */
+export function growthPreview(
+  def: ChampionDef,
+  now: Pick<ChampionInstance, 'stars' | 'level'>,
+  next: Pick<ChampionInstance, 'stars' | 'level'>,
+  worn: readonly GearInstance[],
+  palace: PalaceBonus,
+): GrowthPreview {
+  const before = totalStats(def, now, worn, content.gearSetById, palace);
+  const after = totalStats(def, next, worn, content.gearSetById, palace);
+  return {
+    rows: GROWING.map((stat) => ({ stat, before: before[stat], after: after[stat] })),
+    power: { before: power(before), after: power(after) },
+  };
 }

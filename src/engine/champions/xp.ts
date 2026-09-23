@@ -49,3 +49,13 @@ export function addChampionXp(
   const wasted = level >= cap ? xp : 0;
   return { level, xp: level >= cap ? 0 : xp, levelsGained, wasted };
 }
+
+/**
+ * XP still to earn before the star tier's cap: every level left, less what the current one already
+ * holds — `championXpTotal(cap) − championXpTotal(level) − xp`, and 0 at the cap.
+ */
+export function xpToCap(champion: { level: number; xp: number; stars: number }): number {
+  const cap = levelCap(champion.stars);
+  if (champion.level >= cap) return 0;
+  return Math.max(0, championXpTotal(cap) - championXpTotal(champion.level) - champion.xp);
+}

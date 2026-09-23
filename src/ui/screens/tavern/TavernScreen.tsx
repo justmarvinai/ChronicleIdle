@@ -1,19 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'motion/react';
 import { playSfx } from '@audio/index';
-import type { CurrencyId } from '@content/currencies/types';
+import type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 import { content } from '@content/registry';
 import { sortAndFilter } from '@engine/champions/query';
-import { levelCap } from '@engine/champions/stats';
-import { championXpToNext } from '@engine/champions/xp';
-import { previewFeed } from '@engine/progression/tavern-level';
+import { levelCap, maxStars } from '@engine/champions/stats';
+import { wornBy } from '@engine/gear/equip';
+import { brewsToCap, previewFeed } from '@engine/progression/tavern-level';
 import { findRankFood, rankRequirement } from '@engine/progression/tavern-rank';
 import { tomeFor } from '@engine/progression/tavern-skills';
 import { t, translate } from '@i18n/index';
-import { canAffordFeed, feedCost, tavernLookupOf } from '@state/tavern';
+import { feedCost, tavernLookupOf } from '@state/tavern';
 import {
+  palaceBonusOf,
   selectActions,
   selectInventory,
+  selectPalaceNodes,
   selectRoster,
   selectRosterView,
   selectSave,
@@ -23,20 +24,34 @@ import { useGameStore } from '@state/store';
 import type { Route, TavernTab } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
-import { Bar } from '@ui/components/Bar/Bar';
 import { ChampionCard } from '@ui/components/ChampionCard/ChampionCard';
-import { StarRow } from '@ui/components/StarRow/StarRow';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { VirtualGrid } from '@ui/components/VirtualGrid/VirtualGrid';
-import { championAvatar } from '@ui/champions/art';
 import { entriesOf } from '@ui/screens/champions/roster-view';
 import { FilterBar } from '@ui/screens/champions/FilterBar';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
-import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
 import type { ScreenProps } from '@ui/router/screens';
+import { BrewShelf } from './BrewShelf';
+import { LevelGauge } from './LevelGauge';
+import { LevelTrack } from './LevelTrack';
 import { OfferingTable } from './OfferingTable';
+import { RankSpares } from './RankSpares';
+import { RankTrack } from './RankTrack';
+import { SkillsTrack } from './SkillsTrack';
+import { TavernHero } from './TavernHero';
 import { TavernPanel } from './TavernPanel';
-import { brewOrder, EMPTY_TABLE, foodEntries, foodWarnings } from './tavern-view';
+import { TomeShelf } from './TomeShelf';
+import {
+  autoFillLevel,
+  brewOrder,
+  EMPTY_TABLE,
+  foodEntries,
+  foodWarnings,
+  growthPreview,
+  levelPosition,
+  levelPositionAfter,
+  tableXp,
+} from './tavern-view';
 import styles from './TavernScreen.module.css';
 
 type TavernRoute = Extract<Route, { name: 'tavern' }>;
@@ -46,8 +61,9 @@ const CARD_H = Math.round(CARD * 1.28);
 const LEVEL_SEATS = 6;
 
 /**
- * The Tavern (docs/tech/UI_DESIGN.md §5.5): the roster rail picks who is drinking, the table in
- * the middle holds what is being spent, and the right column runs the three tracks.
+ * The Tavern (docs/tech/UI_DESIGN.md §5.5): the roster rail picks who is drinking; the champion
+ * sits framed between the seats, the road to the level cap under them and the brew shelf (or the
+ * rank-up's larder, or the tomes) below that; the right column reckons the track and presses it.
  */
 export default function TavernScreen({ route }: ScreenProps) {
   const params = route as TavernRoute;
@@ -56,10 +72,12 @@ export default function TavernScreen({ route }: ScreenProps) {
   const roster = useGameStore(selectRoster);
   const inventory = useGameStore(selectInventory);
   const view = useGameStore(selectRosterView);
+  const nodes = useGameStore(selectPalaceNodes);
+  const palace = useMemo(() => palaceBonusOf(nodes), [nodes]);
   const [tab, setTab] = useState<TavernTab>(params.tab ?? 'level');
-  const table = useGameStore(selectTavern);
-  const targetId = table.targetId ?? params.instanceId ?? null;
-  const offering = table.offering;
+  const tavern = useGameStore(selectTavern);
+  const targetId = tavern.targetId ?? params.instanceId ?? null;
+  const offering = tavern.offering;
   useSceneAudio('hub', 'interior');
 
   const entries = useMemo(() => entriesOf(roster, inventory), [roster, inventory]);
@@ -81,11 +99,35 @@ export default function TavernScreen({ route }: ScreenProps) {
 
   const requirement = target ? rankRequirement(target.stars) : null;
   const seats = tab === 'rank' ? (requirement?.count ?? 0) : LEVEL_SEATS;
-  const cost = useMemo(() => {
-    if (tab === 'rank')
-      return requirement ? [{ currency: 'gold' as CurrencyId, amount: requirement.gold }] : [];
+  const table = useMemo(() => (def ? tableXp(offering, roster, def.element) : null), [offering, roster, def]);
+  const worn = useMemo(() => (target ? wornBy(target, inventory) : []), [target, inventory]);
+  const levelGrowth = useMemo(
+    () =>
+      def && target && preview && preview.levelsGained > 0
+        ? growthPreview(def, target, { stars: target.stars, level: preview.level }, worn, palace)
+        : null,
+    [def, target, preview, worn, palace],
+  );
+  const rankGrowth = useMemo(
+    () =>
+      def && target && requirement && tab === 'rank'
+        ? growthPreview(def, target, { stars: requirement.to, level: target.level }, worn, palace)
+        : null,
+    [def, target, requirement, tab, worn, palace],
+  );
+  const spares = useMemo(
+    () => (target && tab === 'rank' ? foodEntries(roster, target.instanceId, 'rank') : []),
+    [roster, target, tab],
+  );
+
+  const cost = useMemo((): CurrencyAmount[] => {
+    if (tab === 'rank') return requirement ? [{ currency: 'gold', amount: requirement.gold }] : [];
     return preview ? feedCost(preview, offering) : [];
   }, [tab, requirement, preview, offering]);
+  const short = useMemo(
+    () => cost.find((entry) => (save?.wallet[entry.currency] ?? 0) < entry.amount)?.currency ?? null,
+    [cost, save],
+  );
 
   // The champion's own numbers drive the celebration: whoever changed them, the Tavern reacts.
   const seenLevel = useRef(target?.level ?? 0);
@@ -104,7 +146,7 @@ export default function TavernScreen({ route }: ScreenProps) {
     seenStars.current = target.stars;
   }, [target?.level, target?.stars, target]);
 
-  if (!save || !target || !def) {
+  if (!save || !target || !def || !table) {
     return (
       <div className={styles.root} data-testid="screen-tavern">
         <Backdrop asset="bg.bg5" grade="rgba(30, 18, 10, 0.55)" parallax={5} />
@@ -114,11 +156,12 @@ export default function TavernScreen({ route }: ScreenProps) {
     );
   }
 
-  const art = championAvatar(def, 512);
   const tome = tomeFor(def.rarity);
   const tomesHeld = tome ? (save.wallet[tome] ?? 0) : 0;
-  const cap = levelCap(target.stars);
+  const atCap = target.level >= levelCap(target.stars);
+  const complete = atCap && target.stars >= maxStars(def.rarity);
   const seated = offering.food.length;
+  const closed = tab === 'level' && atCap;
 
   const setFood = (food: string[]): void => actions.setTavernOffering({ ...offering, food });
   const unseat = (instanceId: string): void => setFood(offering.food.filter((id) => id !== instanceId));
@@ -129,27 +172,44 @@ export default function TavernScreen({ route }: ScreenProps) {
       mode: tab === 'rank' ? 'rank' : 'level',
       seats,
     });
-
-  const autoFill = (): void => {
-    if (tab === 'rank') {
-      const picked = findRankFood(target, tavernLookupOf(save)).map((i) => i.instanceId);
-      if (picked.length === 0) {
-        actions.toast('error', 'tavern.rank.none');
-        return;
-      }
-      playSfx('ui.confirm');
-      setFood(picked);
-      return;
+  const toggleSpare = (instanceId: string): void => {
+    if (offering.food.includes(instanceId)) {
+      playSfx('ui.cancel');
+      unseat(instanceId);
+    } else if (seated < seats) {
+      playSfx('ui.tab');
+      setFood([...offering.food, instanceId]);
+    } else {
+      playSfx('ui.error');
     }
-    const picked = foodEntries(roster, target.instanceId, 'level')
-      .slice(0, LEVEL_SEATS)
-      .map((entry) => entry.instance.instanceId);
+  };
+
+  const autoFillRank = (): void => {
+    const picked = findRankFood(target, tavernLookupOf(save)).map((i) => i.instanceId);
     if (picked.length === 0) {
-      actions.toast('error', 'foodPicker.empty');
+      actions.toast('error', 'tavern.rank.none');
       return;
     }
     playSfx('ui.confirm');
     setFood(picked);
+  };
+  const fillSeats = (): void => {
+    const picked = autoFillLevel(roster, target, table.brews.xp, LEVEL_SEATS);
+    if (picked.length === 0) {
+      actions.toast('error', 'tavern.autofill.none');
+      return;
+    }
+    playSfx('ui.confirm');
+    setFood(picked);
+  };
+  const pour = (): void => {
+    const brews = brewsToCap(target, def.element, save.wallet, table.food.xp);
+    if (Object.keys(brews).length === 0) {
+      actions.toast('error', 'tavern.pour.none');
+      return;
+    }
+    playSfx('ui.confirm');
+    actions.setTavernOffering({ ...offering, brews });
   };
 
   const upgrade = (): void => {
@@ -200,6 +260,22 @@ export default function TavernScreen({ route }: ScreenProps) {
     });
   };
 
+  const left = Math.ceil(seats / 2);
+  const seatColumn = (count: number, offset: number) =>
+    tab === 'skills' || count === 0 ? null : (
+      <OfferingTable
+        roster={roster}
+        offering={offering}
+        seats={count}
+        offset={offset}
+        mode={tab === 'rank' ? 'rank' : 'level'}
+        foodStars={requirement?.foodStars}
+        closed={closed}
+        onAdd={openPicker}
+        onRemove={unseat}
+      />
+    );
+
   return (
     <div className={styles.root} data-testid="screen-tavern">
       <Backdrop asset="bg.bg5" grade="rgba(30, 18, 10, 0.5)" parallax={5} />
@@ -246,115 +322,93 @@ export default function TavernScreen({ route }: ScreenProps) {
       </section>
 
       <section className={styles.stage}>
-        <div className={styles.scene}>
-          {tab === 'skills' ? null : (
-            <OfferingTable
-              roster={roster}
-              offering={offering}
-              seats={Math.ceil(seats / 2)}
-              layout="flank"
-              onAdd={openPicker}
-              onRemove={unseat}
-            />
-          )}
-          <div className={styles.hero}>
-            {flash && !prefersReducedMotion() ? (
-              <motion.span
-                key={flash.id}
-                className={flash.kind === 'rank' ? styles.burstGold : styles.burst}
-                aria-hidden="true"
-                data-testid="tavern-flash"
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: [0, 0.9, 0], scale: [0.6, 1.25, 1.5] }}
-                transition={{ duration: 1.1, ease: 'easeOut' }}
-              />
-            ) : null}
-            <span
-              className={styles.portrait}
-              style={{ backgroundImage: `url("${art.url}")` }}
-              data-testid="tavern-portrait"
-              data-champion={def.id}
-            >
-              {art.tint ? (
-                <span
-                  className={styles.tint}
-                  style={{
-                    backgroundColor: art.tint,
-                    WebkitMaskImage: `url("${art.url}")`,
-                    maskImage: `url("${art.url}")`,
-                  }}
-                  aria-hidden="true"
-                />
-              ) : null}
-            </span>
-            <h2 className={`display ${styles.name}`}>{translate(def.name)}</h2>
-            <StarRow stars={target.stars} max={6} size={22} />
-            <div className={styles.levelLine}>
-              <span className={`num ${styles.levelNow}`} data-testid="tavern-champion-level">
-                {t('common.level', { level: target.level })}
-              </span>
-              <span className={`num ${styles.levelCap}`}>/ {cap}</span>
-            </div>
-            <Bar
-              value={target.xp}
-              max={target.level >= cap ? 1 : championXpToNext(target.level)}
-              kind="xp"
-              width={320}
-              height={18}
-              showNumbers
-            />
-          </div>
-
-          {tab === 'skills' || seats < 2 ? null : (
-            <OfferingTable
-              roster={roster}
-              offering={offering}
-              seats={Math.floor(seats / 2)}
-              offset={Math.ceil(seats / 2)}
-              layout="flank"
-              onAdd={openPicker}
-              onRemove={unseat}
-            />
-          )}
+        <div className={styles.table}>
+          <div className={styles.seats}>{seatColumn(left, 0)}</div>
+          <TavernHero def={def} instance={target} flash={flash} />
+          <div className={styles.seats}>{seatColumn(seats - left, left)}</div>
         </div>
 
-        {tab === 'level' ? (
-          <OfferingTable
-            roster={roster}
-            offering={offering}
-            seats={0}
-            onAdd={openPicker}
-            onRemove={unseat}
-            brews={{
-              order: brewOrder(def),
-              held: save.wallet,
-              onChange: (currency: CurrencyId, amount: number) =>
+        <LevelGauge
+          level={target.level}
+          xp={target.xp}
+          stars={target.stars}
+          now={levelPosition(target)}
+          after={preview ? levelPositionAfter(target, preview.xp) : levelPosition(target)}
+          wasted={preview?.wasted ?? 0}
+        />
+
+        <div className={styles.shelf}>
+          {tab === 'level' ? (
+            <BrewShelf
+              order={brewOrder(def)}
+              element={def.element}
+              held={save.wallet}
+              poured={offering.brews}
+              closed={atCap}
+              onChange={(currency: CurrencyId, amount: number) =>
                 actions.setTavernOffering({
                   ...offering,
                   brews: { ...offering.brews, [currency]: Math.max(0, amount) },
-                }),
-            }}
-          />
-        ) : null}
+                })
+              }
+            />
+          ) : null}
+          {tab === 'rank' && requirement ? (
+            <RankSpares
+              spares={spares}
+              seated={offering.food}
+              seats={seats}
+              foodStars={requirement.foodStars}
+              onToggle={toggleSpare}
+            />
+          ) : null}
+          {tab === 'skills' ? <TomeShelf def={def} tomesHeld={tomesHeld} /> : null}
+        </div>
       </section>
 
       <TavernPanel
-        def={def}
-        instance={target}
         tab={tab}
         onTab={setTab}
-        preview={preview}
         cost={cost}
-        canAfford={preview ? canAffordFeed(save, preview, offering) : false}
+        short={short}
+        ready={
+          tab === 'level'
+            ? preview !== null && !preview.atCap
+            : requirement !== null && seated === requirement.count
+        }
         onUpgrade={upgrade}
-        onAutoFill={autoFill}
-        onClear={() => actions.setTavernOffering(EMPTY_TABLE)}
-        requirement={requirement}
-        seated={seated}
-        canRank={Boolean(requirement) && seated === requirement?.count}
-        tomesHeld={tomesHeld}
-        onUpgradeSkill={upgradeSkill}
-      />
+      >
+        {tab === 'level' ? (
+          <LevelTrack
+            def={def}
+            instance={target}
+            preview={preview}
+            table={table}
+            growth={levelGrowth}
+            atCap={atCap}
+            complete={complete}
+            onToRank={() => setTab('rank')}
+            onPour={pour}
+            onFill={fillSeats}
+            onClear={() => actions.setTavernOffering(EMPTY_TABLE)}
+          />
+        ) : null}
+        {tab === 'rank' ? (
+          <RankTrack
+            def={def}
+            instance={target}
+            requirement={requirement}
+            seated={seated}
+            spares={spares.length}
+            growth={rankGrowth}
+            onAutoFill={autoFillRank}
+            onClear={() => actions.setTavernOffering(EMPTY_TABLE)}
+          />
+        ) : null}
+        {tab === 'skills' ? (
+          <SkillsTrack def={def} instance={target} tomesHeld={tomesHeld} onUpgradeSkill={upgradeSkill} />
+        ) : null}
+      </TavernPanel>
     </div>
   );
 }

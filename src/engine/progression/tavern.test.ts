@@ -4,9 +4,10 @@ import { RANK_UP_GOLD } from '@content/balance/xp';
 import { allyUnit } from '@engine/battle/create';
 import { emptyGear, type ChampionInstance, type Roster } from '@engine/champions/instance';
 import { levelCap } from '@engine/champions/stats';
-import { championXpToNext } from '@engine/champions/xp';
+import { championXpToNext, xpToCap } from '@engine/champions/xp';
 import {
   applyFeed,
+  brewsToCap,
   brewXp,
   foodXp,
   isEdible,
@@ -173,6 +174,60 @@ describe('previewFeed', () => {
     expect(previewFeed(hungry, { brews: { gold: 1 }, food: [] }, lookup).ok).toBe(false);
     expect(previewFeed(hungry, { brews: {}, food: ['ghost-9'] }, lookup).ok).toBe(false);
     expect(previewFeed(hungry, { brews: {}, food: ['food-1', 'food-1'] }, lookup).ok).toBe(false);
+  });
+});
+
+describe('brewsToCap', () => {
+  // A fresh 3★ valor champion; `table` shapes the XP still wanted by pretending food is seated.
+  const hero = { level: 1, xp: 0, stars: 3 };
+  const table = (need: number): number => xpToCap(hero) - need;
+
+  it('pours its own element first, and a tie on value goes to its own element', () => {
+    // 2 own = 5,100 and 3 universal = 5,100 cost the same: the own element wins.
+    expect(brewsToCap(hero, 'valor', { brew_valor: 10, brew_universal: 10 }, table(5_000))).toEqual({
+      brew_valor: 2,
+    });
+  });
+
+  it('tops a nearly full bar off with the smaller brew', () => {
+    // 1,000 XP short: one universal (1,700) pours far less past the cap than one own (2,550).
+    expect(brewsToCap(hero, 'valor', { brew_valor: 10, brew_universal: 10 }, table(1_000))).toEqual({
+      brew_universal: 1,
+    });
+    // With no universal on the shelf, the own element tops it off instead.
+    expect(brewsToCap(hero, 'valor', { brew_valor: 10 }, table(1_000))).toEqual({ brew_valor: 1 });
+  });
+
+  it('reaches for another element only once its own and the universal run out, most plentiful first', () => {
+    const held = { brew_valor: 1, brew_universal: 1, brew_justice: 5, brew_faith: 2 };
+    // 2,550 + 1,700 leaves 3,400: two brews of the element held most.
+    expect(brewsToCap(hero, 'valor', held, table(2_550 + 1_700 + 3_400))).toEqual({
+      brew_valor: 1,
+      brew_universal: 1,
+      brew_justice: 2,
+    });
+    // Plenty of its own element: the other elements stay on the shelf.
+    expect(brewsToCap(hero, 'valor', { brew_valor: 40, brew_justice: 40 }, table(20_000))).toEqual({
+      brew_valor: 8,
+    });
+  });
+
+  it('pours everything held when the cap is out of reach, and nothing at the cap', () => {
+    const held = { brew_valor: 1, brew_universal: 1, brew_justice: 2, brew_eclipse: 0 };
+    expect(brewsToCap(hero, 'valor', held)).toEqual({ brew_valor: 1, brew_universal: 1, brew_justice: 2 });
+    expect(brewsToCap({ level: 30, xp: 0, stars: 3 }, 'valor', held)).toEqual({});
+    // Food already on the table that reaches the cap leaves nothing for the brews to do.
+    expect(brewsToCap(hero, 'valor', held, xpToCap(hero))).toEqual({});
+  });
+
+  it('lands the bar on the cap through previewFeed', () => {
+    const champion = instance({ instanceId: 'hero-1', defId: 'champ.hero' as ChampionId, stars: 2 });
+    const pour = brewsToCap(champion, 'valor', { brew_valor: 99, brew_universal: 99 });
+    const preview = previewFeed(champion, { brews: pour, food: [] }, lookupOf([champion]));
+    if (!preview.ok) throw new Error(preview.error.message);
+    expect(preview.value.level).toBe(levelCap(2));
+    // The pour never overshoots by a whole brew.
+    expect(preview.value.wasted).toBeLessThan(2_550);
   });
 });
 

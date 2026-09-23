@@ -1,0 +1,63 @@
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.caption {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--gold-2);
+}
+.rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.65), rgba(16, 13, 10, 0.35));
+}
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.values {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 18px;
+}
+.before {
+  color: var(--text-3);
+}
+.arrow {
+  color: var(--text-3);
+  font-size: 15px;
+}
+.up {
+  color: var(--ok);
+}
+.same {
+  color: var(--text-1);
+}
+.powerRow {
+  margin-top: 2px;
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+  background: linear-gradient(90deg, rgba(70, 50, 22, 0.7), rgba(20, 16, 11, 0.45));
+}
+.powerRow .stat {
+  color: var(--gold-3);
+}
+.gain {
+  font-size: 15px;
+  color: var(--ok);
+}

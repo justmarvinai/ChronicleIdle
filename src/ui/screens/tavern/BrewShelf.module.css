@@ -1,0 +1,163 @@
+/* Five bottles in a row, the champion's own element first (docs/tech/UI_DESIGN.md §5.5). */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  width: 664px;
+}
+
+.brew {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 8px 10px;
+  text-align: center;
+  background:
+    radial-gradient(
+      ellipse 80% 45% at 50% 22%,
+      color-mix(in srgb, var(--brew) 16%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgba(34, 27, 20, 0.94), rgba(13, 11, 9, 0.96));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.3),
+    0 6px 16px rgba(0, 0, 0, 0.5);
+  transition:
+    box-shadow var(--t-fast),
+    transform var(--t-fast) var(--ease-out);
+}
+.brew:hover {
+  transform: translateY(-2px);
+}
+/* The champion's own element: a gold rim and a tag, because it pours half as much again. */
+.own {
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 213, 122, 0.75),
+    0 0 18px color-mix(in srgb, var(--brew) 35%, transparent),
+    0 6px 16px rgba(0, 0, 0, 0.5);
+}
+.poured {
+  box-shadow:
+    inset 0 0 0 2px var(--gold-3),
+    0 0 20px rgba(240, 213, 122, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.5);
+}
+.none {
+  opacity: 0.55;
+}
+.ownTag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 2px 10px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--bg-0);
+  background: linear-gradient(to bottom, var(--gold-3), var(--gold-2));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* The bottle pours one: the same as its + below. */
+.bottle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  cursor: var(--cursor-pointer);
+  transition:
+    transform var(--t-fast) var(--ease-out),
+    filter var(--t-fast);
+}
+.bottle:hover:not(:disabled) {
+  transform: translateY(-3px) rotate(-6deg);
+  filter: brightness(1.2);
+}
+.bottle:active:not(:disabled) {
+  transform: scale(0.94) rotate(8deg);
+}
+.bottle:disabled {
+  cursor: default;
+}
+.glow {
+  position: absolute;
+  inset: 4px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brew) 45%, transparent) 0%, transparent 68%);
+  animation: simmer 3.2s ease-in-out infinite;
+}
+@keyframes simmer {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow {
+    animation: none;
+  }
+}
+
+.name {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  line-height: 1.1;
+  color: var(--text-1);
+}
+.worth {
+  font-size: 16px;
+  color: var(--text-2);
+}
+.own .worth {
+  color: var(--gold-3);
+}
+.held {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.step {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--gold-3);
+  background: linear-gradient(180deg, rgba(60, 46, 24, 0.95), rgba(24, 18, 12, 0.95));
+  border: 1px solid rgba(201, 162, 74, 0.5);
+  cursor: var(--cursor-pointer);
+  transition:
+    filter var(--t-fast),
+    transform var(--t-fast);
+}
+.step:hover:not(:disabled) {
+  filter: brightness(1.3);
+  transform: translateY(-1px);
+}
+.step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.count {
+  min-width: 28px;
+  text-align: center;
+  font-size: 20px;
+  color: var(--gold-3);
+}

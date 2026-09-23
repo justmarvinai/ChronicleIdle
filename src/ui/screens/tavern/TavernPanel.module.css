@@ -1,3 +1,4 @@
+/* The Tavern's right column (docs/tech/UI_DESIGN.md §5.5). */
 .panel {
   position: absolute;
   right: 24px;
@@ -9,11 +10,9 @@
   flex-direction: column;
   gap: 12px;
 }
-
 .tabs {
   flex: 0 0 auto;
 }
-
 .body {
   flex: 1 1 auto;
   min-height: 0;
@@ -22,124 +21,326 @@
 .track {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   height: 100%;
 }
-
 .hint {
   margin: 0;
   font-size: 15px;
+  line-height: 1.35;
   color: var(--text-3);
 }
-
-.levelRow {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.level {
-  font-size: 26px;
-  color: var(--gold-3);
-}
-
-.cap {
-  font-size: 18px;
-  color: var(--text-3);
-}
-
-.xp {
-  margin: 0;
-  font-size: 18px;
-  color: var(--text-1);
-}
-
 .warn {
   margin: 0;
   font-size: 15px;
   color: var(--warn);
 }
+.levelBig {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+.cap {
+  font-size: 20px;
+  color: var(--text-3);
+}
+
+/* What the table holds, by kind, and the total the preview reads. */
+.ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ledgerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+}
+.ledgerCaption {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--gold-2);
+}
+.ledgerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.65), rgba(16, 13, 10, 0.35));
+}
+.ledgerName {
+  flex: 1;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.ledgerCount {
+  font-size: 16px;
+  color: var(--text-3);
+}
+.ledgerXp {
+  min-width: 80px;
+  text-align: right;
+  font-size: 18px;
+  color: var(--text-1);
+}
+.ledgerTotal {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+  background: linear-gradient(90deg, rgba(70, 50, 22, 0.7), rgba(20, 16, 11, 0.45));
+}
+.ledgerTotal .ledgerName {
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  color: var(--gold-2);
+}
+.total {
+  font-size: 22px;
+  color: var(--gold-3);
+}
+.nothing {
+  font-size: 15px;
+  color: var(--text-3);
+}
 
 .actions {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   margin-top: auto;
 }
+/* The tooltip's trigger has no box of its own, so the buttons are the row's items. */
+.actions button {
+  flex: 1 1 0;
+}
 
-.skill {
+/* The cap reached: a callout that names the way on. */
+.capped {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 26px 20px 22px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, rgba(240, 213, 122, 0.16), transparent 70%),
+    linear-gradient(180deg, rgba(40, 32, 20, 0.8), rgba(14, 11, 8, 0.8));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.45);
+}
+.cappedTitle {
+  font-size: 23px;
+  color: var(--gold-3);
+}
+.cappedBody {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+/* Rank: the star it lights, the seats it asks for, what it raises. */
+.rankTitle {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.need {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.7), rgba(16, 13, 10, 0.4));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.needLine {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-1);
+}
+.pips {
+  display: flex;
+  gap: 8px;
+}
+.pip,
+.pipOn {
+  width: 30px;
+  height: 10px;
+  transform: skewX(-18deg);
+  border: 1px solid rgba(201, 162, 74, 0.55);
+  background: rgba(11, 10, 13, 0.7);
+  transition:
+    background var(--t-fast),
+    box-shadow var(--t-fast);
+}
+.pipOn {
+  background: linear-gradient(to bottom, var(--gold-3), var(--gold-2));
+  box-shadow: 0 0 8px rgba(240, 213, 122, 0.6);
+}
+.needFoot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.seatedLine {
+  font-size: 17px;
+  color: var(--gold-3);
+}
+.spareLine {
+  font-size: 17px;
+  color: var(--text-3);
+}
+.gainLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  color: var(--text-1);
+}
+
+/* Skills: the tome held, then one row per ability. */
+.tome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: linear-gradient(90deg, rgba(40, 32, 20, 0.7), rgba(16, 13, 10, 0.4));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.3);
+}
+.tomeLine {
+  font-size: 19px;
+  color: var(--text-1);
+}
+.skills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skill {
+  display: flex;
+  align-items: flex-start;
   gap: 12px;
   padding: 8px 10px;
   background: linear-gradient(90deg, rgba(40, 32, 20, 0.7), rgba(16, 13, 10, 0.6));
   border-left: 3px solid var(--gold-1);
 }
-
+.skillIcon {
+  display: inline-flex;
+}
 .skillText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   flex: 1;
   min-width: 0;
 }
-
 .skillText strong {
   font-size: 17px;
   color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
+.slot {
+  color: var(--gold-2);
+}
 .skillText em {
+  flex: 1;
+  min-width: 0;
   font-style: normal;
-  font-size: 13px;
+  font-size: 14px;
+  color: var(--gold-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* What the ability does with the steps already taken, three lines at most; the tooltip has it all. */
+.skillBody {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.35;
   color: var(--text-3);
 }
-
+.skillStep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+.skillPress {
+  margin-left: auto;
+}
+.skillTip {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.skillTip strong {
+  font-size: 17px;
+  color: var(--gold-3);
+}
 .dots {
   display: flex;
-  gap: 3px;
+  gap: 4px;
 }
-
 .dot,
 .dotOn {
-  width: 9px;
-  height: 9px;
-  border: 1px solid rgba(201, 162, 74, 0.6);
+  width: 16px;
+  height: 7px;
+  transform: skewX(-18deg);
+  border: 1px solid rgba(201, 162, 74, 0.55);
 }
-
 .dotOn {
   background: var(--gold-3);
   box-shadow: 0 0 6px rgba(240, 213, 122, 0.7);
 }
 
+/* The press: what it costs, what the wallet is short of, and Upgrade. */
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 10px 14px;
-  background: linear-gradient(180deg, rgba(30, 24, 18, 0.9), rgba(14, 11, 8, 0.9));
-  border: 1px solid rgba(201, 162, 74, 0.32);
+  min-height: 96px;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(30, 24, 18, 0.92), rgba(14, 11, 8, 0.92));
+  border: 1px solid rgba(201, 162, 74, 0.35);
 }
-
 .cost {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
-
 .costLabel {
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-3);
 }
-
+.costList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
 .costEntry {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-1);
 }
-.costEntry .num {
-  font-size: 17px;
+.costEntry :global(.num) {
+  font-size: 18px;
   color: var(--gold-3);
+}
+.short {
+  font-size: 14px;
+  color: var(--danger);
 }

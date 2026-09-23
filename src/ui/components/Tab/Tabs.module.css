@@ -44,6 +44,14 @@
 .label {
   font-size: 20px;
 }
+.glyph {
+  flex: 0 0 auto;
+  opacity: 0.8;
+}
+.active .glyph {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(240, 213, 122, 0.55));
+}
 .badge {
   min-width: 24px;
   height: 24px;

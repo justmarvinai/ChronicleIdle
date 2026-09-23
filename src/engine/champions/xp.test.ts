@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addChampionXp, canLevel, championXpToNext, championXpTotal } from './xp';
+import { addChampionXp, canLevel, championXpToNext, championXpTotal, xpToCap } from './xp';
 
 describe('champion XP (ECONOMY.md §3.1)', () => {
   it('follows the documented curve', () => {
@@ -41,5 +41,23 @@ describe('champion XP (ECONOMY.md §3.1)', () => {
       wasted: 0,
     });
     expect(addChampionXp({ level: 5, xp: 100, stars: 6 }, -50).xp).toBe(100);
+  });
+
+  it('counts the XP still to earn before the star tier’s cap', () => {
+    // A fresh 3★ has the whole climb to 30 ahead of it.
+    expect(xpToCap({ level: 1, xp: 0, stars: 3 })).toBe(championXpTotal(30));
+    // What the current level already holds is off the bill.
+    const partway = { level: 10, xp: 200, stars: 3 };
+    expect(xpToCap(partway)).toBe(championXpTotal(30) - championXpTotal(10) - 200);
+    // That amount lands exactly on the cap: nothing short, nothing poured past it.
+    expect(addChampionXp(partway, xpToCap(partway))).toEqual({
+      level: 30,
+      xp: 0,
+      levelsGained: 20,
+      wasted: 0,
+    });
+    // At the cap there is nothing left to earn until the next star.
+    expect(xpToCap({ level: 30, xp: 0, stars: 3 })).toBe(0);
+    expect(xpToCap({ level: 30, xp: 0, stars: 4 })).toBe(championXpTotal(40) - championXpTotal(30));
   });
 });

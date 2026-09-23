@@ -16,7 +16,7 @@ import {
 } from '@engine/champions/imports';
 import type { ChampionInstance, Roster } from '@engine/champions/instance';
 import { levelCap } from '@engine/champions/stats';
-import { addChampionXp } from '@engine/champions/xp';
+import { addChampionXp, xpToCap } from '@engine/champions/xp';
 import { fail, ok, type Result } from '@engine/errors';
 
 /** Brews by element, and the universal one that never matches (ECONOMY.md §3.1). */
@@ -136,4 +136,69 @@ export function previewFeed(
 export function applyFeed(target: ChampionInstance, preview: FeedPreview): ChampionInstance {
   const gain = addChampionXp(target, preview.xp);
   return { ...target, level: gain.level, xp: gain.xp };
+}
+
+/** Brew counts by currency: an offering's brews, or the wallet's. */
+export type BrewCounts = Readonly<Partial<Record<CurrencyId, number>>>;
+
+/**
+ * The brews that carry a champion to its star tier's cap, for the Tavern's "Pour to the cap".
+ * `otherXp` is what the table already holds (the seated food) and `held` what the wallet holds.
+ *
+ * Every brew is weighed at its best use — the champion's own element at `BREW_XP ×
+ * BREW_MATCH_MULT`, the universal at `BREW_XP`, another element's at what it would pay its own
+ * champions — and the pour is the cheapest that reaches the cap, the own element winning a tie.
+ * So own-element and universal brews come first, the smaller one topping off a nearly full bar,
+ * and another element's brews (worth half as much again to their own champions) only once both
+ * have run out, the most plentiful first. When nothing held reaches the cap, it pours everything.
+ */
+export function brewsToCap(
+  target: Pick<ChampionInstance, 'level' | 'xp' | 'stars'>,
+  element: Element,
+  held: BrewCounts,
+  otherXp = 0,
+): Partial<Record<CurrencyId, number>> {
+  const need = xpToCap(target) - Math.max(0, otherXp);
+  if (need <= 0) return {};
+  const own = BREW_OF_ELEMENT[element];
+  const ownXp = brewXp(own, element);
+  const count = (brew: CurrencyId): number => Math.max(0, Math.floor(held[brew] ?? 0));
+  const ownHeld = count(own);
+  const universalHeld = count(UNIVERSAL_BREW);
+
+  // Own and universal brews: every own count that fits, topped off with the fewest universals.
+  let best: { own: number; universal: number; value: number } | null = null;
+  for (let ownCount = 0; ownCount <= Math.min(ownHeld, Math.ceil(need / ownXp)); ownCount += 1) {
+    const universal = Math.ceil(Math.max(0, need - ownCount * ownXp) / BREW_XP);
+    if (universal > universalHeld) continue;
+    const value = ownCount * ownXp + universal * BREW_XP;
+    if (!best || value < best.value || (value === best.value && ownCount > best.own))
+      best = { own: ownCount, universal, value };
+  }
+  if (best)
+    return counted([
+      [own, best.own],
+      [UNIVERSAL_BREW, best.universal],
+    ]);
+
+  // Short of the cap on those two: all of both, then the other elements, most plentiful first.
+  const pour: [CurrencyId, number][] = [
+    [own, ownHeld],
+    [UNIVERSAL_BREW, universalHeld],
+  ];
+  let left = need - ownHeld * ownXp - universalHeld * BREW_XP;
+  const others = Object.values(BREW_OF_ELEMENT)
+    .filter((brew) => brew !== own)
+    .sort((a, b) => count(b) - count(a));
+  for (const brew of others) {
+    if (left <= 0) break;
+    const take = Math.min(count(brew), Math.ceil(left / BREW_XP));
+    pour.push([brew, take]);
+    left -= take * BREW_XP;
+  }
+  return counted(pour);
+}
+
+function counted(entries: readonly (readonly [CurrencyId, number])[]): Partial<Record<CurrencyId, number>> {
+  return Object.fromEntries(entries.filter(([, amount]) => amount > 0));
 }
