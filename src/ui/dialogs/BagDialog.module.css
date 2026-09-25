@@ -1,70 +1,180 @@
-/* The Bag (docs/tech/UI_DESIGN.md §5.26): a row per thing held, each saying what it would do. */
+/* The Bag (docs/tech/UI_DESIGN.md §5.26): the holdings as slots, and the chosen one in full. */
 .subtitle {
-  margin: 0 0 12px;
-  font-size: 14px;
+  margin: 0 0 14px;
+  font-size: 15px;
   color: var(--text-2);
 }
-.empty {
-  margin: 30px 0;
-  text-align: center;
-  font-size: 15px;
-  color: var(--text-3);
+
+.layout {
+  display: grid;
+  grid-template-columns: 620px minmax(0, 1fr);
+  gap: 22px;
+  min-height: 560px;
 }
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 176px;
+  gap: 12px;
   margin: 0;
-  padding: 0 8px 0 0;
+  padding: 0;
   list-style: none;
 }
-.row {
-  display: grid;
-  grid-template-columns: 56px 1fr auto;
+
+/* A slot: the item's art in a niche edged in its rarity, its count in the corner, its name below. */
+.slot {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 10px 12px;
-  background: rgba(20, 17, 26, 0.72);
-  border: 1px solid rgba(120, 100, 70, 0.4);
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 10px 8px;
+  cursor: var(--cursor-pointer);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 35%,
+      color-mix(in srgb, var(--rarity) 20%, transparent),
+      transparent 72%
+    ),
+    linear-gradient(180deg, rgba(32, 27, 34, 0.95), rgba(14, 12, 16, 0.97));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--rarity) 60%, transparent),
+    inset 0 0 0 4px rgba(8, 7, 10, 0.85);
+  transition:
+    filter var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast) var(--ease-out);
 }
-.icon {
+
+.slot:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+}
+
+.slot[aria-pressed='true'] {
+  box-shadow:
+    inset 0 0 0 2px var(--gold-2),
+    inset 0 0 0 5px rgba(8, 7, 10, 0.85),
+    inset 0 0 24px color-mix(in srgb, var(--rarity) 35%, transparent),
+    0 0 16px rgba(240, 213, 122, 0.25);
+}
+
+.slotArt {
   position: relative;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  border: 1px solid var(--gold-4);
-  background: rgba(10, 8, 14, 0.7);
+  width: 92px;
+  height: 92px;
 }
+
+.slotArt img {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
+}
+
 .count {
   position: absolute;
-  right: 2px;
-  bottom: 1px;
-  font-size: 12px;
-  color: var(--gold-1);
-  text-shadow: 0 1px 2px #000;
+  right: -2px;
+  bottom: 0;
+  min-width: 30px;
+  padding: 1px 6px 0;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-1);
+  background: linear-gradient(180deg, #2a2230, #120f16);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rarity) 70%, transparent);
 }
-.text {
+
+.slotName {
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-1);
+}
+
+.slot[aria-pressed='true'] .slotName {
+  color: var(--gold-3);
+}
+
+/* An empty slot: cut into the stone, waiting. */
+.emptySlot {
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  background: linear-gradient(180deg, rgba(10, 9, 12, 0.7), rgba(18, 15, 20, 0.6));
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.8),
+    inset 0 0 0 1px rgba(141, 133, 119, 0.18);
+}
+
+/* Nothing held: what fills the Bag, and the way there. */
+.emptyPanel {
+  height: 100%;
+}
+
+.emptyBody {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100%;
+  text-align: center;
 }
-.name {
-  font-size: 16px;
-  letter-spacing: 0.03em;
+
+.emptyGlyph {
+  color: var(--text-3);
 }
-.body {
-  font-size: 13px;
+
+.empty {
+  margin: 0;
+  max-width: 380px;
+  font-size: 17px;
   line-height: 1.45;
   color: var(--text-2);
 }
+
+.emptyWays {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.foot {
+  min-height: 26px;
+  margin-top: 12px;
+}
+
 .said {
-  margin: 12px 0 0;
-  font-size: 14px;
+  margin: 0;
+  font-size: 15px;
   color: var(--ok, #7fae8a);
 }
+
 .refused {
-  margin: 12px 0 0;
-  font-size: 14px;
+  margin: 0;
+  font-size: 15px;
   color: var(--warn, #d9a441);
 }

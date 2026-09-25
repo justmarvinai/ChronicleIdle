@@ -44,6 +44,9 @@ and the Bag reworked.
   `CurrencyDef.sources` / `uses`, validated as place ids).
 - The Wallet's parts (`ui/dialogs`): `WalletDetail` and `wallet-view.ts` (`heldLine`, `poolLine`).
   The wallet dialog route takes the currency to open on, and the top bar's + passes its own.
+- The Bag's parts (`ui/dialogs`): `BagDetail` (one item in full) and `bag-view.ts` (`itemStatus`:
+  how the thing an item acts on stands now — a boost's time left, the day's Brewery runs, a board's
+  points, the open mission).
 
 ### Changed
 
@@ -68,6 +71,10 @@ and the Bag reworked.
   and the chosen one in full — its amount out of its cap, when the next comes back, what it is,
   where it comes from and what it is for, each place a press that goes there. It opens on the
   currency whose + was pressed.
+- **The Bag** redesigned (`UI_DESIGN.md` §5.26): what is held as slots in a grid — the item's art in
+  its rarity's frame, its count and its name — and the chosen one in full beside it: what kind of
+  thing it is, what using it does, how its target stands right now, and the press. An empty Bag
+  offers the way to the Market and to Daily Rewards.
 
 ### Fixed
 
