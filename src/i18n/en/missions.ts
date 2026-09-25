@@ -16,6 +16,7 @@ export const missions = {
   'missions.locked': 'Locked',
   'missions.open': 'In progress',
   'missions.complete': 'Complete',
+  'missions.giftStars': '{stars}★',
   'missions.progressLabel': 'Progress',
   'missions.chapters': 'Chapters',
   'missions.step': 'Mission {chapter}.{index}',

@@ -34,13 +34,14 @@ export function ChapterTrack({ view, onClaimChest }: ChapterTrackProps) {
       label: t('missions.eldricJoined'),
       edge: RARITY_HEX.legendary,
     });
-  if (chest.gearChoice)
+  const gift = chest.gearChoice;
+  if (gift)
     extras.push({
       id: 'gear',
-      icon: <Glyph glyph="glyph.ribcage_armor" size={36} color={RARITY_HEX.legendary} />,
-      amount: '6★',
+      icon: <Glyph glyph="glyph.ribcage_armor" size={36} color={RARITY_HEX[gift.rarity]} />,
+      amount: translate('missions.giftStars', { stars: gift.stars }),
       label: t('missions.gearChoice.title'),
-      edge: RARITY_HEX.legendary,
+      edge: RARITY_HEX[gift.rarity],
     });
 
   return (
