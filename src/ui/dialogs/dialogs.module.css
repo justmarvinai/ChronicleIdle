@@ -52,23 +52,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px 18px;
 }
-.walletItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(201, 162, 74, 0.18);
-}
-.walletName {
-  flex: 1 1 auto;
-  color: var(--text-2);
-  font-size: var(--fs-small);
-}
-.walletAmount {
-  color: var(--text-1);
-  font-size: 20px;
-}
 .summary {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,6 +1,6 @@
 import type { FeatureId } from '@content/balance/unlocks';
 import type { Element, GearSlot } from '@content/champions/types';
-import type { CurrencyAmount } from '@content/currencies/types';
+import type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 import type { QuestPeriod } from '@content/quests/types';
 import type { I18nKey, I18nParams } from '@i18n/index';
 import type { DecodedChronicle } from './chronicle-file';
@@ -67,7 +67,8 @@ export type RouteName = Route['name'];
 export type DialogRoute =
   | { name: 'settings' }
   | { name: 'profile' }
-  | { name: 'wallet' }
+  /** Opens on one currency when the press came from its purse in the top bar. */
+  | { name: 'wallet'; currency?: CurrencyId }
   | { name: 'new-game' }
   | { name: 'new-game-confirm' }
   | { name: 'import-confirm'; decoded: DecodedChronicle; fileName: string }

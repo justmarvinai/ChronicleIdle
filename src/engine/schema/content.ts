@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { RARITY_KIT, STAT_DEVIATION_TOLERANCE } from '@content/balance/stats';
 import { CHAMPION_IDS, STARTER_IDS, type ChampionDef } from '@content/champions/types';
 import { CURRENCY_IDS } from '@content/currencies/types';
+import { PLACE_IDS } from '@content/places/types';
 import { PARTY_SIZE_BOSS, PARTY_SIZE_CAMPAIGN } from '@content/balance/battle';
 import type { EncounterDef } from '@content/encounters/types';
 import { FACTION_ARCHETYPES, type EnemyDef } from '@content/enemies/types';
@@ -64,6 +65,8 @@ export const currencySchema = z.object({
     .optional(),
   category: z.enum(['core', 'keys', 'shards', 'brews', 'tomes', 'materials']),
   topBar: z.boolean(),
+  sources: z.array(z.enum(PLACE_IDS)).min(1),
+  uses: z.array(z.enum(PLACE_IDS)).min(1),
   version: z.number().int().positive(),
 });
 

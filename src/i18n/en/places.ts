@@ -31,7 +31,7 @@ export const places = {
   'place.palace.to': 'the Palace',
   'place.market.name': 'Market',
   'place.market.to': 'the Market',
-  'place.quests.name': 'Daily and weekly quests',
+  'place.quests.name': 'Quests',
   'place.quests.to': 'the Ledger',
   'place.quests.daily': 'Daily quests',
   'place.missions.name': 'The Chronicler’s Path',

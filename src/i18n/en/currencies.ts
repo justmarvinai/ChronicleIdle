@@ -5,7 +5,8 @@ export const currencies = {
   'currency.gems.description':
     'Earned, never bought. Trades for Ancient and Sacred Shards and refills Energy.',
   'currency.energy.name': 'Energy',
-  'currency.energy.description': 'Spent on campaign stages. Regenerates one point per minute below the cap.',
+  'currency.energy.description':
+    'Spent on campaign stages and dungeon runs. Regenerates one point per minute below the cap.',
   'currency.key_daily.name': 'Gargoyle Key',
   'currency.key_daily.description': 'One fight against Gargoyle. Two keys every day.',
   'currency.key_weekly.name': 'Titan Key',

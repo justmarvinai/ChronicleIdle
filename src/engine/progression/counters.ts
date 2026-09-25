@@ -102,6 +102,9 @@ export const COUNTER_KEYS = [
    * that counter answers "how many have been earned", and a bought one was not.
    */
   'missions.skipped',
+  // The Wallet
+  /** Energy bought with gems (ECONOMY.md §5), one per refill. */
+  'energy.refills',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */

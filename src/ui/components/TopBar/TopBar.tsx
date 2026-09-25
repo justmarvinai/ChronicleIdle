@@ -50,14 +50,14 @@ export function TopBar({ title, onBack, onClose, children }: TopBarProps) {
                   amount={energy.value}
                   cap={energy.cap}
                   highlight={energy.overCap ? 'over' : energy.value < 10 ? 'low' : null}
-                  onAdd={() => actions.openDialog({ name: 'wallet' })}
+                  onAdd={() => actions.openDialog({ name: 'wallet', currency: 'energy' })}
                 />
               ) : (
                 <CurrencyPill
                   key={def.id}
                   currency={def.id}
                   amount={wallet[def.id]}
-                  onAdd={() => actions.openDialog({ name: 'wallet' })}
+                  onAdd={() => actions.openDialog({ name: 'wallet', currency: def.id })}
                 />
               ),
             )

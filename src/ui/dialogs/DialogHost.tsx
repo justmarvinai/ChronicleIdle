@@ -43,7 +43,9 @@ export function DialogHost() {
     <AnimatePresence>
       {dialog?.name === 'settings' ? <SettingsDialog key="settings" onClose={closeDialog} /> : null}
       {dialog?.name === 'profile' ? <ProfileDialog key="profile" onClose={closeDialog} /> : null}
-      {dialog?.name === 'wallet' ? <WalletDialog key="wallet" onClose={closeDialog} /> : null}
+      {dialog?.name === 'wallet' ? (
+        <WalletDialog key="wallet" currency={dialog.currency} onClose={closeDialog} />
+      ) : null}
       {dialog?.name === 'new-game' ? <NewGameDialog key="new-game" onClose={closeDialog} /> : null}
       {dialog?.name === 'new-game-confirm' ? (
         <NewGameConfirmDialog key="new-game-confirm" onClose={closeDialog} />

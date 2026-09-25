@@ -1,12 +1,14 @@
 import { defineCurrency } from '@content/define';
+import { CURRENCY_FLOWS } from './flows';
 import type { CurrencyDef, CurrencyId } from './types';
 
 const c = (
-  def: Omit<CurrencyDef, 'name' | 'description' | 'version'> & { version?: number },
+  def: Omit<CurrencyDef, 'name' | 'description' | 'version' | 'sources' | 'uses'> & { version?: number },
 ): CurrencyDef => ({
   name: `currency.${def.id}.name`,
   description: `currency.${def.id}.description`,
   version: 1,
+  ...CURRENCY_FLOWS[def.id],
   ...def,
 });
 

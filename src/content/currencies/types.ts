@@ -1,4 +1,5 @@
 import type { AssetKey } from '@assets/manifest.generated';
+import type { PlaceId } from '@content/places/types';
 
 /** All wallet currencies of EA-0.1 (docs/design/ECONOMY.md §2). Order = display order. */
 export const CURRENCY_IDS = [
@@ -45,6 +46,9 @@ export interface CurrencyDef {
   category: CurrencyCategory;
   /** Shown in the top bar of every screen. */
   topBar: boolean;
+  /** Where it comes from and what it is for, as places the Wallet can send a player to (`flows.ts`). */
+  sources: readonly PlaceId[];
+  uses: readonly PlaceId[];
   version: number;
 }
 

@@ -33,6 +33,17 @@ and the Bag reworked.
   `LoginTile` (a day's number, its reward slots, its tier's edge, and a seal once taken).
   `RewardSlots.grants` and `slots.tsx`'s `itemSlot`, `grantSlot` and `grantLabel`: a Bag item as a
   slot in its own art and rarity, and any grant list as slots.
+- **The energy refill** the economy always had (`ECONOMY.md` §5, owner's answer Q15): 50 gems for
+  100 energy, no daily limit, past the cap if need be — `applyEnergyRefill` in `state/wallet.ts`,
+  the store's `refillEnergy`, and the `energy.refills` counter. The Eternal Key's gem exchange stays
+  unwired (Q49).
+- `holdingOf` (`state/wallet.ts`): what a chronicle holds of any currency, read from wherever it
+  lives — energy and the Eternal Key from their pools, the boss keys as the period's allowance less
+  what it has spent — with the cap, the next point's countdown and the reset.
+- Every currency says where it comes from and what it is for (`content/currencies/flows.ts`,
+  `CurrencyDef.sources` / `uses`, validated as place ids).
+- The Wallet's parts (`ui/dialogs`): `WalletDetail` and `wallet-view.ts` (`heldLine`, `poolLine`).
+  The wallet dialog route takes the currency to open on, and the top bar's + passes its own.
 
 ### Changed
 
@@ -53,6 +64,16 @@ and the Bag reworked.
   drawn as slots, so a day that pays a Bag item shows the item rather than its name; today's day
   flagged, days taken sealed, tomorrow's ringed once today's is in, and the three that lead the
   board in gold.
+- **The Wallet** redesigned (`UI_DESIGN.md` §5.26): every holding as a tile, grouped, all in view;
+  and the chosen one in full — its amount out of its cap, when the next comes back, what it is,
+  where it comes from and what it is for, each place a press that goes there. It opens on the
+  currency whose + was pressed.
+
+### Fixed
+
+- The Wallet showed Energy and every key as 0: it read their wallet rows, which the pools never
+  fill. It now reads the pools and the boss allowances.
+- Energy's description named only the campaign; dungeon runs spend it too.
 
 _Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a

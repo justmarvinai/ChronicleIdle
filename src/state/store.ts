@@ -92,6 +92,7 @@ import {
 import { applyGemPurchase, applyGoldPurchase, type PurchaseResult } from './market';
 import { applyUseItem, type UseResult } from './bag';
 import { applyLoginClaim, type LoginClaim } from './login';
+import { applyEnergyRefill, type EnergyRefill } from './wallet';
 import type { DungeonDifficulty } from '@content/balance/dungeon';
 import {
   applyBossChestClaim,
@@ -310,6 +311,8 @@ export interface GameActions {
   useItem(item: string, instanceId?: string): Result<UseResult>;
   /** Takes today's tile off the Login Calendar. */
   claimLoginDay(): Result<LoginClaim>;
+  /** Buys energy with gems in the Wallet (ECONOMY.md §5): no daily limit, refused when short. */
+  refillEnergy(): Result<EnergyRefill>;
   /** Spends an Eternal Key and points the save at the tower floor it bought. */
   startTowerFloor(floor: number): Result<TowerFloorStarted>;
   /** Banks a finished tower floor: the climb, the rewards and the XP. */
@@ -1380,6 +1383,23 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 if (result.ok) state.save.updatedAt = now;
               });
               if (result.ok) events.emit({ type: 'bag.used', item });
+              return result;
+            },
+
+            refillEnergy() {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<EnergyRefill> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyEnergyRefill(state.save, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const { changes } = result.value;
+              events.emit({ type: 'currency.changed', changes, reason: 'energy-refill' });
+              const energy = changes.find((change) => change.currency === 'energy');
+              if (energy) events.emit({ type: 'energy.changed', delta: energy.delta, total: energy.total });
               return result;
             },
 
