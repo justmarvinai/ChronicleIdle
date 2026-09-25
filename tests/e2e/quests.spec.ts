@@ -32,6 +32,13 @@ test.describe('the quest boards', () => {
     const stages = page.getByTestId('quest-row-quest.daily.clear_stages');
     await expect(stages).toContainText('Clear 5 campaign stages');
     await expect(stages).toContainText('0 / 5');
+    // A quest still to do offers the way to where it is played, not a press that does nothing.
+    await expect(page.getByTestId('quest-claim-quest.daily.clear_stages')).toHaveCount(0);
+    await expect(page.getByTestId('quest-go-quest.daily.clear_stages')).toBeEnabled();
+    // And the tally says what its first chest holds before it is reached.
+    await expect(page.getByTestId('quest-chest-daily-20').locator('xpath=..')).toContainText(
+      '20 more points',
+    );
 
     // Claiming pays the reward and moves the track; the row says so and cannot be claimed twice.
     await page.getByTestId('quest-claim-quest.daily.login').click();

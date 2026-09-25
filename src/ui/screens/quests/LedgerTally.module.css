@@ -1,0 +1,264 @@
+/* The tally page of the Ledger (docs/tech/UI_DESIGN.md §5.14). */
+.panel {
+  height: 100%;
+  min-height: 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+  min-height: 0;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: none;
+}
+
+.title {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--gold-3);
+}
+
+.points {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--text-3);
+}
+
+.done {
+  font-size: 15px;
+  line-height: 1.35;
+  color: #9ec79b;
+}
+
+/*
+ * The ladder. The rail runs from 0 at its top to the board's whole at its foot; every row stands
+ * centred on its own threshold (`--at`, 0–1), so the gaps between chests are the gaps between their
+ * numbers. The last row's half-height below its mark is the room the rail leaves at the foot.
+ */
+.ladder {
+  --row: 96px;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail {
+  position: absolute;
+  left: 17px;
+  top: 0;
+  bottom: calc(var(--row) / 2);
+  width: 6px;
+  background: rgba(6, 5, 8, 0.85);
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.28),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.railFill {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  top: 1px;
+  height: calc(var(--fill) * (100% - 2px));
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-3));
+  box-shadow: 0 0 10px rgba(240, 213, 122, 0.5);
+  transition: height var(--t-slow) var(--ease-out);
+}
+
+.row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--at) * (100% - var(--row) / 2));
+  height: var(--row);
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: 40px 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+/* The mark on the rail: a lozenge, lit once the points reach it. */
+.node {
+  justify-self: center;
+  width: 16px;
+  height: 16px;
+  transform: rotate(45deg);
+  background: #15121a;
+  box-shadow:
+    inset 0 0 0 2px rgba(141, 133, 119, 0.6),
+    0 0 0 2px rgba(0, 0, 0, 0.7);
+}
+
+.row[data-state='claimable'] .node,
+.row[data-state='claimed'] .node {
+  background: var(--gold-2);
+  box-shadow:
+    inset 0 0 0 2px var(--gold-3),
+    0 0 10px rgba(240, 213, 122, 0.7);
+}
+
+/* The chest itself is the press: the kit's painted chest in a bevelled niche, its mark under it. */
+.chest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 88px;
+  padding: 0;
+  border: none;
+  cursor: var(--cursor-pointer);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(240, 213, 122, 0.08), transparent 70%),
+    linear-gradient(180deg, rgba(34, 29, 38, 0.95), rgba(14, 12, 17, 0.97));
+  box-shadow: inset 0 0 0 1px rgba(141, 133, 119, 0.45);
+  transition:
+    filter var(--t-base),
+    transform var(--t-base) var(--ease-snap);
+}
+
+.chest:disabled {
+  cursor: default;
+}
+
+.chestArt {
+  width: 66px;
+  height: 66px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7));
+  transform: translateY(-6px);
+}
+
+.threshold {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 40px;
+  padding: 1px 8px 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--gold-3);
+  background: linear-gradient(180deg, #2a2230, #120f16);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.5);
+}
+
+.check {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  color: #9ec79b;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.row[data-state='locked'] .chestArt {
+  filter: grayscale(0.55) brightness(0.7) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7));
+}
+
+.row[data-state='claimed'] .chestArt {
+  filter: saturate(0.5) brightness(0.62) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7));
+}
+
+.row[data-state='claimable'] .chest {
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(240, 213, 122, 0.3), transparent 72%),
+    linear-gradient(180deg, rgba(48, 38, 30, 0.96), rgba(20, 16, 14, 0.97));
+  box-shadow: inset 0 0 0 2px var(--gold-2);
+  animation: ready 2.2s ease-in-out infinite;
+}
+
+.row[data-state='claimable'] .chest:hover {
+  transform: translateY(-2px) scale(1.04);
+  filter: brightness(1.15);
+}
+
+.row[data-state='claimable'] .chestArt {
+  animation: stir 2.2s ease-in-out infinite;
+}
+
+/* What the chest holds, and how far off it is. */
+.holds {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.state {
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.row[data-state='claimable'] .state {
+  color: var(--gold-3);
+  font-weight: 700;
+}
+
+.row[data-state='claimed'] .state {
+  color: #9ec79b;
+}
+
+.cycle {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-3);
+}
+
+@keyframes ready {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.22);
+  }
+}
+
+@keyframes stir {
+  0%,
+  100% {
+    transform: translateY(-6px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(-3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row[data-state='claimable'] .chest,
+  .row[data-state='claimable'] .chestArt {
+    animation: none;
+  }
+}

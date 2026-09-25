@@ -82,7 +82,11 @@ describe('the ledger', () => {
     const stages = screen.getByTestId('quest-row-quest.daily.clear_stages');
     expect(stages).toHaveTextContent('Clear 5 campaign stages');
     expect(stages).toHaveTextContent('2 / 5');
-    expect(screen.getByTestId('quest-claim-quest.daily.clear_stages')).toBeDisabled();
+    // Not done yet: nothing to claim, and the way to where it is played instead.
+    expect(screen.queryByTestId('quest-claim-quest.daily.clear_stages')).not.toBeInTheDocument();
+    expect(screen.getByTestId('quest-go-quest.daily.clear_stages')).toHaveAccessibleName(
+      'Go to the Campaign',
+    );
 
     const shards = held('shard_faded');
     await user.click(screen.getByTestId('quest-claim-quest.daily.login'));
@@ -119,6 +123,47 @@ describe('the ledger', () => {
     expect(held('gold')).toBe(gold + 3_000);
     expect(chest()).toBeDisabled();
     expect(save().quests.daily.chests).toEqual([20]);
+  });
+
+  it('puts what is owed first and what is taken last', async () => {
+    const user = userEvent.setup();
+    played('campaign.cleared', 5);
+    render(stage(<QuestsScreen route={QUESTS} />));
+    const order = (): string[] =>
+      screen
+        .getAllByTestId(/^quest-row-/)
+        .map((row) => row.getAttribute('data-testid')?.replace('quest-row-', '') ?? '');
+    // The login quest and the five stands are done: both lead the board.
+    expect(order().slice(0, 2)).toEqual(['quest.daily.login', 'quest.daily.clear_stages']);
+    await user.click(screen.getByTestId('quest-claim-quest.daily.login'));
+    // Taken, it steps to the foot of the board.
+    expect(order()[0]).toBe('quest.daily.clear_stages');
+    expect(order().at(-1)).toBe('quest.daily.login');
+  });
+
+  it('goes to where an open quest is played', async () => {
+    const user = userEvent.setup();
+    render(stage(<QuestsScreen route={QUESTS} />));
+    await user.click(screen.getByTestId('quest-go-quest.daily.level_champions'));
+    const stack = useGameStore.getState().ui.stack;
+    expect(stack[stack.length - 1]).toEqual({ name: 'tavern', tab: 'level' });
+  });
+
+  it('sends the weekly quest that counts daily boards to the daily tab, not to a second ledger', async () => {
+    const user = userEvent.setup();
+    render(stage(<QuestsScreen route={QUESTS} />));
+    await user.click(screen.getByTestId('quests-tab-weekly'));
+    const depth = useGameStore.getState().ui.stack.length;
+    await user.click(screen.getByTestId('quest-go-quest.weekly.daily_days'));
+    expect(useGameStore.getState().ui.stack).toHaveLength(depth);
+    expect(screen.getByTestId('quest-row-quest.daily.login')).toBeInTheDocument();
+  });
+
+  it('shows what each chest holds and how far off it is', () => {
+    render(stage(<QuestsScreen route={QUESTS} />));
+    const chest = screen.getByTestId('quest-chest-daily-20').closest('li');
+    expect(chest).toHaveTextContent('Gold ×3,000');
+    expect(chest).toHaveTextContent('20 more points');
   });
 
   it('switches to the weekly board and says when it opens', async () => {

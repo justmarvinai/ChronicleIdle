@@ -299,7 +299,11 @@ export function goalDestination(goal: Goal, save: SaveGame): Destination | null 
       };
     }
     case 'complete_daily_quests_days':
-      return { ...destination('quests'), way: { route: { name: 'quests', period: 'daily' } } };
+      return {
+        ...destination('quests'),
+        name: t('place.quests.daily'),
+        way: { route: { name: 'quests', period: 'daily' } },
+      };
   }
 }
 

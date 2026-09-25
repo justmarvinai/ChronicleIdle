@@ -23,6 +23,11 @@ and the Bag reworked.
 - The Path's parts (`ui/screens/missions`): `ChapterTabs` (the ten chapters, each with how far it is
   walked and a dot while its chest waits) and `mission-view.ts` (`missionFamily`, `FAMILY_TINT`,
   `progressLine`, `chapterState`, `chapterShare`).
+- The Ledger's parts (`ui/screens/quests`): `LedgerTally` (the board's points, and its chests down a
+  rail that fills as quests are claimed — each chest the kit's painted chest standing at its own
+  threshold, with what it holds and the points still to go), `QuestCard`, and `quest-view.ts`
+  (`questState`, `orderQuests`, `chestState`, `pointsToGo`, `railShare`). `GoButton.onGo`, for a way
+  that leads to another tab of the screen it is pressed on.
 
 ### Changed
 
@@ -33,6 +38,11 @@ and the Bag reworked.
   the chapter and whose slots show what it holds. The mission being walked offers **Go** to where it
   is played instead of the old disabled *In progress* button, and a stage reference such as "4-10"
   no longer breaks across two lines.
+- **The Chronicler's Ledger** redesigned (`UI_DESIGN.md` §5.14): two pages — the tally on the left,
+  the board's quests on the right as two columns of cards, what is owed first and what is taken
+  last. A quest still to do offers **Go** to where it is played (the weekly quest that counts daily
+  boards turns to the Daily tab) instead of a disabled Claim; a chest shows what it holds without a
+  hover. `PointsTrack` and `QuestRow` are retired.
 
 _Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a

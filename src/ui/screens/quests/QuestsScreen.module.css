@@ -6,8 +6,8 @@
 
 .body {
   position: absolute;
-  left: 120px;
-  right: 120px;
+  left: 40px;
+  right: 40px;
   top: 96px;
   bottom: 28px;
   z-index: var(--z-scene);
@@ -39,12 +39,32 @@
   color: var(--text-2);
 }
 
-.list {
+/* Two pages: the tally, and the board's quests. */
+.pages {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 440px minmax(0, 1fr);
+  gap: 18px;
+}
+
+.list {
+  min-height: 0;
+}
+
+/* Two columns of cards, each row as tall as its tallest card. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 148px;
+  gap: 12px 14px;
+  margin: 0;
+  padding: 2px 18px 2px 2px;
+  list-style: none;
+}
+
+.cell {
+  min-width: 0;
 }
 
 .locked {

@@ -45,6 +45,12 @@ export const quests = {
   'quests.chestToast': 'The {points}-point chest is yours.',
   'quests.allClaimedToast': '{count} quests claimed.',
   'quests.boardDone': 'Every quest on the board is done.',
+  'quests.open': 'In progress',
+  'quests.tally.daily': 'Today’s tally',
+  'quests.tally.weekly': 'This week’s tally',
+  'quests.tallyHint': 'Every quest claimed adds its points; each chest opens once its mark is reached.',
+  'quests.chestReady': 'Ready to open',
+  'quests.chestToGo': '{points} more points',
   'quests.hint.replacement':
     'Some of the board opens with the chronicle. Until then this quest carries its points.',
 } as const;

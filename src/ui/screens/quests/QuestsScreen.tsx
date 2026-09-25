@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { playSfx } from '@audio/index';
 import type { QuestPeriod } from '@content/quests/types';
+import { content } from '@content/registry';
 import { t, translate } from '@i18n/index';
 import { questBoardState } from '@state/quests';
 import { selectActions, selectSave } from '@state/selectors';
@@ -17,9 +18,11 @@ import { Timer } from '@ui/components/Timer/Timer';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
+import { goalDestination, placeOpen } from '@ui/places/places';
 import type { ScreenProps } from '@ui/router/screens';
-import { PointsTrack } from './PointsTrack';
-import { QuestRow } from './QuestRow';
+import { LedgerTally } from './LedgerTally';
+import { QuestCard } from './QuestCard';
+import { orderQuests } from './quest-view';
 import styles from './QuestsScreen.module.css';
 
 type QuestsRoute = Extract<Route, { name: 'quests' }>;
@@ -32,9 +35,11 @@ const LEDGER_GLOWS = [
 
 /**
  * The Chronicler's Ledger (docs/design/QUESTS_MISSIONS.md §2–§3, `UI_DESIGN.md` §5.14): the two
- * boards behind their own tabs, the points track along the top and a row per quest under it. The
- * board is derived from the save on every render, so a quest ticks over the moment the play that
- * finishes it lands — there is nothing here to refresh.
+ * boards behind their own tabs, and each as two pages — the tally on the left, its points and its
+ * chests down a rail with what each holds; the quests on the right as cards, what is owed first and
+ * what is taken last, each with the way to where it is played. The board is derived from the save
+ * on every render, so a quest ticks over the moment the play that finishes it lands — there is
+ * nothing here to refresh.
  */
 export default function QuestsScreen({ route }: ScreenProps) {
   const params = route as QuestsRoute;
@@ -51,6 +56,7 @@ export default function QuestsScreen({ route }: ScreenProps) {
     weekly: questBoardState(save, 'weekly', now),
   };
   const view = boards[period];
+  const standIn = content.questBoard(period).replacement.id;
 
   const claim = (questId?: string): void => {
     const result = actions.claimQuest(period, questId);
@@ -63,6 +69,11 @@ export default function QuestsScreen({ route }: ScreenProps) {
     if (paid.questIds.length > 1)
       actions.toast('reward', 'quests.allClaimedToast', { count: paid.questIds.length }, paid.currencies);
     else actions.toast('reward', 'quests.claimedToast', { points: paid.points }, paid.currencies);
+  };
+
+  const switchTo = (next: QuestPeriod): void => {
+    setPeriod(next);
+    playSfx('ui.tab');
   };
 
   const claimChest = (points: number): void => {
@@ -103,10 +114,7 @@ export default function QuestsScreen({ route }: ScreenProps) {
               },
             ]}
             value={period}
-            onChange={(key) => {
-              setPeriod(key);
-              playSfx('ui.tab');
-            }}
+            onChange={switchTo}
           />
           <div className={styles.headRight}>
             <Timer
@@ -130,14 +138,30 @@ export default function QuestsScreen({ route }: ScreenProps) {
         </header>
 
         {view.unlocked ? (
-          <>
-            <PointsTrack view={view} onClaim={claimChest} />
-            <ScrollArea height={560} className={styles.list} data-testid="quests-list">
-              {view.quests.map((row) => (
-                <QuestRow key={row.quest.id} view={row} onClaim={() => claim(row.quest.id)} />
-              ))}
+          <div className={styles.pages}>
+            <LedgerTally view={view} onClaim={claimChest} />
+            <ScrollArea height="100%" fade className={styles.list ?? ''} data-testid="quests-list">
+              <ol className={styles.grid}>
+                {orderQuests(view.quests).map((row) => {
+                  const way = row.claimable || row.claimed ? null : goalDestination(row.quest.goal, save);
+                  const destination = way && placeOpen(save, way.place) ? way : null;
+                  // The weekly quest that counts daily boards is played on this screen's other tab.
+                  const here = destination?.place === 'quests';
+                  return (
+                    <li key={row.quest.id} className={styles.cell}>
+                      <QuestCard
+                        view={row}
+                        destination={destination}
+                        standIn={row.quest.id === standIn}
+                        onClaim={() => claim(row.quest.id)}
+                        {...(here ? { onGo: () => switchTo('daily') } : {})}
+                      />
+                    </li>
+                  );
+                })}
+              </ol>
             </ScrollArea>
-          </>
+          </div>
         ) : (
           <Panel kind="ember-wide" padding={28} className={styles.locked}>
             <Glyph glyph="glyph.broken_shackle" size={44} color="var(--text-3)" />

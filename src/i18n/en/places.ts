@@ -33,6 +33,7 @@ export const places = {
   'place.market.to': 'the Market',
   'place.quests.name': 'Daily and weekly quests',
   'place.quests.to': 'the Ledger',
+  'place.quests.daily': 'Daily quests',
   'place.missions.name': 'The Chronicler’s Path',
   'place.missions.to': 'the Path',
   'place.login.name': 'Daily Rewards',

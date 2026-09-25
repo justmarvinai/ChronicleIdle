@@ -15,6 +15,8 @@ export interface GoButtonProps {
    * stays its accessible name.
    */
   compact?: boolean;
+  /** Where the way leads to the screen it is pressed on — another of its tabs — this is the press. */
+  onGo?: () => void;
   className?: string;
   testId?: string;
 }
@@ -29,6 +31,7 @@ export function GoButton({
   variant = 'secondary',
   size = 'sm',
   compact = false,
+  onGo,
   className,
   testId,
 }: GoButtonProps) {
@@ -43,7 +46,7 @@ export function GoButton({
       sound="ui.open"
       className={className ?? ''}
       icon={<Glyph glyph={PLACES[destination.place].glyph} size={18} color="var(--gold-3)" />}
-      onClick={() => go(destination.way)}
+      onClick={() => (onGo ? onGo() : go(destination.way))}
       aria-label={compact ? full : undefined}
       data-testid={testId}
     >
