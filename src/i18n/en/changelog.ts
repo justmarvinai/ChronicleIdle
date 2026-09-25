@@ -20,6 +20,25 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_9.name': 'The Ledger and the Purse',
+  'release.0_9_9.path':
+    'The Chronicler’s Path has a new look: the ten chapters as tabs that show how far each is walked, the chapter’s missions as tall cards marked with the kind of task they are, and Eldric beside the chapter’s chest, which now shows what it holds.',
+  'release.0_9_9.ledger':
+    'Your daily and weekly quests are laid out as a tally and a board: your points with every chest beside the mark it opens at and what it holds, and the quests as cards — the ones ready to claim first, the ones you have taken last.',
+  'release.0_9_9.go':
+    'A mission or quest you have not finished tells you where it is played and has a Go button that takes you straight there, instead of a Claim button you could not press.',
+  'release.0_9_9.daily_rewards':
+    'Daily Rewards shows all thirty days at once, with today’s day large beside them and what it pays; days that give an item, like the Brewery Token, now show the item itself.',
+  'release.0_9_9.wallet':
+    'The Wallet shows everything you hold at a glance and each currency in full: how much you have, when more comes back, where it comes from and what it is for — with a way to each. The + next to a currency opens it on that currency.',
+  'release.0_9_9.energy_refill':
+    'You can buy energy in the Wallet: 50 gems for 100 energy, as often as you like, even past your cap.',
+  'release.0_9_9.bag':
+    'Your Bag is a grid of slots now, with the item you pick shown in full: what it does, and how the thing it acts on stands right now — a boost’s time left, the Brewery runs you have today.',
+  'release.0_9_9.wallet_zero': 'The Wallet no longer shows your energy and your keys as 0.',
+  'release.0_9_9.stage_numbers':
+    'A stage number such as 4-10 no longer breaks across two lines on a mission card.',
+
   'release.0_9_8.name': 'The Cask and the Crystal',
   'release.0_9_8.summoning':
     'Summoning is a ritual worth watching now. Your shard hangs in the gate as a crystal; press, and the runes kindle and light pours into it, then the gate shows its colours one by one — every colour it climbs is a rarer answer — and before gold it holds its breath. Then the crystal shatters, and the rarer the champion, the bigger the burst: a pillar of light for a Legendary, and slow motion for a Mythic.',

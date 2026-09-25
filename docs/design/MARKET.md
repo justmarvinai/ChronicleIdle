@@ -208,9 +208,12 @@ What a chronicle holds but has not used. It is a **count per item id** and nothi
 consumable has no instance identity, so two Brewery Tokens are the number two rather than two
 objects. An item at zero is removed rather than kept at 0.
 
-Every row says what using it would do **in full**, because a consumable is bought once and used
-weeks later — by then the name alone would make a player guess. Rows are in shelf order, not
-acquisition order, so the Bag reads the same way the Market does.
+The Bag says what using an item would do **in full**, because a consumable is bought once and used
+weeks later — by then the name alone would make a player guess. It draws what is held as slots in
+a grid, in shelf order rather than acquisition order so the Bag reads the same way the Market does,
+and the chosen item in full beside them: its description, and how the thing it acts on stands right
+now — a boost's time left, the day's Brewery runs, a board's points, the mission being walked
+(`docs/tech/UI_DESIGN.md` §5.26).
 
 The Bag is reached from **the top bar**, beside the purse and the chest, so it is open from every
 screen rather than only from the hub — it is a thing the chronicle owns, like gold, not a place it

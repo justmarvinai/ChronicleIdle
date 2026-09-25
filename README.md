@@ -3,7 +3,7 @@
 A 2D pixel-art, dark-fantasy, **turn-based idle gacha champion-collection RPG** for desktop
 browsers (and later Steam via Electron). Single player, no accounts, no monetisation.
 
-> Status: **`0.9.8` — The Cask and the Crystal.** Early Access 0.1 shipped as `0.1.0`
+> Status: **`0.9.9` — The Ledger and the Purse.** Early Access 0.1 shipped as `0.1.0`
 > with all fifteen phases in: the game shell, 23 champions, deterministic animated battles, the
 > twelve-settlement campaign, chronicle levels and titles, the Tavern, gear and its fourteen sets,
 > the Forge, the Portal, the idle chest, the two period bosses, quests, the Chronicler's Path and
@@ -14,7 +14,9 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 > given its emblem (`0.9.3`), then gear tooltips, a rebuilt Champions overview and every drop list
 > shown by its marks (`0.9.4`), then a reworked Tavern, Forge, hub and Idle Chest (`0.9.5`),
 > Market (`0.9.6`), battle setup, battle HUD, battle results, Eternal Tower, profile and settings
-> (`0.9.7`), and the Brewery and the Summoning Portal with a new summoning ritual (`0.9.8`). See
+> (`0.9.7`), the Brewery and the Summoning Portal with a new summoning ritual (`0.9.8`), and the
+> Chronicler's Path, the quest Ledger, Daily Rewards, the Wallet and the Bag — with a way from every
+> unfinished mission and quest to where it is played, and energy bought with gems (`0.9.9`). See
 > `ROADMAP.md` for what is planned and `CHANGELOG.md` for what landed.
 
 ## Documents

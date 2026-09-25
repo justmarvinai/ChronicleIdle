@@ -88,7 +88,7 @@ than store).
 - **Claiming twice in one day is impossible** because the second claim's key matches the one just
   written. That is the same "a record from an older period reads as a fresh one" rule the boss
   gates and the Brewery's runs use, read in reverse.
-- **Which round of the board this is** is `floor(claimed / 30) + 1`, printed beside the title so a
+- **Which round of the board this is** is `floor(claimed / 30) + 1`, printed over the board so a
   player on their fourth pass knows the board has not glitched back to day 1.
 
 A tile is drawn **taken** when its day is behind the player *in this cycle*. Note that `pendingDay`
@@ -108,6 +108,8 @@ one dialog a player meets before they have decided to do anything — and since 
 lose, there is nothing urgent enough to justify taking the first press of the session. The dot says
 the same thing and lets them choose when.
 
+The board shows the whole round of thirty at once, beside the day in question drawn large: today's
+with the one press, then its seal and tomorrow's day under it (`docs/tech/UI_DESIGN.md` §5.27).
 Under the board a single line says what is left: the time until the next day when today's is taken,
 or the finale's invitation when it is still there.
 

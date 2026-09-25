@@ -36,6 +36,12 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 
 25 wallet entries. Quest points and mission progress are tracked separately (not wallet items).
 
+The sources and sinks above are also data: every currency carries its `sources` and `uses` as
+places (`src/content/currencies/flows.ts`), which is what the Wallet lists — each with the way there
+— under *Where it comes from* and *What it is for*. A row there is a promise, so a change to what
+pays or spends a currency changes that table too. Energy and the three keys are pools, not wallet
+rows: the Wallet reads them from the pool and the boss allowance (`holdingOf`, `state/wallet.ts`).
+
 ## 3. Champion growth costs
 
 ### 3.1 Champion XP
@@ -112,7 +118,7 @@ Titles live in `src/content/titles/`; adding one is a data change (`CONTENT_AUTH
 | Cap | `60 + 10 × (level − 1)` → 60 at Lv1, 150 at Lv10, 550 at Lv50, 1,050 at Lv100 (+10 per level, owner's answer) |
 | Regeneration | **1 energy per 60 s** while below cap (online and offline, computed from timestamps) → 1,440 per day |
 | Overflow | Rewards always add, with **no upper limit**; regeneration pauses while above cap |
-| Refill | 50 Gems → +100 energy (no daily limit) |
+| Refill | 50 Gems → +100 energy (no daily limit), bought in the Wallet's Energy panel (`UI_DESIGN.md` §5.28); like any grant it may pass the cap |
 | Level-up | adds an amount equal to the new cap on top of the current value (may overflow) |
 
 ### 5.1 Early-game provisions (owner: the first days must feel generous)

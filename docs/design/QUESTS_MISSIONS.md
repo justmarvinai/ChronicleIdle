@@ -279,13 +279,16 @@ above: 2.5 asks for **a rank-up** rather than "to 3★" (a Rare starter already 
 
 ## 5. Screens
 
-- **Quests** (clones the "Missions/Quests" RSL layout): tabs Daily / Weekly; list of quest rows
-  with progress bar, points and reward; top points track with five chest nodes; "Claim" per quest
-  and per chest with reward burst; reset timer.
+- **Quests** (clones the "Missions/Quests" RSL layout): tabs Daily / Weekly and the reset timer;
+  the board as two pages — the tally (the points, and the chests down a rail at their thresholds,
+  each showing what it holds) and the quests as cards, what is owed first and what is taken last;
+  "Claim" per quest and per chest with reward burst, and **Go** to where an unfinished quest is
+  played. Full spec in `docs/tech/UI_DESIGN.md` §5.14.
 - **The Chronicler's Path** (clones `progress_missions_screen.png`): chapter tabs across the top;
-  a horizontal carousel of mission cards (icon, line, progress bar, lock state, reward); bottom
-  chapter-progress track with the chapter's chest; Eldric's portrait with a line of dialogue that
-  changes per chapter. Full spec in `docs/tech/UI_DESIGN.md` §5.15.
+  a horizontal rail of mission cards (the crest of the kind of asking it is, the line, where it is
+  played, a progress groove, lock state, reward slots, and **Go** or **Claim**); along the bottom,
+  Eldric's portrait with a line of dialogue that changes per chapter, and the chapter's chest with
+  what it holds. Full spec in `docs/tech/UI_DESIGN.md` §5.15.
 
 ## 6. Content shape
 

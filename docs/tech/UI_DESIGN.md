@@ -120,6 +120,8 @@ carved tracks are only used at 40 px and up, where the rim fits (see `Bar` below
 | `GearTooltip` | a `Tooltip` holding a piece's sheet: painting and emblem, name in its rarity, slot · rarity · +level, stars, power, main stat, every substat with its rolls, the set's emblem, name, piece count and bonus, and who wears it | on every gear card (racks, picker, Forge benches, dungeon haul, mission gift) and on a champion's worn slots |
 | `Chip` / `SetChip` / `CurrencyChip` | dark stone with the gold hairline, square-cornered: the thing's mark (a set's emblem, a currency's icon), its name, and a count, range or chance in gold | wherever something important is *named*: what a settlement drops, what a keep holds, a tower boss's shards (`sm` 28 px / `md` 34 px) |
 | `CurrencyLabel` | a currency's icon before its name, optionally with an amount in front | every row that lists what was won, spent or paid: a result's rewards, a dismantle's yield, a level-up, Forge and Tavern costs, a boss chest's contents |
+| `RewardSlots` | bevelled dark-stone squares (`sm` 50 / `md` 64 / `lg` 78 px) with a hairline in gold or the thing's rarity: the icon large, the count in the corner, the name on hover and for a screen reader | what something *will* pay — a mission, a quest, a chest, a calendar day; a Bag item is drawn in its own art and edged in its rarity (`grants`), never named in words alone; `muted` for what is taken or still far off |
+| `GoButton` (`ui/places`) | a secondary kit button with the place's own hub glyph: *Go to the Tavern*, or a compact **Go** where the card already names the place | the way to where a thing is done — a mission, a quest, an empty Bag; the Wallet draws the same ways as whole press-rows. It hides for a place the chronicle cannot enter yet: a button onto a locked door would be a promise the game then refuses. Where each goal of the shared DSL is played is `goalDestination` (§5.14, §5.15) |
 | `Dialog` | `dark-ember/frame-wide` over dimmed backdrop; title banner | Esc closes |
 | `Divider` | `stone-vine/divider-vine`, `deco-frames/deco-divider-NN` | |
 | `RewardBurst` | item cards flying to the wallet with count-up | used everywhere |
@@ -755,55 +757,76 @@ under a purple banner of their own.
 - Header: **Daily** / **Weekly** tabs, each wearing a badge with what that board owes (quests
   finished plus chests earned); on the right, the period's countdown (*Resets in 10h 31m*) and the
   primary **Claim all (N)**, which reads *Nothing to claim yet* and is disabled when the board owes
-  nothing.
-- **Points track** (`PointsTrack`): one `ember-wide` panel with *40 / 100 points* and a gold rail
-  from zero to the board's hundred, a chest standing at every threshold (20 / 40 / 60 / 80 / 100
-  daily, 25 / 50 / 75 / 100 weekly). A chest is dim while the points are short, wears the gold
-  pulse when it can be taken (no pulse under `prefers-reduced-motion`), and swaps its scroll for a
-  trophy and the word *Taken* once it has been. Hovering one prints its contents; the daily hundred
-  also prints its cadence (*Every 3 claims this pays Ancient Shard ×1 instead.*).
-- **Quest rows** (`QuestRow`, a `thin` panel each, in a `ScrollArea`): the quest's glyph, its line
-  (*Clear 5 campaign stages*), a gold progress bar carrying `progress / target`, the points it
-  pays, its reward as a `RewardList` strip, and **Claim**. A finished row wears a gold glow and a
-  gold name until it is claimed; a claimed one steps back to *Claimed* with a trophy and mutes its
-  bar. Nothing on the board is ever a dead row: a quest whose feature is still locked is not shown
-  at all, and the period's replacement quest carries its points.
-- A board the chronicle cannot open yet (the weekly one before level 12) replaces the track and the
-  list with one panel: a broken shackle and *The ledger opens at chronicle level 12.*
+  nothing. Under it the board as two pages.
+- **The tally** (`LedgerTally`, an `ember-wide` panel on the left): *Today's tally* or *This week's
+  tally*, the board's *40 / 100 points* large, and its chests down a vertical rail that fills from
+  the top as quests are claimed. Each chest stands centred on its own threshold, so the gaps between
+  chests are the gaps between their numbers (20 / 40 / 60 / 80 / 100 daily, 25 / 50 / 75 / 100
+  weekly): the kit's painted chest in a bevelled niche with its mark under it, a lozenge on the rail
+  that lights once the points reach it, what it holds as `RewardSlots`, and how far off it is
+  (*20 more points*). The chest itself is the press. One the points have reached glows and stirs
+  until it is opened (still under reduced motion); a taken one dims and wears a trophy. The daily
+  hundred prints its cadence under its slots (*Every 3 claims this pays Ancient Shard ×1 instead.*).
+- **The board** (`QuestCard`, two columns of `thin` cards, all ten in view): the quest's emblem in a
+  gold-edged plate with its points under it, its line, a groove with `progress / target` beside it,
+  and its reward as `RewardSlots`; at its end the one press that means something now — **Claim**
+  once it is done, **Go** to where it is played while it is not (the place named under it: the
+  Campaign, the Tavern's Level tab, the Forge's bench, the Gargoyle at the tier the quest names), a
+  *Claimed* seal once taken. A card never offers a press that does nothing: the old disabled Claim
+  on every unfinished row was one. What is owed stands first and what is taken last, each group in
+  the board's own order, so a quest only moves when its state does. A finished card breathes gold
+  until it is claimed. Nothing on the board is ever a dead row: a quest whose feature is still locked
+  is not shown at all, and the period's replacement quest carries its points — in ember, with a
+  hover that says whose they are. The weekly quest that counts daily boards is played on this very
+  screen, so its **Go** turns to the Daily tab rather than opening a second ledger.
+- A board the chronicle cannot open yet (the weekly one before level 12) replaces both pages with
+  one panel: a broken shackle and *The ledger opens at chronicle level 12.*
 - Motion and sound: `reward.small` on one claim, `reward.medium` on a Claim all, `reward.large` on a
-  chest, `ui.tab` on the tabs, `ui.error` on a press the board refuses; every claim raises a reward
-  toast naming the points and the currencies, and the top bar ticks up.
+  chest, `ui.tab` on the tabs, `ui.open` on a Go, `ui.error` on a press the board refuses; every
+  claim raises a reward toast naming the points and the currencies, and the top bar ticks up.
 - The hub's bottom-bar **Quests** button opens the ledger and carries the same badge; the Welcome
   Back panel says when a new day's or week's quests are waiting.
 
 ### 5.15 The Chronicler's Path (`QUESTS_MISSIONS.md` §4)
 - Reference: `progress_missions_screen.png`. Backdrop `bg.bg6` with the interior ambience and two
   lamp glows over the chronicler's table.
-- Header: ten **Chapter N** tabs (the names are prose and do not fit ten across, so the chapter's
-  own name sits with Eldric instead) and the Path's total — *72 / 120 missions*. A tab wears a
-  badge when that chapter's chest is waiting. Every tab is readable, including chapters still to
+- Header: the ten chapters as tabs (`ChapterTabs`) — each the kit's banner with a glyph for its
+  state (a trophy for a finished chapter, the ember flame on the one being walked, a broken shackle
+  ahead), *Chapter N* and a thin gold rail of how far it is walked, with a dot while its chest waits
+  — and beside them the Path's total, *72 / 120 missions*, over a rail of its own. The chapter's own
+  name is prose and sits with Eldric instead. Every tab is readable, including chapters still to
   come: the Path is a promise as much as a task list.
-- **Mission cards** (`MissionCard`, a rail of fixed-height cards with an arrow either side that
-  steps one card): the mission's glyph on a framed crest, the line it asks for, a gold progress bar
-  carrying `progress / target`, its reward as a `RewardList`, and the press. Four states — the one
-  being walked wears the ember frame and a gold name (*In progress*, or **Claim** once it is
-  finished), a claimed one steps back to *Claimed* with a trophy and a muted bar, and one still to
-  come wears a broken shackle and the word *Locked*. A locked card's counter goals read zero (it
-  has not started); its state predicates read the truth, so a chronicle deep enough sees what it
-  already satisfies. The rail opens on the mission being walked, not at the start of its chapter.
-- **Eldric** sits under the rail in a `thin` panel: the chapter's name, his own, and his line for
-  that chapter (the Path's own line once every mission is claimed). His portrait is the placeholder
-  model, tinted, until he has one of his own (`ASSETS.md` §3).
-- **The chapter track** (`ChapterTrack`): *Chapter chest*, the chapter's `claimed / 12` on a gold
-  rail, and the chest node at the end — dim while the chapter is unfinished (*Finish the chapter*),
-  gold and pulsing when it can be taken, a trophy and *Taken* afterwards, with its contents on
-  hover. The tenth chapter's node wears Eldric's own glyph and names what it is holding.
+- **Mission cards** (`MissionCard`): a rail of tall cards joined by chevrons — gold behind a claimed
+  card — with a slim drawn arrow either side that steps one card; the rail opens on the mission
+  being walked, not at the start of its chapter. A card: a hexagonal crest standing out of its top
+  edge in the colour of the kind of asking it is (campaign, champion, gear, summon, boss or
+  chronicle — `mission-view.ts`), *Mission 7.1*, the kind as its heading (*Campaign mission*) and
+  the line it asks for — a stage reference such as "4-10" is held whole rather than broken across
+  two lines. Its middle says what it is doing: while it is walked, **where it is played** (the
+  place's glyph in a gold lozenge and its name — *Thornwood Crossing*, *The Gargoyle*); a trophy and
+  *Complete* once finished; a *Claimed* seal once taken; a broken shackle and *Locked* while it
+  waits. Under it *Progress* with `progress / target` over a groove, a *Reward* divider and the
+  reward as `RewardSlots`, and at its foot the one press that means something: **Claim** once
+  finished, a compact **Go** to where it is played while it is walked — never the old disabled
+  *In progress* — and for one still to come the mission it waits on (*Opens after mission 7.1*). A
+  locked card's counter goals read zero (it has not started); its state predicates read the truth,
+  so a chronicle deep enough sees what it already satisfies. The foot is always there, so every
+  card's progress and reward sit level along the rail.
+- **Eldric** (a `thin` panel at the foot, left): his portrait — the same face that teaches the
+  chronicle — in a gold rim, *Chapter N*, the chapter's name, and his line for it in quotation marks
+  with his name under it (the Path's own line once every mission is claimed).
+- **The chapter chest** (`ChapterTrack`, an `ember-wide` panel beside him): *Chapter chest* with
+  `claimed / 12`, twelve skewed pips — gold for a claimed mission, ember for the one being walked —
+  what the chest holds as `RewardSlots` (the last chapter's champion as Eldric's portrait edged in
+  gold, the gift as a 6★ piece), and the press: *Finish the chapter*, **Claim** while it waits, then
+  *Taken*.
 - **Eldric's parting gift** (`MissionGiftDialog`): the last chest owes a 6★ Legendary piece, so the
   dialog offers the six slots and the set list, strikes it on *Strike it*, and shows the card it
   made before it closes. Once — the piece's id is kept in the save.
-- Motion and sound: `reward.medium` on a mission, `reward.large` on a chest or the gift,
-  `ui.tab` on the tabs and the arrows, `ui.error` on a press the Path refuses; every claim raises a
-  reward toast with what it paid, and Eldric's arrival gets its own.
+- Motion and sound: `reward.medium` on a mission, `reward.large` on a chest or the gift, `ui.tab`
+  on the tabs and the arrows, `ui.open` on a Go, `ui.error` on a press the Path refuses; a claimable
+  card breathes gold (still under reduced motion); every claim raises a reward toast with what it
+  paid, and Eldric's arrival gets its own.
 - The hub's bottom-bar **Missions** button opens the Path and carries a badge for the mission or
   the chest it owes.
 
@@ -1220,11 +1243,18 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   is the large one, and that happens in the Bag.
 
 ### 5.26 The Bag and the champion picker (`docs/design/MARKET.md` §3, §5)
-- **Every row says what using it would do, in full.** A consumable is bought once and used weeks
-  later, so a name alone would make a player guess. Icon in a rarity-coloured square with its count
-  in the corner, then the name in that rarity's colour over its whole description, then the button.
-  Rows are in shelf order so the Bag reads the way the Market does. An empty Bag says so in one
-  line rather than showing an empty frame.
+- **A bag, not a list.** What is held as slots in a grid of twelve — each item's art in a niche
+  edged in its rarity, its count in the corner and its name under it, in shelf order so the Bag reads
+  the way the Market does; the slots it does not fill are cut into the stone and wait. The chosen
+  one (the first held, until another is pressed) stands in full beside the grid (`BagDetail`).
+- **The panel says what using it would do, in full.** A consumable is bought once and used weeks
+  later, so a name alone would make a player guess: its art large in its rarity's frame, *Rare · The
+  Brewery* over its name, how many are held, its whole description — and how the thing it acts
+  on stands **right now** (`itemStatus`): a boost already running and how long it has left, the
+  day's Brewery runs, a board's points, the mission being walked. Then the one press. When the last
+  of an item is used, the panel moves on to what is left.
+- **An empty Bag says so, and says where to go**: *The Market and the Calendar both fill it*, with
+  **Go to the Market** and **Go to Daily Rewards** under it.
 - **The two that act on a champion say so and hand off.** Their button reads *Use on…* and opens the
   picker rather than acting on whoever is first.
 - **The picker greys rather than hides.** The whole roster is drawn in a `VirtualGrid` of 96 px
@@ -1232,7 +1262,7 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   already wearing every star for a Cheatmeal — are drawn **dimmed and dead to the touch**. Showing
   them is the point: a player looking for someone who is *not* on the list learns the rule from the
   list itself.
-- **What happened is said, not announced.** After a use, one line under the list: the item's name in
+- **What happened is said, not announced.** After a use, one line under the grid: the item's name in
   bold and the outcome after it — the boost and its new remaining time, *"twenty runs, from the
   top"*, the level or the stars reached. A refusal prints the engine's own reason in the same place,
   in the error colour.
@@ -1254,19 +1284,48 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   decide to.
 
 ### 5.27 Daily Rewards (`docs/design/LOGIN.md`)
-- **A board, not a list.** Thirty tiles in a scrolling grid, each framed in its tier's colour —
-  borrowed from gear's rarities, which a player already reads fluently. A tile carries *Day N*, its
-  rewards as a `RewardList` (plus the item's name in words when it pays one, because an icon alone
-  would be a guess), and its state: *Claimed* on the days behind, a primary **Claim** button on
-  today's, nothing on the days ahead. The three finale tiles carry a faint gold wash, so the end of the board
-  reads as the end of the board — every round, not only the first.
-- **The line under the title is the whole design in a sentence.** *A day is a day you came* — so
-  missing one costs nothing. Saying it on the board matters: a player who has met a login calendar
-  before will assume there is a streak to protect and will feel punished by a day they missed that
-  in fact cost them nothing. Beside it, which round of the board this is.
+- **The day in question, large** (`LoginHero`, the left panel): *Today* and *Day 4* over its tier,
+  what it pays as large `RewardSlots` with each named in words beneath, and the one press on the
+  board — **Take it**. Once taken, a *Taken* seal stamps down in its place and tomorrow's day shows
+  under it with the time until it opens; opened again later the same day, the panel is simply
+  tomorrow's (*Tomorrow · Day 5 · Opens in 7h 58m*). The design's one sentence (below) sits at its
+  foot.
+- **A board, not a list.** The whole round of thirty on the right, six across and five down, with no
+  scrolling (`LoginTile`). Each day is bevelled stone edged in its tier's colour — borrowed from
+  gear's rarities, which a player already reads fluently — so the shuffle reads as a scatter: *Day N*
+  and what it pays as `RewardSlots`, a Bag item drawn in its own art rather than named in words.
+  Today's day is gold-edged, lit and flagged *Today* on a corner ribbon; the days behind step back
+  and wear a seal (which lands with a stamp on the day just taken); once today's is in, tomorrow's is
+  ringed; the three finale tiles carry a gold wash and a star, so the end of the board reads as the
+  end of the board — every round, not only the first.
+- **One line is the whole design in a sentence.** *A day is a day you came* — so missing one costs
+  nothing. Saying it on the board matters: a player who has met a login calendar before will assume
+  there is a streak to protect and will feel punished by a day they missed that in fact cost them
+  nothing. Over the board, *Thirty days, in whatever order you come* and which round this is.
 - **The foot says what is left**: the time until the next day once today's is taken, the finale's
   invitation while it is still there, and — right after a claim — which day was just taken.
 - **It is reached, never pushed.** A *Rewards* plate at the far left of the hub's bottom bar wearing a notification
   dot the moment a day is owed. It does not open itself over the hub at launch: that would be the
   one dialog a player meets before they have decided to do anything, and with no streak to lose
   there is nothing urgent enough to justify taking the first press of the session.
+
+### 5.28 The Wallet (`docs/design/ECONOMY.md` §2, §5)
+- **Everything held, in view.** Every currency as a tile — its icon, its name, how much — grouped
+  under *Essentials*, *Keys*, *Shards*, *Brews*, *Tomes* and *Materials*, five to a line, all
+  twenty-five on the stage at once. A holding is what can be spent (`holdingOf`): energy and the
+  Eternal Key are read from their regenerating pools and the boss keys as the period's allowance less
+  what it has spent — out of their cap (*250 / 250*, *2 / 2*) — never from their wallet rows, which
+  those pools leave at zero (and which the first Wallet showed as 0).
+- **The chosen one in full** (`WalletDetail`, the right panel): its art in a gold-rimmed niche, its
+  group, its name and its amount; its description; for a pool, how it stands against its refill —
+  *The next one comes back in 42s*, *Full*, *All 2 come back in 7h 38m*. Then **Where it comes from**
+  and **What it is for**: the places from the currency's own data (`content/currencies/flows.ts`),
+  two to a line, each with its door's glyph. A place with a way in is itself the press — the whole
+  row, with *Go ›* at its end — and it closes the Wallet on the way; a place not yet open says
+  *Locked*; the clock, a level-up and the resets are only named.
+- **Energy's refill lives here** (ECONOMY.md §5): *50 [gems] › 100 [energy]* and **Refill** — as
+  often as the gems allow, past the cap if need be; without the gems the press is dead and says
+  *Not enough gems*. A refill toasts what it added. (The Eternal Key's exchange is not offered:
+  `USER_QUESTIONS.md` Q49.)
+- **It opens where it was asked for.** The **+** on a purse in the top bar opens the Wallet on that
+  currency; anything else opens it on Gold.

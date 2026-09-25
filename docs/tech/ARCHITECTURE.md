@@ -292,7 +292,10 @@ shelf and the boost expiries are `ADR-045`):
 purchases), `state/bag.ts` (`applyUseItem` and an exhaustive switch over the six effect kinds),
 `state/boosts.ts` (the three reward sites that may be doubled), `state/login.ts` and
 `state/grants.ts` — one payer for currencies and consumables alike, so a bundle and a login tile
-cannot drift apart in what they can give.
+cannot drift apart in what they can give. `state/wallet.ts` is the Wallet's: `holdingOf` reads a
+holding from wherever the currency lives — energy and the Eternal Key from their pools, the two boss
+keys as the period's allowance less what it has spent, the rest from their wallet rows — and
+`applyEnergyRefill` buys energy with gems (`ECONOMY.md` §5).
 
 ### 3.8 Time
 
@@ -478,6 +481,13 @@ interface SaveGame {
   transitions, top bar, and the asset-group await.
 - Dialogs are a stack too; `Esc` pops.
 - Component library in `ui/components` (see `UI_DESIGN.md` §4).
+- **The way there** (`ui/places`): content names places (`content/places/types.ts` — the screens,
+  the dialogs, and the clock and resets that are only a "where from"); `places.ts` knows how to reach
+  each one (a route or a dialog), which glyph its door wears, and what must be open first
+  (`placeOpen`), and maps every goal of the shared quest-and-mission DSL to where it is played
+  (`goalDestination`) — the settlement a stand is in, the Tavern tab, the Forge bench, the boss at
+  its tier. A mission card, a quest card, the Wallet and an empty Bag all offer the same ways
+  through `GoButton` or `useGo`, and none of them knows where anything is.
 
 ## 7. Audio
 

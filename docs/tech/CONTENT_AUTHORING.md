@@ -330,9 +330,18 @@ export default set({
 ## 6. Currency
 
 ```ts
-{ id: 'mat_glyph_sigil', name: 'currency.mat_glyph_sigil', icon: 'spell.rune-gilded-script', category: 'material', order: 24, cap: null }
+// src/content/currencies/index.ts — name and description keys, version and flows are filled in
+defineCurrency(c({ id: 'mat_glyph_sigil', icon: 'spell.rune_gilded_script', category: 'materials', topBar: false }))
+
+// src/content/currencies/flows.ts — where it comes from and what it is for, as places
+mat_glyph_sigil: { sources: ['campaign', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'], uses: ['forge'] },
 ```
-Adding a currency: add here, add its English name, add sources/sinks to `docs/design/ECONOMY.md` §2.
+Adding a currency: its id in `CURRENCY_IDS` (display order), its definition here, its row in
+`flows.ts` (validated as place ids from `src/content/places/types.ts`, at least one of each — the
+Wallet lists them with the way to each, so every source must really pay it and every use really
+spend it), its English name and description in `src/i18n/en/currencies.ts`, and its sources and
+sinks in `docs/design/ECONOMY.md` §2. A currency that lives in a pool rather than a wallet row
+(energy, the keys) also needs its arm in `holdingOf` (`src/state/wallet.ts`).
 
 ## 7. Title
 

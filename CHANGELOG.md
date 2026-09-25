@@ -6,8 +6,20 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-The owner's tenth batch, in progress: the Chronicler's Path, the Ledger, Daily Rewards, the Wallet
-and the Bag reworked.
+_Nothing pending. Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
+say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
+lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
+Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
+
+## [0.9.9] — 2026-09-25 — The Ledger and the Purse
+
+The owner's tenth batch: the Chronicler's Path, the Chronicler's Ledger, Daily Rewards, the Wallet
+and the Bag reworked — "just make the menus overall look better". Beyond the look, three things a
+player can now do: follow any unfinished mission or quest straight to where it is played, read
+where every currency comes from and what it is for, and buy energy with gems. The tutorial's Path
+and Ledger lessons were walked against the new screens: their targets and their lines still hold.
+`docs/tech/UI_DESIGN.md` §4, §5.14, §5.15, §5.26–§5.28; `docs/tech/ARCHITECTURE.md` §3.7d, §6;
+`docs/design/ECONOMY.md` §2, §5; `docs/tech/CONTENT_AUTHORING.md` §6.
 
 ### Added
 
@@ -81,11 +93,10 @@ and the Bag reworked.
 - The Wallet showed Energy and every key as 0: it read their wallet rows, which the pools never
   fill. It now reads the pools and the boss allowances.
 - Energy's description named only the campaign; dungeon runs spend it too.
-
-_Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
-say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
-lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
-Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
+- A mission line's stage reference ("4-10") broke across two lines at its hyphen.
+- The Path's rail scrolled itself on every render (the view it keyed on is rebuilt each time), which
+  React stopped as an update loop; it now moves only when the chapter or the mission being walked
+  changes.
 
 ## [0.9.8] — 2026-09-23 — The Cask and the Crystal
 
