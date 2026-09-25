@@ -1,0 +1,89 @@
+/* The ten chapters (docs/tech/UI_DESIGN.md §5.15): each tab says how far it is walked. */
+.tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  color: var(--text-2);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  transition:
+    color var(--t-fast),
+    transform var(--t-fast) var(--ease-out),
+    filter var(--t-fast);
+}
+
+.tab:hover {
+  color: var(--text-1);
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.mark {
+  flex: none;
+  color: var(--text-3);
+}
+
+/* A thin gold bar of the chapter's twelve, filled by how many are claimed. */
+.bar {
+  position: relative;
+  height: 4px;
+  margin: 0 4px;
+  background: rgba(6, 5, 8, 0.85);
+  box-shadow: 0 0 0 1px rgba(141, 133, 119, 0.25);
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--share) * 100%);
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+  box-shadow: 0 0 6px rgba(240, 213, 122, 0.45);
+}
+
+.tab[data-active='true'] {
+  color: var(--gold-3);
+}
+
+.tab[data-state='done'] .mark {
+  color: var(--gold-2);
+}
+
+/* The chapter being walked: its mark burns ember whether or not its tab is the one open. */
+.tab[data-state='current'] .mark {
+  color: var(--ember-3);
+  filter: drop-shadow(0 0 5px rgba(216, 85, 47, 0.8));
+}
+
+.tab[data-state='locked'] {
+  color: var(--text-3);
+}
+
+.tab[data-state='locked'] .label {
+  opacity: 0.75;
+}

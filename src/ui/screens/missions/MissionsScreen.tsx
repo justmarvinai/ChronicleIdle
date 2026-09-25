@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { playSfx } from '@audio/index';
 import { content } from '@content/registry';
 import { t, translate, type I18nKey } from '@i18n/index';
@@ -7,17 +7,16 @@ import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import type { Route } from '@state/ui-types';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { Backdrop } from '@ui/components/Backdrop/Backdrop';
-import { Button } from '@ui/components/Button/Button';
-import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
-import { SpriteView } from '@ui/components/SpriteView/SpriteView';
-import { Tabs } from '@ui/components/Tab/Tabs';
 import { TopBar } from '@ui/components/TopBar/TopBar';
 import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
+import { goalDestination } from '@ui/places/places';
 import type { ScreenProps } from '@ui/router/screens';
-import { ChapterTrack } from './ChapterTrack';
+import { ChapterTabs } from './ChapterTabs';
+import { ChapterTrack, ELDRIC_PORTRAIT } from './ChapterTrack';
 import { MissionCard } from './MissionCard';
 import styles from './MissionsScreen.module.css';
 
@@ -29,13 +28,16 @@ const DESK_GLOWS = [
   { x: 1560, y: 300, size: 200, color: 0x9f8fff, flicker: 0.2 },
 ];
 
-/** How far one press of the carousel's arrows moves it: a card and its gap. */
-const CARD_STEP = 336;
+/** How far one press of the rail's arrows moves it: a card and the gap its chevron stands in. */
+const CARD_STEP = 346;
+/** Scroll left within this many pixels of an end counts as being at it. */
+const END_SLACK = 4;
 
 /**
- * The Chronicler's Path (docs/design/QUESTS_MISSIONS.md §4, `UI_DESIGN.md` §5.15): chapter tabs
- * across the top, a carousel of mission cards under them, the chapter's own track with its chest
- * along the bottom, and Eldric beside it with a line for the chapter that is open.
+ * The Chronicler's Path (docs/design/QUESTS_MISSIONS.md §4, `UI_DESIGN.md` §5.15): the ten chapters
+ * across the top, each saying how far it is walked; the chapter's twelve missions as a rail of
+ * cards joined by chevrons, opening on the one being walked; and along the bottom Eldric with his
+ * line for the chapter, beside the chapter's chest and what it holds.
  *
  * The line is derived from the save on every render, so the card that is claimable is always the
  * one the chronicle is actually on.
@@ -49,17 +51,30 @@ export default function MissionsScreen({ route }: ScreenProps) {
   useSceneAudio('hub', 'interior');
   const view = save ? missionsState(save, now) : null;
   const [chapter, setChapter] = useState<number | null>(params.chapter ?? null);
-  const rail = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLOListElement>(null);
+  const [ends, setEnds] = useState({ start: true, end: false });
 
   // The tab follows the Path until the player picks one themselves.
   const shown = chapter ?? view?.activeChapter ?? 1;
   const current = view?.chapters.find((entry) => entry.chapter.index === shown) ?? null;
 
+  // The first card not yet taken; the rail opens on it rather than at the start of its chapter.
+  const walked = current?.missions.findIndex((mission) => mission.status !== 'claimed') ?? -1;
+
+  const measure = useCallback((): void => {
+    const node = rail.current;
+    if (!node) return;
+    const start = node.scrollLeft <= END_SLACK;
+    const end = node.scrollLeft + node.clientWidth >= node.scrollWidth - END_SLACK;
+    // The view is rebuilt every render; only a change at either end is worth another one.
+    setEnds((was) => (was.start === start && was.end === end ? was : { start, end }));
+  }, []);
+
   useEffect(() => {
-    // Open on the mission being walked rather than at the start of its chapter.
-    const open = current?.missions.findIndex((mission) => mission.status !== 'claimed') ?? -1;
-    if (rail.current && open > 0) rail.current.scrollLeft = (open - 1) * CARD_STEP;
-  }, [current]);
+    const node = rail.current;
+    if (node) node.scrollLeft = walked > 0 ? (walked - 1) * CARD_STEP : 0;
+    measure();
+  }, [shown, walked, measure]);
 
   if (!save || !view || !current) return null;
   const eldric = content.championById('champ.eldric_chronicler');
@@ -100,90 +115,69 @@ export default function MissionsScreen({ route }: ScreenProps) {
 
       <div className={styles.body}>
         <header className={styles.head}>
-          <Tabs
-            /*
-             * Every chapter can be read, not only the one being walked: the Path is a promise as
-             * much as a task list, and a card still to come shows what it will ask for (and, for
-             * a state predicate, whether the chronicle already satisfies it).
-             */
-            items={view.chapters.map((entry) => ({
-              key: `${entry.chapter.index}`,
-              label: translate('missions.chapter', { index: entry.chapter.index }),
-              badge: entry.chestClaimable ? 1 : 0,
-              testId: `missions-tab-${entry.chapter.index}`,
-            }))}
-            value={`${shown}`}
-            onChange={(key) => {
-              setChapter(Number(key));
-              playSfx('ui.tab');
-            }}
-            className={styles.tabs ?? ''}
-          />
-          <span className={`num ${styles.total}`} data-testid="missions-progress">
-            {translate('missions.progress', { claimed: view.claimed, total: view.total })}
-          </span>
+          <ChapterTabs chapters={view.chapters} value={shown} onChange={(index) => setChapter(index)} />
+          <div className={styles.total}>
+            <span className={`num ${styles.totalCount}`} data-testid="missions-progress">
+              {translate('missions.progress', { claimed: view.claimed, total: view.total })}
+            </span>
+            <span className={styles.totalBar} aria-hidden="true">
+              <span className={styles.totalFill} style={{ width: `${(view.claimed / view.total) * 100}%` }} />
+            </span>
+          </div>
         </header>
 
         <div className={styles.carousel}>
-          <Button
-            variant="secondary"
-            size="sm"
-            className={styles.arrow ?? ''}
+          <button
+            type="button"
+            className={styles.arrow}
+            data-direction="back"
+            disabled={ends.start}
             onClick={() => scroll(-1)}
             aria-label={t('missions.earlier')}
             data-testid="missions-prev"
-          >
-            <Glyph glyph="glyph.magic_arrow" size={22} color="var(--gold-3)" className={styles.back ?? ''} />
-          </Button>
-
-          <div className={styles.rail} ref={rail} data-testid="missions-rail">
+          />
+          <ol className={styles.rail} ref={rail} onScroll={measure} data-testid="missions-rail">
             {current.missions.map((mission) => (
-              <MissionCard
-                key={mission.mission.id}
-                view={mission}
-                onClaim={() => claim(mission.mission.id)}
-              />
+              <li key={mission.mission.id} className={styles.cell} data-status={mission.status}>
+                <MissionCard
+                  view={mission}
+                  destination={mission.status === 'open' ? goalDestination(mission.mission.goal, save) : null}
+                  onClaim={() => claim(mission.mission.id)}
+                />
+              </li>
             ))}
-          </div>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            className={styles.arrow ?? ''}
+          </ol>
+          <button
+            type="button"
+            className={styles.arrow}
+            data-direction="forward"
+            disabled={ends.end}
             onClick={() => scroll(1)}
             aria-label={t('missions.later')}
             data-testid="missions-next"
-          >
-            <Glyph
-              glyph="glyph.magic_arrow"
-              size={22}
-              color="var(--gold-3)"
-              className={styles.forward ?? ''}
-            />
-          </Button>
+          />
         </div>
 
         <div className={styles.foot}>
           <Panel kind="thin" padding={14} className={styles.eldric} contentClassName={styles.eldricRow}>
-            <div className={styles.portrait}>
-              {eldric ? (
-                <SpriteView
-                  model={eldric.art.model}
-                  scale={2.2}
-                  facing="right"
-                  tint={eldric.art.tint}
-                  desaturate={eldric.art.placeholder}
-                />
-              ) : null}
-            </div>
+            <span className={styles.portrait}>
+              <AssetImage asset={ELDRIC_PORTRAIT} size={256} alt="" />
+            </span>
             <div className={styles.speech}>
-              <span className={`display ${styles.speaker}`}>
-                {t(current.chapter.name as I18nKey)}
-                <span className={styles.speakerName}>{eldric ? t(eldric.name as I18nKey) : ''}</span>
+              <span className={`num ${styles.chapterNo}`}>
+                {translate('missions.chapter', { index: current.chapter.index })}
               </span>
+              <span className={`display ${styles.chapterName}`}>{t(current.chapter.name as I18nKey)}</span>
               <p className={styles.line} data-testid="missions-eldric">
-                {view.finished ? t('missions.finished') : t(current.chapter.eldric as I18nKey)}
+                {translate('missions.quote', {
+                  line: view.finished ? t('missions.finished') : t(current.chapter.eldric as I18nKey),
+                })}
               </p>
+              {eldric ? (
+                <span className={styles.speaker}>
+                  {translate('missions.speaker', { name: t(eldric.name as I18nKey) })}
+                </span>
+              ) : null}
             </div>
           </Panel>
 

@@ -45,8 +45,11 @@ test.describe('the Chronicler’s Path', () => {
     await expect(stars).toContainText('30 / 30');
     await expect(stars).toContainText('Locked');
 
-    // The open mission is not finished (Normal has not been touched), so its press is refused.
-    await expect(page.getByTestId('mission-claim-mission.07.01')).toBeDisabled();
+    // The open mission is not finished (Normal has not been touched), so there is nothing to claim:
+    // the card names where it is played and offers the way there instead.
+    await expect(page.getByTestId('mission-claim-mission.07.01')).toHaveCount(0);
+    await expect(page.getByTestId('mission-where-mission.07.01')).toContainText('Thornwood Crossing');
+    await expect(page.getByTestId('mission-go-mission.07.01')).toBeEnabled();
 
     // Back to chapter 6: its last mission is claimed and the chest is taken, so nothing is owed.
     await page.getByTestId('missions-tab-6').click();
@@ -68,6 +71,10 @@ test.describe('the Chronicler’s Path', () => {
     await page.getByTestId('nav-missions').click();
     await expect(page.getByTestId('screen-missions')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('missions-progress')).toContainText('72 / 120 missions');
+
+    // And the way there leads to the settlement the open mission is fought in.
+    await page.getByTestId('mission-go-mission.07.01').click();
+    await expect(page.getByTestId('screen-settlement')).toBeVisible({ timeout: 20_000 });
 
     expect(problems).toEqual([]);
   });

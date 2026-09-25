@@ -6,7 +6,35 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending. Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
+The owner's tenth batch, in progress: the Chronicler's Path, the Ledger, Daily Rewards, the Wallet
+and the Bag reworked.
+
+### Added
+
+- **The way there** (`ui/places`): `places.ts` — `PLACES`, every place a press can reach (its name,
+  its "Go to" words, the glyph its door wears on the hub, what must be open first, its screen or
+  dialog), `placeOpen`, `placeDestination`, and `goalDestination`, where each goal of the shared DSL
+  is played (the settlement a stand is in, or the map before it is reached; the Tavern tab; the Forge
+  bench; the boss and its tier); `GoButton` ("Go to the Tavern", or a compact **Go** that keeps the
+  full words as its name) and `use-go.ts`; the place ids in `content/places/types.ts`.
+- `RewardSlots` (`ui/components/RewardSlots`): what something will pay as the reference's framed
+  squares — the icon large, the count in the corner, the name on hover and for a screen reader —
+  with `currencySlot` (`slots.tsx`) for a currency and room for items beside it.
+- The Path's parts (`ui/screens/missions`): `ChapterTabs` (the ten chapters, each with how far it is
+  walked and a dot while its chest waits) and `mission-view.ts` (`missionFamily`, `FAMILY_TINT`,
+  `progressLine`, `chapterState`, `chapterShare`).
+
+### Changed
+
+- **The Chronicler's Path** redesigned (`docs/tech/UI_DESIGN.md` §5.15): the chapters as tabs over
+  the Path's total; the chapter's twelve missions as a rail of tall cards joined by chevrons, opening
+  on the one being walked; each card with the crest of its kind, where it is played, its progress
+  and its reward slots; Eldric's portrait and line for the chapter beside its chest, whose pips count
+  the chapter and whose slots show what it holds. The mission being walked offers **Go** to where it
+  is played instead of the old disabled *In progress* button, and a stage reference such as "4-10"
+  no longer breaks across two lines.
+
+_Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
 lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
 Campaign" in the drop-rarity note meant the difficulty or the early settlements)._

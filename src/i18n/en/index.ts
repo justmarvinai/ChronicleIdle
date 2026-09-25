@@ -3,6 +3,7 @@ import { bosses } from './bosses';
 import { brewery } from './brewery';
 import { missions } from './missions';
 import { palace } from './palace';
+import { places } from './places';
 import { quests } from './quests';
 import { campaign } from './campaign';
 import { changelog } from './changelog';
@@ -44,6 +45,7 @@ export const en = {
   ...dungeons,
   ...market,
   ...palace,
+  ...places,
   ...quests,
   ...missions,
   ...tower,

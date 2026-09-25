@@ -34,6 +34,7 @@ export const ui = {
   'common.xp': 'XP',
   'common.energy': 'Energy',
   'common.full': 'Full',
+  'common.amountOf': '{name} ×{amount}',
   'common.next': 'Next in {time}',
   'common.new': 'New',
 

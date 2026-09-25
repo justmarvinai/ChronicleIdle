@@ -91,9 +91,13 @@ describe('the Path on screen', () => {
     const first = screen.getByTestId('mission-card-mission.01.01');
     expect(first).toHaveTextContent('Clear Thornwood Crossing 1-1 (Intro)');
     expect(first).toHaveTextContent('Gold ×2,000');
-    // Its own button says it is in progress; the next card has no button at all.
-    expect(screen.getByTestId('mission-claim-mission.01.01')).toBeDisabled();
+    // Nothing to claim yet: the card names where it is played and offers the way there instead,
+    // and a card still to come offers no press at all.
+    expect(screen.queryByTestId('mission-claim-mission.01.01')).not.toBeInTheDocument();
+    expect(screen.getByTestId('mission-where-mission.01.01')).toHaveTextContent('Thornwood Crossing');
+    expect(screen.getByTestId('mission-go-mission.01.01')).toHaveAccessibleName('Go to Thornwood Crossing');
     expect(screen.queryByTestId('mission-claim-mission.01.03')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mission-go-mission.01.03')).not.toBeInTheDocument();
     expect(screen.getByTestId('mission-card-mission.01.03')).toHaveTextContent('Locked');
     expect(screen.getByTestId('missions-chapter-progress')).toHaveTextContent('0 / 12');
     expect(screen.getByTestId('chapter-chest-1')).toBeDisabled();
@@ -113,8 +117,29 @@ describe('the Path on screen', () => {
     expect(screen.getByTestId('mission-claimed-mission.01.01')).toHaveTextContent('Claimed');
     expect(screen.getByTestId('missions-progress')).toHaveTextContent('1 / 120 missions');
     expect(screen.getByTestId('missions-chapter-progress')).toHaveTextContent('1 / 12');
-    // The next mission is the open one now, and it is not finished.
-    expect(screen.getByTestId('mission-claim-mission.01.02')).toBeDisabled();
+    // The next mission is the open one now, and it is not finished: it points at the Campaign.
+    expect(screen.queryByTestId('mission-claim-mission.01.02')).not.toBeInTheDocument();
+    expect(screen.getByTestId('mission-go-mission.01.02')).toHaveAccessibleName('Go to the Campaign');
+  });
+
+  it('goes to where the open mission is played', async () => {
+    const user = userEvent.setup();
+    render(stage(<MissionsScreen route={PATH} />));
+    await user.click(screen.getByTestId('mission-go-mission.01.01'));
+    const stack = useGameStore.getState().ui.stack;
+    expect(stack[stack.length - 1]).toEqual({ name: 'settlement', settlement: 1 });
+  });
+
+  it('offers no way into a place the chronicle has not opened yet', () => {
+    // Mission 3.2 asks for the Gargoyle, which a chronicle this young cannot fight.
+    chronicle({ level: 1 });
+    patch((s) => {
+      s.missions.claimed = ALL.slice(0, 25);
+      s.missions.chests = [1, 2];
+    });
+    render(stage(<MissionsScreen route={PATH} />));
+    expect(screen.getByTestId('mission-where-mission.03.02')).toHaveTextContent('The Gargoyle');
+    expect(screen.queryByTestId('mission-go-mission.03.02')).not.toBeInTheDocument();
   });
 
   it('lets a chronicle read a chapter it has not reached', async () => {

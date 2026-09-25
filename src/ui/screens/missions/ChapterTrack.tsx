@@ -1,11 +1,16 @@
 import { t, translate } from '@i18n/index';
 import type { ChapterView } from '@engine/missions/path';
-import { Bar } from '@ui/components/Bar/Bar';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
+import { Button } from '@ui/components/Button/Button';
 import { Glyph } from '@ui/components/Glyph/Glyph';
 import { Panel } from '@ui/components/Frame/Panel';
-import { RewardList } from '@ui/components/RewardList/RewardList';
-import { Tooltip } from '@ui/components/Tooltip/Tooltip';
+import { RewardSlots } from '@ui/components/RewardSlots/RewardSlots';
+import type { RewardSlotItem } from '@ui/components/RewardSlots/slots';
+import { RARITY_HEX } from '@ui/styles/display-maps';
 import styles from './ChapterTrack.module.css';
+
+/** The portrait the Path, the tutorial and the last chest all give Eldric. */
+export const ELDRIC_PORTRAIT = 'avatar.tutorial_npc' as const;
 
 export interface ChapterTrackProps {
   view: ChapterView;
@@ -13,14 +18,31 @@ export interface ChapterTrackProps {
 }
 
 /**
- * The chapter's own progress and the chest at the end of it (docs/tech/UI_DESIGN.md §5.15): twelve
- * missions along a rail, and a node that lights when the last of them is claimed. The final
- * chapter's node is Eldric himself, so it says who it is holding.
+ * The chapter's chest (docs/tech/UI_DESIGN.md §5.15): twelve pips, one a mission, lit as they are
+ * claimed and burning on the one being walked; then what the chest holds, drawn as the rewards it
+ * is rather than hidden in a tooltip; then the press that takes it. The tenth chapter's chest holds
+ * Eldric himself and the Legendary piece of the player's choosing, so it shows both.
  */
 export function ChapterTrack({ view, onClaimChest }: ChapterTrackProps) {
   const chest = view.chapter.chest;
-  const eldric = chest.champion !== undefined;
-  const state = view.chestClaimed ? 'claimed' : view.chestClaimable ? 'claimable' : 'locked';
+  const extras: RewardSlotItem[] = [];
+  if (chest.champion)
+    extras.push({
+      id: 'champion',
+      icon: <AssetImage asset={ELDRIC_PORTRAIT} size={128} className={styles.portraitSlot} alt="" />,
+      amount: '',
+      label: t('missions.eldricJoined'),
+      edge: RARITY_HEX.legendary,
+    });
+  if (chest.gearChoice)
+    extras.push({
+      id: 'gear',
+      icon: <Glyph glyph="glyph.ribcage_armor" size={36} color={RARITY_HEX.legendary} />,
+      amount: '6★',
+      label: t('missions.gearChoice.title'),
+      edge: RARITY_HEX.legendary,
+    });
+
   return (
     <Panel kind="ember-wide" padding={16} className={styles.panel} contentClassName={styles.body}>
       <div className={styles.text}>
@@ -33,48 +55,36 @@ export function ChapterTrack({ view, onClaimChest }: ChapterTrackProps) {
         </span>
       </div>
 
-      <Bar
-        value={view.claimed}
-        max={view.chapter.missions.length}
-        kind="stamina"
-        height={24}
-        className={styles.rail ?? ''}
-      />
+      <ol className={styles.pips} aria-hidden="true">
+        {view.missions.map((mission) => (
+          <li key={mission.mission.id} className={styles.pip} data-status={mission.status} />
+        ))}
+      </ol>
 
-      <Tooltip
-        content={
-          <div className={styles.tip}>
-            <strong className={styles.tipTitle}>{t('missions.chest')}</strong>
-            {chest.currencies.length ? (
-              <RewardList amounts={chest.currencies} layout="column" size={22} />
-            ) : null}
-            {eldric ? <span>{t('missions.eldricJoined')}</span> : null}
-            {chest.gearChoice ? <span>{t('missions.gearChoice.title')}</span> : null}
-          </div>
-        }
-      >
-        <button
-          type="button"
-          className={[styles.chest, styles[state]].join(' ')}
+      <div className={styles.chest}>
+        <RewardSlots
+          amounts={chest.currencies}
+          items={extras}
+          size="md"
+          muted={view.chestClaimed}
+          testId={`chapter-chest-holds-${view.chapter.index}`}
+        />
+        <Button
+          variant={view.chestClaimable ? 'primary' : 'secondary'}
+          size="md"
           disabled={!view.chestClaimable}
           onClick={onClaimChest}
-          aria-label={t('missions.chest')}
+          className={styles.take ?? ''}
+          data-state={view.chestClaimed ? 'claimed' : view.chestClaimable ? 'claimable' : 'locked'}
           data-testid={`chapter-chest-${view.chapter.index}`}
         >
-          <Glyph
-            glyph={view.chestClaimed ? 'glyph.trophy_cup' : eldric ? 'glyph.owl' : 'glyph.burning_scroll'}
-            size={30}
-            color={view.chestClaimable ? 'var(--gold-2)' : 'var(--text-3)'}
-          />
-          <span className={styles.chestLabel}>
-            {view.chestClaimed
-              ? t('missions.chestTaken')
-              : view.chestClaimable
-                ? t('missions.claim')
-                : t('missions.chestLocked')}
-          </span>
-        </button>
-      </Tooltip>
+          {view.chestClaimed
+            ? t('missions.chestTaken')
+            : view.chestClaimable
+              ? t('missions.claim')
+              : t('missions.chestLocked')}
+        </Button>
+      </div>
     </Panel>
   );
 }

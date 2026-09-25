@@ -1,85 +1,300 @@
+/*
+ * One mission (docs/tech/UI_DESIGN.md §5.15): a tall card with its crest standing out of its top
+ * edge, in the colour of the kind of asking it is.
+ */
 .card {
-  width: 320px;
-  /* Every card the same height, so the rail reads as a row of pages rather than a ragged edge. */
-  height: 336px;
+  position: relative;
+  width: 312px;
+  height: 510px;
   flex: none;
-  transition:
-    transform var(--t-base) var(--ease-snap),
-    filter var(--t-base);
-}
-
-.body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  height: 100%;
-  min-height: 0;
+  gap: 8px;
+  padding: 52px 18px 16px;
+  background:
+    radial-gradient(
+      ellipse 95% 42% at 50% 0%,
+      color-mix(in srgb, var(--tone) 24%, transparent),
+      transparent 72%
+    ),
+    linear-gradient(180deg, rgba(30, 25, 32, 0.95), rgba(12, 10, 14, 0.97));
+  transition:
+    transform var(--t-base) var(--ease-out),
+    filter var(--t-base),
+    box-shadow var(--t-base);
 }
 
+.card:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.06);
+}
+
+/* A hexagonal crest, gold-rimmed, the family's colour inside it. */
 .crest {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  width: 80px;
+  height: 90px;
+  transform: translateX(-50%);
   display: grid;
   place-items: center;
-  width: 76px;
-  height: 76px;
-  /* The kit's round frame is where a round shape is allowed (CLAUDE.md §7.1). */
-  border: 1px solid rgba(141, 133, 119, 0.4);
-  background: radial-gradient(circle at 40% 35%, rgba(58, 48, 38, 0.95), rgba(16, 14, 18, 0.95));
+  clip-path: polygon(50% 0, 100% 24%, 100% 76%, 50% 100%, 0 76%, 0 24%);
+  background: linear-gradient(160deg, var(--gold-3), var(--gold-1) 55%, #3a2a12);
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.7));
 }
 
-.name {
-  font-size: 19px;
-  line-height: 1.2;
-  color: var(--text-1);
-  text-align: center;
-  min-height: 46px;
+.crest::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  clip-path: polygon(50% 0, 100% 24%, 100% 76%, 50% 100%, 0 76%, 0 24%);
+  background:
+    radial-gradient(circle at 45% 35%, color-mix(in srgb, var(--tone) 85%, white 15%), transparent 62%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--tone) 70%, black),
+      color-mix(in srgb, var(--tone) 35%, black)
+    );
 }
 
-.progress {
-  margin-top: auto;
+.crestGlyph {
+  position: relative;
+  color: #fff4d8;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.75));
 }
 
-.rewards {
-  align-self: flex-start;
-}
-
-.foot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-}
-
-.claimable {
-  box-shadow: 0 0 22px rgba(240, 213, 122, 0.26);
-}
-
-.claimable .name,
-.open .name {
-  color: var(--gold-3);
-}
-
-.claimed {
-  opacity: 0.74;
-}
-
-.claimed .progress {
-  filter: grayscale(0.55) brightness(0.72);
-}
-
-.locked {
-  font-size: 15px;
+.step {
+  font-size: 13px;
+  letter-spacing: 0.14em;
   color: var(--text-3);
 }
 
-.card.locked {
-  opacity: 0.66;
+.family {
+  font-size: 19px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--tone) 70%, var(--gold-3));
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-.taken {
+.name {
+  margin: 0;
+  min-height: 46px;
+  font-size: 17px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-1);
+}
+
+.ref {
+  white-space: nowrap;
+}
+
+/* What the card is doing, big and quiet in its middle. */
+.state {
+  flex: 1;
+  min-height: 0;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+}
+
+.mark {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
-  font-size: 15px;
+  min-width: 0;
+}
+
+.markGlyph {
+  color: var(--text-3);
+  opacity: 0.85;
+}
+
+.word {
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+}
+
+.card[data-status='claimable'] .markGlyph {
+  color: var(--gold-3);
+  opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(240, 213, 122, 0.6));
+}
+
+.card[data-status='claimable'] .word {
+  color: var(--gold-3);
+}
+
+/* Where the walked mission is played: the door's glyph in a gold-edged lozenge, and its name. */
+.medallion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: linear-gradient(160deg, var(--gold-3), var(--gold-1) 60%, #2a1f10);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+.medallion::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tone) 45%, transparent), transparent 70%),
+    linear-gradient(180deg, #221c24, #0e0c10);
+}
+
+.medallionGlyph {
+  position: relative;
+  color: var(--gold-3);
+  filter: drop-shadow(0 0 6px rgba(240, 213, 122, 0.35));
+}
+
+.placeName {
+  max-width: 100%;
+  font-size: 17px;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--text-1);
+}
+
+.seal {
+  padding: 6px 16px 4px;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: #9ec79b;
+  border: 2px solid rgba(158, 199, 155, 0.7);
+  box-shadow:
+    inset 0 0 0 3px rgba(12, 10, 14, 0.9),
+    inset 0 0 0 4px rgba(158, 199, 155, 0.35);
+  transform: rotate(-8deg);
+}
+
+/* How far along: the count over a groove. */
+.progress {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.progressHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.caption {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+}
+
+.count {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+
+.count[data-done='true'] {
+  color: var(--gold-3);
+}
+
+/* "Reward" between two gold hairlines. */
+.divider {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--text-3);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 74, 0.55));
+}
+
+.divider::after {
+  background: linear-gradient(90deg, rgba(201, 162, 74, 0.55), transparent);
+}
+
+.rewards {
+  min-height: 64px;
+}
+
+.foot {
+  display: grid;
+  place-items: center;
+  min-height: 60px;
+  align-self: stretch;
+}
+
+.press {
+  min-width: 180px;
+}
+
+.waits {
+  font-size: 14px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-3);
+}
+
+/* The one being walked, and finished: it glows until it is taken. */
+.card[data-status='claimable'] {
+  animation: owed 2.4s ease-in-out infinite;
+}
+
+.card[data-status='open'] .name,
+.card[data-status='claimable'] .name {
+  color: var(--gold-3);
+}
+
+.card[data-status='claimed'] {
+  filter: saturate(0.6) brightness(0.8);
+}
+
+.card[data-status='claimed']:hover {
+  filter: saturate(0.7) brightness(0.9);
+}
+
+.card[data-status='locked'] {
+  filter: saturate(0.35) brightness(0.72);
+}
+
+.card[data-status='locked']:hover {
+  filter: saturate(0.45) brightness(0.82);
+}
+
+@keyframes owed {
+  0%,
+  100% {
+    box-shadow: 0 0 18px rgba(240, 213, 122, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 34px rgba(240, 213, 122, 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card[data-status='claimable'] {
+    animation: none;
+    box-shadow: 0 0 26px rgba(240, 213, 122, 0.32);
+  }
 }

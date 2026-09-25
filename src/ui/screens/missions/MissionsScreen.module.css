@@ -8,59 +8,120 @@
   position: absolute;
   left: 40px;
   right: 40px;
-  top: 96px;
+  top: 100px;
   bottom: 24px;
   z-index: var(--z-scene);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   min-height: 0;
 }
 
 .head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 14px;
   flex: none;
 }
 
-.tabs {
-  flex: 1;
-  min-width: 0;
-}
-
+/* The Path's whole length: its count over a thin rail of the hundred and twenty. */
 .total {
-  font-size: 18px;
-  color: var(--gold-2);
-  white-space: nowrap;
-  padding: 8px 14px;
-  background: linear-gradient(180deg, rgba(24, 20, 26, 0.86), rgba(14, 12, 17, 0.9));
-  border: 1px solid rgba(141, 133, 119, 0.3);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 190px;
+  padding: 9px 14px 11px;
+  background: linear-gradient(180deg, rgba(24, 20, 26, 0.9), rgba(12, 10, 14, 0.94));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.35),
+    inset 0 0 0 3px rgba(8, 7, 10, 0.9);
 }
 
-/* The carousel: arrows either side of a rail that scrolls a card at a time. */
+.totalCount {
+  font-size: 19px;
+  color: var(--gold-3);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.totalBar {
+  position: relative;
+  height: 4px;
+  background: rgba(6, 5, 8, 0.85);
+}
+
+.totalFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+}
+
+/* The rail and its arrows. */
 .carousel {
   flex: 1;
   min-height: 0;
   display: flex;
-  align-items: stretch;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
 }
 
+/* A tall, slim chevron either side, drawn rather than borrowed from a square button. */
 .arrow {
-  align-self: center;
+  position: relative;
   flex: none;
+  width: 46px;
+  height: 150px;
+  cursor: var(--cursor-pointer);
+  background: linear-gradient(180deg, rgba(30, 25, 32, 0.9), rgba(12, 10, 14, 0.94));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.45),
+    inset 0 0 0 3px rgba(8, 7, 10, 0.9),
+    0 6px 14px rgba(0, 0, 0, 0.55);
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
+  transition:
+    filter var(--t-fast),
+    transform var(--t-fast) var(--ease-out),
+    opacity var(--t-base);
 }
 
-/* The kit's arrow glyph is drawn pointing up-right; a quarter turn either way reads as the rail's
-   two directions. */
-.back {
-  transform: rotate(135deg);
+.arrow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-top: 3px solid var(--gold-3);
+  border-right: 3px solid var(--gold-3);
+  filter: drop-shadow(0 0 4px rgba(240, 213, 122, 0.55));
 }
 
-.forward {
-  transform: rotate(-45deg);
+.arrow[data-direction='back']::before {
+  transform: translate(-30%, -50%) rotate(-135deg);
+}
+
+.arrow[data-direction='forward']::before {
+  transform: translate(-70%, -50%) rotate(45deg);
+}
+
+.arrow:hover:not(:disabled) {
+  filter: brightness(1.25);
+  transform: scale(1.04);
+}
+
+.arrow:disabled {
+  opacity: 0.28;
+  cursor: default;
 }
 
 .rail {
@@ -68,66 +129,111 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 34px;
+  margin: 0;
+  padding: 40px 6px 8px;
+  list-style: none;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  padding: 4px;
+  scrollbar-width: none;
 }
 
-.rail > * {
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.cell {
+  position: relative;
+  flex: none;
   scroll-snap-align: start;
 }
 
+/* The Path runs card to card: a chevron in each gap, gold once the card behind it is claimed. */
+.cell:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -23px;
+  width: 11px;
+  height: 11px;
+  border-top: 3px solid rgba(141, 133, 119, 0.5);
+  border-right: 3px solid rgba(141, 133, 119, 0.5);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.cell[data-status='claimed']:not(:last-child)::after {
+  border-color: var(--gold-2);
+  filter: drop-shadow(0 0 4px rgba(240, 213, 122, 0.6));
+}
+
+/* Eldric and the chapter's chest along the bottom. */
 .foot {
   flex: none;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  min-height: 150px;
 }
 
 .eldric {
-  flex: none;
+  flex: 1.1 1 0;
+  min-width: 0;
 }
 
 .eldricRow {
   display: flex;
   align-items: center;
   gap: 18px;
+  height: 100%;
 }
 
+/* The same face that teaches the chronicle, in a gold-rimmed frame. */
 .portrait {
-  width: 120px;
-  height: 120px;
-  display: grid;
-  place-items: center;
   flex: none;
-  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.7));
+  width: 112px;
+  height: 112px;
+  padding: 3px;
+  background: linear-gradient(160deg, var(--gold-3), var(--gold-1) 60%, #2a1f10);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.65);
+}
+
+.portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .speech {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
-.speaker {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  font-size: 20px;
-  color: var(--gold-3);
-}
-
-.speakerName {
-  font-size: 15px;
+.chapterNo {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--text-3);
 }
 
+.chapterName {
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--gold-3);
+}
+
 .line {
-  margin: 0;
+  margin: 4px 0 0;
   font-size: 17px;
-  line-height: 1.35;
-  color: var(--text-2);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--text-1);
+}
+
+.speaker {
+  align-self: flex-end;
+  font-size: 14px;
+  color: var(--text-3);
 }

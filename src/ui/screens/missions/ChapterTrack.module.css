@@ -1,101 +1,82 @@
 .panel {
-  flex: none;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .body {
   display: grid;
-  grid-template-columns: 210px minmax(0, 1fr) 210px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 18px;
+  gap: 22px;
+  height: 100%;
 }
 
 .text {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .title {
-  font-size: 19px;
+  font-size: 20px;
   color: var(--gold-3);
+  white-space: nowrap;
 }
 
 .count {
-  font-size: 16px;
-  color: var(--text-2);
+  font-size: 22px;
+  color: var(--text-1);
 }
 
-.rail {
-  min-width: 0;
+/* Twelve pips, one a mission: gold once claimed, ember on the one being walked. */
+.pips {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pip {
+  height: 14px;
+  background: rgba(6, 5, 8, 0.85);
+  box-shadow:
+    inset 0 0 0 1px rgba(141, 133, 119, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.04);
+  transform: skewX(-18deg);
+}
+
+.pip[data-status='claimed'] {
+  background: linear-gradient(180deg, var(--gold-3), var(--gold-1));
+  box-shadow: 0 0 8px rgba(240, 213, 122, 0.4);
+}
+
+.pip[data-status='open'],
+.pip[data-status='claimable'] {
+  background: linear-gradient(180deg, #ff8a5c, var(--ember-2));
+  box-shadow: 0 0 10px rgba(216, 85, 47, 0.7);
+  animation: walking 1.8s ease-in-out infinite;
 }
 
 .chest {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid rgba(141, 133, 119, 0.4);
-  background: linear-gradient(180deg, rgba(38, 33, 42, 0.92), rgba(20, 17, 24, 0.95));
-  color: var(--text-2);
-  font-size: 15px;
-  cursor: var(--cursor-pointer);
-  transition:
-    filter var(--t-base),
-    border-color var(--t-base),
-    transform var(--t-base) var(--ease-snap);
+  gap: 16px;
 }
 
-.chest:disabled {
-  cursor: default;
+.take {
+  min-width: 190px;
 }
 
-.chestLabel {
-  white-space: nowrap;
+.portraitSlot {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
 }
 
-.locked {
-  opacity: 0.62;
-}
-
-.claimable {
-  border-color: var(--gold-2);
-  color: var(--gold-2);
-  animation: waiting 2.4s ease-in-out infinite;
-}
-
-.claimable:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.15);
-}
-
-.claimed {
-  border-color: rgba(120, 180, 120, 0.55);
-  color: #9ec79b;
-}
-
-.tip {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 14px;
-}
-
-.tipTitle {
-  color: var(--gold-3);
-}
-
-@keyframes waiting {
-  0%,
-  100% {
-    box-shadow: 0 0 14px rgba(240, 213, 122, 0.22);
-  }
+@keyframes walking {
   50% {
-    box-shadow: 0 0 24px rgba(240, 213, 122, 0.48);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .claimable {
-    animation: none;
+    filter: brightness(1.35);
   }
 }
