@@ -28,6 +28,11 @@ and the Bag reworked.
   threshold, with what it holds and the points still to go), `QuestCard`, and `quest-view.ts`
   (`questState`, `orderQuests`, `chestState`, `pointsToGo`, `railShare`). `GoButton.onGo`, for a way
   that leads to another tab of the screen it is pressed on.
+- Daily Rewards' parts (`ui/dialogs`): `LoginHero` (the day in question, large — today's to take,
+  the one just taken with tomorrow's under it, or tomorrow's with the time until it opens) and
+  `LoginTile` (a day's number, its reward slots, its tier's edge, and a seal once taken).
+  `RewardSlots.grants` and `slots.tsx`'s `itemSlot`, `grantSlot` and `grantLabel`: a Bag item as a
+  slot in its own art and rarity, and any grant list as slots.
 
 ### Changed
 
@@ -43,6 +48,11 @@ and the Bag reworked.
   last. A quest still to do offers **Go** to where it is played (the weekly quest that counts daily
   boards turns to the Daily tab) instead of a disabled Claim; a chest shows what it holds without a
   hover. `PointsTrack` and `QuestRow` are retired.
+- **Daily Rewards** redesigned (`UI_DESIGN.md` §5.27): the day in question large on the left with
+  the one press, and the whole round of thirty on the right with no scrolling — each day's rewards
+  drawn as slots, so a day that pays a Bag item shows the item rather than its name; today's day
+  flagged, days taken sealed, tomorrow's ringed once today's is in, and the three that lead the
+  board in gold.
 
 _Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
 say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a

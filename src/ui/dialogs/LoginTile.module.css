@@ -1,0 +1,159 @@
+/* One day of the thirty (docs/tech/UI_DESIGN.md §5.27): bevelled stone, edged in its tier. */
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 8px 12px;
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 50% 0%,
+      color-mix(in srgb, var(--tier) 14%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgba(30, 25, 32, 0.95), rgba(14, 12, 16, 0.97));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--tier) 65%, transparent),
+    inset 0 0 0 3px rgba(8, 7, 10, 0.9);
+  transition: filter var(--t-base);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--tier) 75%, var(--text-1));
+}
+
+.star {
+  color: var(--gold-3);
+  filter: drop-shadow(0 0 4px rgba(240, 213, 122, 0.6));
+}
+
+.slots {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+/* Today's: gold-edged, lit, and flagged. */
+.tile[data-today='true'] {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 20%, rgba(240, 213, 122, 0.22), transparent 72%),
+    linear-gradient(180deg, rgba(52, 40, 26, 0.96), rgba(20, 16, 12, 0.97));
+  box-shadow:
+    inset 0 0 0 2px var(--gold-2),
+    inset 0 0 0 4px rgba(8, 7, 10, 0.9),
+    inset 0 0 22px rgba(240, 213, 122, 0.2);
+  animation: today 2.4s ease-in-out infinite;
+}
+
+.ribbon {
+  position: absolute;
+  top: 8px;
+  right: -26px;
+  width: 96px;
+  padding: 2px 0 1px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: #1a1208;
+  background: linear-gradient(180deg, var(--gold-3), var(--gold-2));
+  transform: rotate(38deg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Tomorrow's, once today's is in: a quieter ring that says it is next. */
+.tile[data-next='true'] {
+  box-shadow:
+    inset 0 0 0 1px var(--gold-1),
+    inset 0 0 0 3px rgba(8, 7, 10, 0.9),
+    inset 0 0 0 4px rgba(201, 162, 74, 0.35);
+}
+
+/* The three that lead the board: a gold wash every round. */
+.tile[data-finale='true'] {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(242, 169, 59, 0.26), transparent 72%),
+    linear-gradient(180deg, rgba(60, 44, 20, 0.95), rgba(22, 17, 10, 0.97));
+}
+
+/* Taken: stepped back, with a seal in its corner. */
+.tile[data-taken='true'] {
+  filter: saturate(0.45) brightness(0.62);
+}
+
+.tile[data-taken='true']:hover {
+  filter: saturate(0.55) brightness(0.75);
+}
+
+.seal {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: #b9e0b3;
+  background: rgba(20, 38, 22, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(158, 199, 155, 0.8);
+  transform: rotate(45deg);
+}
+
+.seal > * {
+  transform: rotate(-45deg);
+}
+
+.tile[data-just='true'] .seal {
+  animation: land 520ms var(--ease-snap) both;
+}
+
+@keyframes today {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.14);
+  }
+}
+
+@keyframes land {
+  0% {
+    opacity: 0;
+    transform: rotate(45deg) scale(2.4);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(45deg) scale(0.92);
+  }
+  100% {
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile[data-today='true'],
+  .tile[data-just='true'] .seal {
+    animation: none;
+  }
+}

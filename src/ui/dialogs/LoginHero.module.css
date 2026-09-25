@@ -1,0 +1,129 @@
+/* The day in question, large (docs/tech/UI_DESIGN.md §5.27). */
+.hero {
+  height: 100%;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  text-align: center;
+}
+
+.caption {
+  font-size: 15px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.hero[data-mode='today'] .caption {
+  color: var(--gold-2);
+}
+
+.dayNo {
+  font-size: 52px;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow:
+    0 0 18px rgba(240, 213, 122, 0.35),
+    0 3px 0 rgba(0, 0, 0, 0.8);
+}
+
+.tier {
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--tier);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--tier) 45%, transparent);
+}
+
+.rule {
+  width: 70%;
+  height: 1px;
+  margin: 6px 0 10px;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 74, 0.7), transparent);
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 16px;
+  color: var(--text-1);
+}
+
+.press {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+}
+
+.opens {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.seal {
+  padding: 8px 22px 6px;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #9ec79b;
+  border: 2px solid rgba(158, 199, 155, 0.75);
+  box-shadow:
+    inset 0 0 0 3px rgba(12, 10, 14, 0.9),
+    inset 0 0 0 4px rgba(158, 199, 155, 0.35);
+  transform: rotate(-7deg);
+  animation: stamp 520ms var(--ease-snap) both;
+}
+
+.next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid rgba(201, 162, 74, 0.25);
+}
+
+.nextLead {
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.explain {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(201, 162, 74, 0.25);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-3);
+}
+
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: rotate(-7deg) scale(2.2);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-7deg) scale(0.94);
+  }
+  100% {
+    transform: rotate(-7deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seal {
+    animation: none;
+  }
+}

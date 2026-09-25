@@ -1,10 +1,13 @@
 import type { CurrencyAmount } from '@content/currencies/types';
+import type { Grant } from '@content/grants';
 import { Tooltip } from '@ui/components/Tooltip/Tooltip';
-import { currencySlot, type RewardSlotItem, type RewardSlotSize } from './slots';
+import { currencySlot, grantSlot, type RewardSlotItem, type RewardSlotSize } from './slots';
 import styles from './RewardSlots.module.css';
 
 export interface RewardSlotsProps {
   amounts?: readonly CurrencyAmount[];
+  /** A grant list (`@content/grants`): its currencies and its Bag items, in its own order. */
+  grants?: readonly Grant[];
   /** Items beside (after) the currencies — a Bag item a calendar day pays. */
   items?: readonly RewardSlotItem[];
   size?: RewardSlotSize;
@@ -21,13 +24,18 @@ export interface RewardSlotsProps {
  */
 export function RewardSlots({
   amounts = [],
+  grants = [],
   items = [],
   size = 'md',
   muted = false,
   className,
   testId,
 }: RewardSlotsProps) {
-  const slots = [...amounts.map((entry) => currencySlot(entry, size)), ...items];
+  const slots = [
+    ...amounts.map((entry) => currencySlot(entry, size)),
+    ...grants.map((grant) => grantSlot(grant, size)),
+    ...items,
+  ];
   return (
     <ul
       className={[styles.slots, styles[size], className ?? ''].join(' ')}

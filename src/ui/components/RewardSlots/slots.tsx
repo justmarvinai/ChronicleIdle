@@ -1,9 +1,13 @@
 import type { ReactNode } from 'react';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyAmount } from '@content/currencies/types';
+import type { Grant } from '@content/grants';
+import { content } from '@content/registry';
 import { formatAmount } from '@engine/economy/wallet';
 import { translate } from '@i18n/index';
+import { AssetImage } from '@ui/components/AssetImage/AssetImage';
 import { TintedIcon } from '@ui/components/AssetImage/TintedIcon';
+import { RARITY_COLOR } from '@ui/styles/display-maps';
 
 export type RewardSlotSize = 'sm' | 'md' | 'lg';
 
@@ -32,4 +36,43 @@ export function currencySlot(entry: CurrencyAmount, size: RewardSlotSize): Rewar
     amount: formatAmount(entry.amount),
     label: translate('common.amountOf', { name, amount: formatAmount(entry.amount) }),
   };
+}
+
+/** A Bag item as a slot: its own art, framed in its rarity (`@content/consumables`). */
+export function itemSlot(item: string, count: number, size: RewardSlotSize): RewardSlotItem {
+  const def = content.consumableById(item);
+  return {
+    id: item,
+    icon: def ? (
+      <AssetImage asset={def.icon} width={SLOT_ICON[size]} height={SLOT_ICON[size]} alt="" />
+    ) : null,
+    amount: formatAmount(count),
+    label: itemLabel(item, count),
+    ...(def ? { edge: RARITY_COLOR[def.rarity] } : {}),
+  };
+}
+
+/** Anything a grant hands over (`@content/grants`) — a currency or a Bag item — as a slot. */
+export function grantSlot(grant: Grant, size: RewardSlotSize): RewardSlotItem {
+  return grant.kind === 'currency'
+    ? currencySlot({ currency: grant.currency, amount: grant.amount }, size)
+    : itemSlot(grant.item, grant.count, size);
+}
+
+/** "Brewery Token ×1": a Bag item in words. */
+function itemLabel(item: string, count: number): string {
+  const def = content.consumableById(item);
+  return translate('common.amountOf', {
+    name: def ? translate(def.name) : item,
+    amount: formatAmount(count),
+  });
+}
+
+/** "Gold ×25,000", "Brewery Token ×1": what a slot says on hover, for a list that says it aloud. */
+export function grantLabel(grant: Grant): string {
+  if (grant.kind === 'consumable') return itemLabel(grant.item, grant.count);
+  return translate('common.amountOf', {
+    name: translate(CURRENCY_BY_ID[grant.currency].name),
+    amount: formatAmount(grant.amount),
+  });
 }

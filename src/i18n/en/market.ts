@@ -134,4 +134,7 @@ export const market = {
   'login.explain':
     'A day is a day you came, not a day on the calendar. Miss one and nothing is lost — the board simply waits for you.',
   'login.finale': 'The last three days are the best on the board.',
+  'login.tomorrow': 'Tomorrow',
+  'login.opensIn': 'Opens in {time}',
+  'login.tomorrowIs': 'Tomorrow is day {day}, in {time}',
 } as const;
