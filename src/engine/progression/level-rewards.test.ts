@@ -32,7 +32,8 @@ describe('level rewards (ECONOMY.md §4)', () => {
   it('names the features a level opens', () => {
     expect(levelUpReward(2).unlocks).toEqual(['tavern_level']);
     expect(levelUpReward(5).unlocks.sort()).toEqual(['auto_repeat_10', 'idle_chest', 'quests_daily']);
-    expect(levelUpReward(11).unlocks).toEqual([]);
+    expect(levelUpReward(11).unlocks).toEqual(['instant_clear']);
+    expect(levelUpReward(13).unlocks).toEqual([]);
   });
 
   it('lists every level gained, and never level 1 or past the cap', () => {

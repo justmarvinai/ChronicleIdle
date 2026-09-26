@@ -290,7 +290,8 @@ describe('migrateSave', () => {
       'tut.the_binding',
       'tut.routine',
     ]);
-    // …Steel and Bone's lessons up to level 16 count as read…
+    // …Steel and Bone's lessons up to level 16 count as read — the instant clear's (11) among
+    // them, since the rule is the level, not the version a lesson arrived in…
     expect(result.save.tutorial.completedSteps).toEqual([
       'tut.6.1',
       'tut.6.2',
@@ -298,6 +299,7 @@ describe('migrateSave', () => {
       'tut.6.4',
       'tut.6.5',
       'tut.6.6',
+      'tut.6.9',
     ]);
     // …and Refine (18) and auto-repeat (20) are still ahead of it.
     expect(result.save.tutorial.completedSteps).not.toContain('tut.6.7');

@@ -100,7 +100,9 @@ Instant clears (11). Each is one dialogue + one spotlighted action.
 chronicle holds every star of* — rather than on the screen alone: on any other stand the press is
 there but dead, and a lesson that points at a press that does nothing teaches the wrong thing
 (`CAMPAIGN.md` §10). A chronicle that had walked chapter 6 before `0.11.0` hears it the first time it
-opens a mastered stand's setup; one whose chapter was waved off does not.
+opens a mastered stand's setup; one whose chapter was waved off does not, and nor does one that
+predated the tutorial itself and was past level 11 when it arrived — the migration counts every
+lesson below a chronicle's level as read, whichever version the lesson came in.
 
 ## Data shape
 
