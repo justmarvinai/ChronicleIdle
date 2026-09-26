@@ -60,7 +60,7 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | bg1 | Drowned colosseum | Settlement 9 backdrop; Game Modes card art |
 | bg2 | Valley road with castle & bridge | Settlement 5; Settlement 8 (cold grade); campaign map base |
 | bg3 | Mossy dungeon gate | Settlement 6; the Gargoyle's arena and the Bosses menu; Settlement 10 (green grade) |
-| bg4 | Desert bazaar | Settlement 4; (Market, backlog) |
+| bg4 | Desert bazaar | Settlement 4; the Market; the Glorious Palace; the starter choice; the Brewery card |
 | bg5 | Armory / tavern interior | Tavern; Forge; Settlement 11 interior stages (1–5) |
 | bg6 | Burning battlefield | Settlement 7; Settlement 11 outer stages (6–10) |
 | bg7 | Green plains with rider | Settlement 1; Settlement 2 (dusk grade) |

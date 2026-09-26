@@ -68,6 +68,3 @@ export const GOLD_MARKET_POOL: readonly GoldMarketRow[] = [
   { currency: 'shard_ancient', weight: 5, min: 1, max: 1, unitGold: 45_000, rareFind: true },
   { currency: 'shard_sacred', weight: 1, min: 1, max: 1, unitGold: 260_000, rareFind: true },
 ];
-
-/** The pool's total weight; the roll reads it once per slot. */
-export const GOLD_MARKET_WEIGHT = GOLD_MARKET_POOL.reduce((sum, row) => sum + row.weight, 0);

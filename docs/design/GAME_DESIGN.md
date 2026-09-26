@@ -94,7 +94,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Roles | Attack, Defense, Health, Support |
 | Rarities | Common, Uncommon, Rare, Epic, Legendary, Mythic |
 | Summon items | Faded Shard, Ancient Shard, Sacred Shard, Primordial Shard |
-| Currencies | Gold, Gems (see `ECONOMY.md` for all 24) |
+| Currencies | Gold, Gems (see `ECONOMY.md` for all 25) |
 | Daily boss | Gargoyle, the Bone Tyrant |
 | Weekly boss | Titan, Mother of Shadows |
 | Mission line | The Chronicler's Path |

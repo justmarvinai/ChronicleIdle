@@ -393,12 +393,26 @@ the running game, to the same Definition of Done as a phase (`AGENTS.md` §3).
 
 ---
 
+## Next — the owner's order of 26 September 2026
+
+The owner read the state of the game and set the next five pieces of work, in this order. Each
+ships to the same Definition of Done as a phase (`AGENTS.md` §3).
+
+| Order | Work | Version | Status |
+| --- | --- | --- | --- |
+| 1 | The four bugs the audit found, and every open question settled on its recommendation | `0.9.10` | 🟨 in progress |
+| 2 | **The Mine** — an upgradable building that works while the chronicle is away, as in the references | `0.10.0` | ⬜ not started |
+| 3 | **Instant 3★ clears** — a stage mastered is a stage that no longer needs fighting | `0.11.0` | ⬜ not started |
+| 4 | **Challenges & Achievements** — long-term goals across every system | `0.12.0` | ⬜ not started |
+| 5 | **The roguelite mode** — the game's deepest mode, built and polished as its flagship | `0.13.0` | ⬜ not started |
+
+---
+
 ## Backlog (after EA-0.1 — not scheduled)
 
 | Item | Notes |
 | --- | --- |
 | Electron wrapper & Steam release | `platform/` adapters, Steamworks achievements, installer, store assets |
-| Market / Shop | gold & gem offers, daily rotating stock (`bg4` backdrop is reserved) |
 | More champions & models | replace placeholders first; new Legendaries/Mythics; faction models |
 | Accessories (ring, amulet, banner) | three more gear slots as in the references |
 | Awakening / Ascension | post-6★ growth track |

@@ -50,7 +50,7 @@ Level cap = `stars × 10`.
 
 Strong = ×1.10 damage and +10 % crit rate. Weak = ×0.90 damage and −10 % crit rate. Eclipse is
 neutral both ways. Numbers live in `balance/element.ts` (`ELEMENT_STRONG_DMG`, `ELEMENT_STRONG_CRIT`,
-`ELEMENT_WEAK_DMG`, `ELEMENT_WEAK_CRIT`, `ELEMENT_WEAK_GLANCE_CHANCE = 0` (off by default)).
+`ELEMENT_WEAK_DMG`, `ELEMENT_WEAK_CRIT`). There are no glancing hits (Q21).
 
 | Attacker ↓ / Defender → | Justice | Valor | Faith | Eclipse |
 | --- | --- | --- | --- | --- |
@@ -123,9 +123,10 @@ Effect vocabulary and targeting are defined in `BATTLE.md` §6. Below, damage is
 
 ## 4. EA-0.1 roster
 
-Elements: J = Justice, V = Valor, F = Faith, E = Eclipse. Models: seven finished models exist; every
-other champion uses the `teritorial_lizard` placeholder with a per-champion tint until art arrives.
-Varkos joined the finished sheets in `0.9.2`.
+Elements: J = Justice, V = Valor, F = Faith, E = Eclipse. Models: twelve finished models exist — the
+seven Epics, the four champions a new chronicle meets first (Bran, Maelis, Corvin, Reva, `0.5.1`) and
+Varkos (`0.9.2`); every other champion uses the `teritorial_lizard` placeholder with a per-champion
+tint until art arrives. All six Legendaries are still among them.
 Stats are authored 6★60 values (HP / ATK / DEF / SPD / C.RATE / C.DMG / RES / ACC).
 
 ### 4.1 Common (food)
@@ -134,7 +135,7 @@ Stats are authored 6★60 values (HP / ATK / DEF / SPD / C.RATE / C.DMG / RES / 
 | --- | --- | --- | --- | --- | --- |
 | `champ.gil_scrapper` | Gil | V | Attack | 9,200 / 1,010 / 640 / 96 / 15 / 50 / 20 / 0 | placeholder (tint: rust) |
 | `champ.wenna_novice` | Wenna | F | Support | 10,400 / 760 / 780 / 100 / 15 / 50 / 25 / 0 | placeholder (tint: pale blue) |
-| `champ.bran_militia` | Bran | J | Defense | 11,600 / 660 / 980 / 92 / 15 / 50 / 25 / 0 | placeholder (tint: ochre) |
+| `champ.bran_militia` | Bran | J | Defense | 11,600 / 660 / 980 / 92 / 15 / 50 / 25 / 0 | `bran` |
 
 Kits (A1 only):
 - **Gil** — *Rusty Cleave*: `3.6 × ATK` single. Upgrades: dmg +5 %, +5 %.
@@ -161,9 +162,9 @@ Kits:
 
 | Id | Name | El | Role | Stats | Model |
 | --- | --- | --- | --- | --- | --- |
-| `champ.sister_maelis` | Maelis | F | Support | 13,900 / 960 / 1,000 / 104 / 15 / 50 / 30 / 10 | placeholder (tint: ivory) |
-| `champ.ser_corvin` | Corvin | J | Defense | 15,200 / 860 / 1,290 / 96 / 15 / 50 / 30 / 0 | placeholder (tint: silver) |
-| `champ.reva_ashblade` | Reva | V | Attack | 12,400 / 1,330 / 820 / 102 / 15 / 60 / 20 / 0 | placeholder (tint: ember) |
+| `champ.sister_maelis` | Maelis | F | Support | 13,900 / 960 / 1,000 / 104 / 15 / 50 / 30 / 10 | `maelis` |
+| `champ.ser_corvin` | Corvin | J | Defense | 15,200 / 860 / 1,290 / 96 / 15 / 50 / 30 / 0 | `corvin` |
+| `champ.reva_ashblade` | Reva | V | Attack | 12,400 / 1,330 / 820 / 102 / 15 / 60 / 20 / 0 | `reva` |
 
 Kits:
 - **Maelis** — A1 *Censer Swing* `3.1 × ATK` single. A2 *Blessed Light* (CD 4): heal all

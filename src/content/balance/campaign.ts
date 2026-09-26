@@ -11,8 +11,6 @@ export const SETTLEMENT_COUNT = 12;
 export const STAGES_PER_SETTLEMENT = 10;
 /** Stage 10 of every settlement is its boss stand. */
 export const BOSS_STAGE_NUMBER = 10;
-/** Campaign battles field three champions (BATTLE.md §1). */
-export const CAMPAIGN_PARTY_SIZE = 3;
 
 /** Global stage index 0..119, which drives enemy scaling (BATTLE.md §4.5). */
 export function globalStageIndex(settlement: number, stage: number): number {

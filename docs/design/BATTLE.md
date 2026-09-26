@@ -303,5 +303,4 @@ result screen.
 | `POISON_PCT`, `BURN_PCT`, `REGEN_PCT` | 0.05, 0.04, 0.075 |
 | `COUNTER_DMG_MULT` | 0.75 |
 | `REVIVE_ON_DEATH_HP` | 0.30 |
-| `CAMPAIGN_TURN_LIMIT_DEFAULT` | 40 ally turns |
-| `BOSS_TURN_LIMIT_DAILY`, `BOSS_TURN_LIMIT_WEEKLY` | 50, 100 |
+| Turn limits | not here: a campaign stage's live in `balance/campaign.ts` (`DEFEAT_TURN_LIMIT` 40, `DEFEAT_TURN_LIMIT_BOSS` 50), and each boss tier carries its own (`content/bosses/*.ts`: 50 for the Gargoyle, 100 for the Titan) |

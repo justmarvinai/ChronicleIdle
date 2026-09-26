@@ -71,8 +71,9 @@ food: lowest rarity first, then lowest level, then longest held.
 One upgrade step consumes one Skill Tome of the champion's rarity (Rare, Epic, Legendary or
 Mythic Tome). Duplicates are ordinary copies (rank-up food) and never upgrade skills. Tomes drop
 by rarity tier: Rare tomes are common (quests), Epic from
-first clears and bosses, Legendary from Hard boss clears and weekly boss, Mythic from Hard
-milestones and the top weekly chest. Common/Uncommon champions have no upgrades.
+first clears and bosses, Legendary from Hard boss clears and weekly boss, Mythic only from the Titan's
+Nightmare 100 % chest and two steps of the Path's last chapter (10.3, 10.11) — the one Mythic is the
+only champion that spends them. Common/Uncommon champions have no upgrades.
 
 ## 4. Player level
 

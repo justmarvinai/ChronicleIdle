@@ -42,11 +42,6 @@ export const FREEZE_DAMAGE_TAKEN = 0.1;
 /** Fear: chance to skip the turn (bosses only). */
 export const FEAR_SKIP_CHANCE = 0.5;
 
-/** Turn limits (ally turns) per encounter type; encounters may override. */
-export const CAMPAIGN_TURN_LIMIT_DEFAULT = 40;
-export const BOSS_TURN_LIMIT_DAILY = 50;
-export const BOSS_TURN_LIMIT_WEEKLY = 100;
-
 /**
  * Enemy scaling (BATTLE.md §4.5): `base × DIFFICULTY_MULT[difficulty] × stageScale(globalIndex)`.
  * The difficulty step is what the same stage costs on Normal and Hard.

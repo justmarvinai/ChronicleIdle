@@ -1,7 +1,7 @@
 /**
  * Authored encounters. Campaign stages generate theirs from `content/stages` (the campaign engine
- * derives one per difficulty), so the only authored entries are the perf bench and, later, the
- * daily and weekly bosses.
+ * derives one per difficulty), and the bosses, the tower, the Brewery and the Dungeons derive theirs
+ * from their own content, so the only authored entries are the perf bench's.
  */
 import { BENCH_ENCOUNTERS } from './bench';
 import type { EncounterDef } from './types';
