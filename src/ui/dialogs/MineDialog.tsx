@@ -4,6 +4,8 @@ import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 import { formatDuration } from '@engine/time/clock';
 import { t } from '@i18n/index';
+import { counter } from '@engine/progression/counters';
+import type { SaveGame } from '@engine/schema/save';
 import { mineView, type MineView } from '@state/mine';
 import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -117,7 +119,10 @@ export default function MineDialog({ onClose }: { onClose: () => void }) {
           <MineVault view={view} haul={haul} reduced={reduced} />
           <Rates view={view} />
         </section>
-        <MineNext view={view} onDig={dig} />
+        <div className={styles.middle}>
+          <MineNext view={view} onDig={dig} />
+          <Tally save={save} />
+        </div>
         <MineStrata level={view.level.level} playerLevel={save.profile.level} fresh={fresh} />
       </div>
     </Dialog>
@@ -155,6 +160,38 @@ function Rates({ view }: { view: MineView }) {
             text={t('mine.rate.sigils', { amount: sigilRate(level.sigilsPerDay) })}
           />
         ) : null}
+      </ul>
+    </div>
+  );
+}
+
+/** What the crews have brought up over the chronicle's life, read off its lifetime counters. */
+function Tally({ save }: { save: Pick<SaveGame, 'stats'> }) {
+  const rows: { currency: CurrencyId; label: string; value: number }[] = [
+    { currency: 'gems', label: t('mine.tally.gems'), value: counter(save, 'mine.gems') },
+    { currency: 'mat_glyph_sigil', label: t('mine.tally.sigils'), value: counter(save, 'mine.sigils') },
+  ];
+  return (
+    <div className={styles.tally} data-testid="mine-tally">
+      <h4 className={`display ${styles.tallyHead}`}>{t('mine.tally')}</h4>
+      <ul className={styles.tallyRows}>
+        {rows.map((row) => {
+          const def = CURRENCY_BY_ID[row.currency];
+          return (
+            <li key={row.currency} className={styles.tallyRow}>
+              <TintedIcon asset={def.icon} tint={def.tint} size={22} />
+              <span>{row.label}</span>
+              <span className={`num ${styles.tallyValue}`}>{row.value.toLocaleString('en-US')}</span>
+            </li>
+          );
+        })}
+        <li className={styles.tallyRow}>
+          <Glyph glyph="glyph.pickaxe" size={22} color="var(--mine)" />
+          <span>{t('mine.tally.hauls')}</span>
+          <span className={`num ${styles.tallyValue}`} data-testid="mine-tally-hauls">
+            {counter(save, 'mine.collections').toLocaleString('en-US')}
+          </span>
+        </li>
       </ul>
     </div>
   );

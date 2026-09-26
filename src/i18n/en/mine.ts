@@ -21,7 +21,8 @@ export const mine = {
   'mine.depths.hint': 'Each level down digs more and holds more.',
   'mine.stratum.dug': 'Dug',
   'mine.stratum.here': 'The crews are here',
-  'mine.stratum.opens': 'Chronicle level {level}',
+  'mine.stratum.opens': 'Opens at chronicle level {level}',
+  'mine.stratum.next': 'The next level down',
 
   'mine.next.title': 'Dig deeper',
   'mine.next.gems': '+{amount} gems a day',
@@ -36,6 +37,10 @@ export const mine = {
   'mine.dug': 'The Mine is now level {level}: {gems} gems a day.',
   'mine.dugCollected': 'The Mine is now level {level}, and the crews handed over {gems} gems.',
   'mine.deepest': 'The Deepvein is dug to its heart. There is nowhere deeper to go.',
+  'mine.tally': 'The crews’ tally',
+  'mine.tally.gems': 'Gems brought up',
+  'mine.tally.sigils': 'Glyph Sigils brought up',
+  'mine.tally.hauls': 'Hauls collected',
 
   // The ten strata, top to bottom (MINE.md §3).
   'mine.stratum.1': 'The Shaft Head',

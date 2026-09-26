@@ -100,8 +100,24 @@ describe('the Mine dialog', () => {
     expect(screen.getByTestId('mine-stratum-3')).toHaveAttribute('data-state', 'here');
     expect(screen.getByTestId('mine-stratum-4')).toHaveAttribute('data-state', 'next');
     expect(screen.getByTestId('mine-stratum-10')).toHaveAttribute('data-state', 'deep');
-    // Level 10 opens at 55, so a level-30 chronicle is told when rather than how much.
-    expect(screen.getByTestId('mine-stratum-10')).toHaveTextContent(`${mineLevel(10).opensAt}`);
+    // Every stratum says where it stands under its name, and what it digs beside it.
+    expect(screen.getByTestId('mine-stratum-2')).toHaveTextContent(/Dug/);
+    expect(screen.getByTestId('mine-stratum-3')).toHaveTextContent(/The crews are here/);
+    // Level 10 opens at 55, so a level-30 chronicle is told when as well as how much.
+    expect(screen.getByTestId('mine-stratum-10')).toHaveTextContent(
+      `Opens at chronicle level ${mineLevel(10).opensAt}`,
+    );
+    expect(screen.getByTestId('mine-stratum-10')).toHaveTextContent(`${mineLevel(10).gemsPerDay}`);
+  });
+
+  it('keeps a tally of what the crews have brought up', async () => {
+    const user = userEvent.setup();
+    render(stage(<MineDialog onClose={() => undefined} />));
+    expect(screen.getByTestId('mine-tally-hauls')).toHaveTextContent('0');
+
+    await user.click(screen.getByTestId('mine-collect'));
+    expect(screen.getByTestId('mine-tally')).toHaveTextContent(`${mineLevel(1).storeGems}`);
+    expect(screen.getByTestId('mine-tally-hauls')).toHaveTextContent('1');
   });
 
   it('shows the next level waiting on the chronicle, and will not dig it', () => {

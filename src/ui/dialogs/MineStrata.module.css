@@ -42,7 +42,7 @@
   grid-template-columns: 30px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  height: 38px;
+  height: 44px;
   padding: 0 10px 0 6px;
   background:
     repeating-linear-gradient(172deg, rgba(0, 0, 0, 0) 0 22px, rgba(0, 0, 0, 0.14) 22px 24px),
@@ -142,8 +142,9 @@
 .name {
   position: relative;
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
   min-width: 0;
 }
 .title {
@@ -151,16 +152,32 @@
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 700;
+  line-height: 1.1;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.crew {
-  flex: none;
+/* The state under the name: dug in the vein's light, worked in gold, next outlined, shut in grey. */
+.note {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
   font-size: 13px;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-3);
+}
+.noteDug {
+  color: var(--mine);
+}
+.noteHere {
   color: var(--gold-3);
 }
-.rate,
-.gate {
+.noteNext {
+  color: var(--text-2);
+}
+.rate {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -169,16 +186,9 @@
   font-weight: 700;
   white-space: nowrap;
 }
-.gate {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-3);
-}
-.mark {
-  position: absolute;
-  right: 4px;
-  top: 3px;
-  opacity: 0.7;
+/* A stratum the chronicle cannot reach yet still shows what it would dig, only dimmer. */
+.stratum[data-open='false'] .rate {
+  opacity: 0.55;
 }
 
 @media (prefers-reduced-motion: reduce) {

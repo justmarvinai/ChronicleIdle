@@ -1365,10 +1365,15 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   (*Opens at chronicle level 16*, with the shackle) or the note that digging down collects the store
   first at this level's rate. **Dig to level N** is dead while anything stands in the way. At the
   bottom of the shaft the card is the pick alone and *The Deepvein is dug to its heart*.
+- **The crews' tally**, under the level below: the gems and the Glyph Sigils brought up and the
+  hauls collected over the chronicle's life, read off the `mine.*` counters.
 - **The shaft** (`MineStrata`): ten strata, the Shaft Head to the Heart of the Vein, each a band of
-  rock that darkens with depth while its vein brightens. Dug strata are lit, with the pick in their
-  corner; the one being worked has a gold edge, a lantern breathing in it and *The crews are here*;
-  the next is outlined in the vein's light (dimmer while the chronicle cannot reach it); the rest
-  are dark with their chronicle level. A level dug this sitting gives way in a flash of light.
+  rock that darkens with depth while its vein brightens, its gems a day on the right and its state
+  on a line under its name — so a note never crowds a name out. Dug strata are lit and read *Dug*
+  beside the pick; the one being worked has a gold edge, a lantern breathing in it and *The crews
+  are here*; the next is outlined in the vein's light (dimmer while the chronicle cannot reach it)
+  and reads *The next level down*; a stratum the chronicle is too young for is dark, its rate dimmed,
+  and reads *Opens at chronicle level N* by the shackle. A level dug this sitting gives way in a
+  flash of light.
 - Sound: `mine.strike` + `reward.medium` on a collection, `mine.deepen` (a rock wall giving way) +
   `reward.large` on a level; the toast says the new rate, or the gems the settled store paid.

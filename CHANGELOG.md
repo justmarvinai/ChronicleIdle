@@ -37,8 +37,9 @@ the chronicle grows. `docs/design/MINE.md`; `docs/tech/UI_DESIGN.md` §5.2, §5.
 - **The Mine dialog** (`ui/dialogs/MineDialog.tsx`, its own lazily loaded chunk; `MineVault`,
   `MineNext`, `MineStrata`): the geode seam in its vault with the store's `FillRing`, the next gem to
   the second, the Sigils dug; *Collect*, with the haul rising out of the vault; the level below —
-  its stratum's name, what it adds, its price against the purse, the gate; and the whole shaft,
-  ten named strata from the Shaft Head to the Heart of the Vein.
+  its stratum's name, what it adds, its price against the purse, the gate — and under it the crews'
+  tally, read off the lifetime counters; and the whole shaft, ten named strata from the Shaft Head
+  to the Heart of the Vein, each with its gems a day and its state on a line under its name.
 - **The hub building** at the old fountain (`hotspots.ts`), its ring filling with the store and its
   plate reading *Gems waiting*, *Next gem in* or — calling, with the dot — *Store full · N gems*.
 - **An in-house glyph**, `glyph.pickaxe` (a pick striking a cut gem, `tools/assets/glyphs/`), built by

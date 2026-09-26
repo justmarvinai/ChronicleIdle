@@ -16,11 +16,35 @@ function stateOf(stratum: number, level: number): StratumState {
   return stratum === level + 1 ? 'next' : 'deep';
 }
 
+/** The line under a stratum's name: dug, worked, next, or the chronicle level that opens it. */
+function StratumNote({ state, open, opensAt }: { state: StratumState; open: boolean; opensAt: number }) {
+  if (state === 'dug')
+    return (
+      <span className={`${styles.note} ${styles.noteDug}`}>
+        <Glyph glyph="glyph.pickaxe" size={13} color="var(--mine)" />
+        {t('mine.stratum.dug')}
+      </span>
+    );
+  if (state === 'here')
+    return <span className={`${styles.note} ${styles.noteHere}`}>{t('mine.stratum.here')}</span>;
+  if (!open)
+    return (
+      <span className={styles.note}>
+        <Glyph glyph="glyph.broken_shackle" size={13} color="var(--text-3)" />
+        {t('mine.stratum.opens', { level: opensAt })}
+      </span>
+    );
+  return state === 'next' ? (
+    <span className={`${styles.note} ${styles.noteNext}`}>{t('mine.stratum.next')}</span>
+  ) : null;
+}
+
 /**
  * The Deepvein top to bottom (docs/tech/UI_DESIGN.md §5.29): ten strata, the ones dug lit by the
  * crews' lanterns, the one they work now marked, the next outlined, the rest in the dark with the
  * chronicle level that opens them. The rock darkens and the vein brightens with depth, so how far
- * down a chronicle has dug reads before a single number does.
+ * down a chronicle has dug reads before a single number does. Every stratum names its state on a
+ * line under its name and its gems a day on the right, so no note ever crowds a name out.
  */
 export function MineStrata({
   level,
@@ -55,22 +79,12 @@ export function MineStrata({
               <span className={`num ${styles.depth}`}>{def.level}</span>
               <span className={styles.name}>
                 <span className={styles.title}>{stratumName(def.level)}</span>
-                {state === 'here' ? <span className={styles.crew}>{t('mine.stratum.here')}</span> : null}
+                <StratumNote state={state} open={open} opensAt={def.opensAt} />
               </span>
-              {state === 'dug' || state === 'here' || open ? (
-                <span className={`num ${styles.rate}`}>
-                  <TintedIcon asset={gem.icon} tint={gem.tint} size={20} />
-                  {def.gemsPerDay}
-                </span>
-              ) : (
-                <span className={`num ${styles.gate}`}>
-                  <Glyph glyph="glyph.broken_shackle" size={16} color="var(--text-3)" />
-                  {t('mine.stratum.opens', { level: def.opensAt })}
-                </span>
-              )}
-              {state === 'dug' ? (
-                <Glyph glyph="glyph.pickaxe" size={16} color="var(--mine)" className={styles.mark} />
-              ) : null}
+              <span className={`num ${styles.rate}`}>
+                <TintedIcon asset={gem.icon} tint={gem.tint} size={20} />
+                {def.gemsPerDay}
+              </span>
             </li>
           );
         })}
