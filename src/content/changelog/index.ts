@@ -32,6 +32,15 @@ function release(version: string, date: string, lines: readonly Line[]): Release
 }
 
 export const RELEASES: readonly ReleaseDef[] = [
+  release('0.10.0', '2026-09-26', [
+    { kind: 'added', slug: 'mine', lead: true },
+    { kind: 'added', slug: 'levels', lead: true },
+    { kind: 'added', slug: 'sigils' },
+    { kind: 'added', slug: 'store' },
+    { kind: 'added', slug: 'lesson' },
+    { kind: 'changed', slug: 'fountain' },
+    { kind: 'balance', slug: 'first_store' },
+  ]),
   release('0.9.10', '2026-09-26', [
     { kind: 'added', slug: 'titan_easy', lead: true },
     { kind: 'added', slug: 'eternal_keys', lead: true },

@@ -531,6 +531,7 @@ immediately by every chronicle that already qualifies.
 | `gear.ts` | main/sub stat tables, level cost, refine cost, dismantle yields, craft tiers, the campaign drop's rarity table per difficulty (`DROP_RARITY_WEIGHTS`) and its star range per settlement |
 | `summon.ts` | shard rates, pity, exchange prices, featured weight, rotation epoch |
 | `idle.ts` | capacity bands, hourly yields, chance rolls |
+| `mine.ts` | the Mine's ten levels: the chronicle level each opens at, gems and Glyph Sigils a day, the store in whole gems, and what digging to it costs (§18) |
 | `dungeon.ts` | the twenty stages and two difficulties, the scale curve and enemy levels, the eight bands (stars, energy, rarity table, second-piece chance), gold/XP per run, shard odds |
 | `tower.ts` | floor count, the scale curve, enemy levels, the faction cycle, key cap/regen, season length, gold/energy/brew/XP per floor, `TOWER_SHARD_ODDS` |
 | `economy.ts` | starting wallet, name limits, reset hour/day, gem/gold sanity targets |
@@ -823,3 +824,27 @@ To add an item: write the `ConsumableDef`, add it to `CONSUMABLES`, give it a `s
 shelf (or put it in a bundle), and add its name and description to `src/i18n/en/market.ts`.
 `CONSUMABLE_BY_ID`, `CONSUMABLE_IDS` and `GEM_SHELF_BY_ID` all derive, so nothing else has to be
 told.
+
+## 18. The Mine (`src/content/balance/mine.ts`)
+
+The Mine is one table, `MINE_LEVELS`, a row per level: `{ level, opensAt, gemsPerDay, storeGems,
+sigilsPerDay, cost }` (`docs/design/MINE.md` §3–§4). There is no content file: every field is a
+number to tune, and the stratum names the dialog shows are strings, `mine.stratum.<level>` in
+`src/i18n/en/mine.ts`.
+
+- **Level 1** is the one a chronicle is handed. Its `opensAt` is `FEATURE_UNLOCK_LEVEL.mine`, so
+  moving the Mine's unlock moves both, and its `cost` is empty.
+- **The store is in whole gems.** How long it takes to fill is derived (`storeGems / gemsPerDay`
+  days), and the Sigils stop with it. Keep the fill time between half a day and a day and never
+  shorter than the level above — `src/engine/mine/mine.test.ts` holds the table to that, to
+  strictly more gems a day and a bigger store at every level, to ascending gates and gold, and to
+  Sigils only from the fourth level.
+- **A level may be appended, never removed.** The save stores only the level dug
+  (`mineSchema` caps it at `MINE_MAX_LEVEL`), so a removed row would leave a chronicle owning a
+  Mine the table no longer describes. A new level needs its name string too.
+- **Check the economy after any change.** `pnpm sim:economy --strict` books the `mine` line against
+  its band and prices each script's dig to its level in days of its surplus
+  (`MINE_DIG_DAYS_MAX`); a new currency in a cost also has to be listed among that currency's uses
+  in `content/currencies/flows.ts`, and a new payout among its sources (`flows.test.ts` checks the
+  latter both ways).
+

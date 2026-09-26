@@ -98,6 +98,7 @@ each other's internals.
     battle/                   Simulation, turn meter, effects, status, AI policy, event log
     brewery/                  The Brewery: derived stage fights, the day's runs, the open-day rule
     economy/                  Currencies, wallet, energy, drops, idle chest maths
+    mine/                     The Mine: the store by the clock, carried fractions, the next level's gate
     palace/                   The Glorious Palace: the stat bonus, the point ledger, the sources
     progression/              Player level, champion level/rank/skills, gear upgrade, unlocks
     summon/                   Banner rolling, pity, rotation schedule
@@ -322,6 +323,7 @@ docs/design/GEAR.md            slots, rarities, stars, main/sub stats, sets, upg
 docs/design/DUNGEONS.md        the five keeps: the sets they hold, the forty rungs, the bands
 docs/design/MARKET.md          the two shelves, the nine consumables, the boosts, the Bag
 docs/design/LOGIN.md           Daily Rewards: thirty days, no streak, and the board loops
+docs/design/MINE.md            the Deepvein: ten levels dug deeper, a store by the clock, gems and Sigils
 docs/design/ECONOMY.md         currencies, energy, player level, idle chest, sources & sinks
 docs/design/SUMMONING.md       shards, banners, rates, pity, rotation, reveal ritual
 docs/design/BOSSES.md          the two period bosses: the Gargoyle and the Titan

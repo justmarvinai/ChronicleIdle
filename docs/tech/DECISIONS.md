@@ -542,3 +542,25 @@ The cost is that the stall cannot be hand-curated — there is no "this hour, a 
 without a second mechanism — and that changing `GOLD_MARKET_POOL` changes every past hour's shelf
 as well as every future one, which is only a problem if a shelf were ever worth reproducing, and it
 is not: it is gone in an hour either way.
+
+## ADR-046 — The Mine is one timestamp and two fractions, and it opens full
+**Context.** The Mine (`MINE.md`) pays whole gems from a store that fills by the clock, and a level
+at 13 or 16 gems a day does not divide a day into whole gems. The shapes that suggest themselves
+each break something. Storing the gems held means a job has to add to them while the game is
+closed; rounding each collection down loses a part-gem every visit, so a player who visits often is
+paid less than one who visits once; rounding up pays a gem that was never dug. And a Mine that
+starts empty cannot be taught: a chronicle can reach level 6 in a couple of hours, and at six gems
+a day the lesson's first collection would find nothing whole to take.
+**Decision.** The save keeps the level, `collectedAt` and a `carry` of the fractions below one gem
+and one Sigil that the last collection could not pay; the store is `carry + rate × min(elapsed,
+store)`, derived on every read (`ADR-033`'s rule for the Idle Chest, with the carry added). A
+collection pays the whole units and carries the rest; whole units are counted with a float
+tolerance, because 0.35 a day for twenty days must be seven Sigils. An upgrade *settles* the old
+store — pays it at the old rate — before the next level starts digging, so a level never re-prices
+time already worked. A new Mine's `collectedAt` is one store's length before the chronicle began,
+and a migrated chronicle's one store's length before its last save: every Mine opens full.
+**Consequences.** Ten small collections pay what one large one would; nothing runs at a boundary;
+a reload, an import or a clock moved backwards (which leaves `collectedAt` where it was) cannot pay
+twice. The tutorial's first collection is guaranteed three gems however fast the chronicle got
+there. The cost is two floats in the save — schema-checked to `[0, 1)` — and a `collectedAt` that
+can be earlier than `createdAt`, which is true of nothing else in the save and is the whole point.

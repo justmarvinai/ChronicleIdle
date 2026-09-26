@@ -34,7 +34,7 @@ short sessions of decisions, long tails of accumulation.
   gear, first level-ups, see the idle chest and the mission line. Energy is deliberately abundant:
   the tutorial, early missions and first clears hand out roughly 3,000 energy over the first days
   so the opening weeks feel generous (`ECONOMY.md` §5.1).
-- **Daily session (15–25 min):** claim idle chest, daily boss ×2 keys, daily quests, place the
+- **Daily session (15–25 min):** claim idle chest, collect the Mine, daily boss ×2 keys, daily quests, place the
   Brewery's twenty runs on whichever element needs brews, spend energy farming a target stage/set on
   auto-repeat, tavern upgrades, summon if shards.
 - **Weekly:** weekly boss ×3 keys, weekly quests, featured banner rotation, push a new
@@ -42,7 +42,7 @@ short sessions of decisions, long tails of accumulation.
 - **Monthly (once Intro is behind you):** climb the Eternal Tower for as long as the keys hold, then
   come back when the season turns and climb it again (`ETERNAL_TOWER.md`).
 - **Long-term (weeks/months):** complete Hard, 6★ the roster, perfect gear, finish the Chronicler's
-  Path, unlock ×4 speed, stand higher in the tower than last season.
+  Path, unlock ×4 speed, stand higher in the tower than last season, dig the Mine to its heart.
 
 ## 2. Core loop
 
@@ -69,6 +69,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Gear | 6 slots, 6 rarities, 1–6 stars, +0…+16, main/sub stats, 14 sets, refine, craft, dismantle | `GEAR.md` |
 | Dungeons | 5 keeps, each holding its own gear sets; 20 stages × Normal/Hard, eight reward bands, farmable | `DUNGEONS.md` |
 | Economy | 25 wallet currencies, energy, player level 1–100, idle chest, sources/sinks | `ECONOMY.md` |
+| The Mine | A hub building that digs gems (and, deeper, Glyph Sigils) while the player is away; ten levels dug with gold and the Forge's metals | `MINE.md` |
 | Summoning | 4 shard types, standard portal + featured banner, pity, deterministic rotation | `SUMMONING.md` |
 | Bosses | Daily boss (4 tiers, 2 keys/day) and weekly boss (4 tiers, 3 keys/week), damage-threshold rewards | `BOSSES.md` |
 | Eternal Tower | 100 floors climbed in order, every 10th a boss floor, keys on a 15-minute clock, a 30-day season | `ETERNAL_TOWER.md` |
@@ -131,6 +132,7 @@ after the first stand.
 | 3 | The Brewery |
 | 4 | Summoning Portal |
 | 5 | Daily Quests, Idle Chest |
+| 6 | **The Mine** (its first level dug, its first store full; levels 2–10 open from 9 to 55) |
 | 7 | Tavern: Rank up |
 | 8 | Forge (crafting, dismantle) |
 | 9 | Tavern: Skill upgrades |

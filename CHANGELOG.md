@@ -6,9 +6,67 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending, and no question open for the owner: the last nine were settled in `0.9.10`. Next,
-in the owner's order (`ROADMAP.md`): the Mine, instant 3★ clears, Challenges & Achievements, and the
-roguelite mode._
+_Nothing pending, and no question open for the owner. Next, in the owner's order (`ROADMAP.md`):
+instant 3★ clears, Challenges & Achievements, and the roguelite mode._
+
+## [0.10.0] — 2026-09-26 — The Deepvein
+
+The owner asked for a Mine "upgradable like in Raid Shadow Legends": a building on the hub that works
+while the chronicle is away, pays gems for being visited, and is dug deeper one level at a time as
+the chronicle grows. `docs/design/MINE.md`; `docs/tech/UI_DESIGN.md` §5.2, §5.29; `ECONOMY.md` §2, §6,
+§7; `TUTORIAL.md` §4; `GAME_DESIGN.md` §3, §6; `ARCHITECTURE.md` §3.5, §4.1;
+`CONTENT_AUTHORING.md` §9, §18.
+
+### Added
+
+- **The Mine** (`content/balance/mine.ts`, `engine/mine/index.ts`, `state/mine.ts`). Ten levels, the
+  first opening with the feature at chronicle level 6 (`FEATURE_UNLOCK_LEVEL.mine`) and the last at
+  55: 6 to 36 gems a day, a store of 3 to 36 whole gems that fills in half a day to a day, and from
+  the fourth level 0.25 to 1 Glyph Sigil a day. Nothing is rolled: `mineStore` derives what the store
+  holds from the level, one timestamp, the carried fractions and the clock; `settleMine` pays the
+  whole units and carries the rest (with a float tolerance, so 0.35 × 20 is 7); `collectMine` refuses
+  while nothing is whole; `mineUpgradeBlock` names what stands in the way — the deepest level, the
+  chronicle's level, or each currency short and by how much.
+- Store actions `collectMine` and `upgradeMine`, and the events `mine.collected` / `mine.upgraded`.
+  An upgrade spends its price, settles the old store at the old rate, then opens the next level.
+  Counters `mine.collections` (asked-for collections only), `mine.gems`, `mine.sigils` and
+  `mine.upgrades`.
+- **Save v20** (`mineSchema`: `{ level, collectedAt, carry }`), migration 19 → 20 and the v20
+  fixture. A new chronicle's Mine opens with its first store full (`newMine`: `collectedAt` one store
+  before the chronicle began), and a migrated one gets the same, stamped from its last save.
+- **The Mine dialog** (`ui/dialogs/MineDialog.tsx`, its own lazily loaded chunk; `MineVault`,
+  `MineNext`, `MineStrata`): the geode seam in its vault with the store's `FillRing`, the next gem to
+  the second, the Sigils dug; *Collect*, with the haul rising out of the vault; the level below —
+  its stratum's name, what it adds, its price against the purse, the gate; and the whole shaft,
+  ten named strata from the Shaft Head to the Heart of the Vein.
+- **The hub building** at the old fountain (`hotspots.ts`), its ring filling with the store and its
+  plate reading *Gems waiting*, *Next gem in* or — calling, with the dot — *Store full · N gems*.
+- **An in-house glyph**, `glyph.pickaxe` (a pick striking a cut gem, `tools/assets/glyphs/`), built by
+  the asset pipeline's glyph step beside the owner's forty; the `--mine` colour token; the sounds
+  `mine.strike` and `mine.deepen`.
+- **The lesson** (Routine, steps 4.4–4.5): at level 6 Eldric points at the fountain, the first
+  collection finishes it, and a last line inside shows the level below. Tutorial targets
+  `hub.mine`, `mine.collect`, `mine.dig`; the dialog `mine`.
+- The Wallet: the Mine is a place (`PLACE_IDS`, `PLACES`) — a source of gems and Glyph Sigils and a
+  use of gold and the five Forge materials its levels cost; `flows.test.ts` derives its payouts from
+  `MINE_LEVELS`.
+- `sim:economy`: every script visits the Mine at its sittings through `settleMine` at the level its
+  chronicle opens (`mineVisits`, `mineLevelOf`); the `mine` line has bands (active 100–250 gems a
+  week, casual ≥ 80); and a dig audit prices each script's path to its level in days of its
+  surplus, failing `--strict` past 30 (`MINE_DIG_DAYS_MAX`). Measured: the active week 1,674 →
+  1,828 gems (≤ 1,950), dedicated 2,150 (≤ 2,600), casual 1,227; the dearest dig is the casual
+  player's Scrap Iron at 17 days.
+- Tests: the engine table and arithmetic (26), the state bookkeeping, the dialog's flows, the hub's
+  building, the lesson, the 19 → 20 migration; e2e `mine.spec.ts` on two new fixtures written by
+  `tools/fixtures/mine-chronicle.ts` (one at the lesson, one past the tutorial).
+
+### Changed
+
+- The Routine chapter teaches three habits instead of two; a chronicle that had finished it before
+  `0.10.0` is shown the Mine's two beats on its next visit to the hub.
+- The star chests' Glyph Sigils are documented as kept rather than interim (`balance/campaign.ts`,
+  `GEAR.md`, `ECONOMY.md` §2): the owner signed off the economy with them in it (Q45), and the
+  steady supply is now the Mine's.
 
 ## [0.9.10] — 2026-09-26 — Accounts Settled
 

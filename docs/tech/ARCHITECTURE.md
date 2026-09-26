@@ -155,6 +155,14 @@ into it (`engine/economy/energy.ts` and `engine/tower/tower.ts`), which is why a
 pays, and the seeded shard roll on a boss floor). Nothing about a floor is authored
 (`docs/design/ETERNAL_TOWER.md` §3).
 
+`engine/mine/` is one file (`index.ts`): the store as a pure function of the level, one timestamp,
+the carried fractions and the clock (`mineStore`), the collection that pays its whole units and
+carries the rest (`settleMine`, `collectMine` — the first always succeeds, which is what lets an
+upgrade settle the old level on its way down), and the gate on the next level (`mineUpgradeBlock`:
+the deepest, the chronicle's level, or the currencies short, by how much). `state/mine.ts` is the
+bookkeeping around it — the wallet, the counters and the view the hub and the dialog read
+(`docs/design/MINE.md`).
+
 `engine/summon/` is four files: `summon.ts` (the rarity row and the champion roll), `pity.ts`
 (mercy counters, guarantees, soft climbs), `rotation.ts` (the fourteen-day wheel from a fixed UTC
 epoch, and which mercy rules a Primordial Rotation swaps in) and `choices.ts` (which champion
@@ -337,7 +345,9 @@ the keeps get their own presets in — its migration writes an untouched ladder 
 row, because there is nothing to back-pay) and v19 (0.9.0: `bag`, `boosts`, `market` and `login`,
 all four starting empty — a veteran chronicle begins the calendar at day 1 rather than being
 back-paid thirty days it never claimed, and the market's `hour` starts at −1 so no real hour can
-collide with it). Fields
+collide with it) and v20 (0.10.0: `mine` — a veteran gets the Mine a new chronicle gets, level 1
+with its first store full, stamped from its last save; nothing is back-paid and no level handed
+over). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -424,6 +434,11 @@ interface SaveGame {
   missions: { claimed: string[]; baseline: Record<string, number>; chests: number[]; gearChoice: string | null };
   // Shipped in save v8. The chest's whole state: when it was last emptied (ADR-033).
   idle: { lastClaimAt: number };
+  // Shipped in save v20. The Mine (MINE.md §6): the level dug, when its store was last emptied, and
+  // the fractions below a whole gem or Sigil the last collection kept. What the store holds is
+  // derived from those and the clock; a new chronicle's `collectedAt` is one store's length before
+  // it began, which is what makes its first store full.
+  mine: { level: number; collectedAt: number; carry: { gems: number; sigils: number } };
   // Shipped in save v12. Which lesson is open is derived from these and where the player is
   // standing (ADR-042), so the save cannot disagree with the step it is on: what it keeps is what
   // Eldric has taught and which chapters were waved off — the latter also carrying the chapters a

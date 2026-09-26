@@ -14,8 +14,8 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 
 | Id | Name | Icon (asset key) | Main sources | Main sinks |
 | --- | --- | --- | --- | --- |
-| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, Daily Rewards | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market** |
-| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards | Ancient/Sacred Shards, energy and Eternal Key refills, **the Gem Market** |
+| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, Daily Rewards | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market**, **the Mine's levels** |
+| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards, **the Mine** | Ancient/Sacred Shards, energy and Eternal Key refills, **the Gem Market** |
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Gargoyle Key | stone-vine/icon-key | daily reset (2) | the Gargoyle |
 | `key_weekly` | Titan Key | stone-vine/icon-key (violet tint) | weekly reset (3) | the Titan |
@@ -27,12 +27,12 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | `brew_justice` / `brew_valor` / `brew_faith` / `brew_eclipse` | Elemental Brew | stone-vine/icon-potion (tinted) | **the Brewery**, campaign, idle chest, quests, bosses | champion XP (1.5× when element matches) |
 | `brew_universal` | Universal Brew | stone-vine/icon-potion (white) | star chests, quests, missions | champion XP (1×) |
 | `tome_rare` / `tome_epic` / `tome_legendary` / `tome_mythic` | Skill Tome | stone-vine/icon-scroll (tinted) | bosses, missions, weekly quests, first clears | skill upgrades |
-| `mat_scrap_iron` | Scrap Iron | spell-icons/earth-fractured-block | Intro/Normal campaign, dismantle | Forge I |
-| `mat_ember_alloy` | Ember Alloy | spell-icons/earth-molten-vein | Normal/Hard campaign, daily boss | Forge II |
-| `mat_starsteel` | Starsteel | spell-icons/earth-star-medallion | Hard campaign, weekly boss, dismantle L/M | Forge III |
-| `mat_arcane_dust` | Arcane Dust | spell-icons/rune-astral-burst | everywhere in small amounts | all Forge tiers |
-| `mat_refining_core` | Refining Core | spell-icons/earth-geode-crystal | star chests, bosses, dismantle | refine |
-| `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | 20-star chests (interim, Q38); later weekly boss, missions, weekly quests | choose set when crafting |
+| `mat_scrap_iron` | Scrap Iron | spell-icons/earth-fractured-block | Intro/Normal campaign, dismantle | Forge I, the Mine's levels |
+| `mat_ember_alloy` | Ember Alloy | spell-icons/earth-molten-vein | Normal/Hard campaign, daily boss | Forge II, the Mine's levels |
+| `mat_starsteel` | Starsteel | spell-icons/earth-star-medallion | Hard campaign, weekly boss, dismantle L/M | Forge III, the Mine's levels |
+| `mat_arcane_dust` | Arcane Dust | spell-icons/rune-astral-burst | everywhere in small amounts | all Forge tiers, the Mine's levels |
+| `mat_refining_core` | Refining Core | spell-icons/earth-geode-crystal | star chests, bosses, dismantle | refine, the Mine's deepest levels |
+| `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | 20-star chests (Q38, kept by Q45), **the Mine from its fourth level**, bosses, missions, weekly quests | choose set when crafting |
 
 25 wallet entries. Quest points and mission progress are tracked separately (not wallet items).
 
@@ -238,6 +238,16 @@ find itself is still the surprise of opening it. Offline gains beyond capacity a
 "come back in time" tension the brief asks for — and the chest says as much when it is opened
 full.
 
+### The Mine (`MINE.md`)
+
+The Idle Chest's partner on the hub, and the other half of what the chronicle earns while away. The
+chest is a small bonus by design (Q40) and pays by the farm tier; the Mine pays gems — and, from its
+fourth level, Glyph Sigils — by a level the player digs deeper with gold and the Forge's metals.
+Ten levels open between chronicle levels 6 and 55, from 6 gems a day to 36, with a store that grows
+from half a day to a whole one. Nothing is rolled, the store's fractions are carried between
+collections, and upgrading settles the store at the old rate first. The full table, the costs and
+how `sim:economy` holds it are in `MINE.md`.
+
 ## 7. Gem budget (sanity)
 
 Measured, not estimated: the figures below are what `pnpm sim:economy` reports, and the tool derives
@@ -256,16 +266,19 @@ farming Normal in the back half of the map at level 30. `sim:economy` also plays
 | Daily Rewards | ~240 | one tile a login, and the board loops forever (`LOGIN.md` §5) |
 | Titan (weekly) | ~182 | the Normal tier's chests once a week (`BOSSES.md` §3) |
 | The weekly board and its chest | ~112 | claimed once a week |
+| The Mine | ~154 | a level-7 Mine collected morning and evening: 22 a day (`MINE.md`) |
 | The idle chest | ~63 | two claims a day at farm tier 20 (§6) |
 | The Chronicler's Path | ~42 | eight missions a week plus a chapter chest |
-| **Income** | **~1,674** | |
+| **Income** | **~1,828** | |
 | Spend: 2 Ancient Shards + 2 refills | ~700 | `SHARD_EXCHANGE`, `ENERGY_REFILL_GEMS` |
 | Spend: the Gem Market | ~380 | two 24-hour boosts a week (`MARKET.md` §2) |
-| **Net** | **~594** | about two further Ancient Shards saved a week |
+| **Net** | **~748** | about two and a half further Ancient Shards saved a week |
 
-A casual player earns ~1,108 a week and keeps ~908 of it, which clears an Ancient Shard with room
-to spare; a dedicated one ~1,996, because the boss, chest and calendar lines do not scale with how
-often you sit down — only the campaign does.
+A casual player earns ~1,227 a week and keeps ~1,027 of it, which clears an Ancient Shard with room
+to spare; a dedicated one ~2,150, because the boss, chest, calendar and Mine lines do not scale with
+how often you sit down — only the campaign does. The Mine is the one line a player *builds*: its
+level is dug with gold and the Forge's spare metal (`MINE.md` §4), and `sim:economy` prices each
+script's path to its level in days of its own surplus.
 
 **The Gem Market is a sink and only a sink.** Every entry on the fixed shelf takes gems and hands
 back progress, and the one way that breaks is an entry that pays *gems* back worth more than it
@@ -275,13 +288,13 @@ back at all are the quest vouchers, because a reset board is a board whose chest
 daily returns at most 60 gems of its 175, the weekly at most 110 of its 450. Nothing else on the
 shelf returns a gem, the Mission Skip Token included: a skipped step is marked done and left unpaid.
 
-> **Twice superseded, both times upward.** This section first printed ≈ 800 gems a week with
+> **Superseded upward three times.** This section first printed ≈ 800 gems a week with
 > "bosses 100", written while the bosses were still a plan; `BOSSES.md`'s tier tables (Phase 10)
 > then made the boss line alone worth ~600 and the total ~1,430. Daily Rewards (Phase P)
 > added a permanent ~240 a week on top, because the owner's answer was that the board repeats
-> rather than ending, and the Gem Market took ~380 a week back out. Every other line has come in
-> where this section said it would each time. Whether ~1,674 a week is the intended generosity is
-> `USER_QUESTIONS.md` Q45; the bands hold the shape either way.
+> rather than ending, and the Gem Market took ~380 a week back out. The owner signed off the
+> ~1,674 that left (`USER_QUESTIONS.md` Q45), and the Mine (`0.10.0`) was fitted inside the band
+> that sign-off set rather than widening it: ~1,828 against a 1,950 ceiling.
 
 ## 8. Gold budget (sanity)
 

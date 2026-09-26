@@ -176,7 +176,11 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   The Bag left the bar entirely for the header (§5.26).
 - **The buildings** (`HubHotspot`, placed on the painting in `hotspots.ts`): the Campaign gate
   (opens Game Modes), the Portal on the statue, the Tavern, the Forge, the Champions barracks, the
-  Glorious Palace, the Chronicler's Hall (the Path), the Market and the Idle Chest at the docks.
+  Glorious Palace, the Chronicler's Hall (the Path), the Market, the Idle Chest at the docks and,
+  since `0.10.0`, **the Mine** at the old fountain in the middle of the square, where the Deepvein's
+  shaft goes down — its medallion wears the in-house pick-over-a-gem glyph, its ring fills with
+  the store in the crystal colour `--mine`, and its plate reads *Gems waiting: 9*, *Next gem in
+  2h 10m* or, full, *Store full · 17 gems* with the dot and the ripple (§5.29).
   Each is a **medallion** — the kit's metal ring (`frame-round-lg`) around a dark disc lit from
   inside in the building's own colour, a soft halo breathing behind it; the Portal also wears a
   slow-turning rune ring (`FxSprite`) — over its **name on a patch of ink** with a hairline and a
@@ -184,8 +188,8 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   over the painting, which covered the town the hub exists to show.
 - Under each name, **one live line** (`hub-status.ts`, every word derived from the save): the
   campaign's next stage, a champion to choose or the shards held, the brews on the shelf, new
-  arrivals or the roster's size, Palace points to spend, missions to claim, the market's restock
-  and the chest's fill. When something is owed inside, the line turns to the building's colour,
+  arrivals or the roster's size, Palace points to spend, missions to claim, the market's restock,
+  the chest's fill and the Mine's store. When something is owed inside, the line turns to the building's colour,
   the medallion wears a count (or a dot) and a ring of its light keeps rolling outward from it —
   the town tells you where to go before you read a word. Hovering a building opens a card that
   says what it is for and repeats its line — above the building, or below the Portal, whose name
@@ -1049,6 +1053,7 @@ recipes). Variants are chosen round-robin with slight pitch jitter.
 | `battle.death` | `Torch/Torch Impact` + generated dissolve |
 | `battle.step.{dirt,stone,water,wood}` | `Footsteps/*` (lunge steps, surface per settlement) |
 | `forge.hammer` / `gear.upgrade` | `Chopping and Mining/mine 1–5` |
+| `mine.strike` / `mine.deepen` (the Mine) | `Chopping and Mining/mine 1–5` / `Spells/Rock Wall 1–2` |
 | `gear.equip` | `Attacks/Sword Unsheath 1–2` |
 | `summon.charge` / `summon.crack` | generated: a rising filtered swell with four rune taps / dry splinters over a low strain |
 | `summon.reveal.*` | generated, one per tier: a two-note chime (Common/Uncommon), a bright triad (Rare), a violet swell with bells (Epic), a bass hit with brass and falling bells (Legendary), and a detonation with a shockwave and a crystalline sequence nothing else plays (Mythic) |
@@ -1335,3 +1340,35 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   opens the Wallet on the Eternal Key, so the price is only ever stated in one place.
 - **It opens where it was asked for.** The **+** on a purse in the top bar opens the Wallet on that
   currency; anything else opens it on Gold.
+
+### 5.29 The Mine (`docs/design/MINE.md`)
+- Opened from the fountain on the hub (§5.2). Its own code chunk (`React.lazy`): the initial route
+  is held to §5.6's budget, and a dialog opened a few times a day can wait the moment it takes to
+  arrive. Three columns, left to right: the store, the level below, the whole shaft.
+- **The store** (`MineVault`): the painted geode seam round-cut into a vault, the store's fill drawn
+  round it (`FillRing`, the crystal `--mine` while it digs, gold when full) and the whole gems it
+  holds against its size on a plate (*12/17*). Full, the vault warms, cold rays turn behind the seam
+  and glints catch on it; under it, *Store full — the crews have downed tools* or *Full in 3h 20m*,
+  the gems held and *Next gem in 1h 04m* — the dialog reads the clock every second, so under an
+  hour the wait counts down in seconds — and, from the fourth level, the Sigils dug so far to two
+  decimals. Under that, an ink plate names the stratum being worked and what it digs: gems a day,
+  what the store holds and how long it takes to fill, Sigils a day.
+- **Collect** (the footer, *Nothing whole yet* while it would pay nothing): a pick strikes the seam
+  (`mine.strike`), the crystal shatters (`fx.gamefx.ice_shatter`) and the haul rises out of the
+  vault as chips — *+12 [gem]*, *+1 [sigil]* — holding for a beat before the vault shows the store
+  again; the reward toast carries the same amounts. A haul taken from a full store adds a line that
+  the crews stopped digging until the player came.
+- **The level below** (`MineNext`): *Dig deeper*, the stratum's name and its level; what it adds in
+  green (*+3 gems a day*, *+3 gems the store holds*, *+0.15 Glyph Sigils a day*, or *Starts bringing
+  up Glyph Sigils* at the fourth); **The crews need** — each line of the price against the purse,
+  the amount held beside it or, short, *Short of 1,200* in red with a red edge; then either the gate
+  (*Opens at chronicle level 16*, with the shackle) or the note that digging down collects the store
+  first at this level's rate. **Dig to level N** is dead while anything stands in the way. At the
+  bottom of the shaft the card is the pick alone and *The Deepvein is dug to its heart*.
+- **The shaft** (`MineStrata`): ten strata, the Shaft Head to the Heart of the Vein, each a band of
+  rock that darkens with depth while its vein brightens. Dug strata are lit, with the pick in their
+  corner; the one being worked has a gold edge, a lantern breathing in it and *The crews are here*;
+  the next is outlined in the vein's light (dimmer while the chronicle cannot reach it); the rest
+  are dark with their chronicle level. A level dug this sitting gives way in a flash of light.
+- Sound: `mine.strike` + `reward.medium` on a collection, `mine.deepen` (a rock wall giving way) +
+  `reward.large` on a level; the toast says the new rate, or the gems the settled store paid.

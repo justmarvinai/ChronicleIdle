@@ -20,6 +20,22 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_10_0.name': 'The Deepvein',
+  'release.0_10_0.mine':
+    'The Mine opens at level 6: beneath the market square, its crews dig gems for you while you are away.',
+  'release.0_10_0.levels':
+    'Dig it deeper, ten levels in all, with gold and the Forge’s spare metal: every level digs more gems a day and holds more before the crews stop.',
+  'release.0_10_0.sigils':
+    'From its fourth level the Mine also brings up Glyph Sigils, the rarest thing the Forge needs.',
+  'release.0_10_0.store':
+    'The Mine keeps the part-gems a visit cannot pay whole, so collecting often never costs you anything — only leaving a full store does.',
+  'release.0_10_0.lesson':
+    'Eldric shows you the Mine the moment it opens, and what the level below it asks for.',
+  'release.0_10_0.fountain':
+    'The old fountain in the middle of Emberhold is the way down to the Mine, and it tells you when its store is full.',
+  'release.0_10_0.first_store':
+    'Every chronicle’s Mine opens with its first store already full, including the ones begun before it existed.',
+
   'release.0_9_10.name': 'Accounts Settled',
   'release.0_9_10.titan_easy':
     'The Titan has an Easy tier: a tenth of her Normal strength, so a team that has just reached her can take her first chests in the week she wakes.',

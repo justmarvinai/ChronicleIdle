@@ -69,13 +69,21 @@ total) — the early-game generosity the owner asked for (`ECONOMY.md` §5.1).
 | 3.2 | Portal | Ancient Shard → Summon | "Place it and watch the light. Every colour it climbs is a rarer answer." | reveal finished (deterministic Epic) |
 | 3.3 | Reveal | New champion card | "A new name in your chronicle. Add them to your team before the next stand." (**grants 250 Energy**) | Continue |
 
-## Chapter 5 — Routine (level 5: Quests, Idle Chest)
+## Chapter 5 — Routine (levels 5–6: Quests, Idle Chest, the Mine)
 
 | Step | Trigger | Spotlight | Dialogue | Completes when |
 | --- | --- | --- | --- | --- |
 | 4.1 | Level 5, on hub | Quests button | "Each day brings its duties, each week its labours. Fulfil them and the chests open." | Quests opened |
 | 4.2 | Quests | Login quest claim | "This one is already done. Claim it." | claimed |
 | 4.3 | Hub | Idle Chest at the docks | "While you are away, Emberhold works for you. The chest fills with time — until it is full. Do not let it overflow." (**grants 250 Energy**) | chest opened & claimed |
+| 4.4 | Level 6, on hub or in the Mine | The Mine at the fountain, then its **Collect** | "Beneath the market square runs the Deepvein. Its crews dig gems while you are away and set them aside — and they have been busy. Take what they found." | the first collection |
+| 4.5 | In the Mine | The level below (*Dig deeper*) | "Every level deeper digs more gems a day and holds more before the crews down tools; from the fourth, they bring up Glyph Sigils too. Each asks for a greater chronicle, gold, and the Forge’s spare metal." | read |
+
+The Mine's two beats (`0.10.0`) wait for its level: a chronicle that reaches 5 walks the first three
+and hears the rest the moment it reaches 6. A Mine opens with its first store full (`MINE.md` §1),
+so 4.4 always has something to collect, however fast the chronicle got there. A chronicle that had
+already finished this chapter before `0.10.0` is shown them on its next visit to the hub; one whose
+Routine was waved off, or marked off when it predated the tutorial, is not.
 
 ## Chapter 6 — Steel and Bone (levels 7–15: Rank-up, Forge, Skills, Bosses)
 
