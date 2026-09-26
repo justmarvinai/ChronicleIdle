@@ -29,6 +29,11 @@ export interface SpoilsPanelProps {
   gearLost: number;
   /** The chronicle's level when the run carried it past one, else null. */
   chronicleLevel: number | null;
+  /**
+   * The run took the stand to its last star (CAMPAIGN.md §10): say it can be cleared instantly
+   * now, or from the level instant clears open at (`opensAt`).
+   */
+  mastered?: { opensAt: number | null } | null;
 }
 
 /**
@@ -45,6 +50,7 @@ export function SpoilsPanel({
   dropped,
   gearLost,
   chronicleLevel,
+  mastered = null,
 }: SpoilsPanelProps) {
   const currencies: { currency: CurrencyId; amount: number }[] = [
     ...rewards.currencies,
@@ -55,7 +61,7 @@ export function SpoilsPanel({
     <section className={styles.spoils} data-testid="result-rewards">
       <h2 className={`display ${styles.heading}`}>{t('battleResult.rewards')}</h2>
 
-      {firstClear || chestThresholds.length || owedChoice || chronicleLevel !== null ? (
+      {firstClear || chestThresholds.length || owedChoice || chronicleLevel !== null || mastered ? (
         <div className={styles.banners}>
           {firstClear ? (
             <ResultBanner glyph="glyph.shooting_stars">{t('battleResult.firstClear')}</ResultBanner>
@@ -65,6 +71,13 @@ export function SpoilsPanel({
               {t('battleResult.starChest', { stars })}
             </ResultBanner>
           ))}
+          {mastered ? (
+            <ResultBanner glyph="glyph.magic_feather" testId="result-mastered">
+              {mastered.opensAt === null
+                ? t('instant.mastered')
+                : t('instant.masteredLater', { level: mastered.opensAt })}
+            </ResultBanner>
+          ) : null}
           {chronicleLevel !== null ? (
             <ResultBanner glyph={BOOST_GLYPH.player_xp} glyphColor={BOOST_TINT.player_xp}>
               {t('battleResult.playerLevelUp', { level: chronicleLevel })}

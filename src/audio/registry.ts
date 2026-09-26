@@ -44,6 +44,8 @@ export const SOUNDS = {
   // The Mine (MINE.md): a pick into the seam as the store is taken, the rock giving way a level down.
   'mine.strike': s('sfx.mining.mine', 0.75, 0.08, 90),
   'mine.deepen': s('sfx.spells.rock_wall', 0.8, 0.02, 600),
+  // An instant clear (CAMPAIGN.md §10): a page of the chronicle turned, once per run the ledger counts.
+  'instant.write': s('sfx.summon.flip', 0.6, 0.08, 45),
   // The summoning ritual (SUMMONING.md §5): the charge, a tell per rarity climbed (pitched by the
   // Portal), the held breath before gold, the wind-up, the shatter, and one reveal per tier; then
   // the cards: a flip for each of ten, a ping per star, a stamp under the rarest.

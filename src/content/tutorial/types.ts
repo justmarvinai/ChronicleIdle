@@ -44,6 +44,7 @@ export const TUTORIAL_TARGETS = [
   'setup.team',
   'setup.start',
   'setup.repeat',
+  'setup.instant',
   // The fight
   'battle.ability1',
   'battle.ability2',
@@ -152,6 +153,11 @@ export type TutorialCondition =
    */
   | { type: 'battle_turn'; wave?: number; slot?: AbilitySlot }
   | { type: 'ability_used'; slot: AbilitySlot }
+  /**
+   * The battle setup is open on a campaign stand this chronicle holds every star of — the only
+   * place the instant clear it teaches can be pressed (CAMPAIGN.md §10).
+   */
+  | { type: 'stand_mastered' }
   | { type: 'auto_battle' }
   | { type: 'acknowledged' }
   | { type: 'clicked' };

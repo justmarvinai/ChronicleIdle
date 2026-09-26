@@ -10,6 +10,7 @@
  *   always give the same open step.
  */
 import { describe, expect, it } from 'vitest';
+import { FEATURE_UNLOCK_LEVEL } from '@content/balance/unlocks';
 import { content } from '@content/registry';
 import type { TutorialChapterDef } from '@content/tutorial/types';
 import { stageIdOf, progressKey } from '@engine/campaign/progress';
@@ -54,6 +55,7 @@ function ctx(patch: Partial<TutorialContext> = {}): TutorialContext {
     dialogOpen: patch.dialogOpen ?? patch.dialog !== undefined,
     playerLevel: patch.playerLevel ?? 1,
     battle: patch.battle ?? null,
+    standMastered: patch.standMastered ?? false,
   };
 }
 
@@ -165,6 +167,22 @@ describe('the tutorial script', () => {
     const next = upTo('tut.5.5');
     expect(activeStep(CHAPTERS, next, ctx({ playerLevel: 6, dialog: 'mine' }))?.id).toBe('tut.5.5');
     expect(activeStep(CHAPTERS, next, ctx({ playerLevel: 6, screen: 'hub' }))).toBeNull();
+  });
+
+  it('teaches the instant clear at 11, and only on a battle setup where the press works', () => {
+    const state: TutorialState = {
+      completedSteps: CHAPTERS.slice(0, 5).flatMap((one) => one.steps.map((step) => step.id)),
+      skippedChapters: [],
+    };
+    const lesson = (patch: Partial<TutorialContext>): boolean =>
+      activeStep(CHAPTERS, state, ctx(patch))?.id === 'tut.6.9';
+    const open = FEATURE_UNLOCK_LEVEL.instant_clear;
+    // A mastered stand's setup at 11: Eldric points at the press.
+    expect(lesson({ playerLevel: open, screen: 'battle-setup', standMastered: true })).toBe(true);
+    // A stand short of its stars has a dead press — nothing to point at yet.
+    expect(lesson({ playerLevel: open, screen: 'battle-setup', standMastered: false })).toBe(false);
+    // Before 11 the press is not there at all.
+    expect(lesson({ playerLevel: open - 1, screen: 'battle-setup', standMastered: true })).toBe(false);
   });
 
   it("lets Steel and Bone's lessons stand alone", () => {

@@ -85,4 +85,6 @@ export const tutorial = {
     'Refining spends a twin piece to move one line on the piece you keep. It is the last polish, not the first.',
   'tut.6.8.text':
     'You have farmed enough stands by hand. Set the repeat and the stand runs itself while your energy lasts.',
+  'tut.6.9.text':
+    'Three stars here, and the chronicle already knows how this fight ends. Clear it instantly: the same energy, the same spoils, the XP to the team you seat — and no fight to watch. The repeat sets how many.',
 } as const;

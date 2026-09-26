@@ -36,6 +36,8 @@ const DebugDialog = import.meta.env.DEV ? lazy(() => import('./DebugDialog')) : 
 // The Mine is its own chunk: the initial route is held to its budget (CLAUDE.md §5.6), and a dialog
 // opened a few times a day can wait the moment its chunk takes to arrive.
 const MineDialog = lazy(() => import('./MineDialog'));
+// So is an instant clear's page: it carries the result screen's spoils panel with it.
+const InstantClearDialog = lazy(() => import('./InstantClearDialog'));
 
 /** Renders the open dialog (one at a time) with enter/exit animation. */
 export function DialogHost() {
@@ -108,6 +110,16 @@ export function DialogHost() {
       {dialog?.name === 'mine' ? (
         <Suspense key="mine" fallback={null}>
           <MineDialog onClose={closeDialog} />
+        </Suspense>
+      ) : null}
+      {dialog?.name === 'instant-clear' ? (
+        <Suspense key="instant-clear" fallback={null}>
+          <InstantClearDialog
+            summary={dialog.summary}
+            team={dialog.team}
+            requested={dialog.requested}
+            onClose={closeDialog}
+          />
         </Suspense>
       ) : null}
       {dialog?.name === 'mission-gift' ? (

@@ -34,6 +34,7 @@ export const tutorialConditionSchema: z.ZodType<Loosen<TutorialCondition>> = z.l
     }),
     z.object({ type: z.literal('ability_used'), slot: z.enum(ABILITY_SLOTS) }),
     z.object({ type: z.literal('auto_battle') }),
+    z.object({ type: z.literal('stand_mastered') }),
     z.object({ type: z.literal('acknowledged') }),
     z.object({ type: z.literal('clicked') }),
   ]),

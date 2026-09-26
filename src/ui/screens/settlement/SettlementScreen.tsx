@@ -4,6 +4,7 @@ import {
   BREW_DROP_CHANCE,
   MATERIAL_DROPS,
   SHARD_DROP_CHANCE,
+  STAGE_MAX_STARS,
   STARS_PER_SETTLEMENT,
 } from '@content/balance/campaign';
 import { content } from '@content/registry';
@@ -19,6 +20,7 @@ import {
   type CampaignProgress,
 } from '@engine/campaign/progress';
 import { globalStageIndex } from '@content/balance/campaign';
+import { isFeatureUnlocked } from '@engine/progression/unlocks';
 import { t, translate } from '@i18n/index';
 import { currentPointer, progressOf } from '@state/campaign';
 import { selectActions, selectSave } from '@state/selectors';
@@ -56,6 +58,8 @@ export default function SettlementScreen({ route }: ScreenProps) {
   if (!save || !settlement || !here) return null;
   const difficulty: Difficulty = here.difficulty;
   const stars = settlementStars(progress, index, difficulty);
+  // A mastered stand says it can be cleared instantly, once the chronicle can (CAMPAIGN.md §10).
+  const instantOpen = isFeatureUnlocked('instant_clear', save.profile.level);
 
   const openStage = (stage: StageDef): void => {
     const pointer = { settlement: index, stage: stage.number, difficulty };
@@ -159,6 +163,7 @@ export default function SettlementScreen({ route }: ScreenProps) {
                 difficulty={difficulty}
                 progress={progress}
                 current={here.stage === stage.number}
+                instantOpen={instantOpen}
                 onOpen={() => openStage(stage)}
               />
             ))}
@@ -175,6 +180,7 @@ function StageRow({
   difficulty,
   progress,
   current,
+  instantOpen,
   onOpen,
 }: {
   stage: StageDef;
@@ -182,6 +188,7 @@ function StageRow({
   difficulty: Difficulty;
   progress: CampaignProgress;
   current: boolean;
+  instantOpen: boolean;
   onOpen: () => void;
 }) {
   const unlocked = isStageUnlocked(progress, settlementIndex, stage.number, difficulty);
@@ -204,7 +211,17 @@ function StageRow({
             {settlementIndex}-{stage.number}
           </span>
           {stage.boss ? <span className={styles.bossTag}>{t('settlement.bossStand')}</span> : null}
-          <StarRow stars={stars} max={3} size={18} />
+          <StarRow stars={stars} max={STAGE_MAX_STARS} size={18} />
+          {instantOpen && stars >= STAGE_MAX_STARS ? (
+            <span
+              className={`display ${styles.instantTag}`}
+              title={t('instant.readyHint')}
+              data-testid={`instant-ready-${stage.id.replace(/\./g, '-')}`}
+            >
+              <Glyph glyph="glyph.magic_feather" size={14} color="var(--gold-3)" />
+              {t('instant.ready')}
+            </span>
+          ) : null}
           <span className={`num ${styles.best}`}>
             {best === null ? t('settlement.noRecord') : t('settlement.bestTurns', { turns: best })}
           </span>

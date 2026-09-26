@@ -1,6 +1,6 @@
 /**
  * Chapter 6 — Steel and Bone (docs/design/TUTORIAL.md §6): the single-step lessons of levels 7 and
- * up. They do not queue behind one another — each waits for its own feature and for the player to
+ * up, from the rank-up at 7 to the instant clear at 11 and auto-repeat's second tier at 20. They do not queue behind one another — each waits for its own feature and for the player to
  * walk into the room it lives in, so a chronicle that has not been to the Tavern since level 7
  * still gets the Forge's lesson at 8.
  *
@@ -109,6 +109,20 @@ export default chapter({
         ],
       },
       spotlight: ['setup.repeat'],
+      complete: { type: 'acknowledged' },
+    }),
+    // 6.9 — instant clears (11): a mastered stand written down rather than fought. It waits for a
+    // battle setup on a stand with every star, so the press it points at is one that works.
+    step({
+      when: {
+        type: 'all',
+        of: [
+          { type: 'feature', feature: 'instant_clear' },
+          { type: 'screen', screen: 'battle-setup' },
+          { type: 'stand_mastered' },
+        ],
+      },
+      spotlight: ['setup.instant'],
       complete: { type: 'acknowledged' },
     }),
   ],

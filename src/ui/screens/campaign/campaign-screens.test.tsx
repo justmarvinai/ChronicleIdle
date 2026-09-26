@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
+import { FEATURE_UNLOCK_LEVEL } from '@content/balance/unlocks';
 import { useGameStore } from '@state/store';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
 import CampaignScreen from './CampaignScreen';
@@ -146,6 +147,27 @@ describe('settlement stands', () => {
     const second = screen.getByTestId('stage-stage-01-02');
     expect(second).toHaveTextContent('Best: 10 turns');
     expect(within(second).getByTestId('battle-stage-01-02')).toBeInTheDocument();
+  });
+
+  it('marks a mastered stand as clearable instantly, once the chronicle can', () => {
+    const { actions } = useGameStore.getState();
+    actions.debugClearCampaign('intro', 3);
+    // A cleared Intro would point the screen at Normal; the stands being asked about are Intro's.
+    actions.selectStage({ settlement: 1, stage: 1, difficulty: 'intro' });
+    const { unmount } = render(stage(<SettlementScreen route={THORNWOOD} />));
+    // Level 1: instant clears are shut, so nothing says otherwise.
+    expect(screen.queryByTestId('instant-ready-stage-01-01')).toBeNull();
+    unmount();
+
+    actions.debugSetPlayerLevel(FEATURE_UNLOCK_LEVEL.instant_clear);
+    useGameStore.setState((state) => {
+      // One stand still short of its last star.
+      if (state.save) state.save.campaign.stars['stage.01.02|intro'] = 2;
+      return state;
+    });
+    render(stage(<SettlementScreen route={THORNWOOD} />));
+    expect(screen.getByTestId('instant-ready-stage-01-01')).toHaveTextContent('Instant');
+    expect(screen.queryByTestId('instant-ready-stage-01-02')).toBeNull();
   });
 
   it('shows what the settlement drops by its marks: set emblems, material and shard icons', () => {

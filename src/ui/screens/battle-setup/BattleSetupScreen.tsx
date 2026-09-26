@@ -10,11 +10,12 @@ import { parseBreweryEncounterId } from '@engine/brewery/encounter';
 import { bestTurnsOf, starsOf } from '@engine/campaign/progress';
 import { autoRepeatTiers } from '@engine/campaign/run';
 import { parseDungeonEncounterId } from '@engine/dungeon/index';
-import { unlockLevel } from '@engine/progression/unlocks';
+import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import type { TeamMode } from '@engine/schema/save';
 import { parseTowerEncounterId } from '@engine/tower/encounter';
 import { t, translate } from '@i18n/index';
 import { pointerCost, progressOf, runsAffordable, stageRefOf } from '@state/campaign';
+import { instantView } from '@state/instant';
 import { affordableRuns } from '@state/dungeon';
 import { selectActions, selectInventory, selectRoster, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
@@ -32,7 +33,7 @@ import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { entriesOf } from '@ui/screens/champions/roster-view';
 import { EnemyPanel } from './EnemyPanel';
-import { LaunchPanel, type RepeatChoice } from './LaunchPanel';
+import { LaunchPanel, type InstantChoice, type RepeatChoice } from './LaunchPanel';
 import { RosterStrip } from './RosterStrip';
 import { enemyPower, makeLeader, stagePointerOf, toggleMember } from './setup-view';
 import { TeamPanel } from './TeamPanel';
@@ -162,6 +163,53 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
     }
   };
 
+  /*
+   * A mastered stand can be written down instead of fought (CAMPAIGN.md §10). The press shows
+   * from the level it opens at — dead, and saying why, on a stand short of its stars — so the
+   * player learns what three stars buy before they have them.
+   */
+  const clearInstantly = (): void => {
+    if (!pointer) return;
+    const result = actions.instantClear({ pointer, runs: repeatRuns, party: team });
+    if (!result.ok) {
+      setError(
+        result.error.code === 'insufficient_energy' ? t('instant.noEnergy', { cost }) : result.error.message,
+      );
+      playSfx('ui.error');
+      return;
+    }
+    setError(null);
+    actions.setLastUsedTeam('campaign', team);
+    playSfx('instant.write');
+    playSfx('reward.large');
+    actions.openDialog({ name: 'instant-clear', summary: result.value, team, requested: repeatRuns });
+  };
+  const standing = pointer ? instantView(save, pointer, repeatRuns) : null;
+  const instant: InstantChoice | null =
+    standing && isFeatureUnlocked('instant_clear', save.profile.level)
+      ? standing.block === null
+        ? {
+            label:
+              standing.affordable > 1
+                ? t('instant.buttonTimes', { count: standing.affordable })
+                : t('instant.button'),
+            price: t('battleSetup.cost', { cost: standing.cost * standing.affordable }),
+            canPress: team.length > 0,
+            note: t('instant.hint'),
+            onPress: clearInstantly,
+          }
+        : {
+            label: t('instant.button'),
+            price: null,
+            canPress: false,
+            note:
+              standing.block.reason === 'energy'
+                ? t('instant.noEnergy', { cost: standing.block.cost })
+                : t('instant.needsStars'),
+            onPress: clearInstantly,
+          }
+      : null;
+
   const repeat: RepeatChoice | null =
     pointer || keep
       ? {
@@ -251,6 +299,7 @@ export default function BattleSetupScreen({ route }: ScreenProps) {
         <LaunchPanel
           price={price}
           repeat={repeat}
+          instant={instant}
           auto={auto}
           onAuto={(value) => actions.updateSettings({ autoBattle: value })}
           error={error}

@@ -16,6 +16,7 @@ import {
   battleSignal,
   dialogOf,
   screenOf,
+  standMastered,
   tutorialContext,
   tutorialGrantsOwed,
   tutorialOver,
@@ -150,6 +151,31 @@ describe('the tutorial in the save', () => {
     for (const step of content.tutorialChapters[0]?.steps ?? []) actions.completeTutorialStep(step.id);
     for (const chapter of content.tutorialChapters.slice(1)) actions.skipTutorialChapter(chapter.id);
     expect(tutorialOver(store.getState().save)).toBe(true);
+  });
+
+  it('knows when the battle setup is open on a mastered stand, and nowhere else', () => {
+    const { store } = started();
+    const { actions } = store.getState();
+    actions.newGame('Marvin');
+    actions.chooseStarter('champ.ser_corvin');
+    store.setState((state) => {
+      if (!state.save) return state;
+      state.save.campaign.stars['stage.01.01|intro'] = 3;
+      state.save.campaign.stars['stage.01.02|intro'] = 2;
+      return state;
+    });
+    const save = store.getState().save;
+    const setup = (encounterId: string) => ({ name: 'battle-setup', encounterId }) as const;
+    expect(standMastered(save, setup('encounter.stage.01.01.intro'))).toBe(true);
+    expect(standMastered(save, setup('encounter.stage.01.02.intro'))).toBe(false);
+    // The same stand on another difficulty is another stand.
+    expect(standMastered(save, setup('encounter.stage.01.01.normal'))).toBe(false);
+    // Not a campaign stand, or not the battle setup at all.
+    expect(standMastered(save, setup('encounter.tower.floor.001'))).toBe(false);
+    expect(standMastered(save, { name: 'hub' })).toBe(false);
+    // …and the context the script reads carries it.
+    actions.push(setup('encounter.stage.01.01.intro'));
+    expect(tutorialContext(world(store)).standMastered).toBe(true);
   });
 
   it('reads the live fight: the open turn, the wave, the abilities cast and the hand-over', async () => {

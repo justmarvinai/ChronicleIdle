@@ -65,6 +65,8 @@ export interface TutorialContext {
   dialogOpen: boolean;
   playerLevel: number;
   battle: TutorialBattleSignal | null;
+  /** The battle setup on screen is for a stand the chronicle has mastered; absent reads as no. */
+  standMastered?: boolean;
 }
 
 export type ChapterStatus = 'locked' | 'open' | 'done' | 'skipped';
@@ -262,6 +264,8 @@ export function conditionHolds(condition: TutorialCondition, ctx: TutorialContex
     }
     case 'counter':
       return ctx.save !== null && counter(ctx.save, condition.key) >= condition.count;
+    case 'stand_mastered':
+      return ctx.standMastered === true;
     case 'gear_worn': {
       const save = ctx.save;
       if (!save) return false;

@@ -11,7 +11,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { content } from '@content/registry';
+import { STAGE_MAX_STARS } from '@content/balance/campaign';
 import { ELEMENT_BEATS } from '@content/balance/element';
+import { FEATURE_UNLOCK_LEVEL } from '@content/balance/unlocks';
 import { ELEMENTS } from '@content/champions/types';
 import { scaledEnemyStats } from '@engine/battle/index';
 import { progressKey } from '@engine/campaign/progress';
@@ -272,5 +274,68 @@ describe('the battle setup screen', () => {
     expect(screen.queryAllByTestId(/^pick-/)).toHaveLength(valor);
     await user.click(screen.getByTestId('setup-filter-valor'));
     expect(cards()).toHaveLength(all);
+  });
+});
+
+describe('an instant clear (CAMPAIGN.md §10)', () => {
+  const OPEN = FEATURE_UNLOCK_LEVEL.instant_clear;
+  beforeEach(() => {
+    launched.campaign.length = 0;
+  });
+
+  /** The chronicle at `level`, the stand at `stars` on Intro, and `energy` to spend. */
+  function standing({ level = OPEN, stars = STAGE_MAX_STARS, energy = 60 } = {}): void {
+    chronicle();
+    useGameStore.setState((state) => {
+      if (!state.save) return state;
+      state.save.profile.level = level;
+      state.save.energy.value = energy;
+      state.save.campaign.stars[progressKey('stage.01.01', 'intro')] = stars;
+      state.save.campaign.bestTurns[progressKey('stage.01.01', 'intro')] = 9;
+      state.save.campaign.autoRepeat = 10;
+      return state;
+    });
+  }
+
+  it('is not offered before the level it opens at', () => {
+    standing({ level: OPEN - 1 });
+    render(stage(<BattleSetupScreen route={SETUP} />));
+    expect(screen.queryByTestId('instant-clear')).toBeNull();
+  });
+
+  it('shows, dead, on a stand short of its stars — and says what would open it', () => {
+    standing({ stars: 2 });
+    render(stage(<BattleSetupScreen route={SETUP} />));
+    expect(screen.getByTestId('instant-clear')).toBeDisabled();
+    expect(screen.getByTestId('instant-note')).toHaveTextContent(/three stars/i);
+  });
+
+  it('names the runs the energy covers and their price on a mastered stand', () => {
+    // A 1-1 run costs 4: 30 energy covers 7 of the 10 asked for.
+    standing({ energy: 30 });
+    render(stage(<BattleSetupScreen route={SETUP} />));
+    const button = screen.getByTestId('instant-clear');
+    expect(button).toBeEnabled();
+    expect(button).toHaveTextContent('Instant ×7');
+    expect(button).toHaveTextContent('28 ⚡');
+  });
+
+  it('clears the stand without a fight and opens the page of what it paid', async () => {
+    const user = userEvent.setup();
+    standing();
+    render(stage(<BattleSetupScreen route={SETUP} />));
+    const gold = save().wallet.gold ?? 0;
+    await user.click(screen.getByTestId('instant-clear'));
+
+    expect(save().energy.value).toBe(60 - 10 * 4);
+    expect(save().wallet.gold ?? 0).toBeGreaterThan(gold);
+    expect(save().stats['campaign.instant']).toBe(10);
+    expect(launched.campaign).toHaveLength(0);
+    const dialog = useGameStore.getState().ui.dialog;
+    expect(dialog?.name).toBe('instant-clear');
+    if (dialog?.name === 'instant-clear') {
+      expect(dialog.summary.runs).toBe(10);
+      expect(dialog.team).toEqual([0, 1, 2].map((i) => seated(i)).map((defId) => idOf(defId ?? '')));
+    }
   });
 });

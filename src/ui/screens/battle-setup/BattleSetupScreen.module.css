@@ -37,6 +37,6 @@
   bottom: 24px;
   z-index: var(--z-scene);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 420px;
+  grid-template-columns: minmax(0, 1fr) 480px;
   gap: 16px;
 }

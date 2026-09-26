@@ -9,6 +9,7 @@
  * Which step is open, what finishes it and what a chapter still owes all live in
  * `@engine/tutorial`; nothing about position is stored (CLAUDE.md §5.5).
  */
+import { STAGE_MAX_STARS } from '@content/balance/campaign';
 import { content } from '@content/registry';
 import type { AbilitySlot } from '@content/champions/types';
 import {
@@ -19,6 +20,8 @@ import {
   type TutorialScreen,
   type TutorialStepDef,
 } from '@content/tutorial/types';
+import { parseStageEncounterId } from '@engine/campaign/encounter';
+import { starsOf } from '@engine/campaign/progress';
 import { fail, ok, type Result } from '@engine/errors';
 import type { SaveGame } from '@engine/schema/save';
 import {
@@ -152,6 +155,18 @@ export function worldOf(
   };
 }
 
+/**
+ * Whether the battle setup on screen is for a stand this chronicle holds every star of — where the
+ * instant clear lesson can point at a press that works (CAMPAIGN.md §10).
+ */
+export function standMastered(save: SaveGame | null, route: Route): boolean {
+  if (!save || route.name !== 'battle-setup') return false;
+  const stand = parseStageEncounterId(route.encounterId);
+  if (!stand) return false;
+  const progress = { stars: save.campaign.stars, bestTurns: save.campaign.bestTurns };
+  return starsOf(progress, stand.stageId, stand.difficulty) >= STAGE_MAX_STARS;
+}
+
 export function tutorialContext(world: TutorialWorld): TutorialContext {
   return {
     save: world.save,
@@ -161,6 +176,7 @@ export function tutorialContext(world: TutorialWorld): TutorialContext {
     dialogOpen: world.dialog !== null,
     playerLevel: world.save?.profile.level ?? 1,
     battle: battleSignal(world.battle),
+    standMastered: standMastered(world.save, world.route),
   };
 }
 

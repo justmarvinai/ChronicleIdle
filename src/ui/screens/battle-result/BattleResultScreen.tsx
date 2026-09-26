@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
+import { STAGE_MAX_STARS } from '@content/balance/campaign';
 import { content } from '@content/registry';
+import { isFeatureUnlocked, unlockLevel } from '@engine/progression/unlocks';
 import { playSfx } from '@audio/index';
 import { battleController } from '@state/battle/index';
 import { bossSession } from '@state/boss-session';
@@ -104,6 +106,15 @@ export default function BattleResultScreen(_props: ScreenProps) {
   const gearLost = campaign.summaries.reduce((sum, summary) => sum + summary.gearLost, 0);
   // Mastering a difficulty owes a champion of the player's choosing; it is claimed at the Portal.
   const owedChoice = openChampionChoices(save).length > 0;
+  // A run that took the stand to its last star says what that star buys (CAMPAIGN.md §10).
+  const masteredNow = campaign.summaries.some(
+    (summary) => summary.stars >= STAGE_MAX_STARS && summary.starsBefore < STAGE_MAX_STARS,
+  );
+  const mastered = masteredNow
+    ? {
+        opensAt: isFeatureUnlocked('instant_clear', save.profile.level) ? null : unlockLevel('instant_clear'),
+      }
+    : null;
   const sideMode = Boolean(boss.summary || tower.summary || brewery.summary || keep.summary);
   const allies = outcome.units.filter((u) => u.side === 'ally');
   const teamIds = allies.map((u) => u.instanceId).filter((id): id is string => !!id);
@@ -246,6 +257,7 @@ export default function BattleResultScreen(_props: ScreenProps) {
                   dropped={dropped}
                   gearLost={gearLost}
                   chronicleLevel={last && last.playerLevelsGained > 0 ? save.profile.level : null}
+                  mastered={mastered}
                 />
               ) : null}
               {advice.length || grow ? (

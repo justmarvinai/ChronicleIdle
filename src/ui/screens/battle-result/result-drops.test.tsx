@@ -9,6 +9,7 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { imageUrl, setManifestForTests } from '@assets/manifest';
+import { FEATURE_UNLOCK_LEVEL } from '@content/balance/unlocks';
 import { GEAR_SLOTS } from '@content/champions/types';
 import { content } from '@content/registry';
 import type { GearInstance } from '@engine/gear/instance';
@@ -170,5 +171,55 @@ describe('the drops on a campaign result', () => {
 
     expect(within(screen.getByTestId('result-gear')).getAllByRole('listitem')).toHaveLength(12);
     expect(screen.getByTestId('result-gear-more')).toHaveTextContent('8 more');
+  });
+});
+
+describe('a stand taken to its last star', () => {
+  beforeEach(() => {
+    const actions = useGameStore.getState().actions;
+    actions.resetGame();
+    actions.newGame('Chronicler');
+    actions.chooseStarter('champ.ser_corvin');
+    clearCampaignSession();
+    battleController.end();
+  });
+
+  /** The screen after one run that took the stand from `before` stars to `after`. */
+  function afterTheRun(before: number, after: number): void {
+    afterTheBatch([[]]);
+    campaignSession.setState({ summaries: [{ ...run([]), starsBefore: before, stars: after }] });
+  }
+
+  const atLevel = (level: number): void =>
+    useGameStore.setState((state) => {
+      if (state.save) state.save.profile.level = level;
+      return state;
+    });
+
+  it('says it can be cleared instantly from now on', () => {
+    atLevel(FEATURE_UNLOCK_LEVEL.instant_clear);
+    afterTheRun(2, 3);
+    render(stage(<BattleResultScreen route={{ name: 'battle-result' }} />));
+    expect(screen.getByTestId('result-mastered')).toHaveTextContent(/clear it instantly/i);
+  });
+
+  it('names the level instant clears open at, before the chronicle reaches it', () => {
+    atLevel(FEATURE_UNLOCK_LEVEL.instant_clear - 1);
+    afterTheRun(1, 3);
+    render(stage(<BattleResultScreen route={{ name: 'battle-result' }} />));
+    expect(screen.getByTestId('result-mastered')).toHaveTextContent(
+      `chronicle level ${FEATURE_UNLOCK_LEVEL.instant_clear}`,
+    );
+  });
+
+  it('says nothing of a stand that was mastered already, or still is not', () => {
+    atLevel(FEATURE_UNLOCK_LEVEL.instant_clear);
+    afterTheRun(3, 3);
+    const { unmount } = render(stage(<BattleResultScreen route={{ name: 'battle-result' }} />));
+    expect(screen.queryByTestId('result-mastered')).toBeNull();
+    unmount();
+    afterTheRun(1, 2);
+    render(stage(<BattleResultScreen route={{ name: 'battle-result' }} />));
+    expect(screen.queryByTestId('result-mastered')).toBeNull();
   });
 });

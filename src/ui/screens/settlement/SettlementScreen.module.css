@@ -136,6 +136,18 @@
   color: var(--bg-0);
   background: var(--gold-3);
 }
+/* A mastered stand, clearable without a fight (CAMPAIGN.md §10): the quill on a gold hairline. */
+.instantTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--gold-3);
+  background: rgba(58, 42, 16, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(240, 213, 122, 0.55);
+}
 .best {
   margin-left: auto;
   font-size: 14px;

@@ -1,0 +1,105 @@
+/* The chronicle's page for an instant clear (docs/tech/UI_DESIGN.md §5.30). */
+.ledger {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 20px 20px;
+  text-align: center;
+  /* Vellum under ink: the page the stand is written on. */
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(240, 213, 122, 0.12), transparent 65%),
+    linear-gradient(180deg, rgba(38, 30, 22, 0.92), rgba(16, 13, 11, 0.94));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.45),
+    inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+.kicker {
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  color: var(--gold-2);
+}
+.stand {
+  margin: 0;
+  font-size: 26px;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+.name {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+/* The quill in a ring of gold light, still once the last page is written. */
+.seal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  margin: 6px 0 2px;
+}
+/* A gold-edged diamond, the battle setup's VS medal turned to the pen. */
+.ring {
+  position: absolute;
+  inset: 26px;
+  rotate: 45deg;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(240, 213, 122, 0.24), transparent 70%),
+    linear-gradient(135deg, #2a2114, #0e0b08);
+  border: 2px solid var(--gold-2);
+  outline: 1px solid rgba(240, 213, 122, 0.3);
+  outline-offset: 5px;
+  box-shadow:
+    0 0 26px rgba(240, 190, 90, 0.35),
+    inset 0 0 18px rgba(0, 0, 0, 0.8);
+}
+.seal[data-done='true'] .ring {
+  border-color: var(--gold-3);
+  box-shadow:
+    0 0 44px rgba(240, 190, 90, 0.6),
+    inset 0 0 18px rgba(0, 0, 0, 0.8);
+  transition:
+    box-shadow var(--t-slow) var(--ease-out),
+    border-color var(--t-slow) var(--ease-out);
+}
+.flare {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.quill {
+  position: relative;
+  display: grid;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.85));
+}
+
+.cleared {
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  color: var(--gold-2);
+}
+.count {
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold-3);
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(240, 190, 90, 0.45);
+}
+.spent {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.short {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #ffcf9e;
+}

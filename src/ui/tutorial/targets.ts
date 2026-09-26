@@ -39,6 +39,7 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'setup.team': testId('setup-team'),
   'setup.start': testId('start-battle'),
   'setup.repeat': testId('auto-repeat'),
+  'setup.instant': testId('instant'),
 
   'battle.ability1': testId('ability-a1'),
   'battle.ability2': testId('ability-a2'),
