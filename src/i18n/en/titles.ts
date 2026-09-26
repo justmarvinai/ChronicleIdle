@@ -22,4 +22,12 @@ export const titles = {
   'title.warden_of_veyrath.description': 'Three stars on every stand of Hard. Nothing is left of it.',
   'title.loremaster.name': 'Loremaster',
   'title.loremaster.description': 'Chronicle level 100.',
+  'title.rabble_rouser.name': 'Rabble-Rouser',
+  'title.rabble_rouser.description': 'A Hard stand won by nobody better than Uncommon.',
+  'title.banneret.name': 'Banneret',
+  'title.banneret.description': 'The fifth rank of the Hall of Deeds.',
+  'title.sovereign_of_the_tower.name': 'Sovereign of the Tower',
+  'title.sovereign_of_the_tower.description': 'The Eternal Tower climbed to its hundredth floor.',
+  'title.legend_of_the_chronicle.name': 'Legend of the Chronicle',
+  'title.legend_of_the_chronicle.description': 'The tenth and last rank of the Hall of Deeds.',
 } as const;

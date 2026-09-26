@@ -48,6 +48,10 @@ const ICONS: Readonly<Record<GoalType, GlyphKey>> = {
   boss_damage: 'glyph.flaming_skull',
   boss_percent: 'glyph.flaming_skull',
   complete_daily_quests_days: 'glyph.burning_scroll',
+  counter: 'glyph.trophy_cup',
+  mine_level: 'glyph.pickaxe',
+  palace_nodes: 'glyph.eagle_staff',
+  path_walked: 'glyph.spell_book',
   all_previous: 'glyph.owl',
 };
 

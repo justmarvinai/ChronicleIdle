@@ -14,7 +14,7 @@ import { DIFFICULTY_MULT } from '@content/balance/battle';
 import { PALACE_POINT_SOURCES } from '@content/balance/palace';
 import { progressKey, stageIdOf } from '@engine/campaign/progress';
 import { settlementKey } from '@engine/palace/index';
-import { SAVE_VERSION, saveSchema, type SaveGame } from '@engine/schema/save';
+import { SAVE_VERSION, emptyDeeds, saveSchema, type SaveGame } from '@engine/schema/save';
 
 export interface MigrationStep {
   from: number;
@@ -406,6 +406,16 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       saveVersion: 20,
       mine: newMine(typeof raw['updatedAt'] === 'number' ? raw['updatedAt'] : 0),
     }),
+  },
+  {
+    from: 20,
+    to: 21,
+    /*
+     * The Hall of Deeds (0.12.0). A chronicle that predates it has claimed nothing — and needs to
+     * be given nothing: the Hall reads the whole chronicle from its lifetime counters, so every
+     * tier the veteran already passed is waiting to be claimed the day the Hall opens.
+     */
+    migrate: (raw) => ({ ...raw, saveVersion: 21, deeds: emptyDeeds() }),
   },
 ];
 

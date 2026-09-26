@@ -14,7 +14,11 @@ export type TitleCondition =
   /** Beat a settlement's boss on a difficulty. */
   | { kind: 'settlement_boss'; settlement: number; difficulty: Difficulty }
   /** Own this many champions. */
-  | { kind: 'champions_owned'; count: number };
+  | { kind: 'champions_owned'; count: number }
+  /** Claim this rank of the Hall of Deeds (ACHIEVEMENTS.md §2). */
+  | { kind: 'hall_rank'; rank: number }
+  /** Claim this challenge of the Hall of Deeds (ACHIEVEMENTS.md §6). */
+  | { kind: 'challenge'; id: string };
 
 export interface TitleDef {
   /** `title.<snake_case>`. */

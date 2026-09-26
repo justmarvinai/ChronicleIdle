@@ -33,6 +33,8 @@ export type Route =
   | { name: 'quests'; period?: QuestPeriod }
   /** The Chronicler's Path; `chapter` opens on one of its ten tabs (`QUESTS_MISSIONS.md` §4). */
   | { name: 'missions'; chapter?: number }
+  /** The Hall of Deeds; `tab` opens on one of its two ledgers (`ACHIEVEMENTS.md`). */
+  | { name: 'deeds'; tab?: DeedsTab }
   /** The Eternal Tower; `floor` scrolls the ladder to one (`ETERNAL_TOWER.md` §7). */
   | { name: 'tower'; floor?: number }
   /** The Glorious Palace, the account-wide skill tree (`GLORIOUS_PALACE.md`). */
@@ -62,6 +64,9 @@ export type Route =
 
 /** Which shelf the Market opens on. */
 export type MarketTab = 'gold' | 'gems';
+
+/** Which ledger the Hall of Deeds opens on. */
+export type DeedsTab = 'achievements' | 'challenges';
 
 export type RouteName = Route['name'];
 
@@ -123,6 +128,7 @@ export type DialogRoute =
   | { name: 'boss-sheet'; bossId: string }
   | { name: 'level-up' }
   | { name: 'title-picker' }
+  | { name: 'frame-picker' }
   | { name: 'battle-pause' }
   | { name: 'debug' };
 

@@ -52,6 +52,7 @@ function startRunBattle(
     encounterId: charged.value.encounterId,
     instanceIds,
     roster: save.roster,
+    inventory: save.inventory,
     palace: palaceBonusOf(save.palace.nodes),
     control,
     speed,

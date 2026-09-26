@@ -26,6 +26,7 @@ export function launchBattle(input: LaunchInput): Result<void> {
     encounterId: input.encounterId,
     instanceIds: input.instanceIds,
     roster: save.roster,
+    inventory: save.inventory,
     palace: palaceBonusOf(save.palace.nodes),
     control,
     speed,

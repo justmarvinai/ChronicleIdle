@@ -54,6 +54,24 @@
 .chip:hover .ring {
   filter: brightness(1.25) drop-shadow(0 0 6px rgba(240, 213, 122, 0.5));
 }
+/*
+ * The frame worn: the ring recoloured — its shading kept, its hue the frame's — and a halo in the
+ * frame's own light (ACHIEVEMENTS.md §3).
+ */
+.ring[data-framed='true'] {
+  filter: drop-shadow(0 0 5px var(--frame-glow));
+}
+.chip:hover .ring[data-framed='true'] {
+  filter: brightness(1.2) drop-shadow(0 0 8px var(--frame-glow));
+}
+.frameTint {
+  position: absolute;
+  inset: -5px;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  mix-blend-mode: color;
+  pointer-events: none;
+}
 /* The level on a gold gem at the foot of the ring. */
 .level {
   position: absolute;

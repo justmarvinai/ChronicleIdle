@@ -33,6 +33,7 @@ export const TUTORIAL_TARGETS = [
   'hub.hall',
   'hub.idle',
   'hub.mine',
+  'hub.deeds',
   'hub.quests',
   'hub.missions',
   'topbar.energy',
@@ -45,6 +46,8 @@ export const TUTORIAL_TARGETS = [
   'setup.start',
   'setup.repeat',
   'setup.instant',
+  // The Hall of Deeds
+  'deeds.claimAll',
   // The fight
   'battle.ability1',
   'battle.ability2',
@@ -104,6 +107,7 @@ export const TUTORIAL_SCREENS = [
   'bosses',
   'quests',
   'missions',
+  'deeds',
   'game-modes',
   'campaign',
   'settlement',

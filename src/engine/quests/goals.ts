@@ -161,6 +161,10 @@ export function evaluateGoal(goal: Goal, ctx: GoalContext): GoalProgress {
     case 'complete_daily_quests_days':
       return made(delta(ctx, goal.quests === 5 ? DAILY_FIVE : counterOf(goal.type)), goal.count);
 
+    // Any counter by name — the Hall of Deeds' lifetime ledgers read theirs this way.
+    case 'counter':
+      return made(delta(ctx, goal.key), goal.count);
+
     // ── The campaign, as it stands ───────────────────────────────────────────────────────────
     case 'clear_stage': {
       const cleared = isStageCleared(
@@ -178,8 +182,11 @@ export function evaluateGoal(goal: Goal, ctx: GoalContext): GoalProgress {
       return made(difficultyStars(ctx.save.campaign, goal.difficulty).stars, goal.stars);
 
     // ── The roster, as it stands ─────────────────────────────────────────────────────────────
-    case 'own_champions':
-      return made(owned(ctx, goal.rarity).length, goal.count);
+    case 'own_champions': {
+      const champions = owned(ctx, goal.rarity);
+      const count = goal.distinct ? new Set(champions.map(({ def }) => def.id)).size : champions.length;
+      return made(count, goal.count);
+    }
 
     case 'champion_reach_level':
       return made(
@@ -266,7 +273,19 @@ export function evaluateGoal(goal: Goal, ctx: GoalContext): GoalProgress {
       return made(Math.floor(damagePercent(tier, best)), goal.pct);
     }
 
+    // ── Emberhold, as it stands ──────────────────────────────────────────────────────────────
+    case 'mine_level':
+      return made(ctx.save.mine.level, goal.level);
+
+    /** Nodes held now: a Palace reset hands them back, and the goal reads the Palace as it is. */
+    case 'palace_nodes':
+      return made(ctx.save.palace.nodes.length, goal.count);
+
     // ── The Path ─────────────────────────────────────────────────────────────────────────────
+    /** A mission passed with a Dispensation is behind the chronicle as surely as a claimed one. */
+    case 'path_walked':
+      return made(ctx.save.missions.claimed.length, goal.missions);
+
     case 'all_previous':
       return made(ctx.allPrevious ? 1 : 0, 1);
 
@@ -311,6 +330,9 @@ export function goalCounterKeys(goals: readonly Goal[]): string[] {
         return;
       case 'complete_daily_quests_days':
         keys.add(goal.quests === 5 ? DAILY_FIVE : counterOf(goal.type));
+        return;
+      case 'counter':
+        keys.add(goal.key);
         return;
       default: {
         const key = GOAL_COUNTERS[goal.type];

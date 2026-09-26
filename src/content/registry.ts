@@ -2,10 +2,8 @@
  * The content registry: every definition the game knows, indexed by id. Built once at boot from
  * the content modules and validated by `validateContent` (dev boot, tests, CI).
  */
-import { LATEST_RELEASE, RELEASES, RELEASE_BY_ID } from '@content/changelog/index';
 import { PALACE } from '@content/palace/index';
 import type { PalaceTree } from '@content/palace/types';
-import type { ReleaseDef } from '@content/changelog/types';
 import { CHAMPIONS, CHAMPION_BY_ID } from '@content/champions/index';
 import type { ChampionDef, ChampionId, Element } from '@content/champions/types';
 import { CURRENCIES, CURRENCY_BY_ID } from '@content/currencies/index';
@@ -46,6 +44,16 @@ import { MISSIONS, MISSION_BY_ID, MISSION_CHAPTERS } from '@content/missions/ind
 import type { MissionChapterDef, MissionDef } from '@content/missions/types';
 import { QUESTS, QUEST_BOARDS, QUEST_BOARD_BY_PERIOD, QUEST_BY_ID } from '@content/quests/index';
 import type { QuestBoardDef, QuestDef, QuestPeriod } from '@content/quests/types';
+import {
+  ACHIEVEMENTS,
+  ACHIEVEMENT_BY_ID,
+  CHALLENGES,
+  CHALLENGE_BY_ID,
+  FRAME_BY_ID,
+  HALL_RANKS,
+  PORTRAIT_FRAMES,
+} from '@content/deeds/index';
+import type { AchievementDef, ChallengeDef, HallRankDef, PortraitFrameDef } from '@content/deeds/types';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
 import type { TitleDef } from '@content/titles/types';
 import { TUTORIAL_CHAPTERS, TUTORIAL_STEPS, TUTORIAL_STEP_BY_ID } from '@content/tutorial/index';
@@ -83,11 +91,6 @@ export interface ContentRegistry {
   /** Titles in display order, earliest first (ECONOMY.md §4). */
   titles: readonly TitleDef[];
   titleById(id: string): TitleDef | undefined;
-  /** The Chronicle of Changes, newest first (CONTENT_AUTHORING.md §13). */
-  releases: readonly ReleaseDef[];
-  releaseById(id: string): ReleaseDef | undefined;
-  /** The release the panel opens on; `undefined` only if nothing has shipped. */
-  latestRelease: ReleaseDef | undefined;
   /** The Glorious Palace's node tree (GLORIOUS_PALACE.md). */
   palace: PalaceTree;
   /** The Brewery's four halls, in element order (BREWERY.md). */
@@ -142,6 +145,14 @@ export interface ContentRegistry {
   tutorialStepById(id: string): TutorialStepDef | undefined;
   /** Champions a shard may pull: every definition whose `obtain` lists `summon`. */
   summonPool: readonly ChampionDef[];
+  /** The Hall of Deeds (ACHIEVEMENTS.md): its two ledgers, its ranks and its portrait frames. */
+  achievements: readonly AchievementDef[];
+  achievementById(id: string): AchievementDef | undefined;
+  challenges: readonly ChallengeDef[];
+  challengeById(id: string): ChallengeDef | undefined;
+  hallRanks: readonly HallRankDef[];
+  frames: readonly PortraitFrameDef[];
+  frameById(id: string): PortraitFrameDef | undefined;
 }
 
 /** Eldric is mission-only, so the pool is whoever's own definition says it can be summoned. */
@@ -248,9 +259,6 @@ export function buildContentRegistry(): ContentRegistry {
     settlementOfStage: (id) => SETTLEMENT_OF_STAGE[id],
     titles: TITLES,
     titleById: (id) => TITLE_BY_ID[id],
-    releases: RELEASES,
-    releaseById: (id) => RELEASE_BY_ID[id],
-    latestRelease: LATEST_RELEASE,
     palace: PALACE,
     breweries: BREWERIES,
     breweryById: (id) => BREWERY_BY_ID[id],
@@ -287,6 +295,13 @@ export function buildContentRegistry(): ContentRegistry {
     tutorialSteps: TUTORIAL_STEPS,
     tutorialStepById: (id) => TUTORIAL_STEP_BY_ID[id],
     summonPool: SUMMON_POOL,
+    achievements: ACHIEVEMENTS,
+    achievementById: (id) => ACHIEVEMENT_BY_ID[id],
+    challenges: CHALLENGES,
+    challengeById: (id) => CHALLENGE_BY_ID[id],
+    hallRanks: HALL_RANKS,
+    frames: PORTRAIT_FRAMES,
+    frameById: (id) => FRAME_BY_ID[id],
   };
 }
 

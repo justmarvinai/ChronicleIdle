@@ -120,6 +120,21 @@ export const COUNTER_KEYS = [
   'energy.refills',
   /** Eternal Keys bought with gems (ECONOMY.md §5.2), one per refill. */
   'tower.key_refills',
+  // Feats only a battle can tell (ACHIEVEMENTS.md §7), written by `@engine/deeds/feats` at a win
+  /** A Normal or Hard stand won with a single champion. */
+  'feat.solo',
+  /** A settlement's boss on Hard felled by a single champion. */
+  'feat.giant_slayer',
+  /** A win with one champion left standing of three or more. */
+  'feat.last_stand',
+  /** A win of three waves or more in which no champion lost health. */
+  'feat.untouched',
+  /** A Normal or Hard stand of three waves cleared in six ally turns or fewer. */
+  'feat.swift',
+  /** A Hard stand won by three or more champions of one element. */
+  'feat.kindred',
+  /** A Hard stand won with nobody better than Uncommon. */
+  'feat.rabble',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */

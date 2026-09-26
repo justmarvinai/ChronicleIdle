@@ -115,7 +115,11 @@ describe('a complete set fights', () => {
     });
     // The wave's own start applies it, so one step is enough — and it lasts three turns.
     step(state);
-    expect(state.units['a0']?.statuses.some((s) => s.id === 'shield')).toBe(true);
+    const unit = state.units['a0'];
+    const shield = unit?.statuses.find((s) => s.id === 'shield');
+    expect(shield).toBeDefined();
+    // Twenty percent of the wearer's max HP (GEAR.md §5) — a value written as 0.2 once made it 0.2 %.
+    expect(shield?.value).toBe(Math.round(0.2 * (unit?.maxHp ?? 0)));
   });
 
   it('leaves a champion with three pieces of a four-piece set with nothing but the stats', () => {

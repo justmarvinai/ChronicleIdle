@@ -1,0 +1,92 @@
+/* The chronicler's portrait in its frame (docs/design/ACHIEVEMENTS.md §3). */
+.portrait {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  background: var(--bg-1);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* A frame that throws light: a soft halo in its own colour, breathing slowly. */
+.portrait[data-glow='true'] {
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.55),
+    0 0 26px color-mix(in srgb, var(--frame-glow) 55%, transparent);
+  animation: halo 3.2s ease-in-out infinite;
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 18%;
+}
+
+.artTint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center 18%;
+  mask-position: center 18%;
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(11, 10, 13, 0.75));
+}
+
+/* The last rank's and the Titan's frames: a gleam that crosses the portrait every few seconds. */
+.gleam {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    color-mix(in srgb, var(--frame-glow) 35%, transparent) 48%,
+    rgba(255, 255, 255, 0.22) 50%,
+    color-mix(in srgb, var(--frame-glow) 35%, transparent) 52%,
+    transparent 62%
+  );
+  mix-blend-mode: screen;
+  transform: translateX(-70%);
+  animation: gleam 4.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes halo {
+  0%,
+  100% {
+    box-shadow:
+      0 14px 30px rgba(0, 0, 0, 0.55),
+      0 0 18px color-mix(in srgb, var(--frame-glow) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 14px 30px rgba(0, 0, 0, 0.55),
+      0 0 34px color-mix(in srgb, var(--frame-glow) 70%, transparent);
+  }
+}
+
+@keyframes gleam {
+  0%,
+  55% {
+    transform: translateX(-70%);
+  }
+  100% {
+    transform: translateX(70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait[data-glow='true'],
+  .gleam {
+    animation: none;
+  }
+  .gleam {
+    display: none;
+  }
+}

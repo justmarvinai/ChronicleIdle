@@ -18,13 +18,18 @@ export const TITLES: readonly TitleDef[] = [
   title('road_warden', { kind: 'settlement_boss', settlement: 5, difficulty: 'intro' }),
   title('gatebreaker', { kind: 'difficulty_cleared', difficulty: 'intro' }),
   title('collector', { kind: 'champions_owned', count: 10 }),
+  // ACHIEVEMENTS.md §4: the Hall's four, each a rank or a challenge claimed.
+  title('rabble_rouser', { kind: 'challenge', id: 'challenge.rabble' }),
   title('seasoned', { kind: 'level', level: 25 }),
+  title('banneret', { kind: 'hall_rank', rank: 5 }),
   title('lorekeeper', { kind: 'difficulty_cleared', difficulty: 'normal' }),
   title('chronicle_keeper', { kind: 'level', level: 50 }),
   title('undimmed', { kind: 'difficulty_cleared', difficulty: 'hard' }),
   // CAMPAIGN.md §7: the Hard all-3★ milestone.
   title('warden_of_veyrath', { kind: 'difficulty_mastered', difficulty: 'hard' }),
+  title('sovereign_of_the_tower', { kind: 'challenge', id: 'challenge.sovereign' }),
   title('loremaster', { kind: 'level', level: 100 }),
+  title('legend_of_the_chronicle', { kind: 'hall_rank', rank: 10 }),
 ];
 
 export const TITLE_BY_ID: Readonly<Record<string, TitleDef>> = Object.fromEntries(

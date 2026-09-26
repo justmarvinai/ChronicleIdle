@@ -8,8 +8,9 @@ import { en } from './en/index';
 export type I18nKey = keyof typeof en;
 export type I18nParams = Record<string, string | number>;
 
-const dictionary: Record<string, string> = en;
-export const I18N_KEYS: ReadonlySet<string> = new Set(Object.keys(dictionary));
+const dictionary: Record<string, string> = { ...en };
+/** The keys the first screen loads with. A table loaded later joins through `registerStrings`. */
+export const I18N_KEYS: ReadonlySet<string> = new Set(Object.keys(en));
 
 /** Raw English text for a key (content validation of description placeholders). */
 export function textOf(key: string): string | undefined {
@@ -17,6 +18,15 @@ export function textOf(key: string): string | undefined {
 }
 
 const missing = new Set<string>();
+
+/**
+ * Joins a table that ships in its own chunk to the dictionary. The Chronicle of Changes' releases
+ * arrive with the panel that prints them rather than with the first screen (ADR-049); their keys
+ * come out of content data, so they are read with `translate`, never with the typed `t`.
+ */
+export function registerStrings(table: Readonly<Record<string, string>>): void {
+  Object.assign(dictionary, table);
+}
 
 export function hasKey(key: string): key is I18nKey {
   return key in dictionary;

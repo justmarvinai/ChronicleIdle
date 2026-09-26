@@ -1,6 +1,7 @@
 import { playSfx } from '@audio/index';
 import { t } from '@i18n/index';
 import { bossView } from '@state/bosses';
+import { deedsClaimable } from '@state/deeds';
 import { idleView } from '@state/idle';
 import { mineView } from '@state/mine';
 import { missionsClaimable } from '@state/missions';
@@ -30,6 +31,7 @@ const selectWeeklyBoss = selectFeatureUnlocked('weekly_boss');
 const selectMissions = selectFeatureUnlocked('missions');
 const selectQuests = selectFeatureUnlocked('quests_daily');
 const selectGear = selectFeatureUnlocked('gear');
+const selectDeeds = selectFeatureUnlocked('deeds');
 
 /** Emberhold — the home screen (clones the reference hub: hotspots on the art, chrome around it). */
 export default function HubScreen(_props: ScreenProps) {
@@ -39,6 +41,7 @@ export default function HubScreen(_props: ScreenProps) {
   const missions = useGameStore(selectMissions);
   const quests = useGameStore(selectQuests);
   const gear = useGameStore(selectGear);
+  const deedsOpen = useGameStore(selectDeeds);
   const unseen = useGameStore(selectUnseen);
   const save = useGameStore(selectSave);
   // The Palace waits on the first settlement falling rather than on a level (owner's answer).
@@ -61,6 +64,8 @@ export default function HubScreen(_props: ScreenProps) {
   const ledger = save ? questsClaimable(save, now) : 0;
   // The Path's: the mission it is on, if it is finished, and any chapter chest still waiting.
   const path = save ? missionsClaimable(save, now) : 0;
+  // The Hall's: every tier, challenge and rank waiting to be claimed.
+  const deeds = save ? deedsClaimable(save, now) : 0;
   // One dot when today's tile is still there — a day owed is the calendar's only live state.
   const rewards = save && loginView(save, now).claimable ? 1 : 0;
 
@@ -159,6 +164,19 @@ export default function HubScreen(_props: ScreenProps) {
               testId="nav-quests"
             />
             <NavTile
+              label={t('hub.deeds')}
+              glyph="glyph.trophy_cup"
+              tint="#e0b04a"
+              unlocked={deedsOpen}
+              notify={deeds}
+              onClick={() =>
+                actions.push(
+                  deedsOpen ? { name: 'deeds' } : { name: 'locked', feature: 'deeds', titleKey: 'hub.deeds' },
+                )
+              }
+              testId="nav-deeds"
+            />
+            <NavTile
               label={t('hub.index')}
               glyph="glyph.owl"
               tint="#8fb98a"
@@ -188,10 +206,10 @@ export default function HubScreen(_props: ScreenProps) {
 /**
  * One destination on the hub's rail.
  *
- * Icon **above** the word rather than beside it, and tinted per destination: five tiles that differ
- * in colour and silhouette are told apart at a glance, where five identical slabs have to be read.
+ * Icon **above** the word rather than beside it, and tinted per destination: six tiles that differ
+ * in colour and silhouette are told apart at a glance, where six identical slabs have to be read.
  * The tile itself carries no frame until it is hovered — the rail behind them is the frame, so the
- * bar reads as one navigation strip rather than as five competing buttons.
+ * bar reads as one navigation strip rather than as six competing buttons.
  */
 function NavTile({
   label,

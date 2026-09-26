@@ -311,6 +311,15 @@ export function goalDestination(goal: Goal, save: SaveGame): Destination | null 
         name: t('place.quests.daily'),
         way: { route: { name: 'quests', period: 'daily' } },
       };
+    // A counter names no place; whoever asks for one (an achievement) says where it is played.
+    case 'counter':
+      return null;
+    case 'mine_level':
+      return placeDestination('mine');
+    case 'palace_nodes':
+      return placeDestination('palace');
+    case 'path_walked':
+      return placeDestination('missions');
   }
 }
 

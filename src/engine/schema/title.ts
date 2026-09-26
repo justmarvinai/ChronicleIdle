@@ -20,6 +20,9 @@ export const titleConditionSchema = z.discriminatedUnion('kind', [
     kind: z.literal('champions_owned'),
     count: z.number().int().min(1).max(CHAMPION_IDS.length),
   }),
+  // The Hall's ranks and challenges are checked against its content by `validateDeeds`.
+  z.object({ kind: z.literal('hall_rank'), rank: z.number().int().min(1) }),
+  z.object({ kind: z.literal('challenge'), id: z.string().regex(/^challenge\.[a-z0-9_]+$/) }),
 ]);
 
 export const titleSchema = z.object({

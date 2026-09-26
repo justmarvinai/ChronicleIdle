@@ -96,6 +96,16 @@ import { applyUseItem, type UseResult } from './bag';
 import { applyLoginClaim, type LoginClaim } from './login';
 import { applyEnergyRefill, applyTowerKeyRefill, type EnergyRefill, type KeyRefill } from './wallet';
 import { applyMineCollect, applyMineUpgrade, type MineCollectSummary, type MineUpgradeSummary } from './mine';
+import {
+  applyAchievementClaim,
+  applyChallengeClaim,
+  applyClaimAllDeeds,
+  applyRankClaim,
+  applyWearFrame,
+  recordFeats,
+  type DeedClaim,
+  type DeedClaimAll,
+} from './deeds';
 import type { DungeonDifficulty } from '@content/balance/dungeon';
 import {
   applyBossChestClaim,
@@ -355,6 +365,16 @@ export interface GameActions {
   claimChapterChest(chapter: number): Result<ChapterChestClaim>;
   /** Names the slot and set of the 6★ Legendary piece the Path's last chest owes. */
   takeMissionGift(slot: GearSlot, setId: string): Result<GearInstance>;
+  /** Claims an achievement's next tier in the Hall of Deeds (ACHIEVEMENTS.md §1). */
+  claimAchievement(achievementId: string): Result<DeedClaim>;
+  /** Claims a challenge, once (ACHIEVEMENTS.md §6). */
+  claimChallenge(challengeId: string): Result<DeedClaim>;
+  /** Claims the next rank of the Hall, when the renown claimed reaches it (ACHIEVEMENTS.md §2). */
+  claimHallRank(): Result<DeedClaim>;
+  /** Claims everything the Hall owes: tiers, then challenges, then the ranks they reach. */
+  claimAllDeeds(): Result<DeedClaimAll>;
+  /** Wears an earned portrait frame, or `null` for the chronicle's own gold (ACHIEVEMENTS.md §3). */
+  wearFrame(frameId: string | null): Result<string | null>;
   /**
    * Dev/debug: a seeded piece straight into the armoury. Rolls on Hard by default, because a
    * debug grant exists to produce every rarity the game has (`GEAR.md` §7 caps the others).
@@ -484,6 +504,38 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             const def = content.titleById(id);
             if (def) get().actions.toast('reward', 'profile.titleEarned', { title: translate(def.name) });
           }
+        };
+
+        /**
+         * One claim in the Hall of Deeds, whichever kind: applied to the draft, then announced —
+         * the wallet's changes, a toast per title and per frame it hung up, and the event the
+         * Hall's seal listens for.
+         */
+        const claimDeed = <T extends { changes: CurrencyChange[]; titles: string[]; frames: string[] }>(
+          apply: (save: SaveGame, now: number) => Result<T>,
+        ): Result<T> => {
+          if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+          const now = clock.now();
+          let result: Result<T> = fail('invalid_argument', 'No chronicle loaded');
+          set((state) => {
+            if (!state.save) return;
+            result = apply(state.save, now);
+            if (result.ok) state.save.updatedAt = now;
+          });
+          if (!result.ok) return result;
+          const claim = result.value;
+          if (claim.changes.length)
+            events.emit({ type: 'currency.changed', changes: claim.changes, reason: 'deeds' });
+          for (const id of claim.titles) {
+            const def = content.titleById(id);
+            if (def) get().actions.toast('reward', 'profile.titleEarned', { title: translate(def.name) });
+          }
+          for (const id of claim.frames) {
+            const def = content.frameById(id);
+            if (def) get().actions.toast('reward', 'deeds.frameEarned', { frame: translate(def.name) });
+          }
+          events.emit({ type: 'deeds.claimed' });
+          return result;
         };
 
         return {
@@ -1577,6 +1629,34 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               return result;
             },
 
+            claimAchievement(achievementId) {
+              return claimDeed((save, now) => applyAchievementClaim(save, achievementId, now));
+            },
+
+            claimChallenge(challengeId) {
+              return claimDeed((save, now) => applyChallengeClaim(save, challengeId, now));
+            },
+
+            claimHallRank() {
+              return claimDeed((save, now) => applyRankClaim(save, now));
+            },
+
+            claimAllDeeds() {
+              return claimDeed((save, now) => applyClaimAllDeeds(save, now));
+            },
+
+            wearFrame(frameId) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<string | null> = fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              set((state) => {
+                if (!state.save) return;
+                result = applyWearFrame(state.save, frameId);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              return result;
+            },
+
             claimChapterChest(chapter) {
               if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
               const now = clock.now();
@@ -1841,6 +1921,7 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 if (outcome.kind === 'victory') {
                   bumpCounterId(save, 'battles.won.', encounterId);
                   if (manual) bumpCounter(save, 'battles.won.manual');
+                  recordFeats(save, outcome, encounterId);
                 }
               });
               events.emit({ type: 'battle.ended', outcome: outcome.kind, encounterId });

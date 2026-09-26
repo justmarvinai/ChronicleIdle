@@ -5,9 +5,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { setManifestForTests } from '@assets/manifest';
 import type { AssetManifest } from '@assets/manifest-types';
 import type { ReleaseDef } from '@content/changelog/types';
-import { content } from '@content/registry';
+import { RELEASES as SHIPPED } from '@content/changelog/index';
 import { ChangelogView } from './ChangelogView';
 import { kindCounts, releaseViews } from './changelog-view';
+import { translate } from '@i18n/index';
 
 vi.mock('@audio/index', () => ({ playSfx: () => undefined, playMusic: () => undefined }));
 
@@ -60,19 +61,28 @@ describe('what the chronicle shows', () => {
   });
 });
 
+/** The panel arrives in its own chunk with its words (the frame stands in until it has). */
+async function renderPanel(): Promise<void> {
+  render(<ChangelogView height={400} />);
+  await screen.findByTestId('changelog');
+  // The releases' words joined the dictionary on the way in: a name reads as a name, not a key.
+  expect(screen.getByText(translate(SHIPPED[0]?.name ?? ''))).toBeInTheDocument();
+  expect(translate(SHIPPED[0]?.name ?? '')).not.toBe(SHIPPED[0]?.name);
+}
+
 describe('the Chronicle of Changes panel', () => {
   it('opens on everything, newest first, with the newest release badged', async () => {
-    render(<ChangelogView height={400} />);
+    await renderPanel();
     const sections = document.querySelectorAll('[data-release]');
-    expect(sections.length).toBe(content.releases.length);
-    expect(sections[0]?.getAttribute('data-release')).toBe(content.releases[0]?.release);
+    expect(sections.length).toBe(SHIPPED.length);
+    expect(sections[0]?.getAttribute('data-release')).toBe(SHIPPED[0]?.release);
     expect(within(sections[0] as HTMLElement).getByText('Latest')).toBeInTheDocument();
     expect(screen.getByTestId('changelog-filter-all')).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByTestId('changelog-order')).toHaveAttribute('data-order', 'newest');
   });
 
   it('filters to one kind, and every line left is of that kind', async () => {
-    render(<ChangelogView height={400} />);
+    await renderPanel();
     await userEvent.click(screen.getByTestId('changelog-filter-fixed'));
     const kinds = [...document.querySelectorAll('li[data-kind]')].map((li) => li.getAttribute('data-kind'));
     expect(kinds.length).toBeGreaterThan(0);
@@ -81,19 +91,21 @@ describe('the Chronicle of Changes panel', () => {
   });
 
   it('flips the order without losing a release', async () => {
-    render(<ChangelogView height={400} />);
+    await renderPanel();
     const first = () => document.querySelector('[data-release]')?.getAttribute('data-release');
     const newest = first();
     await userEvent.click(screen.getByTestId('changelog-order'));
     expect(screen.getByTestId('changelog-order')).toHaveAttribute('data-order', 'oldest');
-    expect(first()).toBe(content.releases.at(-1)?.release);
-    expect(document.querySelectorAll('[data-release]').length).toBe(content.releases.length);
+    expect(first()).toBe(SHIPPED.at(-1)?.release);
+    expect(document.querySelectorAll('[data-release]').length).toBe(SHIPPED.length);
     await userEvent.click(screen.getByTestId('changelog-order'));
     expect(first()).toBe(newest);
   });
 
   it('only asks the stylesheet for classes the bundler will hand it', () => {
-    const tsx = readFileSync('src/ui/changelog/ChangelogView.tsx', 'utf8');
+    const tsx = ['ChangelogView', 'ChangelogPanel']
+      .map((file) => readFileSync(`src/ui/changelog/${file}.tsx`, 'utf8'))
+      .join('\n');
     const css = readFileSync('src/ui/changelog/ChangelogView.module.css', 'utf8');
     const asked = [...tsx.matchAll(/\bstyles\.(\w+)/g)].flatMap((m) => (m[1] ? [m[1]] : []));
     expect(asked.length).toBeGreaterThan(10);

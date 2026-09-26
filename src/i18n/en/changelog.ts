@@ -4,21 +4,32 @@
  *
  * Write for someone who plays the game and has never read a commit: name the thing that changed
  * and what it does for them. No file paths, no version numbers inside a line, no jargon.
+ *
+ * This table is not part of the dictionary the first screen loads: it is the largest the game has
+ * and it grows with every release, so it arrives with the panel that prints it and joins the
+ * dictionary then (`registerStrings`, ADR-049). The panel's own labels live in `ui.ts`.
  */
 export const changelog = {
-  'changelog.title': 'Chronicle of Changes',
-  'changelog.subtitle': 'What has changed in Veyrath',
-  'changelog.latest': 'Latest',
-  'changelog.empty': 'Nothing has been written here yet.',
-  'changelog.all': 'Everything',
-  'changelog.kind.added': 'New',
-  'changelog.kind.content': 'Content',
-  'changelog.kind.changed': 'Improved',
-  'changelog.kind.balance': 'Balance',
-  'changelog.kind.fixed': 'Fixed',
-  'changelog.newestFirst': 'Newest first',
-  'changelog.oldestFirst': 'Oldest first',
-  'changelog.open': 'Chronicle of Changes',
+  'release.0_12_0.name': 'The Hall of Deeds',
+  'release.0_12_0.hall':
+    'The Hall of Deeds opens at level 13, on the hub’s bottom bar: thirty-seven achievements across every part of the game, each climbing through five tiers, each tier paid when you claim it.',
+  'release.0_12_0.challenges':
+    'Twenty challenges dare you further — win a Hard stand with nothing better than Uncommon, fell a boss with a single champion, reach the top of the Tower — each paying once, and paying more.',
+  'release.0_12_0.renown':
+    'Everything you claim adds renown, and renown climbs ten ranks of the Hall, each with its own reward to claim.',
+  'release.0_12_0.frames':
+    'Ranks and the hardest challenges hang up portrait frames — bronze, silver, gold, ember, void, verdant and amethyst — to wear in your profile and around your portrait at the top of the screen.',
+  'release.0_12_0.titles':
+    'Four new titles to wear: Rabble-Rouser, Banneret, Sovereign of the Tower and Legend of the Chronicle.',
+  'release.0_12_0.remembered':
+    'The Hall remembers everything your chronicle has already done, so the day it opens your first deeds are waiting — and Claim all takes them in one press.',
+  'release.0_12_0.lesson': 'Eldric points the way to the Hall the day it opens.',
+  'release.0_12_0.profile':
+    'The profile has a frame picker beside the avatar, showing every frame around your own portrait.',
+  'release.0_12_0.gear':
+    'The gear your champions wear now counts in every fight. Its stats and its set bonuses were on their sheets but were being left out of battle — they now fight exactly as strong as their sheets say.',
+  'release.0_12_0.bulwark':
+    'Bulwark’s shield at the start of each wave now holds a fifth of the wearer’s health, as it always promised, instead of almost nothing.',
 
   'release.0_11_0.name': 'The Chronicler’s Quill',
   'release.0_11_0.instant':

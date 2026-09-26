@@ -87,4 +87,6 @@ export const tutorial = {
     'You have farmed enough stands by hand. Set the repeat and the stand runs itself while your energy lasts.',
   'tut.6.9.text':
     'Three stars here, and the chronicle already knows how this fight ends. Clear it instantly: the same energy, the same spoils, the XP to the team you seat — and no fight to watch. The repeat sets how many.',
+  'tut.6.10.text':
+    'The Hall of Deeds is open. Everything this chronicle has done is written there, from the first stand — so deeds are already waiting. Claim them for their spoils and their renown; renown raises your rank in the Hall, and the ranks pay shards, titles and frames for your portrait.',
 } as const;

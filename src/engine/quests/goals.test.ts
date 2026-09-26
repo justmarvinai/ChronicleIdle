@@ -518,3 +518,53 @@ describe('the counters a period has to snapshot', () => {
     }
   });
 });
+
+describe('the goals the Hall of Deeds added (ACHIEVEMENTS.md §5)', () => {
+  it('counter reads any counter by name, as a delta like every counter goal', () => {
+    const goal: Goal = { type: 'counter', key: 'feat.solo', count: 1 };
+    expect(evaluateGoal(goal, ctx({})).done).toBe(false);
+    expect(evaluateGoal(goal, ctx({ 'feat.solo': 1 }))).toEqual({ progress: 1, target: 1, done: true });
+    // Against a baseline it measures only what came after, whatever the key.
+    expect(evaluateGoal(goal, ctx({ 'feat.solo': 3 }, { 'feat.solo': 3 })).progress).toBe(0);
+    expect(goalCounterKeys([goal, { type: 'counter', key: 'tower.best', count: 10 }])).toEqual([
+      'feat.solo',
+      'tower.best',
+    ]);
+  });
+
+  it('own_champions with distinct counts each champion once, whatever its copies', () => {
+    const view = withSave((save) => {
+      champion(save, 'champ.gil_scrapper');
+      champion(save, 'champ.gil_scrapper');
+      champion(save, 'champ.bran_militia');
+    });
+    expect(evaluateGoal({ type: 'own_champions', count: 3 }, view).done).toBe(true);
+    expect(evaluateGoal({ type: 'own_champions', count: 3, distinct: true }, view)).toEqual({
+      progress: 2,
+      target: 3,
+      done: false,
+    });
+  });
+
+  it('mine_level and palace_nodes read Emberhold as it stands', () => {
+    const dug = withSave((save) => {
+      save.mine.level = 4;
+      save.palace.nodes = ['a', 'b', 'c'];
+    });
+    expect(evaluateGoal({ type: 'mine_level', level: 4 }, dug).done).toBe(true);
+    expect(evaluateGoal({ type: 'mine_level', level: 5 }, dug).progress).toBe(4);
+    expect(evaluateGoal({ type: 'palace_nodes', count: 5 }, dug)).toEqual({
+      progress: 3,
+      target: 5,
+      done: false,
+    });
+  });
+
+  it('path_walked counts missions claimed and missions passed alike', () => {
+    const walked = withSave((save) => {
+      save.missions.claimed = ['mission.01.01', 'mission.01.02', 'mission.01.03'];
+    });
+    expect(evaluateGoal({ type: 'path_walked', missions: 3 }, walked).done).toBe(true);
+    expect(evaluateGoal({ type: 'path_walked', missions: 10 }, walked).progress).toBe(3);
+  });
+});

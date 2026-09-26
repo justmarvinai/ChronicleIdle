@@ -14,6 +14,7 @@ import type { SummonSave } from '@engine/schema/save';
 import type { Inventory } from '@engine/gear/instance';
 import type { CampaignSave, PalaceSave } from '@engine/schema/save';
 import type { Route } from './ui-types';
+import { wornFrame } from './deeds';
 
 const EMPTY_NODES: readonly string[] = [];
 
@@ -118,6 +119,9 @@ export const selectLevelUp = (s: GameStore): LevelUpResult | null => s.ui.levelU
 
 /** The title the chronicle wears, or null. Earned titles are derived — see `earnedTitleIds`. */
 export const selectWornTitle = (s: GameStore): string | null => s.save?.profile.title ?? null;
+
+/** The portrait frame worn, while the chronicle still has the right to it; null for its own gold. */
+export const selectWornFrame = (s: GameStore): string | null => (s.save ? wornFrame(s.save) : null);
 
 /**
  * Ids of every title the chronicle has earned. Returns a fresh array, so components must not

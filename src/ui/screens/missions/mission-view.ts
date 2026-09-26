@@ -45,6 +45,10 @@ const FAMILY: Readonly<Record<GoalType, MissionFamily>> = {
   login: 'chronicle',
   claim_idle: 'chronicle',
   complete_daily_quests_days: 'chronicle',
+  counter: 'chronicle',
+  mine_level: 'chronicle',
+  palace_nodes: 'chronicle',
+  path_walked: 'chronicle',
   any: 'chronicle',
   all_previous: 'chronicle',
 };

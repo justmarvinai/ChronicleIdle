@@ -97,6 +97,7 @@ each other's internals.
   engine/                     Pure TypeScript game logic. No React, no Pixi, no DOM, no timers.
     battle/                   Simulation, turn meter, effects, status, AI policy, event log
     brewery/                  The Brewery: derived stage fights, the day's runs, the open-day rule
+    deeds/                    The Hall of Deeds: claimable tiers, renown, ranks, frames, battle feats
     economy/                  Currencies, wallet, energy, drops, idle chest maths
     mine/                     The Mine: the store by the clock, carried fractions, the next level's gate
     palace/                   The Glorious Palace: the stat bonus, the point ledger, the sources
@@ -108,7 +109,7 @@ each other's internals.
     schema/                   Zod schemas for content and saves
   content/                    Game data only (see docs/tech/CONTENT_AUTHORING.md)
     champions/  abilities/  enemies/  gear/  sets/  stages/  bosses/  banners/  brewery/
-    quests/  missions/  currencies/  balance/  tutorial/  unlocks/  palace/  changelog/  registry.ts
+    quests/  missions/  deeds/  currencies/  balance/  tutorial/  unlocks/  palace/  changelog/  registry.ts
   state/                      Zustand store: slices, selectors, persistence, migrations
   ui/                         React: screens/, components/, hooks/, styles/ (tokens, mixins)
   render/                     Pixi: battle stage, sprite/atlas loading, FX library, camera, ambient
@@ -331,6 +332,7 @@ docs/design/ETERNAL_TOWER.md   the endless tower: floors, keys, the season, the 
 docs/design/GLORIOUS_PALACE.md the account-wide skill tree: the mandala, the points, the reset
 docs/design/BREWERY.md         the four brew halls: the five stages, the twenty runs, the calendar
 docs/design/QUESTS_MISSIONS.md daily/weekly quests and the Chronicler's Path mission line
+docs/design/ACHIEVEMENTS.md    the Hall of Deeds: achievements, challenges, renown, ranks, frames
 docs/design/TUTORIAL.md        interactive onboarding script
 docs/tech/ARCHITECTURE.md      runtime architecture, engine design, state, saves, rendering
 docs/tech/UI_DESIGN.md         design tokens, layout grid, every screen, animation language

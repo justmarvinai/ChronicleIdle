@@ -18,6 +18,7 @@ export const FEATURE_IDS = [
   'daily_boss',
   'instant_clear',
   'quests_weekly',
+  'deeds',
   'weekly_boss',
   'gear_refine',
   'eternal_tower',
@@ -71,6 +72,12 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
    */
   instant_clear: 11,
   quests_weekly: 12,
+  /**
+   * The Hall of Deeds (ACHIEVEMENTS.md §8): the one level between the weekly board (12) and the
+   * Titan (15) with nothing else to teach, and late enough that a dozen first tiers are already
+   * waiting — the Hall opens on a morning's claiming rather than on thirty-seven empty bars.
+   */
+  deeds: 13,
   weekly_boss: 15,
   gear_refine: 18,
   /**

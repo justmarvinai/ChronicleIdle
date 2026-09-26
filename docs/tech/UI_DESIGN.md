@@ -165,13 +165,14 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   once it is full.
 - **The bottom bar is three weights, not seven buttons.** Far left, the **Rewards** plate: its own
   gold-framed stone, because it is the one thing down here that *gives* rather than leads, and it
-  wears the calendar's dot. Centre, one **rail** holding five destinations — Champions, Armoury,
-  Missions, Quests, Index — each an icon **above** its word, tinted its own colour, with the frame
-  belonging to the rail and a tile drawing its own edge only on hover. Far right, the primary
-  **BATTLE** (opens Game Modes, wears the boss-chest dot), whose red ember frame is its alone.
+  wears the calendar's dot. Centre, one **rail** holding six destinations — Champions, Armoury,
+  Missions, Quests, Deeds (the Hall of Deeds, §5.31, since `0.12.0`), Index — each an icon
+  **above** its word, tinted its own colour, with the frame belonging to the rail and a tile
+  drawing its own edge only on hover. Far right, the primary **BATTLE** (opens Game Modes, wears the
+  boss-chest dot), whose red ember frame is its alone.
 
   It read as seven identical silver slabs before `0.9.1`, which is a bar you have to *read* rather
-  than see: five tiles that differ in hue and silhouette are told apart at a glance, and separating
+  than see: six tiles that differ in hue and silhouette are told apart at a glance, and separating
   the giving button from the going buttons from the fighting button gives the eye somewhere to land.
   The Bag left the bar entirely for the header (§5.26).
 - **The buildings** (`HubHotspot`, placed on the painting in `hotspots.ts`): the Campaign gate
@@ -855,7 +856,8 @@ under a purple banner of their own.
 - Reference: `player_profile.png` (chip).
 - **The chip** is a dark plate with a gold hairline along its foot, fading out to the right; hover
   brightens the plate and lights the ring. It carries:
-  - the avatar in the kit's round frame, with the level on a gold gem set into the ring's foot;
+  - the avatar in the kit's round frame, with the level on a gold gem set into the ring's foot —
+    the ring recoloured to the portrait frame worn, and lit with its glow (§5.31);
   - the name, and the worn title under it in gold small caps;
   - the XP toward the next level as a lit blue bar in a dark groove (the numbers in its tooltip);
   - the **Account Power** row: every owned champion's power summed, in gold numerals.
@@ -863,12 +865,13 @@ under a purple banner of their own.
   On a level-up the ring flares and the gem pops (skipped under `prefers-reduced-motion`).
 - **Profile dialog** (1120 px wide): two columns.
   - **On the left, the chronicler as a card:**
-    - the portrait in a gold deco frame, with the level on a gold gem set into its foot;
+    - the portrait in the frame the chronicle wears (`FramedPortrait`: the chronicle's own gold
+      deco frame, or one the Hall of Deeds hung up), with the level on a gold gem set into its foot;
     - the name with *Rename*;
     - the worn title with *Choose*;
     - the experience bar with its numbers;
     - the Account Power plate;
-    - *Choose avatar*.
+    - *Choose avatar* and *Choose frame*, side by side.
   - **On the right, scrolling:**
     - the standing as eight glyph tiles (energy cap, stands cleared, champions, strongest
       champion, battles, victories, chronicle begun, time played);
@@ -877,7 +880,12 @@ under a purple banner of their own.
     - every title as a chip: earned ones lit with a trophy, the worn one framed, the rest dark
       with what earns them in their tooltip;
     - the next three level gates, as cards under a gold hexagon of their level.
-  - The avatar and title pickers open in place of the profile and return to it when they close.
+  - The avatar, title and frame pickers open in place of the profile and return to it when they
+    close.
+- Frame picker (1,100 px): every portrait frame drawn round the chronicler's own portrait, four to
+  a row — the chronicle's own gold first, always selectable, then the Hall's seven; earned ones lit
+  and selectable, the worn one framed in gold, locked ones greyed with a shackle and what earns them
+  (*Rank 4 of the Hall of Deeds: Sworn Blade*, *The challenge The Titan Falls*).
 - Title picker: two-column list of every title, earned ones in gold with a trophy glyph and
   selectable, locked ones dimmed with a shackle glyph and a "Locked" tag; *No title* is always
   available.
@@ -1409,3 +1417,35 @@ variants are used for Duskmere Marsh and Frostvein Pass.
 - Footer: **Again ×10 · 40 ⚡** clears the stand once more with the same team and count, and the
   page counts again; when the energy no longer covers a run it is dead and says so. **Done** closes;
   a chronicle level the batch paid is celebrated then, never over the page.
+
+### 5.31 The Hall of Deeds (`docs/design/ACHIEVEMENTS.md`)
+- Reached from the hub's rail (*Deeds*, the trophy, with a dot counting everything waiting: tiers,
+  challenges and ranks). The long road to the citadel (`bg.bg2`) under a dark grade, torchlight and
+  drifting motes over it. Before level 13 the screen is a single shackled panel naming the level.
+- **Header:** the two ledgers as tabs, *Achievements* and *Challenges*, each with its own badge;
+  beside them a line of standing (*12 of 37 achievements finished · 96 of 185 tiers claimed*); at
+  the right the primary **Claim all (N)** — tiers, then challenges, then every rank the renown now
+  reaches — or a dead *Nothing waiting*.
+- **The standing** (left, 440 px, `HallStanding`): the chronicler's portrait in the frame they
+  wear, the name and worn title, the rank's name in gold (it pops when a new one is claimed) and
+  *Rank 3 of 10*; **Renown** in large gold numerals that tick up as a claim lands; a bar from the
+  last rank to the next and the line under it (*188 renown to Sworn Blade*, or *Sworn Blade is
+  waiting to be claimed* in gold with a breathing **Claim rank** under it); then the ten ranks as a
+  ladder — a hexagonal seal with the number, the name, the renown it stands on, its purse as slots
+  and the frame or the title it hangs up as a tinted tag; claimed rungs gold-sealed and stepped
+  back, a reached one outlined in gold, the rest dim.
+- **Achievements** (right): a row of ledger filters — *All* and the eight ledgers, each with a dot
+  for what it owes — over two columns of cards (`AchievementCard`, 168 px): the emblem in a
+  gold-edged bevelled plate with the five tiers as diamonds under it (gold for claimed, lit and
+  breathing for waiting, dark for still to earn); the name, and at the right the ledger and the
+  tier in hand as a numeral (*CAMPAIGN II*); the tier's goal as a sentence with its numbers
+  (*Clear 1,000 campaign stands*); the progress groove and its count; what the tier pays as slots
+  and the renown it adds (*+10*). One press at the card's end: **Claim** when met, **Go** to where it
+  is played while not, a green *Complete* seal once all five are claimed. Owed first, then the
+  nearest to done, finished last.
+- **Challenges** (right, second tab): the same card cut from ember rather than gold, the renown
+  under the emblem, the whole ask as its line, a groove only for a climb (a floor, a pool, every
+  star — a feat is done or not), the purse and any frame or title it hangs up named on the card;
+  **Claim**, **Go**, or a *Claimed* seal.
+- A claim pays with the reward chime and a toast carrying the purse; a rank claim with the larger
+  chime; a title or a frame a claim hangs up gets its own toast (*Frame earned: Bronze*).

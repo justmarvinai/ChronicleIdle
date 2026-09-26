@@ -3,6 +3,10 @@ import { NO_PALACE, palaceBonus, type PalaceBonus } from '@engine/palace/index';
 import { PALACE } from '@content/palace/index';
 import { content } from '@content/registry';
 import { createInstance } from '@engine/champions/instance';
+import { generateGear } from '@engine/gear/generate';
+import type { Inventory } from '@engine/gear/instance';
+import { createRng } from '@engine/rng/rng';
+import type { GearSlot } from '@content/champions/types';
 import type { Roster } from '@engine/champions/instance';
 import { createBattleController } from './controller';
 import type { BattlePresenter } from './presenter';
@@ -40,6 +44,7 @@ describe('battle controller', () => {
       instanceIds: Object.keys(roster),
       roster,
       palace: NO_PALACE,
+      inventory: {},
       control: 'auto',
       speed: 2,
       seed: 'ctrl',
@@ -55,6 +60,59 @@ describe('battle controller', () => {
     expect(controller.store.getState().status).toBe('idle');
   });
 
+  it("sends champions in wearing their gear: the pieces' stats and their set's bonus", () => {
+    const roster = rosterOf(STARTERS);
+    const corvin = Object.values(roster).find((c) => c.defId === 'champ.ser_corvin');
+    if (!corvin) throw new Error('no Corvin');
+    // Four pieces of Bulwark on Corvin: four main stats and a complete four-piece set.
+    const slots: GearSlot[] = ['weapon', 'helmet', 'shield', 'gauntlets'];
+    const inventory: Inventory = {};
+    slots.forEach((slot, i) => {
+      const piece = generateGear(
+        {
+          serial: i + 1,
+          slot,
+          setId: 'gear_set.bulwark',
+          rarity: 'epic',
+          stars: 5,
+          source: 'campaign_drop',
+          now: 0,
+        },
+        createRng(`worn-${slot}`),
+      );
+      inventory[piece.instanceId] = { ...piece, equippedTo: corvin.instanceId };
+      corvin.gear[slot] = piece.instanceId;
+    });
+    const fielded = (armoury: Inventory) => {
+      const controller = createBattleController();
+      const result = controller.start({
+        encounterId: 'encounter.stage.01.01.intro',
+        instanceIds: Object.keys(roster),
+        roster,
+        palace: NO_PALACE,
+        inventory: armoury,
+        control: 'manual',
+        speed: 1,
+        seed: 'worn',
+      });
+      if (!result.ok) throw new Error(result.error.message);
+      const unit = Object.values(controller.simulation()?.units ?? {}).find(
+        (u) => u.defId === 'champ.ser_corvin',
+      );
+      controller.end();
+      if (!unit) throw new Error('Corvin did not take the field');
+      return unit;
+    };
+    const bare = fielded({});
+    const dressed = fielded(inventory);
+    // The weapon's ATK and the helmet's HP are in the stats he fights with (they never were before 0.12.0).
+    expect(dressed.base.atk).toBeGreaterThan(bare.base.atk);
+    expect(dressed.base.hp).toBeGreaterThan(bare.base.hp);
+    // And the set's bonus rides in as a passive, the way GEAR.md §5 says set bonuses fight.
+    expect(bare.passives.some((p) => p.id.startsWith('gear_set.bulwark'))).toBe(false);
+    expect(dressed.passives.some((p) => p.id.startsWith('gear_set.bulwark'))).toBe(true);
+  });
+
   it('sends champions in with the Glorious Palace behind them', () => {
     const roster = rosterOf(STARTERS);
     const start = (palace: PalaceBonus) => {
@@ -64,6 +122,7 @@ describe('battle controller', () => {
         instanceIds: Object.keys(roster),
         roster,
         palace,
+        inventory: {},
         control: 'manual',
         speed: 1,
         seed: 'palace',
@@ -100,6 +159,7 @@ describe('battle controller', () => {
       instanceIds: Object.keys(roster),
       roster,
       palace: NO_PALACE,
+      inventory: {},
       control: 'auto',
       speed: 1,
       seed: 'hold',
@@ -134,6 +194,7 @@ describe('battle controller', () => {
       instanceIds: Object.keys(roster),
       roster,
       palace: NO_PALACE,
+      inventory: {},
       control: 'manual',
       speed: 1,
       seed: 'manual',
@@ -163,6 +224,7 @@ describe('battle controller', () => {
       instanceIds: Object.keys(roster),
       roster,
       palace: NO_PALACE,
+      inventory: {},
       control: 'manual',
       speed: 1,
       seed: 'mark',
@@ -201,6 +263,7 @@ describe('battle controller', () => {
         instanceIds: ['ghost-9'],
         roster,
         palace: NO_PALACE,
+        inventory: {},
         control: 'auto',
         speed: 1,
         seed: 's',
@@ -212,6 +275,7 @@ describe('battle controller', () => {
         instanceIds: Object.keys(roster),
         roster,
         palace: NO_PALACE,
+        inventory: {},
         control: 'auto',
         speed: 1,
         seed: 's',
@@ -222,6 +286,7 @@ describe('battle controller', () => {
       instanceIds: Object.keys(roster),
       roster,
       palace: NO_PALACE,
+      inventory: {},
       control: 'manual',
       speed: 1,
       seed: 'retreat',
@@ -254,6 +319,7 @@ describe('battle controller', () => {
       instanceIds: Object.keys(roster),
       roster,
       palace: NO_PALACE,
+      inventory: {},
       control: 'auto',
       speed: 4,
       seed: 'bp',

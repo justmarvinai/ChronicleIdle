@@ -7,7 +7,88 @@ All notable changes to ChronicleIdle are documented here. The format follows
 ## [Unreleased]
 
 _Nothing pending, and no question open for the owner. Next, in the owner's order (`ROADMAP.md`):
-Challenges & Achievements, then the roguelite mode._
+the roguelite mode._
+
+## [0.12.0] — 2026-09-26 — The Hall of Deeds
+
+The owner asked for challenges and achievements, so players have long-term goals.
+`docs/design/ACHIEVEMENTS.md` (new); `docs/tech/UI_DESIGN.md` §5.2, §5.17, §5.31; `TUTORIAL.md` §6;
+`GAME_DESIGN.md` §3, §6; `QUESTS_MISSIONS.md` §1; `ECONOMY.md` §4.1, §7; `ARCHITECTURE.md` §3.5,
+§4, §6; `CONTENT_AUTHORING.md` §13, §19; ADR-048, ADR-049.
+
+### Added
+
+- **The Hall of Deeds** (`src/content/deeds/`, `engine/deeds/`, `state/deeds.ts`), open from chronicle
+  level 13 (`FEATURE_UNLOCK_LEVEL.deeds`). **37 achievements** in eight ledgers, each five tiers
+  built by the `achievement`/`counts` builders, whose rewards and renown come from the tier and the
+  ledger (`balance/deeds.ts`: `TIER_REWARDS`, `LEDGER_TIER_REWARDS`, `TIER_RENOWN`). **20
+  challenges**, **10 ranks** of the Hall standing on renown (`ranks.ts`), and **7 portrait frames**
+  hung up by ranks and challenges (`frames.ts`, drawn from the pixel deco set).
+- Everything the Hall shows is derived (`engine/deeds/hall.ts`): each achievement's tier in hand and
+  how many wait behind it, challenge states, renown, the ranks, earned frames, and the
+  `tierToClaim`/`challengeToClaim`/`rankToClaim` checks the claims ask first. Goals are read against
+  a baseline of zero, so a veteran's passed tiers are waiting the day the Hall opens.
+- **Feats a battle writes** (`engine/deeds/feats.ts`): seven `feat.*` counters bumped by
+  `recordBattle` on a victory — a lone champion on Normal/Hard, a lone champion over a Hard boss,
+  one left standing of three, three waves untouched, a swift three-wave clear, one element on Hard,
+  nobody better than Uncommon on Hard — with their thresholds in `balance/deeds.ts`.
+- **Goal DSL**: `counter` (any registered counter by name), `mine_level`, `palace_nodes`,
+  `path_walked`, and `own_champions` with `distinct`. Evaluated in `engine/quests/goals.ts`, routed by
+  `goalDestination`, validated by the goal checks now shared in `engine/schema/goal-issues.ts`.
+- Store actions `claimAchievement`, `claimChallenge`, `claimHallRank`, `claimAllDeeds` and
+  `wearFrame`; the event `deeds.claimed`; toasts for every title and frame a claim hangs up.
+- **Titles** gain two condition kinds, `hall_rank` and `challenge`, and four titles: Rabble-Rouser,
+  Banneret, Sovereign of the Tower, Legend of the Chronicle.
+- **The Hall's screen** (`ui/screens/deeds/`, route `deeds`): the standing column (`HallStanding` —
+  framed portrait, renown ticking up, the rank, the bar to the next, *Claim rank*, the ten-rung
+  ladder), the two ledgers as tabs with ledger filters, `AchievementCard` (five tier diamonds, the
+  tier's goal in words, progress, purse, renown, Claim/Go) and `ChallengeCard`, and *Claim all*.
+- **Portrait frames**: `FramedPortrait` (the tinted deco frame, its glow, a gleam for the two
+  hardest), used by the profile, the Hall and the new **frame picker** dialog; the header's avatar ring
+  takes the worn frame's colour and light. `selectWornFrame`, and `wornFrame` falls back to the
+  chronicle's own gold if the right to a frame is ever lost.
+- The hub's rail gains a sixth tile, **Deeds**, with a dot counting everything claimable.
+- **The lesson** (Steel and Bone, 6.10): from level 13, on the hub it points at *Deeds*; inside the
+  Hall, at *Claim all*. New tutorial targets `hub.deeds`, `deeds.claimAll` and the screen `deeds`.
+- Content validation for the Hall (`engine/schema/deeds.ts`): ids, strings, line placeholders,
+  climbing tiers, climbing ranks, a last rank the Hall can pay, frames and titles that name real
+  ranks and challenges. The validator's summary line reports the Hall.
+- Tests: `engine/deeds/hall.test.ts`, `engine/deeds/feats.test.ts`, the new goals in
+  `goals.test.ts`, the Hall titles in `titles.test.ts`, `state/deeds.test.ts`,
+  `ui/screens/deeds/deeds-screen.test.tsx`, and the e2e `tests/e2e/deeds.spec.ts` on the new fixture
+  `deeds.chronicle` (`tools/fixtures/deeds-chronicle.ts`).
+
+### Changed
+
+- **Save v21**: `deeds { achievements, challenges, ranks, frame }`; the v20 → v21 migration adds an
+  empty Hall. New fixture `tests/fixtures/saves/v21.json` (with a Hall part-way up).
+- The profile dialog draws its portrait through `FramedPortrait` and sets *Choose avatar* and
+  *Choose frame* side by side.
+- The content validator's goal checks moved out of `engine/schema/content.ts` into
+  `goal-issues.ts`, shared by quests, missions and the Hall.
+
+### Fixed
+
+- **Gear now fights.** `battleController.start` never handed a champion's worn pieces to
+  `createBattle`, so no live fight — campaign, bosses, tower, dungeons, brewery — applied a piece's
+  stats or a set's bonus, though the champion sheet and the setup screen counted both.
+  `StartBattleInput.inventory` is now required (as `palace` is) and every flow passes the save's
+  armoury; the controller resolves `wornBy` per champion. `controller.test.ts` fields Corvin in four
+  Bulwark pieces and checks the stats and the set passive. `sim:balance` always modelled geared
+  teams (`tools/sim/teams.ts`), so the tuned curves are what the game now plays.
+- **Bulwark's shield** was authored as `value: 0.2` — 0.2 % of max HP — against the 20 % `GEAR.md` §5
+  promises (a shield's value is a percentage, as on every champion). It is `20`, and
+  `gear-battle.test.ts` now checks the shield's size, not only that one exists.
+
+### Performance
+
+- **The Chronicle of Changes loads with its panel** (ADR-049). The Hall took the first screen's
+  JavaScript to 353.7 kB gzipped, over the 350 kB budget; the releases and their strings — the
+  largest table of words the game has, growing every release — left the eager registry and
+  dictionary. `ChangelogView` is now a lazy shell around `ChangelogPanel` that loads the panel and
+  `i18n/en/changelog.ts` together and joins the words through the new `registerStrings`; the panel's
+  labels moved to `ui.ts`. Validators and tests read every table through `i18n/catalog.ts`
+  (`ALL_I18N_KEYS`, `allTextOf`). The first screen is 338.4 kB.
 
 ## [0.11.0] — 2026-09-26 — The Chronicler's Quill
 

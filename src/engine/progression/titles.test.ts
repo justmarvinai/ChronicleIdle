@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TITLES, TITLE_BY_ID } from '@content/titles/index';
 import { content } from '@content/registry';
 import { emptyCampaignProgress, recordRun, type CampaignProgress } from '@engine/campaign/progress';
-import { currentTitle, earnedTitles, isTitleEarned } from './titles';
+import { currentTitle, earnedTitles, isTitleEarned, type TitleContext } from './titles';
 
 function clear(
   progress: CampaignProgress,
@@ -17,10 +17,12 @@ function clear(
   return next;
 }
 
-const ctx = (over: Partial<Parameters<typeof earnedTitles>[1]> = {}) => ({
+const ctx = (over: Partial<TitleContext> = {}): TitleContext => ({
   level: 1,
   progress: emptyCampaignProgress(),
   championsOwned: 4,
+  hallRanks: 0,
+  challenges: [],
   ...over,
 });
 
@@ -70,6 +72,27 @@ describe('titles (ECONOMY.md §4)', () => {
     expect(earnedTitles(TITLES, ctx({ level: 25 })).map((t) => t.id)).toContain('title.seasoned');
     expect(earnedTitles(TITLES, ctx({ level: 24 })).map((t) => t.id)).not.toContain('title.seasoned');
     expect(earnedTitles(TITLES, ctx({ championsOwned: 10 })).map((t) => t.id)).toContain('title.collector');
+  });
+
+  it('reads the Hall of Deeds: a rank claimed, a challenge claimed (ACHIEVEMENTS.md §4)', () => {
+    expect(isTitleEarned({ kind: 'hall_rank', rank: 5 }, ctx({ hallRanks: 4 }))).toBe(false);
+    expect(isTitleEarned({ kind: 'hall_rank', rank: 5 }, ctx({ hallRanks: 5 }))).toBe(true);
+    expect(isTitleEarned({ kind: 'challenge', id: 'challenge.rabble' }, ctx())).toBe(false);
+    expect(
+      isTitleEarned({ kind: 'challenge', id: 'challenge.rabble' }, ctx({ challenges: ['challenge.rabble'] })),
+    ).toBe(true);
+    const hall = earnedTitles(
+      TITLES,
+      ctx({ hallRanks: 10, challenges: ['challenge.rabble', 'challenge.sovereign'] }),
+    ).map((t) => t.id);
+    expect(hall).toEqual(
+      expect.arrayContaining([
+        'title.banneret',
+        'title.legend_of_the_chronicle',
+        'title.rabble_rouser',
+        'title.sovereign_of_the_tower',
+      ]),
+    );
   });
 
   it('names every title with strings the game ships', () => {

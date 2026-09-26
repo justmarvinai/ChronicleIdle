@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { motion } from 'motion/react';
 import { imageUrl } from '@assets/manifest';
 import { playSfx } from '@audio/index';
@@ -7,9 +7,10 @@ import { content } from '@content/registry';
 import { accountPower } from '@engine/champions/query';
 import { xpToNextLevel } from '@engine/progression/player-level';
 import { t, translate } from '@i18n/index';
-import { selectInventory, selectProfile, selectRoster } from '@state/selectors';
+import { selectInventory, selectProfile, selectRoster, selectWornFrame } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { frameLook } from '@ui/components/Portrait/frame-look';
 import { entriesOf } from '@ui/screens/champions/roster-view';
 import { profileAvatar } from '@ui/champions/art';
 import { prefersReducedMotion } from '@ui/hooks/reducedMotion';
@@ -25,6 +26,7 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
   const profile = useGameStore(selectProfile);
   const roster = useGameStore(selectRoster);
   const inventory = useGameStore(selectInventory);
+  const frame = useGameStore(selectWornFrame);
   // Every champion's power, gear and sets included. Memoised on the two slices it reads, because
   // the chip is on every screen and a full roster is two hundred stat blocks.
   const power = useMemo(() => accountPower(entriesOf(roster, inventory)), [roster, inventory]);
@@ -39,6 +41,12 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
 
   if (!profile) return null;
   const avatar = profileAvatar(profile.avatarChampionId, 128);
+  const ring = imageUrl('ui.dark_ember.frame_round_sm');
+  const look = frameLook(frame);
+  const ringStyle: CSSProperties & Record<'--frame-glow', string> = {
+    backgroundImage: `url("${ring}")`,
+    '--frame-glow': look.glow ?? look.tint,
+  };
   const titleDef = profile.title ? content.titleById(profile.title) : null;
   const maxed = profile.level >= PLAYER_MAX_LEVEL;
   const toNext = xpToNextLevel(profile.level);
@@ -70,11 +78,21 @@ export function ProfileChip({ onClick }: { onClick: () => void }) {
             aria-hidden="true"
           />
         ) : null}
-        <span
-          className={styles.ring}
-          style={{ backgroundImage: `url("${imageUrl('ui.dark_ember.frame_round_sm')}")` }}
-          aria-hidden="true"
-        />
+        <span className={styles.ring} style={ringStyle} data-framed={frame !== null} aria-hidden="true" />
+        {frame ? (
+          // The frame worn, as the ring's colour (ACHIEVEMENTS.md §3); its light is on the ring.
+          <span
+            className={styles.frameTint}
+            data-testid="profile-chip-frame"
+            data-frame={frame}
+            style={{
+              backgroundColor: look.tint,
+              WebkitMaskImage: `url("${ring}")`,
+              maskImage: `url("${ring}")`,
+            }}
+            aria-hidden="true"
+          />
+        ) : null}
         {flash > 0 && !prefersReducedMotion() ? (
           <motion.span
             key={flash}

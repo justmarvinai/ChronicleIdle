@@ -611,6 +611,12 @@ release('0.5.0', '2026-09-20', [
 3. `pnpm content:validate` checks that every line has a string, that the id matches the version,
    and that the list really is newest first.
 
+The releases and their strings are **not** in the first screen's bundle (ADR-049): the panel loads
+them when it opens, and `registerStrings` adds the words to the dictionary before it draws. That is
+why a release's keys are read with `translate` rather than the typed `t`, and why the validator and
+the tests check them against `ALL_I18N_KEYS` (`src/i18n/catalog.ts`), which holds every table,
+early and late. The panel's own labels (`changelog.title`, the filter chips) stay in `ui.ts`.
+
 
 ## 14. The Glorious Palace
 
@@ -848,3 +854,35 @@ number to tune, and the stratum names the dialog shows are strings, `mine.stratu
   in `content/currencies/flows.ts`, and a new payout among its sources (`flows.test.ts` checks the
   latter both ways).
 
+
+## 19. The Hall of Deeds (`src/content/deeds/`)
+
+The Hall is four files and a balance table (`docs/design/ACHIEVEMENTS.md`):
+`achievements.ts`, `challenges.ts`, `ranks.ts`, `frames.ts`, and `src/content/balance/deeds.ts`
+for what a tier pays and the feats' thresholds. Titles the Hall hangs up live with the other titles
+(`src/content/titles/index.ts`), naming a rank or a challenge as their condition.
+
+- **An achievement is five goals.** `achievement({ slug, ledger, icon, place, goals })` builds the
+  id (`achievement.<slug>`), the i18n keys (`.name`, `.line`) and each tier's rewards and renown
+  from the tier and the ledger — a file of achievements is goals. `counts(key, [..five targets])`
+  writes the common case: five `counter` goals on one lifetime counter. The targets must climb (the
+  validator refuses a tier that asks for no more than the one before it).
+- **A line is one sentence with the goal's numbers in it** — `{count}`, `{level}`, `{stars}`,
+  `{missions}`, `{settlement}`, `{difficulty}` and nothing else (`DEED_LINE_TOKENS`). When a tier
+  asks for exactly one thing, give the line a `.one` form too ("Summon an Epic champion") and the
+  Hall reads it for that tier.
+- **`place` is where "Go" leads** when the goal names no place of its own; a `counter` goal never
+  does, so every achievement and challenge built on one names its place.
+- **Nothing pays twice.** If a new mode has a top, make the top a challenge and stop the
+  achievement that climbs to it a rung below (§1 of the design doc). Every goal is checked like a
+  quest's: a counter the game does not write, a boss tier that does not exist or a Palace or Path
+  bigger than the content is a build error.
+- **A challenge** is `challenge({ slug, icon, place, goal, renown, rewards })`. A feat only a battle
+  can tell needs a counter first: add `feat.<name>` to `COUNTER_KEYS`, teach `featsOf` when to write
+  it (with a test), and point the challenge's `counter` goal at it.
+- **Ranks** are claimed in order and must stand on climbing renown; the last may not stand on more
+  than the whole Hall pays (the validator adds it up). **Frames** name a rank or a challenge as
+  their `source`, one of the 32 deco frames and a tint; a frame's name is `frame.<slug>.name`.
+- **Adding to the Hall later is safe**: the save keeps claims by id, so a new achievement or
+  challenge simply opens — already met, if the chronicle has done the thing. Never reuse an id, and
+  never lower a target a chronicle may already have claimed past.

@@ -103,14 +103,20 @@ which single title to wear; that choice is the only part kept in the save (`prof
 | Road Warden | beating the Old Kingsroad's boss on Intro |
 | Gatebreaker | clearing every stand of Intro |
 | Collector | owning 10 champions |
+| Rabble-Rouser | claiming the challenge *The Rabble Rises* (`ACHIEVEMENTS.md` §6) |
 | Seasoned | chronicle level 25 |
+| Banneret | claiming the fifth rank of the Hall of Deeds (`ACHIEVEMENTS.md` §2) |
 | Lorekeeper | clearing every stand of Normal |
 | Keeper of the Chronicle | chronicle level 50 |
 | Undimmed | clearing every stand of Hard |
 | Warden of Veyrath | three stars on every stand of Hard (`CAMPAIGN.md` §7 milestone) |
+| Sovereign of the Tower | claiming the challenge *Sovereign of the Tower* |
 | Loremaster | chronicle level 100 |
+| Legend of the Chronicle | claiming the tenth rank of the Hall of Deeds |
 
-Titles live in `src/content/titles/`; adding one is a data change (`CONTENT_AUTHORING.md` §7).
+Titles live in `src/content/titles/`; adding one is a data change (`CONTENT_AUTHORING.md` §7). The
+Hall's four (0.12.0) are earned by a *claim* — a rank or a challenge — rather than by the renown or
+the feat alone, so a title arrives with the press that pays it.
 
 ## 5. Energy
 
@@ -295,6 +301,13 @@ shelf returns a gem, the Mission Skip Token included: a skipped step is marked d
 > rather than ending, and the Gem Market took ~380 a week back out. The owner signed off the
 > ~1,674 that left (`USER_QUESTIONS.md` Q45), and the Mine (`0.10.0`) was fitted inside the band
 > that sign-off set rather than widening it: ~1,828 against a 1,950 ceiling.
+
+**One-off pools are not in the table.** The Hall of Deeds (0.12.0, `ACHIEVEMENTS.md` §9) pays each
+tier, challenge and rank once in a chronicle's life: 18,590 gems in all, with 50 Ancient, 10 Sacred
+and 5 Primordial Shards and 3.5 million gold besides. Earned over the one to two years most of it
+takes, that is 180–360 gems a week on top of the table — arriving in the order the play earns it, so
+it rewards the long haul rather than widening any week's band. `sim:economy` does not model it, for
+the same reason it does not model the first-clear bundles of settlements already beaten.
 
 ## 8. Gold budget (sanity)
 

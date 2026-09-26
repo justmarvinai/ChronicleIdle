@@ -1,6 +1,7 @@
 /**
  * Chapter 6 — Steel and Bone (docs/design/TUTORIAL.md §6): the single-step lessons of levels 7 and
- * up, from the rank-up at 7 to the instant clear at 11 and auto-repeat's second tier at 20. They do not queue behind one another — each waits for its own feature and for the player to
+ * up, from the rank-up at 7 to the Hall of Deeds at 13 and auto-repeat's second tier at 20. They do
+ * not queue behind one another — each waits for its own feature and for the player to
  * walk into the room it lives in, so a chronicle that has not been to the Tavern since level 7
  * still gets the Forge's lesson at 8.
  *
@@ -123,6 +124,26 @@ export default chapter({
         ],
       },
       spotlight: ['setup.instant'],
+      complete: { type: 'acknowledged' },
+    }),
+    // 6.10 — the Hall of Deeds (13): one line, wherever it is first heard. On the hub it points
+    // at the Hall's button; inside the Hall, at the press that claims everything already waiting.
+    step({
+      when: {
+        type: 'all',
+        of: [
+          { type: 'feature', feature: 'deeds' },
+          {
+            type: 'any',
+            of: [
+              { type: 'screen', screen: 'hub' },
+              { type: 'screen', screen: 'deeds' },
+            ],
+          },
+        ],
+      },
+      spotlight: ['hub.deeds', 'deeds.claimAll'],
+      allow: 'all',
       complete: { type: 'acknowledged' },
     }),
   ],

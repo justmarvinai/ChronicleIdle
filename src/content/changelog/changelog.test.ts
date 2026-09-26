@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compareReleases, releaseSchema } from '@engine/schema/changelog';
 import { validateContentRegistry } from '@engine/schema/content';
-import { I18N_KEYS } from '@i18n/index';
+import { ALL_I18N_KEYS } from '@i18n/catalog';
 import { content } from '@content/registry';
 import { CHANGE_KINDS, type ReleaseDef } from './types';
 import { LATEST_RELEASE, RELEASES } from './index';
@@ -11,7 +11,7 @@ const registryWith = (releases: readonly unknown[]): Parameters<typeof validateC
   ...content,
   releases,
 });
-const refs = { assetKeys: new Set<string>(), i18nKeys: I18N_KEYS };
+const refs = { assetKeys: new Set<string>(), i18nKeys: ALL_I18N_KEYS };
 const releaseErrors = (releases: readonly unknown[]): string[] =>
   validateContentRegistry(registryWith(releases), refs)
     .filter((i) => i.severity === 'error' && i.path.startsWith('releases'))
@@ -32,10 +32,10 @@ describe('the Chronicle of Changes', () => {
     for (const release of RELEASES) {
       expect(releaseSchema.safeParse(release).success, release.id).toBe(true);
       expect(release.id).toBe(`release.${release.release.replace(/\./g, '_')}`);
-      expect(I18N_KEYS.has(release.name), release.name).toBe(true);
+      expect(ALL_I18N_KEYS.has(release.name), release.name).toBe(true);
       expect(release.changes.length, release.id).toBeGreaterThan(0);
       for (const change of release.changes) {
-        expect(I18N_KEYS.has(change.text), change.text).toBe(true);
+        expect(ALL_I18N_KEYS.has(change.text), change.text).toBe(true);
         expect(CHANGE_KINDS).toContain(change.kind);
       }
       // A release where everything leads has nothing leading.

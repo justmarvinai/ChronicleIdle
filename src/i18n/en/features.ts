@@ -34,6 +34,8 @@ export const features = {
     'A stand you have mastered can be cleared without a fight, for the same energy.',
   'feature.quests_weekly.name': 'Weekly Quests',
   'feature.quests_weekly.hint': 'A longer list, a heavier chest.',
+  'feature.deeds.name': 'Hall of Deeds',
+  'feature.deeds.hint': 'Achievements and challenges for the long road: renown, ranks, titles and frames.',
   'feature.weekly_boss.name': 'The Titan',
   'feature.weekly_boss.hint': 'The hardest fight the week has.',
   'feature.eternal_tower.name': 'The Eternal Tower',

@@ -96,6 +96,8 @@ const COUNTERS: Readonly<Record<string, number>> = {
   'mine.gems': 388,
   'mine.sigils': 3,
   'mine.upgrades': 4,
+  'feat.solo': 2,
+  'feat.last_stand': 1,
 };
 
 async function main(): Promise<void> {
@@ -259,6 +261,18 @@ async function main(): Promise<void> {
     idle: { lastClaimAt: NOW - 7_200_000 },
     // The Mine dug to level 5, part-way through a store, with fractions carried from the last visit.
     mine: { level: 5, collectedAt: NOW - 5 * 3_600_000, carry: { gems: 0.4, sigils: 0.7 } },
+    // The Hall of Deeds part-way up: tiers of three achievements, one challenge, two ranks and the
+    // Bronze frame worn — every field a later migration could drop.
+    deeds: {
+      achievements: {
+        'achievement.stand_breaker': 2,
+        'achievement.victor': 2,
+        'achievement.tavern_regular': 1,
+      },
+      challenges: ['challenge.lone_blade'],
+      ranks: 2,
+      frame: 'frame.bronze',
+    },
     bosses: {
       'boss.gargoyle': {
         periodKey: base.periods.lastDailyKey,

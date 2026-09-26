@@ -56,12 +56,19 @@ export type Goal =
    * mission line's "5 daily quests on 5 different days"; without it, the whole board.
    */
   | { type: 'complete_daily_quests_days'; count: number; quests?: 5 }
+  /**
+   * Any counter the game writes (`@engine/progression/counters`), by name. The Hall of Deeds reads
+   * its lifetime counters this way — a stand-breaker, a summoner, a feat only a battle can tell —
+   * rather than growing a goal type per counter; the validator checks the key is one of them.
+   */
+  | { type: 'counter'; key: string; count: number }
   // ── What the chronicle *is*, read live off the save ───────────────────────────────────────
   /** One stand, on one difficulty. Stage 10 is a settlement's boss (`CAMPAIGN.md` §2). */
   | { type: 'clear_stage'; settlement: number; stage: number; difficulty: Difficulty }
   | { type: 'settlement_stars'; settlement: number; difficulty: Difficulty; stars: number }
   | { type: 'difficulty_stars'; difficulty: Difficulty; stars: number }
-  | { type: 'own_champions'; count: number; rarity?: Rarity }
+  /** Champions in the roster; `distinct` counts each definition once, whatever its copies. */
+  | { type: 'own_champions'; count: number; rarity?: Rarity; distinct?: boolean }
   /** Champions at `level` or better; `stars` narrows it to that rank or better. */
   | { type: 'champion_reach_level'; level: number; count: number; stars?: number }
   | { type: 'champion_reach_stars'; stars: number; count: number }
@@ -80,6 +87,12 @@ export type Goal =
   | { type: 'boss_damage'; boss: string; tier: string; amount: number }
   /** The best a tier has ever taken, as a share of its pool — a record, so it outlives resets. */
   | { type: 'boss_percent'; boss: string; tier: string; pct: number }
+  /** The level the Mine has been dug to (`MINE.md` §3). */
+  | { type: 'mine_level'; level: number }
+  /** Nodes of the Glorious Palace taken — read live, so a reset gives them back. */
+  | { type: 'palace_nodes'; count: number }
+  /** Missions behind the chronicle on the Path, claimed or passed with a Dispensation. */
+  | { type: 'path_walked'; missions: number }
   /** Every mission before this one — the last page of the Path. */
   | { type: 'all_previous' };
 

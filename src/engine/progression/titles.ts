@@ -18,6 +18,9 @@ export interface TitleContext {
   progress: CampaignProgress;
   /** Champions in the roster. */
   championsOwned: number;
+  /** Ranks of the Hall of Deeds claimed, and the challenges claimed (ACHIEVEMENTS.md §4). */
+  hallRanks: number;
+  challenges: readonly string[];
 }
 
 export function isTitleEarned(condition: TitleCondition, ctx: TitleContext): boolean {
@@ -38,6 +41,10 @@ export function isTitleEarned(condition: TitleCondition, ctx: TitleContext): boo
       const { stars, max } = difficultyStars(ctx.progress, condition.difficulty);
       return stars === max;
     }
+    case 'hall_rank':
+      return ctx.hallRanks >= condition.rank;
+    case 'challenge':
+      return ctx.challenges.includes(condition.id);
   }
 }
 

@@ -171,6 +171,16 @@ settles with (`claimRunIndex`, `runRng`, `mintRunDrops`, `payChampionXp` in `sta
 which is what makes a batch written down pay exactly what the same runs fought would — a state test
 holds the two side by side.
 
+`engine/deeds/` is the Hall of Deeds (`docs/design/ACHIEVEMENTS.md`, ADR-048) in two files.
+`hall.ts` derives everything the Hall shows from the claims in the save and the goal evaluator run
+against a baseline of zero: each achievement's tier in hand and how many tiers wait behind it, each
+challenge's state, renown, the ranks, the earned frames — and the three `…ToClaim` checks the state
+layer asks before it pays anything. `feats.ts` reads a won battle's report (and the fielded
+champions' rarity and element, handed in) into the `feat.*` counters `state/store.ts` bumps in
+`recordBattle`. `state/deeds.ts` writes: a tier, a challenge, the next rank, "Claim all" (tiers, then
+challenges, then every rank the renown now reaches) and the frame worn; it reports the frames and
+titles each claim hung up by deriving them before and after.
+
 `engine/summon/` is four files: `summon.ts` (the rarity row and the champion roll), `pity.ts`
 (mercy counters, guarantees, soft climbs), `rotation.ts` (the fourteen-day wheel from a fixed UTC
 epoch, and which mercy rules a Primordial Rotation swaps in) and `choices.ts` (which champion
@@ -355,7 +365,8 @@ all four starting empty — a veteran chronicle begins the calendar at day 1 rat
 back-paid thirty days it never claimed, and the market's `hour` starts at −1 so no real hour can
 collide with it) and v20 (0.10.0: `mine` — a veteran gets the Mine a new chronicle gets, level 1
 with its first store full, stamped from its last save; nothing is back-paid and no level handed
-over). Fields
+over) and v21 (0.12.0: `deeds` — an empty Hall, because the Hall reads the lifetime counters and a
+veteran's tiers are waiting the day it opens; ADR-048). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -447,6 +458,10 @@ interface SaveGame {
   // derived from those and the clock; a new chronicle's `collectedAt` is one store's length before
   // it began, which is what makes its first store full.
   mine: { level: number; collectedAt: number; carry: { gems: number; sigils: number } };
+  // Shipped in save v21. The Hall of Deeds (ACHIEVEMENTS.md §10): what was claimed — tiers per
+  // achievement, challenge ids, ranks — and the frame worn. Renown, rank, progress, earned frames
+  // and titles are all derived (ADR-048).
+  deeds: { achievements: Record<string, number>; challenges: string[]; ranks: number; frame: string | null };
   // Shipped in save v12. Which lesson is open is derived from these and where the player is
   // standing (ADR-042), so the save cannot disagree with the step it is on: what it keeps is what
   // Eldric has taught and which chapters were waved off — the latter also carrying the chapters a
@@ -512,6 +527,10 @@ interface SaveGame {
   (`goalDestination`) — the settlement a stand is in, the Tavern tab, the Forge bench, the boss at
   its tier. A mission card, a quest card, the Wallet and an empty Bag all offer the same ways
   through `GoButton` or `useGo`, and none of them knows where anything is.
+- **Strings** (`i18n/`): one flat dictionary of English, typed by the eager tables in
+  `i18n/en/index.ts`. A table only one panel reads can ship in that panel's chunk instead and join
+  the dictionary through `registerStrings` when it loads — the Chronicle of Changes does (ADR-049).
+  Validators and tests check keys against `i18n/catalog.ts`, which holds every table.
 
 ## 7. Audio
 

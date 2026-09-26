@@ -12,6 +12,7 @@ import { LoginDialog } from './LoginDialog';
 import { ChangelogDialog } from './ChangelogDialog';
 import { CreditsDialog } from './CreditsDialog';
 import { FoodPickerDialog } from './FoodPickerDialog';
+import { FramePickerDialog } from './FramePickerDialog';
 import { GearPickerDialog } from './GearPickerDialog';
 import { BossSheetDialog } from './BossSheetDialog';
 import { IdleChestDialog } from './IdleChestDialog';
@@ -78,6 +79,7 @@ export function DialogHost() {
       {/* The pickers return to the profile they were opened from, so they close themselves. */}
       {dialog?.name === 'avatar-picker' ? <AvatarPickerDialog key="avatar" /> : null}
       {dialog?.name === 'title-picker' ? <TitlePickerDialog key="title" /> : null}
+      {dialog?.name === 'frame-picker' ? <FramePickerDialog key="frame" /> : null}
       {dialog?.name === 'level-up' ? <LevelUpDialog key="level-up" onClose={closeDialog} /> : null}
       {dialog?.name === 'food-picker' ? (
         <FoodPickerDialog

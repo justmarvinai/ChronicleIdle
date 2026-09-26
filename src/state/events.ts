@@ -102,6 +102,8 @@ export type DomainEvent =
   | { type: 'profile.titleChanged'; title: string | null }
   | { type: 'player.leveled'; level: number; levelsGained: number; unlocks: readonly string[] }
   | { type: 'currency.changed'; changes: CurrencyChange[]; reason: string }
+  /** Something in the Hall of Deeds was claimed (ACHIEVEMENTS.md). */
+  | { type: 'deeds.claimed' }
   | { type: 'energy.changed'; delta: number; total: number }
   | { type: 'settings.changed' }
   | { type: 'battle.ended'; outcome: 'victory' | 'defeat' | 'timeout' | 'retreat'; encounterId: string }

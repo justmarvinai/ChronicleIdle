@@ -10,6 +10,7 @@ import {
   emptySummon,
   emptyTeams,
   emptyBrewery,
+  emptyDeeds,
   emptyDungeons,
   emptyPalace,
   type SaveGame,
@@ -85,5 +86,6 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     dungeons: emptyDungeons(),
     // The Mine opens at level 6 already dug to its first level, its first store full (MINE.md §1).
     mine: newMine(now),
+    deeds: emptyDeeds(),
   };
 }

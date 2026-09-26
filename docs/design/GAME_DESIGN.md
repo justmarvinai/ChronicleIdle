@@ -79,6 +79,7 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Daily Rewards | Thirty days of rewards, one per day the player comes back; no streak to lose, and the board loops forever | `LOGIN.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
+| Hall of Deeds | 37 achievements in five tiers and 20 challenges read off the whole chronicle; renown, ten ranks, titles and portrait frames | `ACHIEVEMENTS.md` |
 | Tutorial | Interactive scripted onboarding with Eldric Lorekeeper | `TUTORIAL.md` |
 | Player level | XP from battles; unlocks features and raises energy cap | `ECONOMY.md` §4 |
 
@@ -139,6 +140,7 @@ after the first stand.
 | 10 | The Gargoyle |
 | 11 | **Instant clears** (a stand with all three stars cleared without a fight, `CAMPAIGN.md` §10) |
 | 12 | Weekly Quests |
+| 13 | **The Hall of Deeds** (achievements and challenges, `ACHIEVEMENTS.md`) |
 | 15 | The Titan |
 | 18 | Gear refine (star-up) |
 | 20 | Auto-repeat ×25 (×10 from level 5) |

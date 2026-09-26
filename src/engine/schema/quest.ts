@@ -7,6 +7,7 @@ import { CURRENCY_IDS } from '@content/currencies/types';
 import { RARITIES } from '@content/champions/types';
 import { SET_SIZES } from '@content/sets/types';
 import { FEATURE_IDS } from '@content/balance/unlocks';
+import { MINE_MAX_LEVEL } from '@content/balance/mine';
 import { QUEST_PERIODS, type Goal } from '@content/quests/types';
 import type { Loosen } from './loosen';
 
@@ -44,6 +45,7 @@ export const goalSchema: z.ZodType<Loosen<Goal>> = z.lazy(() =>
       count,
       quests: z.literal(5).optional(),
     }),
+    z.object({ type: z.literal('counter'), key: z.string().min(1), count }),
     // What the chronicle is, read live off the save.
     z.object({
       type: z.literal('clear_stage'),
@@ -53,7 +55,12 @@ export const goalSchema: z.ZodType<Loosen<Goal>> = z.lazy(() =>
     }),
     z.object({ type: z.literal('settlement_stars'), settlement, difficulty, stars: count }),
     z.object({ type: z.literal('difficulty_stars'), difficulty, stars: count }),
-    z.object({ type: z.literal('own_champions'), count, rarity: z.enum(RARITIES).optional() }),
+    z.object({
+      type: z.literal('own_champions'),
+      count,
+      rarity: z.enum(RARITIES).optional(),
+      distinct: z.boolean().optional(),
+    }),
     z.object({
       type: z.literal('champion_reach_level'),
       level: z.number().int().min(1).max(60),
@@ -83,6 +90,9 @@ export const goalSchema: z.ZodType<Loosen<Goal>> = z.lazy(() =>
       tier: z.string().min(1),
       pct: z.number().int().min(1).max(100),
     }),
+    z.object({ type: z.literal('mine_level'), level: z.number().int().min(1).max(MINE_MAX_LEVEL) }),
+    z.object({ type: z.literal('palace_nodes'), count }),
+    z.object({ type: z.literal('path_walked'), missions: count }),
     z.object({ type: z.literal('all_previous') }),
   ]),
 );

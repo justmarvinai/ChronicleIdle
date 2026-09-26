@@ -10,11 +10,19 @@ import { ENERGY_PROVISIONS } from '@content/balance/energy';
 import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import { validateContentRegistry } from '@engine/schema/content';
-import { I18N_KEYS, textOf, translate } from '@i18n/index';
-import { content } from './registry';
+import { ALL_I18N_KEYS, allTextOf } from '@i18n/catalog';
+import { translate } from '@i18n/index';
+import { RELEASES } from './changelog/index';
+import { content as registry } from './registry';
 
 const manifest = JSON.parse(readFileSync('public/assets/generated/manifest.json', 'utf8')) as AssetManifest;
-const refs = { assetKeys: new Set(Object.keys(manifest.entries)), i18nKeys: I18N_KEYS, i18nText: textOf };
+const refs = {
+  assetKeys: new Set(Object.keys(manifest.entries)),
+  i18nKeys: ALL_I18N_KEYS,
+  i18nText: allTextOf,
+};
+/** The registry as the validator reads it: the Chronicle of Changes loads with its panel, not with it. */
+const content = { ...registry, releases: RELEASES };
 
 describe('content registry', () => {
   it('validates against the generated asset manifest and the string table', () => {

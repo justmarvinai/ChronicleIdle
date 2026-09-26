@@ -17,7 +17,8 @@ export default set({
     {
       trigger: 'onWaveStart',
       effects: [
-        { kind: 'apply_status', target: 'self', status: 'shield', value: 0.2, turns: 3, chance: 100 },
+        // A shield's value is a percentage of the wearer's max HP, like every champion's shield.
+        { kind: 'apply_status', target: 'self', status: 'shield', value: 20, turns: 3, chance: 100 },
       ],
     },
   ],

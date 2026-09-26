@@ -42,6 +42,7 @@ export function launchTowerFloor(input: TowerLaunchInput): Result<void> {
     encounterId: charged.value.encounterId,
     instanceIds: input.instanceIds,
     roster: save.roster,
+    inventory: save.inventory,
     palace: palaceBonusOf(save.palace.nodes),
     control,
     speed,

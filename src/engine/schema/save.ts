@@ -11,8 +11,9 @@ import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@conte
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 import { MINE_MAX_LEVEL } from '@content/balance/mine';
+import { ACHIEVEMENT_TIERS } from '@content/balance/deeds';
 
-export const SAVE_VERSION = 20 as const;
+export const SAVE_VERSION = 21 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -358,6 +359,23 @@ export const mineSchema = z.object({
   carry: z.object({ gems: z.number().min(0).lt(1), sigils: z.number().min(0).lt(1) }),
 });
 
+/**
+ * The Hall of Deeds (ACHIEVEMENTS.md §10): what has been *claimed*, and the frame worn — nothing
+ * else. Renown, the rank renown has reached, every achievement's progress, every earned frame and
+ * title are derived from these and the chronicle (CLAUDE.md §5.5), so a save edited by hand
+ * cannot mint renown it never claimed.
+ */
+export const deedsSchema = z.object({
+  /** Achievement id → tiers claimed (1–5). An achievement never claimed has no row. */
+  achievements: z.record(z.string(), z.number().int().min(1).max(ACHIEVEMENT_TIERS)),
+  /** Ids of the challenges claimed. */
+  challenges: z.array(z.string()),
+  /** Ranks of the Hall claimed, in order: 0 before the first. */
+  ranks: z.number().int().min(0),
+  /** The portrait frame worn, or null for the chronicle's own gold. */
+  frame: z.string().nullable(),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -456,7 +474,9 @@ export type SaveGameV17 = z.infer<typeof saveSchemaV17>;
 export type SaveGameV18 = z.infer<typeof saveSchemaV18>;
 export type SaveGameV19 = z.infer<typeof saveSchemaV19>;
 export type SaveGameV20 = z.infer<typeof saveSchemaV20>;
-export type SaveGame = SaveGameV20;
+export type SaveGameV21 = z.infer<typeof saveSchemaV21>;
+export type SaveGame = SaveGameV21;
+export type DeedsSave = z.infer<typeof deedsSchema>;
 export type MineSave = z.infer<typeof mineSchema>;
 export type PalaceSave = z.infer<typeof palaceSchema>;
 export type BrewerySave = z.infer<typeof brewerySchema>;
@@ -489,8 +509,19 @@ export const saveSchemaV20 = saveSchemaV19.extend({
   mine: mineSchema,
 });
 
+/** v21 adds the Hall of Deeds; everything else is v20's. */
+export const saveSchemaV21 = saveSchemaV20.extend({
+  saveVersion: z.literal(21),
+  deeds: deedsSchema,
+});
+
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV20;
+export const saveSchema = saveSchemaV21;
+
+/** A Hall nobody has claimed in: no tiers, no challenges, no ranks and the chronicle's own frame. */
+export function emptyDeeds(): DeedsSave {
+  return { achievements: {}, challenges: [], ranks: 0, frame: null };
+}
 
 /** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
 export function emptyPalace(): PalaceSave {

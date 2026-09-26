@@ -55,6 +55,7 @@ const ROUTE_OF_SCREEN: Readonly<Record<TutorialScreen, RouteName>> = {
   bosses: 'bosses',
   quests: 'quests',
   missions: 'missions',
+  deeds: 'deeds',
   'game-modes': 'game-modes',
   campaign: 'campaign',
   settlement: 'settlement',

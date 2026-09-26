@@ -76,8 +76,10 @@ export default function PerfScreen(_props: ScreenProps) {
       encounterId,
       instanceIds: Object.keys(roster),
       roster,
-      // The bench measures frames, not a chronicle: its champions fight without a Palace behind them.
+      // The bench measures frames, not a chronicle: its champions fight without a Palace behind them
+      // and without an armoury on their backs.
       palace: NO_PALACE,
+      inventory: {},
       control: 'auto',
       speed: 4,
       seed: 'bench',

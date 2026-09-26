@@ -29,6 +29,7 @@ export const SCREENS: Record<RouteName, Lazy> = {
   bosses: lazy(() => import('@ui/screens/bosses/BossScreen')),
   quests: lazy(() => import('@ui/screens/quests/QuestsScreen')),
   missions: lazy(() => import('@ui/screens/missions/MissionsScreen')),
+  deeds: lazy(() => import('@ui/screens/deeds/DeedsScreen')),
   campaign: lazy(() => import('@ui/screens/campaign/CampaignScreen')),
   settlement: lazy(() => import('@ui/screens/settlement/SettlementScreen')),
   'battle-setup': lazy(() => import('@ui/screens/battle-setup/BattleSetupScreen')),

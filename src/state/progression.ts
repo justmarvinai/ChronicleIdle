@@ -34,6 +34,8 @@ export function titlesOf(save: SaveGame): string[] {
     level: save.profile.level,
     progress: progressOf(save),
     championsOwned: Object.keys(save.roster).length,
+    hallRanks: save.deeds.ranks,
+    challenges: save.deeds.challenges,
   }).map((title) => title.id);
 }
 

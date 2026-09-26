@@ -5,9 +5,10 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { AssetManifest } from '@assets/manifest-types';
+import { RELEASES } from '@content/changelog/index';
 import { content } from '@content/registry';
 import { validateContentRegistry } from '@engine/schema/content';
-import { I18N_KEYS, textOf } from '@i18n/index';
+import { ALL_I18N_KEYS, allTextOf } from '@i18n/catalog';
 
 const REPO_ROOT = join(import.meta.dirname, '..', '..');
 
@@ -21,7 +22,10 @@ async function main(): Promise<void> {
     console.error('[content] asset manifest missing — run `pnpm assets:build` first.');
     process.exit(1);
   }
-  const issues = validateContentRegistry(content, { assetKeys, i18nKeys: I18N_KEYS, i18nText: textOf });
+  const issues = validateContentRegistry(
+    { ...content, releases: RELEASES },
+    { assetKeys, i18nKeys: ALL_I18N_KEYS, i18nText: allTextOf },
+  );
   const errors = issues.filter((i) => i.severity === 'error');
   const warnings = issues.filter((i) => i.severity === 'warning');
   for (const issue of warnings) console.warn(`  ! ${issue.path}: ${issue.message}`);
@@ -39,13 +43,15 @@ async function main(): Promise<void> {
       `${content.questBoards.length} quest boards (${content.quests.length} quests), ` +
       `${content.missionChapters.length} chapters (${content.missions.length} missions), ` +
       `${content.tutorialChapters.length} tutorial chapters (${content.tutorialSteps.length} steps), ` +
-      `${content.releases.length} releases, ${content.palace.nodes.length} Palace nodes, ` +
+      `${RELEASES.length} releases, ${content.palace.nodes.length} Palace nodes, ` +
       `${content.breweries.length} brewery halls (${content.breweries.reduce((n, h) => n + h.stages.length, 0)} stages), ` +
       `${content.dungeons.length} dungeons (${content.openDungeons.length} open), ` +
       `${content.consumables.length} items on a ${content.gemShelf.length}-entry shelf, ` +
-      `a ${content.loginBoard.length}-day calendar and ` +
+      `a ${content.loginBoard.length}-day calendar, ` +
+      `a Hall of ${content.achievements.length} achievements, ${content.challenges.length} challenges, ` +
+      `${content.hallRanks.length} ranks and ${content.frames.length} frames, and ` +
       `${content.summonPool.length} summonable champions validated against ${assetKeys.size} assets and ` +
-      `${I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
+      `${ALL_I18N_KEYS.size} strings (${warnings.length} warning(s)).`,
   );
 }
 

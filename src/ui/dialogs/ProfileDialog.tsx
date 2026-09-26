@@ -15,31 +15,37 @@ import { formatDuration } from '@engine/time/clock';
 import { t, translate, type I18nKey } from '@i18n/index';
 import { progressOf } from '@state/campaign';
 import { titlesOf } from '@state/progression';
-import { selectActions, selectInventory, selectProfile, selectRoster, selectSave } from '@state/selectors';
+import {
+  selectActions,
+  selectInventory,
+  selectProfile,
+  selectRoster,
+  selectSave,
+  selectWornFrame,
+} from '@state/selectors';
 import { useGameStore } from '@state/store';
-import { profileAvatar } from '@ui/champions/art';
 import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
-import { DecoFrame } from '@ui/components/Frame/DecoFrame';
 import { Glyph } from '@ui/components/Glyph/Glyph';
+import { FramedPortrait } from '@ui/components/Portrait/FramedPortrait';
 import { ScrollArea } from '@ui/components/ScrollArea/ScrollArea';
 import { entriesOf } from '@ui/screens/champions/roster-view';
 import styles from './dialogs.module.css';
 import profileStyles from './ProfileDialog.module.css';
 
 const DIFFICULTIES: readonly Difficulty[] = ['intro', 'normal', 'hard'];
-/** The portrait's frame: the ornate deco frame in the chronicle's gold. */
-const PORTRAIT_FRAME = 13;
-const PORTRAIT_TINT = '#d9a53c';
+/** The portrait, in the frame the chronicle wears (ACHIEVEMENTS.md §3). */
+const PORTRAIT_WIDTH = 300;
+const PORTRAIT_HEIGHT = 330;
 /** How far the details scroll inside the dialog, in stage pixels. */
 const DETAILS_HEIGHT = 720;
 
 /**
  * The chronicle's own page (docs/tech/UI_DESIGN.md §5.17). It has two columns:
  *
- * - on the left, the chronicler as a card: the portrait in a gold frame with the level on a gem, the
- *   name and the worn title (each a press to change), the XP to the next level, the whole roster's
- *   power, and the avatar;
+ * - on the left, the chronicler as a card: the portrait in the frame it wears with the level on a
+ *   gem, the name and the worn title (each a press to change), the XP to the next level, the whole
+ *   roster's power, and the avatar and the frame;
  * - on the right, the standing as tiles, the campaign's stars per difficulty, every title (earned
  *   lit, the rest dark with what earns them), and what the next levels open.
  *
@@ -51,6 +57,7 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
   const save = useGameStore(selectSave);
   const roster = useGameStore(selectRoster);
   const inventory = useGameStore(selectInventory);
+  const frame = useGameStore(selectWornFrame);
   const createdAt = useGameStore((s) => s.save?.createdAt ?? 0);
   const hasRoster = useGameStore((s) => Object.keys(s.save?.roster ?? {}).length > 0);
   const playtime = useGameStore((s) => s.save?.stats['playtime_ms'] ?? 0);
@@ -88,7 +95,6 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
   }, [profile?.level]);
 
   if (!profile || !save) return null;
-  const avatar = profileAvatar(profile.avatarChampionId ?? null, 512);
   const wornDef = profile.title ? content.titleById(profile.title) : null;
   const championsOwned = Object.keys(save.roster).length;
   const maxed = profile.level >= PLAYER_MAX_LEVEL;
@@ -118,30 +124,13 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
     <Dialog title={t('profile.title')} onClose={onClose} width={1120} testId="dialog-profile">
       <div className={profileStyles.layout}>
         <aside className={profileStyles.card}>
-          <DecoFrame
-            frame={PORTRAIT_FRAME}
-            tint={PORTRAIT_TINT}
-            thickness={14}
-            className={profileStyles.portrait}
-          >
-            <span
-              className={profileStyles.art}
-              style={{ backgroundImage: `url("${avatar.url}")` }}
-              aria-hidden="true"
-            >
-              {avatar.tint ? (
-                <span
-                  className={profileStyles.artTint}
-                  style={{
-                    backgroundColor: avatar.tint,
-                    WebkitMaskImage: `url("${avatar.url}")`,
-                    maskImage: `url("${avatar.url}")`,
-                  }}
-                />
-              ) : null}
-            </span>
-            <span className={profileStyles.shade} aria-hidden="true" />
-          </DecoFrame>
+          <FramedPortrait
+            avatarChampionId={profile.avatarChampionId ?? null}
+            frameId={frame}
+            width={PORTRAIT_WIDTH}
+            height={PORTRAIT_HEIGHT}
+            testId="profile-portrait"
+          />
           <span className={`num ${profileStyles.gem}`} data-testid="profile-level">
             <span className={profileStyles.gemLabel}>{t('profile.level')}</span> {profile.level}
           </span>
@@ -218,18 +207,28 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
             </span>
           </div>
 
-          {hasRoster ? (
+          <span className={profileStyles.looks}>
+            {hasRoster ? (
+              <Button
+                size="md"
+                variant="secondary"
+                onClick={() => actions.openDialog({ name: 'avatar-picker' })}
+                data-testid="choose-avatar"
+              >
+                {t('profile.avatar.choose')}
+              </Button>
+            ) : (
+              <span className={styles.hint}>{t('profile.avatar.none')}</span>
+            )}
             <Button
               size="md"
               variant="secondary"
-              onClick={() => actions.openDialog({ name: 'avatar-picker' })}
-              data-testid="choose-avatar"
+              onClick={() => actions.openDialog({ name: 'frame-picker' })}
+              data-testid="choose-frame"
             >
-              {t('profile.avatar.choose')}
+              {t('profile.frame.choose')}
             </Button>
-          ) : (
-            <span className={styles.hint}>{t('profile.avatar.none')}</span>
-          )}
+          </span>
         </aside>
 
         <ScrollArea height={DETAILS_HEIGHT} className={profileStyles.scroll}>

@@ -85,16 +85,18 @@ so 4.4 always has something to collect, however fast the chronicle got there. A 
 already finished this chapter before `0.10.0` is shown them on its next visit to the hub; one whose
 Routine was waved off, or marked off when it predated the tutorial, is not.
 
-## Chapter 6 — Steel and Bone (levels 7–20: Rank-up, Forge, Skills, Bosses, Instant clears)
+## Chapter 6 — Steel and Bone (levels 7–20: Rank-up, Forge, Skills, Bosses, Instant clears, the Hall)
 
 Short, single-step lessons triggered on first visit: Rank-up (7), Forge (8), Skill upgrade (9),
 the Gargoyle (10, includes the "damage accumulates, chests at thresholds, keys reset" explanation),
 Weekly Quests (12), the Titan (15), Refine (18), Auto-repeat (5/20/30), and — since `0.11.0` —
-Instant clears (11). Each is one dialogue + one spotlighted action.
+Instant clears (11), and — since `0.12.0` — the Hall of Deeds (13). Each is one dialogue + one
+spotlighted action.
 
 | # | Where | Spotlight | Eldric says | Done when |
 | --- | --- | --- | --- | --- |
 | 6.9 | The battle setup of a stand with all three stars, from level 11 | The *Instant ×N* press | "Three stars here, and the chronicle already knows how this fight ends. Clear it instantly: the same energy, the same spoils, the XP to the team you seat — and no fight to watch. The repeat sets how many." | read |
+| 6.10 | The hub or the Hall of Deeds, from level 13 | The hub's *Deeds* button, or *Claim all* inside the Hall | "The Hall of Deeds is open. Everything this chronicle has done is written there, from the first stand — so deeds are already waiting. Claim them for their spoils and their renown; renown raises your rank in the Hall, and the ranks pay shards, titles and frames for your portrait." | read |
 
 6.9 waits on the condition `stand_mastered` — *the battle setup on screen is for a stand the
 chronicle holds every star of* — rather than on the screen alone: on any other stand the press is
@@ -104,10 +106,15 @@ opens a mastered stand's setup; one whose chapter was waved off does not, and no
 predated the tutorial itself and was past level 11 when it arrived — the migration counts every
 lesson below a chronicle's level as read, whichever version the lesson came in.
 
+6.10 is one line wherever it is first heard, which is why its spotlight names two targets in
+fallback order: on the hub it rests on the Hall's button, and a chronicle that walks into the Hall
+first — through the button's dot — hears it pointing at *Claim all* instead (`ACHIEVEMENTS.md` §8).
+Every chronicle past level 13 hears it once when `0.12.0` arrives: the Hall is new to all of them.
+
 ## Data shape
 
 **As shipped (0.0.14).** The script lives in `src/content/tutorial/`, one file per chapter named
-for it (`awakening`, `the_path`, `the_hold`, `the_binding`, `routine`, `steel_and_bone`; 38 steps)
+for it (`awakening`, `the_path`, `the_hold`, `the_binding`, `routine`, `steel_and_bone`; 39 steps)
 with `index.ts` holding the order, and is validated with everything else by
 `pnpm content:validate`; the overlay is
 `src/ui/tutorial/TutorialOverlay.tsx` and the step machine `src/engine/tutorial/script.ts`.

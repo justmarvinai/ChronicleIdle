@@ -54,6 +54,21 @@ Nothing listens to events: the counters are written by the reducers that own the
 board is a function of them, the save and the clock (ADR-040). A goal can therefore only name a
 counter the game actually keeps, and `pnpm content:validate` enforces exactly that.
 
+**Added for the Hall of Deeds (0.12.0, `ACHIEVEMENTS.md`).** The Hall reads the same DSL against a
+baseline of zero — the whole chronicle — and needed four more shapes:
+
+```ts
+  | { type: 'counter'; key: string; count: number }     // any registered counter, by name
+  | { type: 'mine_level'; level: number }               // the level the Mine is dug to
+  | { type: 'palace_nodes'; count: number }             // Palace nodes lit now (a reset gives them back)
+  | { type: 'path_walked'; missions: number }           // missions behind the chronicle, claimed or passed
+```
+
+and `own_champions` gained `distinct: true`, which counts each champion once whatever its copies.
+`counter` is a counter goal like the others — measured against the baseline, its key checked
+against `COUNTER_KEYS` by the validator — so a quest or a mission may use it too; the Hall's feats
+(`feat.solo`, `feat.rabble` …, `ACHIEVEMENTS.md` §7) are read that way.
+
 ## 2. Daily quests (reset 00:00 local)
 
 Ten quests; each completes for points and a small reward; points unlock five chests.

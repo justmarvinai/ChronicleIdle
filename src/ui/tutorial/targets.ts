@@ -28,6 +28,7 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'hub.hall': testId('hotspot-hall'),
   'hub.idle': testId('hotspot-idle'),
   'hub.mine': testId('hotspot-mine'),
+  'hub.deeds': testId('nav-deeds'),
   'hub.quests': testId('nav-quests'),
   'hub.missions': testId('nav-missions'),
   'topbar.energy': testId('pill-energy'),
@@ -40,6 +41,7 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'setup.start': testId('start-battle'),
   'setup.repeat': testId('auto-repeat'),
   'setup.instant': testId('instant'),
+  'deeds.claimAll': testId('deeds-claim-all'),
 
   'battle.ability1': testId('ability-a1'),
   'battle.ability2': testId('ability-a2'),

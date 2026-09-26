@@ -26,14 +26,14 @@ import { LOGIN_DAYS, LOGIN_FINALE_FROM } from '@content/balance/login';
 import { consumableSchema, gemShelfEntrySchema, grantSchema, loginDaySchema } from './market';
 import { GEAR_MAX_STARS } from '@content/balance/gear';
 import { ELEMENTS, STAT_IDS } from '@content/champions/types';
-import { CHAMPION_CHOICES, SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
+import { CHAMPION_CHOICES, SETTLEMENT_COUNT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
 import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
 import { ENERGY_PROVISIONS } from '@content/balance/energy';
 import type { TutorialCondition } from '@content/tutorial/types';
 import { SHARD_RATES } from '@content/balance/summon';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
-import { levelCap, statDeviation } from '@engine/champions/stats';
+import { statDeviation } from '@engine/champions/stats';
 import { unlockLevel } from '@engine/progression/unlocks';
 import { championSchema } from './champion';
 import { encounterSchema } from './encounter';
@@ -45,7 +45,7 @@ import { missionChapterSchema } from './mission';
 import { tutorialChapterSchema } from './tutorial';
 import { FEATURE_IDS } from '@content/balance/unlocks';
 import type { Goal, QuestBoardDef } from '@content/quests/types';
-import { GOAL_COUNTERS, goalCounterKeys } from '@engine/quests/goals';
+import { GOAL_COUNTERS } from '@engine/quests/goals';
 import { visibleQuests } from '@engine/quests/board';
 import { isCounterKey } from '@engine/progression/counters';
 import { gearSetSchema } from './gear-set';
@@ -53,6 +53,8 @@ import { questBoardSchema } from './quest';
 import { titleSchema } from './title';
 import { compareReleases, releaseSchema } from './changelog';
 import { palaceNodeSchema } from './palace';
+import { goalIssues, tiersByBoss } from './goal-issues';
+import { validateDeeds } from './deeds';
 
 export const currencySchema = z.object({
   id: z.enum(CURRENCY_IDS),
@@ -123,6 +125,10 @@ export function validateContentRegistry(
     missionChapters: readonly unknown[];
     tutorialChapters: readonly unknown[];
     summonPool: readonly { id: string; rarity: string }[];
+    achievements: readonly unknown[];
+    challenges: readonly unknown[];
+    hallRanks: readonly unknown[];
+    frames: readonly unknown[];
   },
   refs: ContentRefs,
 ): ValidationIssue[] {
@@ -167,6 +173,24 @@ export function validateContentRegistry(
     ...validateQuestBoards(registry.questBoards, registry.bosses, refs),
     ...validateMissionChapters(registry.missionChapters, registry.bosses, registry.champions, refs),
     ...validateTutorialChapters(registry.tutorialChapters, refs),
+    ...validateDeeds(
+      {
+        achievements: registry.achievements,
+        challenges: registry.challenges,
+        hallRanks: registry.hallRanks,
+        frames: registry.frames,
+        titles: registry.titles,
+        bosses: registry.bosses,
+        limits: {
+          palaceNodes: registry.palace.nodes.length,
+          missions: registry.missionChapters.reduce<number>(
+            (sum, chapter) => sum + ((chapter as { missions?: readonly unknown[] }).missions?.length ?? 0),
+            0,
+          ),
+        },
+      },
+      refs,
+    ),
   ];
 }
 
@@ -248,67 +272,6 @@ function validateQuestBoards(
 /** A goal and, for `any`, everything inside it. */
 function flattenGoals(goal: Goal): Goal[] {
   return goal.type === 'any' ? [goal, ...goal.goals.flatMap(flattenGoals)] : [goal];
-}
-
-/**
- * A goal's references, whatever family it belongs to: the boss it names, the settlement and stand
- * it asks for, the counter it measures. A mission that names a stand nobody can fight, or counts
- * something nothing writes, would sit unfinishable at the head of the line — so it is a build
- * error, not a surprise on somebody's save.
- */
-function goalIssues(goal: Goal, tiersByBoss: ReadonlyMap<string, readonly string[]>): string[] {
-  const problems: string[] = [];
-  const bossTiers = (id: string): readonly string[] => tiersByBoss.get(id) ?? [];
-  const known = (id: string): boolean => tiersByBoss.has(id);
-  switch (goal.type) {
-    case 'boss_fights':
-      if (!known(goal.boss)) problems.push(`names an unknown boss ${goal.boss}`);
-      else if (goal.tier && !bossTiers(goal.boss).includes(goal.tier))
-        problems.push(`names ${goal.boss} tier ${goal.tier}, which does not exist`);
-      break;
-    case 'boss_damage':
-    case 'boss_percent':
-      if (!known(goal.boss)) problems.push(`names an unknown boss ${goal.boss}`);
-      else if (!bossTiers(goal.boss).includes(goal.tier))
-        problems.push(`names ${goal.boss} tier ${goal.tier}, which does not exist`);
-      break;
-    case 'clear_stage':
-      if (goal.settlement > SETTLEMENT_COUNT) problems.push(`settlement ${goal.settlement} does not exist`);
-      break;
-    case 'settlement_stars':
-      if (goal.settlement > SETTLEMENT_COUNT) problems.push(`settlement ${goal.settlement} does not exist`);
-      if (goal.stars > STARS_PER_SETTLEMENT)
-        problems.push(`asks for ${goal.stars} stars; a settlement holds ${STARS_PER_SETTLEMENT}`);
-      break;
-    case 'difficulty_stars': {
-      const most = SETTLEMENT_COUNT * STARS_PER_SETTLEMENT;
-      if (goal.stars > most) problems.push(`asks for ${goal.stars} stars; a difficulty holds ${most}`);
-      break;
-    }
-    case 'champion_reach_level':
-      if (goal.level > levelCap(goal.stars ?? 6))
-        problems.push(`asks for level ${goal.level}, past the cap at ${goal.stars ?? 6}★`);
-      break;
-    default:
-      break;
-  }
-  for (const key of goalCounterKeys([goal]))
-    if (!isCounterKey(key)) problems.push(`counts ${key}, which nothing writes`);
-  return problems;
-}
-
-/** Tier ids per boss, read straight off the boss content the registry hands over. */
-function tiersByBoss(bosses: readonly unknown[]): Map<string, readonly string[]> {
-  const map = new Map<string, readonly string[]>();
-  for (const raw of bosses) {
-    const boss = raw as { id?: unknown; tiers?: readonly { id?: unknown }[] };
-    if (typeof boss.id !== 'string') continue;
-    map.set(
-      boss.id,
-      (boss.tiers ?? []).map((tier) => tier.id).filter((id): id is string => typeof id === 'string'),
-    );
-  }
-  return map;
 }
 
 /**

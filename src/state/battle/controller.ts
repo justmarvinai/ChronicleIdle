@@ -22,6 +22,8 @@ import {
 } from '@engine/battle/index';
 import { validateTeam } from '@engine/battle/teams';
 import type { Roster } from '@engine/champions/instance';
+import { wornBy } from '@engine/gear/equip';
+import type { Inventory } from '@engine/gear/instance';
 import type { PalaceBonus } from '@engine/palace/index';
 import { fail, ok, type Result } from '@engine/errors';
 import { hashString } from '@engine/rng/rng';
@@ -72,6 +74,12 @@ export interface StartBattleInput {
    * sheet that sent them in. `NO_PALACE` is what a bench or a test passes.
    */
   palace: PalaceBonus;
+  /**
+   * The chronicle's armoury, so every champion fights in what they wear — the pieces' stats and
+   * their sets' bonuses (`GEAR.md` §5). Required for the same reason as `palace`: until 0.12.0 it
+   * was not passed at all, and every fight was fought as if nobody wore anything.
+   */
+  inventory: Inventory;
   control: 'manual' | 'auto';
   speed: BattleSpeed;
   /** Deterministic seed material (the save's seedRoot + a counter). */
@@ -200,7 +208,7 @@ export function createBattleController(): BattleController {
         const instance = input.roster[id];
         const def = instance ? content.championById(instance.defId) : undefined;
         if (!instance || !def) throw new Error(`Roster instance ${id} has no definition`);
-        return { instance, def };
+        return { instance, def, worn: wornBy(instance, input.inventory) };
       });
       session += 1;
       playing = false;

@@ -586,3 +586,45 @@ the energy, the chronicle, the roster and the armoury identical to the same runs
 needs no new line, because instant clears move no number it measures — they only save the time a
 fight takes. The cost is that an instant clear can never be *better* than a fight (no bonus for the
 convenience), which is the point: the choice between them is only about time.
+
+## ADR-048 — The Hall of Deeds stores claims, reads the whole chronicle, and learns feats as counters
+**Context.** The owner asked for challenges and achievements as long-term goals. The obvious shapes
+each break something. Storing progress per achievement would be a second record of play the
+counters already keep, free to drift from them. Counting from the day the Hall opened would tell a
+veteran that nothing they did before 0.12.0 counts. Storing renown would let a save edited by hand
+mint a rank. And a challenge that names *how* a fight was won — alone, untouched, with commons on
+Hard — asks something no counter or state predicate could answer after the fight is over.
+**Decision.** Both ledgers are goals from the shared DSL (ADR-040), evaluated against a baseline of
+zero: the Hall reads the lifetime counters and the chronicle as it stands. The save keeps only what
+was *claimed* — tiers per achievement, challenge ids, ranks claimed — and the frame worn (save v21).
+Renown is the sum of what was claimed, the rank is where that sum stands, and frames and titles are
+derived from claimed ranks and challenges. Feats are written as ordinary lifetime counters
+(`feat.*`) by `recordBattle` the moment a victory is recorded, from the battle's report and the
+fielded champions (`engine/deeds/feats.ts`), so the challenges read them like any other counter.
+Where a mode has a top, the top is a challenge and the achievement below it stops a rung short, so
+nothing pays twice.
+**Consequences.** The Hall opens full for an old chronicle — every tier it passed is waiting — with
+no back-pay migration and no event replay; the v20 → v21 migration only adds an empty `deeds`. A
+counter a tier names is checked against `COUNTER_KEYS` like any quest's, and the validator refuses a
+rank ladder the Hall cannot pay. The price is that feats can only be learned from the day they were
+first recorded (0.12.0): a lone win fought in 0.11.0 is not on any record, and a veteran has to win
+it again. Deliberately, the Hall is one-off rewards rather than a rate, so `sim:economy` does not
+model it (`ECONOMY.md` §7).
+
+## ADR-049 — The largest string tables load with the panels that print them
+**Context.** 0.12.0 put the first screen's JavaScript at 353.7 kB gzipped against the 350 kB budget
+(CLAUDE.md §5.6). Measured module by module, the biggest single table of words in that bundle was
+the Chronicle of Changes — about 14 kB gzipped, and the one table guaranteed to grow with every
+release, since every release writes into it. Everything else of that size is a library the first
+screen draws with (the motion library, the schema library behind save loading).
+**Decision.** The releases (`content/changelog`) and their strings (`i18n/en/changelog.ts`) leave the
+eager registry and the eager dictionary. `ChangelogView` is a lazy shell: it loads the panel and
+the words together, `registerStrings` joins the words to the dictionary, and the frame keeps its
+size while they arrive. Release keys come out of content data and are read with `translate`; the
+panel's own labels stay typed in `ui.ts`. Validation and tests read every table through
+`i18n/catalog.ts` (`ALL_I18N_KEYS`), which the game itself never imports.
+**Consequences.** The first screen is 338 kB and no longer grows with the changelog. The title
+screen's frame paints a beat before its text — a precached local chunk, so a frame or two. The
+same mechanism is how a large feature's words can ship in its own chunk later: a table that only
+one screen reads can be registered by that screen's loader, the way this one is.
+

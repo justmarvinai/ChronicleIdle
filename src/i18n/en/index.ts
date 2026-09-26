@@ -6,9 +6,9 @@ import { palace } from './palace';
 import { places } from './places';
 import { quests } from './quests';
 import { campaign } from './campaign';
-import { changelog } from './changelog';
 import { champions } from './champions';
 import { currencies } from './currencies';
+import { deeds } from './deeds';
 import { dungeons } from './dungeons';
 import { market } from './market';
 import { mine } from './mine';
@@ -32,7 +32,6 @@ export const en = {
   ...champions,
   ...enemies,
   ...campaign,
-  ...changelog,
   ...titles,
   ...features,
   ...gear,
@@ -54,4 +53,5 @@ export const en = {
   ...missions,
   ...tower,
   ...tutorial,
+  ...deeds,
 } as const;

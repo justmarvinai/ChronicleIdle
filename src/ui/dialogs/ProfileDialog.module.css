@@ -15,36 +15,13 @@
   gap: 12px;
   text-align: center;
 }
-.portrait {
-  position: relative;
-  width: 300px;
-  height: 330px;
-  overflow: hidden;
-  background: var(--bg-1);
-  box-shadow:
-    0 14px 30px rgba(0, 0, 0, 0.55),
-    0 0 26px rgba(217, 165, 60, 0.18);
-}
-.art {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center 18%;
-}
-.artTint {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: multiply;
-  opacity: 0.85;
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  -webkit-mask-position: center 18%;
-  mask-position: center 18%;
-}
-.shade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 60%, rgba(11, 10, 13, 0.75));
+/* The avatar and the frame, chosen side by side under the card. */
+.looks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 /* The level on a gold gem, set into the foot of the portrait. */
 .gem {
