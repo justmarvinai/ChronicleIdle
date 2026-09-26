@@ -18,7 +18,8 @@ in the same commit that adds an asset (`AGENTS.md` §5, `docs/tech/ASSETS.md` §
 
 Sounds rendered by `tools/audio` and effects rendered by `tools/vfx` are original works of this
 project (recipes in the repository). They are listed per key in the registries and need no
-external credit.
+external credit. The same holds for the few line glyphs drawn in-house where the owner's set has no
+mark for a building (`tools/assets/glyphs/`), each drawn to sit with the owner's forty.
 
 ## Additions
 
@@ -26,3 +27,4 @@ external credit.
 | --- | --- | --- | --- |
 | Summon ritual sounds (`sfx.summon.charge`, `crack`, `reveal_common/rare/epic/legendary/mythic`) | Generated in-house by `tools/audio/summon-recipes.ts` | Original work of this project | Phase 8 (`0.0.8`); the charge re-cut in `0.9.8` |
 | Summon ritual sounds, second set (`sfx.summon.tell`, `stall`, `windup`, `shatter`, `flip`, `star`, `stamp`) | Generated in-house by `tools/audio/summon-recipes.ts` | Original work of this project | `0.9.8` |
+| The Mine's glyph (`glyph.pickaxe`: a miner's pick striking a cut gem, `tools/assets/glyphs/glyph-pickaxe.svg`) | Drawn in-house for the Mine's medallion and buttons | Original work of this project (CC0) | `0.10.0` |

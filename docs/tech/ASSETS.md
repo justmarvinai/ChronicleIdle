@@ -20,7 +20,7 @@ recorded in `CREDITS.md`.
 | UI kit: dark-ember | `assets/ui/dark-ember/` | 42 | PNG 64²–1024×1536 | ember buttons, frames, banners, bars, ornate panels, 4 skill icons, 3 item icons, 2 silhouettes |
 | UI kit: stone-vine | `assets/ui/stone-vine/` | 37 | PNG | stone panels/slots/buttons, icon buttons, health/mana/stamina bars, 10 item icons, vine divider, dark scene bg 1920×1047 |
 | Pixel deco frames | `assets/ui/deco-frames/` | 140 | 32 frames × {line, solid, soft, scrim} 96² + 6 dividers + 6 fade dividers | 9-slice with 32 px insets; `line` is the bare outline, `solid` adds an opaque inner band, `soft`/`scrim` are the 50 % alpha versions |
-| Line glyphs | `assets/ui/line-glyphs/` | 40 | SVG, black | recolourable via CSS mask / Pixi tint |
+| Line glyphs | `assets/ui/line-glyphs/` | 40 | SVG, black | recolourable via CSS mask / Pixi tint; one more is drawn in-house in `tools/assets/glyphs/` (the Mine's pick, `0.10.0`) and built by the same step |
 | Spell icons | `assets/ui/spell-icons/` | 235 | WebP, painted | families: blood 25, crest 6, earth 40, fire 40, fx 12, hero 15, hunt 25, icon 4, orb 4, rune 19, skill 4, tech 25, weapon 16 |
 | Gear set paintings | `assets/gear_sets/<set>/<set>_<slot>.png` | 14 × 6 = 84 | PNG 1254², RGB, a full painted scene behind each piece (1.3–2.8 MB) | one per slot of every set; four files spell their slot differently (`lifedrinker_boot`, `swiftfoot_gauntlet`, `relentless_gauntlents`, `stunlock_sword`) and are read as they are |
 | Gear set emblems | `assets/gear_sets/!gear_set_identifier_icons/<set>_identifier.png` | 14 | PNG 1254², RGB, a flat single-colour emblem on black (0.7–0.9 MB) | the set's identifier; the black is keyed out at build time |

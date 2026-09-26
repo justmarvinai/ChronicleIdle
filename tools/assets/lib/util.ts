@@ -5,6 +5,11 @@ import { dirname, join, relative, sep } from 'node:path';
 
 export const REPO_ROOT = join(import.meta.dirname, '..', '..', '..');
 export const SOURCE_ROOT = join(REPO_ROOT, 'game', 'assets');
+/**
+ * Glyphs drawn in-house where the owner's set has no mark for a building (docs/tech/CREDITS.md).
+ * They live in the repo rather than in `/game`, which is the owner's and read-only.
+ */
+export const IN_HOUSE_GLYPHS = join(REPO_ROOT, 'tools', 'assets', 'glyphs');
 export const OUTPUT_ROOT = join(REPO_ROOT, 'public', 'assets', 'generated');
 export const ICONS_ROOT = join(REPO_ROOT, 'public', 'icons');
 export const CACHE_ROOT = join(REPO_ROOT, '.assets-cache');

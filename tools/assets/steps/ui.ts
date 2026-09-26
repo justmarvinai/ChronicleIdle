@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import type { AtlasEntry, ImageEntry, ImageSetEntry, SvgEntry } from '@assets/manifest-types';
 import { packShelves, pixiAtlasJson, type PackInput } from '../lib/atlas.ts';
 import type { BuildContext } from '../lib/context.ts';
-import { SOURCE_ROOT, listFiles, sanitize } from '../lib/util.ts';
+import { IN_HOUSE_GLYPHS, SOURCE_ROOT, listFiles, sanitize } from '../lib/util.ts';
 
 type Encoding = 'png' | 'webp';
 
@@ -100,17 +100,19 @@ export async function buildUi(ctx: BuildContext): Promise<void> {
       return { outputs: [image.rel, json.rel], entries: { 'deco.sheet': entry } };
     },
   );
-  // Line glyphs: SVG copied verbatim (used as CSS masks and as Pixi textures).
-  const glyphs = join(SOURCE_ROOT, 'ui', 'line-glyphs');
-  for (const file of await listFiles(glyphs, (f) => f.endsWith('.svg'))) {
-    const source = join(glyphs, file);
-    const name = sanitize(file.replace(/^glyph-/, '').replace(/\.svg$/, ''));
-    await ctx.cached(`glyph:${file}`, [source], async () => {
-      const data = await readFile(source);
-      const out = await ctx.emit('ui/glyphs', name, 'svg', data);
-      const entry: SvgEntry = { kind: 'svg', group: 'ui', url: out.url };
-      return { outputs: [out.rel], entries: { [`glyph.${name}`]: entry } };
-    });
+  // Line glyphs: SVG copied verbatim (used as CSS masks and as Pixi textures). The owner's set comes
+  // first; the in-house ones beside it fill the gaps it leaves (the Mine's pick), drawn to match.
+  for (const glyphs of [join(SOURCE_ROOT, 'ui', 'line-glyphs'), IN_HOUSE_GLYPHS]) {
+    for (const file of await listFiles(glyphs, (f) => f.endsWith('.svg'))) {
+      const source = join(glyphs, file);
+      const name = sanitize(file.replace(/^glyph-/, '').replace(/\.svg$/, ''));
+      await ctx.cached(`glyph:${file}`, [source], async () => {
+        const data = await readFile(source);
+        const out = await ctx.emit('ui/glyphs', name, 'svg', data);
+        const entry: SvgEntry = { kind: 'svg', group: 'ui', url: out.url };
+        return { outputs: [out.rel], entries: { [`glyph.${name}`]: entry } };
+      });
+    }
   }
   // Spell icons: full WebP as provided + 64 px thumbnail.
   const spells = join(SOURCE_ROOT, 'ui', 'spell-icons');
