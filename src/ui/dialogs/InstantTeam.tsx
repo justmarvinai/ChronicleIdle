@@ -25,9 +25,9 @@ export interface InstantTeamProps {
 }
 
 /**
- * The team an instant clear sent (docs/tech/UI_DESIGN.md §5.30): each champion framed in their
- * rarity, the level they stand at now and the bar towards the next, what the batch paid them — and
- * a *Level up* badge with the levels climbed when it carried them past one.
+ * The team an instant clear sent (docs/tech/UI_DESIGN.md §5.30): each champion a tile — the
+ * portrait framed in their rarity, the level they stand at now with a *Level up* stamp when the
+ * batch carried them past one, the bar towards the next level, and what the batch paid them.
  */
 export function InstantTeam({ team, roster, xp, levelUps, reduced }: InstantTeamProps) {
   return (
@@ -60,7 +60,7 @@ export function InstantTeam({ team, roster, xp, levelUps, reduced }: InstantTeam
                   damping: 24,
                 }}
               >
-                <DecoFrame frame={3} tint={RARITY_HEX[def.rarity]} thickness={10} className={styles.frame}>
+                <DecoFrame frame={3} tint={RARITY_HEX[def.rarity]} thickness={8} className={styles.frame}>
                   <span
                     className={styles.portrait}
                     style={{ backgroundImage: `url("${art.url}")` }}
@@ -77,22 +77,28 @@ export function InstantTeam({ team, roster, xp, levelUps, reduced }: InstantTeam
                       />
                     ) : null}
                   </span>
-                  <span className={`num ${styles.level}`}>{instance.level}</span>
-                  {climbed > 0 ? (
-                    <span
-                      className={`display ${styles.levelUp}`}
-                      data-testid={`instant-levelup-${instanceId}`}
-                    >
-                      {climbed > 1 ? t('instant.levels', { count: climbed }) : t('instant.levelUp')}
-                    </span>
-                  ) : null}
                 </DecoFrame>
-                <span className={`display ${styles.name}`}>{translate(def.name)}</span>
-                <span className={styles.bar} aria-hidden="true">
-                  <span style={{ width: `${progress * 100}%` }} className={capped ? styles.full : ''} />
-                </span>
-                <span className={`num ${styles.xp}`}>
-                  {capped ? t('instant.maxLevel') : t('instant.xp', { amount: xp.toLocaleString('en-US') })}
+                <span className={styles.details}>
+                  <span className={`display ${styles.name}`}>{translate(def.name)}</span>
+                  <span className={styles.levelLine}>
+                    <span className={`num ${styles.level}`}>
+                      {t('instant.level', { level: instance.level })}
+                    </span>
+                    {climbed > 0 ? (
+                      <span
+                        className={`display ${styles.levelUp}`}
+                        data-testid={`instant-levelup-${instanceId}`}
+                      >
+                        {climbed > 1 ? t('instant.levels', { count: climbed }) : t('instant.levelUp')}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className={styles.bar} aria-hidden="true">
+                    <span style={{ width: `${progress * 100}%` }} className={capped ? styles.full : ''} />
+                  </span>
+                  <span className={`num ${capped ? styles.max : styles.xp}`}>
+                    {capped ? t('instant.maxLevel') : t('instant.xp', { amount: xp.toLocaleString('en-US') })}
+                  </span>
                 </span>
               </motion.div>
             </li>

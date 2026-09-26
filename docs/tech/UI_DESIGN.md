@@ -1390,21 +1390,22 @@ variants are used for Duskmere Marsh and Frostvein Pass.
 ### 5.30 Instant clear (`docs/design/CAMPAIGN.md` §10)
 - Opened by the battle setup's instant press, which has already cleared the runs: the page is what
   they wrote into the chronicle. Its own code chunk (`React.lazy`), like the Mine's — it carries the
-  result screen's spoils panel with it. Two columns in 1,320 px.
-- **The page** (`InstantLedger`), on vellum under a gold hairline: *Written into the chronicle*, the
-  stand (*Stand 1-3 · Intro*) and its encounter's name, its three stars; the quill in a gold-edged
-  diamond — the VS medal turned to the pen — rocking while it writes; *Cleared* and the runs counted
-  up a page at a time (*×10*, about a second whatever the count, never faster than a page every
-  28 ms, a page turned — `instant.write` — at each), the diamond flaring (`fx.gamefx.light_cast`)
-  on the last; then *40 ⚡ spent*, and when the energy covered fewer runs than were asked, how many
-  of how many.
-- **The team** (`InstantTeam`) under it: each champion seated, framed in their rarity, the level on
-  its plate and a *Level up* (or *+3 levels*) stamp across the top when the batch carried them past
-  one, the bar towards the next level in the result screen's XP blue, and *+2,380 XP* — *Max level*
-  in gold for a champion at their stars' cap.
-- **The spoils** on the right: the result screen's own `SpoilsPanel` — the tiles landing one after
-  another, the chronicle-level banner when one was crossed, the drops as paintings named in their
-  rarity (a dozen, then a count) and the pieces the armoury had no room for.
+  result screen's spoils panel with it. Two columns in 1,320 px: the page on the left, what it
+  paid and who took it on the right.
+- **The page** (`InstantLedger`), on vellum under a gold hairline and filling the left column:
+  *Written into the chronicle*, the stand (*Stand 1-3 · Intro*) and its encounter's name, its three
+  stars; the quill in a gold-edged diamond — the VS medal turned to the pen — rocking while it
+  writes; *Cleared* and the runs counted up a page at a time (*×10*, about a second whatever the
+  count, never faster than a page every 28 ms, a page turned — `instant.write` — at each), the
+  diamond flaring (`fx.gamefx.light_cast`) on the last; then *40 ⚡ spent*, and when the energy
+  covered fewer runs than were asked, how many of how many.
+- **The spoils**: the result screen's own `SpoilsPanel` — the tiles landing one after another, the
+  chronicle-level banner when one was crossed, the drops as paintings named in their rarity (a
+  dozen, then a count) and the pieces the armoury had no room for.
+- **The team** (`InstantTeam`) under the spoils, one tile per champion seated: the portrait framed
+  in their rarity, the name, *Level 24* with a gold *Level up* (or *+3 levels*) stamp when the batch
+  carried them past one, the bar towards the next level in the result screen's XP blue, and
+  *+2,380 XP* — *Max level* in gold, on a gold bar, for a champion at their stars' cap.
 - Footer: **Again ×10 · 40 ⚡** clears the stand once more with the same team and count, and the
   page counts again; when the energy no longer covers a run it is dead and says so. **Done** closes;
   a chronicle level the batch paid is celebrated then, never over the page.

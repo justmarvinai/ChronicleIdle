@@ -16,6 +16,7 @@ export const instant = {
   'instant.short': 'Your energy covered {count} of the {total} runs you asked for.',
   'instant.team': 'The team',
   'instant.teamHint': 'The champions you sent take the XP, as if they had fought.',
+  'instant.level': 'Level {level}',
   'instant.xp': '+{amount} XP',
   'instant.levelUp': 'Level up',
   'instant.levels': '+{count} levels',

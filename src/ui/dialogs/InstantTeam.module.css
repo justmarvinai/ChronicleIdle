@@ -1,8 +1,11 @@
-/* The team an instant clear sent (docs/tech/UI_DESIGN.md §5.30). */
+/* The team an instant clear sent (docs/tech/UI_DESIGN.md §5.30): three tiles under the spoils. */
 .team {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 12px 18px 16px;
+  background: rgba(11, 10, 13, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.28);
 }
 .heading {
   margin: 0;
@@ -17,21 +20,25 @@
 .cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
+/* One champion: the framed portrait, and beside it who they are and what the batch paid them. */
 .card {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 5px;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
   min-width: 0;
+  padding: 6px 10px 6px 6px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--rarity) 14%, transparent), transparent 85%);
 }
 .frame {
   position: relative;
-  aspect-ratio: 1;
+  width: 92px;
+  height: 92px;
 }
 .portrait {
   position: absolute;
@@ -47,39 +54,38 @@
   mask-size: cover;
   mask-position: center top;
 }
-.level {
-  position: absolute;
-  left: 4px;
-  bottom: 4px;
-  min-width: 30px;
-  padding: 1px 6px;
-  font-size: 17px;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text-1);
-  background: rgba(11, 10, 13, 0.85);
-  box-shadow: inset 0 0 0 1px var(--rarity);
-}
-/* The levels the batch carried them past, stamped across the portrait's top. */
-.levelUp {
-  position: absolute;
-  left: 50%;
-  top: 6px;
-  translate: -50% 0;
-  padding: 2px 8px;
-  font-size: 13px;
-  white-space: nowrap;
-  color: #1a1206;
-  background: linear-gradient(180deg, #fff1b8, var(--gold-3));
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 .name {
   overflow: hidden;
-  font-size: 15px;
+  font-size: 17px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  text-align: center;
   color: var(--text-1);
+}
+.levelLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.level {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+/* The levels the batch carried them past, stamped in gold beside the level. */
+.levelUp {
+  padding: 1px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  color: #1a1206;
+  background: linear-gradient(180deg, #fff1b8, var(--gold-3));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 .bar {
   display: block;
@@ -101,6 +107,10 @@
 .xp {
   font-size: 15px;
   font-weight: 700;
-  text-align: center;
   color: #a8d8ff;
+}
+.max {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold-3);
 }

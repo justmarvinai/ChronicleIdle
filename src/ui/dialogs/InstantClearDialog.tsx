@@ -27,9 +27,9 @@ export interface InstantClearDialogProps {
 
 /**
  * What an instant clear wrote into the chronicle (docs/design/CAMPAIGN.md §10, docs/tech/
- * UI_DESIGN.md §5.30): the stand and the runs counted up a page at a time on the left, the team
- * that took the XP under it, and everything the batch paid on the right — the same tiles and drops
- * a fought run's result shows. *Again* clears the stand once more with the same team and count, for
+ * UI_DESIGN.md §5.30): the stand and the runs counted up a page at a time on the left; on the
+ * right everything the batch paid — the same tiles and drops a fought run's result shows — and
+ * under it the team that took the XP. *Again* clears the stand once more with the same team and count, for
  * as long as the energy lasts; the chronicle levels it paid are celebrated once the dialog closes.
  */
 export default function InstantClearDialog({
@@ -103,36 +103,36 @@ export default function InstantClearDialog({
       }
     >
       <div className={styles.layout} key={batch}>
-        <div className={styles.left}>
-          <InstantLedger
-            stand={t('instant.stand', {
-              settlement: summary.pointer.settlement,
-              stage: summary.pointer.stage,
-              difficulty: t(`campaign.difficulty.${summary.pointer.difficulty}`),
-            })}
-            name={encounter ? translate(encounter.name) : translate(ref.settlement.name)}
-            runs={summary.runs}
-            requested={requested}
-            energySpent={summary.energySpent}
-            reduced={reduced}
-          />
+        <InstantLedger
+          stand={t('instant.stand', {
+            settlement: summary.pointer.settlement,
+            stage: summary.pointer.stage,
+            difficulty: t(`campaign.difficulty.${summary.pointer.difficulty}`),
+          })}
+          name={encounter ? translate(encounter.name) : translate(ref.settlement.name)}
+          runs={summary.runs}
+          requested={requested}
+          energySpent={summary.energySpent}
+          reduced={reduced}
+        />
+        <div className={styles.right}>
+          <div className={styles.spoils}>
+            <SpoilsPanel
+              rewards={summary.rewards}
+              firstClear={false}
+              chestThresholds={[]}
+              owedChoice={false}
+              dropped={summary.gear}
+              gearLost={summary.gearLost}
+              chronicleLevel={levelsGained > 0 ? save.profile.level : null}
+            />
+          </div>
           <InstantTeam
             team={team}
             roster={roster}
             xp={summary.championXp}
             levelUps={summary.levelUps}
             reduced={reduced}
-          />
-        </div>
-        <div className={styles.right}>
-          <SpoilsPanel
-            rewards={summary.rewards}
-            firstClear={false}
-            chestThresholds={[]}
-            owedChoice={false}
-            dropped={summary.gear}
-            gearLost={summary.gearLost}
-            chronicleLevel={levelsGained > 0 ? save.profile.level : null}
           />
         </div>
       </div>

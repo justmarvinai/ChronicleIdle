@@ -4,7 +4,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   padding: 18px 20px 20px;
   text-align: center;
   /* Vellum under ink: the page the stand is written on. */
@@ -37,9 +38,9 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 150px;
-  height: 150px;
-  margin: 6px 0 2px;
+  width: 170px;
+  height: 170px;
+  margin: 10px 0 6px;
 }
 /* A gold-edged diamond, the battle setup's VS medal turned to the pen. */
 .ring {
@@ -84,7 +85,7 @@
   color: var(--gold-2);
 }
 .count {
-  font-size: 64px;
+  font-size: 72px;
   font-weight: 700;
   line-height: 1;
   color: var(--gold-3);
