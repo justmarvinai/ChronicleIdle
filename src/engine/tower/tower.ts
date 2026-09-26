@@ -114,10 +114,8 @@ export function msUntilNextKey(keys: Pool, now: number): number | null {
 }
 
 /**
- * A grant, which may carry the pool above the cap (16/10). Nothing in the game calls this yet —
- * regeneration stops at the cap and no source hands keys out — so the over-cap case the owner
- * asked for is arithmetic and display only until one exists (`USER_QUESTIONS.md` Q49). Its test is
- * what holds the rule true in the meantime.
+ * A grant, which may carry the pool above the cap (16/10): regeneration stops at the cap, a grant
+ * does not. The gem refill (`@state/wallet`, USER_QUESTIONS.md Q49) is the grant that uses it.
  */
 export function addKeys(keys: Pool, amount: number, now: number): Pool {
   return add(keys, amount, TOWER_KEY_CAP, KEY_PERIOD_MS, now);

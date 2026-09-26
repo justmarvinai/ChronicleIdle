@@ -159,6 +159,12 @@
   opacity: 0.22;
   filter: grayscale(1) brightness(0.7);
 }
+.keysFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 .keyNext {
   font-size: 15px;
   color: var(--text-2);

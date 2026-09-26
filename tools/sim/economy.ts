@@ -18,7 +18,7 @@
 import type { CurrencyId } from '@content/currencies/types';
 import { energyCap } from '@engine/economy/energy';
 import { ECONOMY_BANDS, SCRIPTS, SCRIPT_BY_ID, type EconomyBand, type EconomyScript } from './economy-script';
-import { DAYS_PER_WEEK, shelfAudit, simulate, tierOf } from './economy-run';
+import { DAYS_PER_WEEK, refillAudit, shelfAudit, simulate, tierOf } from './economy-run';
 
 const argv = process.argv.slice(2);
 const flag = (name: string): boolean => argv.includes(`--${name}`);
@@ -187,7 +187,7 @@ function checkBands(all: Map<string, Rates>): boolean {
 function checkShelf(): boolean {
   console.log('\nGem Market — no entry may pay its own price back (MARKET.md §2)');
   let ok = true;
-  for (const row of shelfAudit()) {
+  const print = (row: { id: string; price: number; gemsBack: number; via: string }): void => {
     const pass = row.gemsBack < row.price;
     ok = ok && pass;
     const share = row.price > 0 ? Math.round((row.gemsBack / row.price) * 100) : 0;
@@ -195,7 +195,11 @@ function checkShelf(): boolean {
       `  ${pass ? '✓' : '✗'} ${row.id.padEnd(28)} ${String(row.price).padStart(5)} gems out, ` +
         `${String(row.gemsBack).padStart(4)} back (${String(share).padStart(3)} %)  — ${row.via}`,
     );
-  }
+  };
+  for (const row of shelfAudit()) print(row);
+  // The refills are the same rule on average: a key's shards are rolled, not certain (ECONOMY.md §5).
+  console.log('\nGem refills — no refill may pay its own price back on average (ECONOMY.md §5, §5.2)');
+  for (const row of refillAudit()) print(row);
   return ok;
 }
 

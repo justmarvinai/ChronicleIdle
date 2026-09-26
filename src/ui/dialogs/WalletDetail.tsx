@@ -1,5 +1,6 @@
 import { playSfx } from '@audio/index';
 import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS } from '@content/balance/energy';
+import { TOWER_KEY_REFILL_AMOUNT, TOWER_KEY_REFILL_GEMS } from '@content/balance/tower';
 import { CURRENCY_BY_ID } from '@content/currencies/index';
 import type { CurrencyId } from '@content/currencies/types';
 import type { PlaceId } from '@content/places/types';
@@ -28,11 +29,13 @@ export interface WalletDetailProps {
 /**
  * One currency in full (docs/tech/UI_DESIGN.md §5.26): what it is and how much of it the chronicle
  * holds — out of the cap, for a pool, and when the next one comes back — then where it comes from
- * and what it is for, each place with the way to it. Energy also offers the gem refill here.
+ * and what it is for, each place with the way to it. Energy and the Eternal Key also offer their
+ * gem refill here.
  */
 export function WalletDetail({ currency, save, now }: WalletDetailProps) {
   const def = CURRENCY_BY_ID[currency];
   const held = holdingOf(save, currency, now);
+  const refill = REFILLS[currency];
   return (
     <Panel
       kind="ember-wide"
@@ -57,7 +60,7 @@ export function WalletDetail({ currency, save, now }: WalletDetailProps) {
 
       <p className={styles.description}>{translate(def.description)}</p>
       <PoolLine held={held} />
-      {currency === 'energy' ? <EnergyRefill gems={save.wallet.gems} /> : null}
+      {refill ? <Refill currency={currency} refill={refill} gems={save.wallet.gems} /> : null}
 
       <ScrollArea height="100%" fade className={styles.flowsScroll ?? ''}>
         <div className={styles.flows}>
@@ -81,39 +84,66 @@ function PoolLine({ held }: { held: Holding }) {
   );
 }
 
-/** Gems for energy (ECONOMY.md §5): as often as the gems allow, and past the cap if need be. */
-function EnergyRefill({ gems }: { gems: number }) {
+/** What one gem refill trades, and the words it says it in. */
+interface RefillDef {
+  gems: number;
+  amount: number;
+  trade: 'wallet.refill.trade' | 'wallet.refill.keysTrade';
+  done: 'wallet.refill.done' | 'wallet.refill.keysDone';
+  action: 'refillEnergy' | 'refillTowerKeys';
+}
+
+/**
+ * The two pools gems can top up (ECONOMY.md §5, §5.2): energy, and the Eternal Key since the owner
+ * settled Q49. Both as often as the gems allow and past the cap, because a refill is a grant.
+ */
+const REFILLS: Partial<Record<CurrencyId, RefillDef>> = {
+  energy: {
+    gems: ENERGY_REFILL_GEMS,
+    amount: ENERGY_REFILL_AMOUNT,
+    trade: 'wallet.refill.trade',
+    done: 'wallet.refill.done',
+    action: 'refillEnergy',
+  },
+  key_eternal: {
+    gems: TOWER_KEY_REFILL_GEMS,
+    amount: TOWER_KEY_REFILL_AMOUNT,
+    trade: 'wallet.refill.keysTrade',
+    done: 'wallet.refill.keysDone',
+    action: 'refillTowerKeys',
+  },
+};
+
+function Refill({ currency, refill, gems }: { currency: CurrencyId; refill: RefillDef; gems: number }) {
   const actions = useGameStore(selectActions);
-  const short = gems < ENERGY_REFILL_GEMS;
-  const refill = (): void => {
-    const result = actions.refillEnergy();
+  const short = gems < refill.gems;
+  const buy = (): void => {
+    const result = actions[refill.action]();
     if (!result.ok) {
       playSfx('ui.error');
       return;
     }
     playSfx('reward.small');
-    actions.toast('reward', 'wallet.refill.done', { energy: ENERGY_REFILL_AMOUNT }, [
-      { currency: 'energy', amount: ENERGY_REFILL_AMOUNT },
-    ]);
+    actions.toast('reward', refill.done, { amount: refill.amount }, [{ currency, amount: refill.amount }]);
   };
   return (
     <div className={styles.refill} data-testid="wallet-refill">
       <div className={styles.trade}>
         <span className={styles.tradeSide}>
           <TintedIcon asset={CURRENCY_BY_ID.gems.icon} size={30} />
-          <span className="num">{formatAmount(ENERGY_REFILL_GEMS)}</span>
+          <span className="num">{formatAmount(refill.gems)}</span>
         </span>
         <span className={styles.tradeArrow} aria-hidden="true" />
         <span className={styles.tradeSide}>
-          <TintedIcon asset={CURRENCY_BY_ID.energy.icon} size={30} />
-          <span className="num">{formatAmount(ENERGY_REFILL_AMOUNT)}</span>
+          <TintedIcon asset={CURRENCY_BY_ID[currency].icon} tint={CURRENCY_BY_ID[currency].tint} size={30} />
+          <span className="num">{formatAmount(refill.amount)}</span>
         </span>
         <span className="sr-only">
-          {translate('wallet.refill.trade', { gems: ENERGY_REFILL_GEMS, energy: ENERGY_REFILL_AMOUNT })}
+          {translate(refill.trade, { gems: refill.gems, amount: refill.amount })}
         </span>
       </div>
       <div className={styles.refillPress}>
-        <Button variant="primary" size="sm" disabled={short} onClick={refill} data-testid="wallet-refill-buy">
+        <Button variant="primary" size="sm" disabled={short} onClick={buy} data-testid="wallet-refill-buy">
           {t('wallet.refill.buy')}
         </Button>
         <span className={styles.refillNote}>

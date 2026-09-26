@@ -105,6 +105,8 @@ export const COUNTER_KEYS = [
   // The Wallet
   /** Energy bought with gems (ECONOMY.md §5), one per refill. */
   'energy.refills',
+  /** Eternal Keys bought with gems (ECONOMY.md §5.2), one per refill. */
+  'tower.key_refills',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */

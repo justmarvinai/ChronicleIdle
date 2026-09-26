@@ -523,7 +523,7 @@ immediately by every chronicle that already qualifies.
 | `stats.ts` | `STAR_MULT`, level factor, role templates, rarity budgets, power weights |
 | `xp.ts` | champion XP curve, brew XP and the element-match multiplier, food XP by rarity and level, Tavern level gold, rank-up gold |
 | `levels.ts` | what a chronicle level pays: gold per level, the gem/Ancient/Sacred steps, the energy refill switch |
-| `energy.ts` | cap formula, regen seconds, refill price, overflow cap |
+| `energy.ts` | cap formula, regen seconds, refill price, overflow cap (the Eternal Key's refill price lives in `tower.ts`) |
 | `battle.ts` | TM rate, DEF K, variance, status constants, turn limits, `DIFFICULTY_MULT`, `stageScale` |
 | `element.ts` | strong/weak modifiers |
 | `campaign.ts` | energy per band, star and defeat limits, star-chest thresholds, plate levels, gold/XP/drop rates, material ranges, first-clear, star-chest and all-3★ milestone bundles, auto-repeat tiers |

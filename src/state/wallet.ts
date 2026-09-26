@@ -8,12 +8,14 @@
  * here rather than reading the row.
  */
 import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS } from '@content/balance/energy';
+import { TOWER_KEY_REFILL_AMOUNT, TOWER_KEY_REFILL_GEMS } from '@content/balance/tower';
 import type { CurrencyId } from '@content/currencies/types';
 import { content } from '@content/registry';
 import { ok, type Result } from '@engine/errors';
 import { addEnergy, energyCap, msUntilNextEnergy, regenerateEnergy } from '@engine/economy/energy';
 import { spend, type CurrencyChange } from '@engine/economy/wallet';
 import { bumpCounter } from '@engine/progression/counters';
+import { addKeys } from '@engine/tower/tower';
 import type { SaveGame } from '@engine/schema/save';
 import { bossView } from './bosses';
 import { towerView } from './tower';
@@ -98,6 +100,30 @@ export function applyEnergyRefill(save: SaveGame, now: number): Result<EnergyRef
     changes: [
       ...paid.value.changes,
       { currency: 'energy', delta: ENERGY_REFILL_AMOUNT, total: save.energy.value },
+    ],
+  });
+}
+
+export interface KeyRefill {
+  /** The gems out and the keys in, for the toast and the Wallet's tick. */
+  changes: CurrencyChange[];
+}
+
+/**
+ * Gems for Eternal Keys (ECONOMY.md §5.2, USER_QUESTIONS.md Q49): five keys for their price, as
+ * often as the gems allow. The keys are a grant, so they carry the pool past the ten the clock
+ * stops at (16/10); the grant brings the clock's own count up to date first, so no tick is lost.
+ */
+export function applyTowerKeyRefill(save: SaveGame, now: number): Result<KeyRefill> {
+  const paid = spend(save.wallet, [{ currency: 'gems', amount: TOWER_KEY_REFILL_GEMS }]);
+  if (!paid.ok) return paid;
+  save.wallet = paid.value.wallet;
+  save.tower.keys = addKeys(save.tower.keys, TOWER_KEY_REFILL_AMOUNT, now);
+  bumpCounter(save, 'tower.key_refills');
+  return ok({
+    changes: [
+      ...paid.value.changes,
+      { currency: 'key_eternal', delta: TOWER_KEY_REFILL_AMOUNT, total: save.tower.keys.value },
     ],
   });
 }

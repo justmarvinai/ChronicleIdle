@@ -92,7 +92,7 @@ import {
 import { applyGemPurchase, applyGoldPurchase, type PurchaseResult } from './market';
 import { applyUseItem, type UseResult } from './bag';
 import { applyLoginClaim, type LoginClaim } from './login';
-import { applyEnergyRefill, type EnergyRefill } from './wallet';
+import { applyEnergyRefill, applyTowerKeyRefill, type EnergyRefill, type KeyRefill } from './wallet';
 import type { DungeonDifficulty } from '@content/balance/dungeon';
 import {
   applyBossChestClaim,
@@ -313,6 +313,8 @@ export interface GameActions {
   claimLoginDay(): Result<LoginClaim>;
   /** Buys energy with gems in the Wallet (ECONOMY.md §5): no daily limit, refused when short. */
   refillEnergy(): Result<EnergyRefill>;
+  /** Five Eternal Keys for gems (Q49): past the ten the clock stops at, like any grant. */
+  refillTowerKeys(): Result<KeyRefill>;
   /** Spends an Eternal Key and points the save at the tower floor it bought. */
   startTowerFloor(floor: number): Result<TowerFloorStarted>;
   /** Banks a finished tower floor: the climb, the rewards and the XP. */
@@ -1400,6 +1402,24 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               events.emit({ type: 'currency.changed', changes, reason: 'energy-refill' });
               const energy = changes.find((change) => change.currency === 'energy');
               if (energy) events.emit({ type: 'energy.changed', delta: energy.delta, total: energy.total });
+              return result;
+            },
+
+            refillTowerKeys() {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<KeyRefill> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyTowerKeyRefill(state.save, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (result.ok)
+                events.emit({
+                  type: 'currency.changed',
+                  changes: result.value.changes,
+                  reason: 'tower-key-refill',
+                });
               return result;
             },
 

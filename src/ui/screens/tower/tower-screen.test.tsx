@@ -273,6 +273,13 @@ describe('the season panel', () => {
     expect(keys.filter((key) => key.className.includes('keyOn'))).toHaveLength(7);
   });
 
+  it('sends Buy keys to the Wallet, open on the Eternal Key (Q49)', async () => {
+    const user = userEvent.setup();
+    render(stage(<TowerScreen route={TOWER} />));
+    await user.click(screen.getByTestId('tower-keys-buy'));
+    expect(useGameStore.getState().ui.dialog).toEqual({ name: 'wallet', currency: 'key_eternal' });
+  });
+
   it('boards the ten keepers — beaten, next, sealed — and reads a keeper’s floor on a press', async () => {
     const user = userEvent.setup();
     climbed(12);

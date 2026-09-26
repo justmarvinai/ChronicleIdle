@@ -71,8 +71,14 @@ export const TOWER_KEY_COST = 1;
 export const TOWER_KEY_CAP = 10;
 /** One key every fifteen minutes: ten floors in a sitting, four more an hour after that. */
 export const TOWER_KEY_REGEN_SECONDS = 15 * 60;
-/** Gem price of a key and how many it buys, mirroring the energy refill. */
-export const TOWER_KEY_REFILL_GEMS = 40;
+/**
+ * The gem refill (USER_QUESTIONS.md Q49): five keys for 150 gems, as often as the gems allow and
+ * past the cap, the way energy's refill works. The price is set by what a key can win back rather
+ * than by the clock: floor 100's two shard rolls are worth about 21 gems a key at the Portal's own
+ * exchange (5 % of a 300-gem Ancient Shard, 0.65 % of a 900-gem Sacred), so at 30 gems a key the
+ * deepest farm in the tower stays a sink and never a loop. `pnpm sim:economy` audits it.
+ */
+export const TOWER_KEY_REFILL_GEMS = 150;
 export const TOWER_KEY_REFILL_AMOUNT = 5;
 
 // ---------------------------------------------------------------------------------------------

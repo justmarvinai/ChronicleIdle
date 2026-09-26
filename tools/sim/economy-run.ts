@@ -15,6 +15,12 @@ import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS, ENERGY_REGEN_SECONDS } from '
 import { FARM_TIER_BAND } from '@content/balance/idle';
 import { LOGIN_DAYS } from '@content/balance/login';
 import { SHARD_EXCHANGE } from '@content/balance/summon';
+import {
+  TOWER_BOSS_EVERY,
+  TOWER_FLOORS,
+  TOWER_KEY_REFILL_AMOUNT,
+  TOWER_KEY_REFILL_GEMS,
+} from '@content/balance/tower';
 import type { CurrencyId } from '@content/currencies/types';
 import { content } from '@content/registry';
 import { rollRunRewards } from '@engine/campaign/rewards';
@@ -27,6 +33,7 @@ import { flatMissions } from '@engine/missions/path';
 import { levelUpGold } from '@engine/progression/tavern-level';
 import { visibleQuests } from '@engine/quests/board';
 import { createRng, type Rng } from '@engine/rng/rng';
+import { shardOdds } from '@engine/tower/rewards';
 import { levelCost } from '@state/gear';
 import type { EconomyScript } from './economy-script';
 
@@ -409,4 +416,44 @@ export function shelfAudit(): readonly ShelfAudit[] {
     }
     return { id: entry.id, price: entry.price, gemsBack, via: via.join(', ') || 'nothing' };
   });
+}
+
+/** A shard's price in gems at the Portal's own exchange, or 0 when gems cannot buy it. */
+function gemsPerShard(shard: 'ancient' | 'sacred'): number {
+  const exchange = SHARD_EXCHANGE[shard];
+  return exchange && exchange.currency === 'gems' ? exchange.amount : 0;
+}
+
+/**
+ * The two gem refills (ECONOMY.md §5, §5.2), priced against what one can win back on average at the
+ * deepest farm it feeds. Energy feeds stages whose repeat runs pay no gems — first clears pay once,
+ * so they are no loop. An Eternal Key feeds the tower, whose boss floors roll shards; they are
+ * valued at the Portal's own gem exchange, and the deepest floor's odds are the worst case.
+ */
+export function refillAudit(): readonly ShelfAudit[] {
+  let best = 0;
+  let bestFloor = 0;
+  for (let floor = TOWER_BOSS_EVERY; floor <= TOWER_FLOORS; floor += TOWER_BOSS_EVERY) {
+    const odds = shardOdds(floor);
+    const perKey =
+      (odds.ancient / 100) * gemsPerShard('ancient') + (odds.sacred / 100) * gemsPerShard('sacred');
+    if (perKey > best) {
+      best = perKey;
+      bestFloor = floor;
+    }
+  }
+  return [
+    {
+      id: 'refill.energy',
+      price: ENERGY_REFILL_GEMS,
+      gemsBack: 0,
+      via: `nothing: ${ENERGY_REFILL_AMOUNT} energy farms stages, which pay no gems`,
+    },
+    {
+      id: 'refill.eternal_keys',
+      price: TOWER_KEY_REFILL_GEMS,
+      gemsBack: Math.round(best * TOWER_KEY_REFILL_AMOUNT),
+      via: `${TOWER_KEY_REFILL_AMOUNT} keys on floor ${bestFloor}, ${best.toFixed(1)} gems a key in shards on average`,
+    },
+  ];
 }

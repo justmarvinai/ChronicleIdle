@@ -17,6 +17,7 @@ export const tower = {
   'tower.keys.bar': '{held} of {cap} keys',
   'tower.keys.next': 'Next in {time}',
   'tower.keys.full': 'Full',
+  'tower.keys.buy': 'Buy keys',
   'tower.enter': 'Climb floor {floor}',
   'tower.topped': 'Every floor of the tower is behind you. It begins again when the season turns.',
   'tower.fight': 'Fight',

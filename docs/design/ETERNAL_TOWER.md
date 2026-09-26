@@ -137,9 +137,11 @@ crash or a reload mid-battle cannot buy a free attempt.
 
 **Above the cap.** Regeneration stops at ten; a *grant* does not, and a chronicle may sit at 16/10
 with the clock frozen until spending drops it back under. This is the same mechanism as energy
-(`@engine/economy/pool.ts` is that mechanism, and energy is a thin call into it). Nothing grants
-keys yet, so nobody reaches 16/10 in `0.2.0` — the display and the arithmetic are ready for the
-first source that does (`USER_QUESTIONS.md` Q49).
+(`@engine/economy/pool.ts` is that mechanism, and energy is a thin call into it). The grant that
+gets there is the **gem refill** (`0.9.10`, `USER_QUESTIONS.md` Q49): five keys for 150 gems, bought
+in the Wallet — the climb panel's *Buy keys* opens it on the Eternal Key. It is priced above what a
+key can win back on the deepest boss floor (`ECONOMY.md` §5.2), so buying keys paces a sitting
+faster and is never a way to turn gems into shards.
 
 Ten keys is ten floors in a sitting, and four more an hour after that. Over a thirty-day season
 regeneration alone is ~2,880 keys, far more than a hundred floors need: the key paces a *session*,

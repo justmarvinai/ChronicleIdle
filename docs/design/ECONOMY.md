@@ -15,11 +15,11 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 | Id | Name | Icon (asset key) | Main sources | Main sinks |
 | --- | --- | --- | --- | --- |
 | `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, Daily Rewards | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market** |
-| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards | Ancient/Sacred Shards, energy refills, **the Gem Market** |
+| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards | Ancient/Sacred Shards, energy and Eternal Key refills, **the Gem Market** |
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Gargoyle Key | stone-vine/icon-key | daily reset (2) | the Gargoyle |
 | `key_weekly` | Titan Key | stone-vine/icon-key (violet tint) | weekly reset (3) | the Titan |
-| `key_eternal` | Eternal Key | stone-vine/icon-key (gold tint) | 1 per 15 min, capped at 10 | the Eternal Tower (1 a floor) |
+| `key_eternal` | Eternal Key | stone-vine/icon-key (gold tint) | 1 per 15 min, capped at 10; the gem refill (5 for 150, past the cap) | the Eternal Tower (1 a floor) |
 | `shard_faded` | Faded Shard | spell-icons/earth-dark-crystal | gold exchange, drops, quests | summon |
 | `shard_ancient` | Ancient Shard | spell-icons/earth-sapphire-shard | first clears, chests, gems, missions | summon |
 | `shard_sacred` | Sacred Shard | spell-icons/earth-citrine-shard | Hard clears, weekly boss, missions, gems | summon |
@@ -157,9 +157,13 @@ Ten keys is ten floors in a sitting and four more an hour after that, so the key
 rather than a day. Over a thirty-day season regeneration alone is ~2,880 keys against a hundred
 floors — the cap is the constraint, never the total.
 
-Nothing grants keys in `0.2.0`: the cap is reached by waiting and the over-cap case is unreachable
-until a source exists. A gem exchange is sized in `balance/tower.ts`
-(`TOWER_KEY_REFILL_GEMS = 40` for 5) and deliberately not wired — `USER_QUESTIONS.md` Q49.
+**The gem refill** (`0.9.10`, `USER_QUESTIONS.md` Q49): five keys for 150 gems in the Wallet (the
+Tower's *Buy keys* opens it there), as often as the gems allow and — being a grant — past the cap,
+which is how a chronicle reaches 16/10. The price is set by what a key can win back, not by the
+clock: floor 100's two shard rolls are worth about 21 gems a key at the Portal's own exchange
+(5 % × 300 + 0.65 % × 900), so at 30 gems a key the deepest farm in the tower stays a sink and never
+a loop. `pnpm sim:economy` audits both refills beside the Gem Market's shelf (69 % back on average
+at floor 100 for the keys, nothing for energy).
 
 ## 6. Idle Chest
 

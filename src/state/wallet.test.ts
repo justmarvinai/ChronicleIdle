@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS } from '@content/balance/energy';
-import { TOWER_KEY_CAP } from '@content/balance/tower';
+import { TOWER_KEY_CAP, TOWER_KEY_REFILL_AMOUNT, TOWER_KEY_REFILL_GEMS } from '@content/balance/tower';
 import { content } from '@content/registry';
 import { energyCap } from '@engine/economy/energy';
 import { FixedClock } from '@engine/time/clock';
@@ -96,5 +96,38 @@ describe('an energy refill', () => {
     expect(save().wallet.gems).toBe(ENERGY_REFILL_GEMS - 1);
     expect(save().energy.value).toBe(12);
     expect(save().stats['energy.refills']).toBeUndefined();
+  });
+});
+
+describe('an Eternal Key refill (USER_QUESTIONS.md Q49)', () => {
+  it('trades gems for five keys, carrying the pool past the ten the clock stops at', () => {
+    const { save, store, actions } = chronicle({ gems: TOWER_KEY_REFILL_GEMS * 2 });
+    store.setState((state) => {
+      if (state.save) state.save.tower.keys = { value: TOWER_KEY_CAP, lastTickAt: T0 };
+      return state;
+    });
+    const result = actions.refillTowerKeys();
+    expect(result.ok).toBe(true);
+    expect(save().wallet.gems).toBe(TOWER_KEY_REFILL_GEMS);
+    // 15 / 10: a grant is not the clock, and the owner asked for exactly this.
+    expect(save().tower.keys.value).toBe(TOWER_KEY_CAP + TOWER_KEY_REFILL_AMOUNT);
+    expect(holdingOf(save(), 'key_eternal', T0).amount).toBe(TOWER_KEY_CAP + TOWER_KEY_REFILL_AMOUNT);
+    expect(save().stats['tower.key_refills']).toBe(1);
+    if (result.ok)
+      expect(result.value.changes).toContainEqual({
+        currency: 'key_eternal',
+        delta: TOWER_KEY_REFILL_AMOUNT,
+        total: TOWER_KEY_CAP + TOWER_KEY_REFILL_AMOUNT,
+      });
+  });
+
+  it('is refused without the gems, and writes nothing', () => {
+    const { save, actions } = chronicle({ gems: TOWER_KEY_REFILL_GEMS - 1 });
+    const before = save().tower.keys;
+    const result = actions.refillTowerKeys();
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('insufficient_currency');
+    expect(save().wallet.gems).toBe(TOWER_KEY_REFILL_GEMS - 1);
+    expect(save().tower.keys).toEqual(before);
   });
 });

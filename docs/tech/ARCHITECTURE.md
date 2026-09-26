@@ -295,7 +295,8 @@ purchases), `state/bag.ts` (`applyUseItem` and an exhaustive switch over the six
 cannot drift apart in what they can give. `state/wallet.ts` is the Wallet's: `holdingOf` reads a
 holding from wherever the currency lives — energy and the Eternal Key from their pools, the two boss
 keys as the period's allowance less what it has spent, the rest from their wallet rows — and
-`applyEnergyRefill` buys energy with gems (`ECONOMY.md` §5).
+`applyEnergyRefill` and `applyTowerKeyRefill` buy energy and Eternal Keys with gems (`ECONOMY.md`
+§5, §5.2) — the keys through `addKeys`, the pool's grant, so they pass the cap.
 
 ### 3.8 Time
 

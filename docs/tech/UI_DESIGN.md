@@ -742,7 +742,8 @@ stone slabs in a `ScrollArea`, *reversed* so floor 1 sits at the foot and the cl
 - ***Eternal Keys***:
   - the count (**ember when over the cap**, because 16 / 10 is worth seeing);
   - a row of ten kit keys, one lit per key held;
-  - *Next in 14m 35s*, or *Full*.
+  - *Next in 14m 35s*, or *Full*, and beside it **Buy keys**, which opens the Wallet on the Eternal
+    Key and its gem refill (`0.9.10`, Q49).
 - ***The keepers***: a board of the ten keepers' floors with their shard odds.
   - Those beaten this season are lit gold with a trophy; the next one burns ember; the rest wait
     dark.
@@ -1327,9 +1328,10 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   two to a line, each with its door's glyph. A place with a way in is itself the press — the whole
   row, with *Go ›* at its end — and it closes the Wallet on the way; a place not yet open says
   *Locked*; the clock, a level-up and the resets are only named.
-- **Energy's refill lives here** (ECONOMY.md §5): *50 [gems] › 100 [energy]* and **Refill** — as
-  often as the gems allow, past the cap if need be; without the gems the press is dead and says
-  *Not enough gems*. A refill toasts what it added. (The Eternal Key's exchange is not offered:
-  `USER_QUESTIONS.md` Q49.)
+- **The two refills live here** (ECONOMY.md §5, §5.2): energy's *50 [gems] › 100 [energy]* and,
+  since `0.9.10` (`USER_QUESTIONS.md` Q49), the Eternal Key's *150 [gems] › 5 [keys]*, each with
+  **Refill** — as often as the gems allow, past the cap if need be; without the gems the press is
+  dead and says *Not enough gems*. A refill toasts what it added. The Tower's own **Buy keys**
+  opens the Wallet on the Eternal Key, so the price is only ever stated in one place.
 - **It opens where it was asked for.** The **+** on a purse in the top bar opens the Wallet on that
   currency; anything else opens it on Gold.

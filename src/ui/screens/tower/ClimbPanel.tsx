@@ -3,7 +3,10 @@ import { imageUrl } from '@assets/manifest';
 import { TOWER_FLOORS } from '@content/balance/tower';
 import { formatDuration } from '@engine/time/clock';
 import { t } from '@i18n/index';
+import { selectActions } from '@state/selectors';
+import { useGameStore } from '@state/store';
 import type { TowerView } from '@state/tower';
+import { Button } from '@ui/components/Button/Button';
 import { Panel } from '@ui/components/Frame/Panel';
 import { KeeperBoard } from './KeeperBoard';
 import styles from './ClimbPanel.module.css';
@@ -25,6 +28,7 @@ export interface ClimbPanelProps {
  * per key held; and the tower's ten keepers, each a press away in the dossier.
  */
 export function ClimbPanel({ view, selected, onLook }: ClimbPanelProps) {
+  const actions = useGameStore(selectActions);
   const radius = (RING - RING_STROKE) / 2;
   const circumference = 2 * Math.PI * radius;
   const climbed = Math.min(1, view.highestFloor / TOWER_FLOORS);
@@ -113,11 +117,22 @@ export function ClimbPanel({ view, selected, onLook }: ClimbPanelProps) {
               />
             ))}
           </ol>
-          <span className={`num ${styles.keyNext}`} data-testid="tower-key-next">
-            {view.msToKey === null
-              ? t('tower.keys.full')
-              : t('tower.keys.next', { time: formatDuration(view.msToKey) })}
-          </span>
+          <div className={styles.keysFoot}>
+            <span className={`num ${styles.keyNext}`} data-testid="tower-key-next">
+              {view.msToKey === null
+                ? t('tower.keys.full')
+                : t('tower.keys.next', { time: formatDuration(view.msToKey) })}
+            </span>
+            {/* The gem refill lives in the Wallet, with the price and what a key is worth. */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => actions.openDialog({ name: 'wallet', currency: 'key_eternal' })}
+              data-testid="tower-keys-buy"
+            >
+              {t('tower.keys.buy')}
+            </Button>
+          </div>
         </section>
 
         <KeeperBoard floors={view.floors} selected={selected} onLook={onLook} />

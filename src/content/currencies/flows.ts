@@ -55,7 +55,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   },
   key_daily: { sources: ['daily_reset'], uses: ['gargoyle'] },
   key_weekly: { sources: ['weekly_reset'], uses: ['titan'] },
-  // Nothing grants keys yet (USER_QUESTIONS.md Q49): the clock is the only source.
+  // The clock, and the Wallet's own gem refill (Q49), which is a press there rather than a place.
   key_eternal: { sources: ['regeneration'], uses: ['tower'] },
   // The Portal's own exchange trades gold for Faded Shards and gems for the two above them.
   shard_faded: {

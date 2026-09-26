@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS } from '@content/balance/energy';
+import { TOWER_KEY_CAP, TOWER_KEY_REFILL_AMOUNT, TOWER_KEY_REFILL_GEMS } from '@content/balance/tower';
 import { energyCap } from '@engine/economy/energy';
 import { useGameStore } from '@state/store';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
@@ -89,6 +90,24 @@ describe('the Wallet', () => {
     expect(save().energy.value).toBe(40 + ENERGY_REFILL_AMOUNT);
     expect(screen.getByTestId('wallet-held')).toHaveTextContent(
       `${40 + ENERGY_REFILL_AMOUNT} / ${energyCap(LEVEL)}`,
+    );
+  });
+
+  it('buys Eternal Keys with gems, past the ten the clock stops at (Q49)', async () => {
+    const user = userEvent.setup();
+    act(() => {
+      useGameStore.setState((state) => {
+        if (state.save) state.save.tower.keys = { value: TOWER_KEY_CAP, lastTickAt: Date.now() };
+        return state;
+      });
+    });
+    render(stage(<WalletDialog currency="key_eternal" onClose={() => undefined} />));
+    expect(screen.getByTestId('wallet-refill')).toHaveTextContent(String(TOWER_KEY_REFILL_GEMS));
+    await user.click(screen.getByTestId('wallet-refill-buy'));
+    expect(save().wallet.gems).toBe(500 - TOWER_KEY_REFILL_GEMS);
+    expect(save().tower.keys.value).toBe(TOWER_KEY_CAP + TOWER_KEY_REFILL_AMOUNT);
+    expect(screen.getByTestId('wallet-held')).toHaveTextContent(
+      `${TOWER_KEY_CAP + TOWER_KEY_REFILL_AMOUNT} / ${TOWER_KEY_CAP}`,
     );
   });
 
