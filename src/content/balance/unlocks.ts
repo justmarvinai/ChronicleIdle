@@ -10,6 +10,7 @@ export const FEATURE_IDS = [
   'summoning',
   'quests_daily',
   'idle_chest',
+  'mine',
   'missions',
   'tavern_rank',
   'forge',
@@ -51,6 +52,11 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
   summoning: 4,
   quests_daily: 5,
   idle_chest: 5,
+  /**
+   * The Mine (MINE.md §1): the one level between the daily board (5) and the Tavern's rank-up (7)
+   * that opens nothing else, so its lesson has the hub to itself. Its first level is dug already.
+   */
+  mine: 6,
   missions: 1,
   tavern_rank: 7,
   forge: 8,

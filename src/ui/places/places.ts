@@ -156,6 +156,13 @@ export const PLACES: Readonly<Record<PlaceId, PlaceDef>> = {
     feature: 'idle_chest',
     way: { dialog: { name: 'idle-chest' } },
   },
+  mine: {
+    name: 'place.mine.name',
+    to: 'place.mine.to',
+    glyph: 'glyph.pickaxe',
+    feature: 'mine',
+    way: { dialog: { name: 'mine' } },
+  },
   regeneration: {
     name: 'place.regeneration.name',
     to: 'place.regeneration.name',

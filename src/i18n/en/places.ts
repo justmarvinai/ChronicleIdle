@@ -40,6 +40,8 @@ export const places = {
   'place.login.to': 'Daily Rewards',
   'place.idle_chest.name': 'Idle Chest',
   'place.idle_chest.to': 'the Idle Chest',
+  'place.mine.name': 'The Mine',
+  'place.mine.to': 'the Mine',
   'place.regeneration.name': 'Comes back over time',
   'place.level_up.name': 'Chronicle level-ups',
   'place.daily_reset.name': 'Every day, at the reset',

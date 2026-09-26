@@ -111,6 +111,8 @@ export type DialogRoute =
   | { name: 'bag-target'; item: string }
   /** The Idle Chest at the docks (`ECONOMY.md` §6). */
   | { name: 'idle-chest' }
+  /** The Mine under the market square (`MINE.md`): its store, its level and the next one down. */
+  | { name: 'mine' }
   /** A boss's mechanics sheet: its kit, what never lands on it, and how to fight it. */
   | { name: 'boss-sheet'; bossId: string }
   | { name: 'level-up' }

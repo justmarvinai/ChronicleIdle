@@ -171,9 +171,10 @@ export const FIRST_CLEAR: Readonly<Record<Difficulty, { stage: RewardBundle; bos
 
 /**
  * Star chests at 10 / 20 / 30 stars in a settlement, per difficulty (CAMPAIGN.md §7). The
- * 20-star chest also carries Glyph Sigils: their designed homes are the weekly boss, the
- * missions and the weekly quests (`ECONOMY.md` §2), none of which exist yet, and a Forge whose
- * set chooser can never be used is not a finished Forge (`USER_QUESTIONS.md` Q38).
+ * 20-star chest also carries Glyph Sigils. They began as the interim supply of `USER_QUESTIONS.md`
+ * Q38, before the weekly boss, the boards and the Path existed; they stayed when those arrived,
+ * because the owner signed off the economy as measured with them in it (Q45). The steady supply
+ * the Forge was short of is the Mine's, from its fourth level (`MINE.md` §2).
  */
 export const STAR_CHESTS: Readonly<Record<Difficulty, readonly RewardBundle[]>> = {
   intro: [

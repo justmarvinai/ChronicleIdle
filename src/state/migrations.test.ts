@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { nextStage } from '@engine/campaign/progress';
 import { createNewGame } from '@engine/save/new-game';
+import { mineLevel, mineStore } from '@engine/mine/index';
 import { SAVE_VERSION } from '@engine/schema/save';
 import { migrateSave } from './migrations';
 import { titlesOf } from './progression';
@@ -344,6 +345,21 @@ describe('migrateSave', () => {
     for (const period of ['daily', 'weekly'] as const)
       expect(save.quests[period].baseline['boss.fights.boss.gravemaw']).toBeUndefined();
     expect(save.missions.baseline['boss.fights.boss.gravemaw']).toBeUndefined();
+  });
+
+  it('gives a v19 chronicle the Mine a new one gets: level 1, its first store full (19 → 20)', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v19.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    expect(fixture['mine'], 'the v19 fixture predates the Mine').toBeUndefined();
+    const { save: migrated } = migrateSave(fixture);
+    expect(migrated.mine.level).toBe(1);
+    expect(migrated.mine.carry).toEqual({ gems: 0, sigils: 0 });
+    // Stamped from the chronicle's last save, a store's length back: full the moment it opens.
+    const store = mineStore(migrated.mine, fixture['updatedAt'] as number);
+    expect(store.full).toBe(true);
+    expect(store.gems).toBe(mineLevel(1).storeGems);
   });
 
   it('runs migration steps in order', () => {

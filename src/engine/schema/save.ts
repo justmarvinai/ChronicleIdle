@@ -10,8 +10,9 @@ import { GEAR_SOURCES } from '@content/balance/gear';
 import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_STATS, MAX_SUBSTATS } from '@content/balance/gear';
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
+import { MINE_MAX_LEVEL } from '@content/balance/mine';
 
-export const SAVE_VERSION = 19 as const;
+export const SAVE_VERSION = 20 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -346,6 +347,17 @@ export const loginSchema = z.object({
   lastKey: z.string(),
 });
 
+/**
+ * The Mine (MINE.md §6): the level dug, when its store was last emptied, and the fractions of a
+ * gem or a Sigil the last collection could not pay whole. What the store holds is derived from
+ * those and the clock (CLAUDE.md §5.5), never stored.
+ */
+export const mineSchema = z.object({
+  level: z.number().int().min(1).max(MINE_MAX_LEVEL),
+  collectedAt: z.number().int().nonnegative(),
+  carry: z.object({ gems: z.number().min(0).lt(1), sigils: z.number().min(0).lt(1) }),
+});
+
 export const saveSchemaV13 = z.object({
   saveVersion: z.literal(13),
   createdAt: z.number().int().nonnegative(),
@@ -443,7 +455,9 @@ export type SaveGameV16 = z.infer<typeof saveSchemaV16>;
 export type SaveGameV17 = z.infer<typeof saveSchemaV17>;
 export type SaveGameV18 = z.infer<typeof saveSchemaV18>;
 export type SaveGameV19 = z.infer<typeof saveSchemaV19>;
-export type SaveGame = SaveGameV19;
+export type SaveGameV20 = z.infer<typeof saveSchemaV20>;
+export type SaveGame = SaveGameV20;
+export type MineSave = z.infer<typeof mineSchema>;
 export type PalaceSave = z.infer<typeof palaceSchema>;
 export type BrewerySave = z.infer<typeof brewerySchema>;
 export type DungeonsSave = z.infer<typeof dungeonsSchema>;
@@ -469,8 +483,14 @@ export const saveSchemaV19 = saveSchemaV18.extend({
   login: loginSchema,
 });
 
+/** v20 adds the Mine; everything else is v19's. */
+export const saveSchemaV20 = saveSchemaV19.extend({
+  saveVersion: z.literal(20),
+  mine: mineSchema,
+});
+
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV19;
+export const saveSchema = saveSchemaV20;
 
 /** A Palace nobody has spent in: no nodes, no points, and nothing paid yet. */
 export function emptyPalace(): PalaceSave {

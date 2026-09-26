@@ -17,8 +17,15 @@
  */
 import type { CurrencyId } from '@content/currencies/types';
 import { energyCap } from '@engine/economy/energy';
-import { ECONOMY_BANDS, SCRIPTS, SCRIPT_BY_ID, type EconomyBand, type EconomyScript } from './economy-script';
-import { DAYS_PER_WEEK, refillAudit, shelfAudit, simulate, tierOf } from './economy-run';
+import {
+  ECONOMY_BANDS,
+  MINE_DIG_DAYS_MAX,
+  SCRIPTS,
+  SCRIPT_BY_ID,
+  type EconomyBand,
+  type EconomyScript,
+} from './economy-script';
+import { DAYS_PER_WEEK, mineAudit, refillAudit, shelfAudit, simulate, tierOf } from './economy-run';
 
 const argv = process.argv.slice(2);
 const flag = (name: string): boolean => argv.includes(`--${name}`);
@@ -203,6 +210,37 @@ function checkShelf(): boolean {
   return ok;
 }
 
+/**
+ * The Mine, script by script: the level its chronicle has dug, and what digging it there cost in
+ * days of what the script has spare of each currency (MINE.md §4). A level priced past
+ * `MINE_DIG_DAYS_MAX` days of a surplus is a wall rather than a goal.
+ */
+function checkMine(all: Map<string, Rates>): boolean {
+  console.log(
+    `\nThe Mine — digging each script's level, in days of its surplus (MINE.md §4, ≤ ${MINE_DIG_DAYS_MAX})`,
+  );
+  let ok = true;
+  for (const script of PLAYERS) {
+    const computed = all.get(script.id);
+    if (!computed) continue;
+    const spare = (currency: CurrencyId): number => {
+      const { income = 0, spend = 0 } = computed.perDay.get(currency) ?? {};
+      return Math.max(0, income - spend);
+    };
+    const audit = mineAudit(script, spare);
+    const cells = audit.lines.map((line) => {
+      const pass = line.days <= MINE_DIG_DAYS_MAX;
+      ok = ok && pass;
+      return `${pass ? '' : '✗ '}${line.currency.replace('mat_', '')} ${money(line.cost)} = ${line.days.toFixed(1)} d`;
+    });
+    const pass = audit.lines.every((line) => line.days <= MINE_DIG_DAYS_MAX);
+    console.log(
+      `  ${pass ? '✓' : '✗'} ${script.id.padEnd(12)} level ${String(audit.level).padStart(2)}  ${cells.join(' · ')}`,
+    );
+  }
+  return ok;
+}
+
 function main(): void {
   console.log(`\nEconomy ledger — ${DAYS} days (${(DAYS / DAYS_PER_WEEK).toFixed(2)} weeks) per script`);
   const all = new Map<string, Rates>();
@@ -213,11 +251,14 @@ function main(): void {
   }
   const bands = checkBands(all);
   const shelf = checkShelf();
-  if (flag('strict') && !(bands && shelf)) {
+  const mine = checkMine(all);
+  if (flag('strict') && !(bands && shelf && mine)) {
     console.error(
-      bands
-        ? '\nAn entry of the Gem Market pays back what it costs.'
-        : '\nA band in tools/sim/economy-script.ts broke.',
+      !bands
+        ? '\nA band in tools/sim/economy-script.ts broke.'
+        : !shelf
+          ? '\nAn entry of the Gem Market pays back what it costs.'
+          : `\nA level of the Mine costs more than ${MINE_DIG_DAYS_MAX} days of a script's surplus.`,
     );
     process.exit(1);
   }

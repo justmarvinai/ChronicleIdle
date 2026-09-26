@@ -93,6 +93,7 @@ import { applyGemPurchase, applyGoldPurchase, type PurchaseResult } from './mark
 import { applyUseItem, type UseResult } from './bag';
 import { applyLoginClaim, type LoginClaim } from './login';
 import { applyEnergyRefill, applyTowerKeyRefill, type EnergyRefill, type KeyRefill } from './wallet';
+import { applyMineCollect, applyMineUpgrade, type MineCollectSummary, type MineUpgradeSummary } from './mine';
 import type { DungeonDifficulty } from '@content/balance/dungeon';
 import {
   applyBossChestClaim,
@@ -277,6 +278,10 @@ export interface GameActions {
   setPortalSelection(patch: Partial<{ bannerId: string; shard: ShardId }>): void;
   /** Opens the Idle Chest (`ECONOMY.md` §6): its hours are paid and it starts filling again. */
   claimIdleChest(): Result<IdleClaimSummary>;
+  /** Empties the Mine's store into the wallet (`MINE.md` §1): whole units paid, fractions kept. */
+  collectMine(): Result<MineCollectSummary>;
+  /** Digs the Mine a level deeper, settling its store at the old rate first (`MINE.md` §1). */
+  upgradeMine(): Result<MineUpgradeSummary>;
   /** The Glorious Palace: lights one node, if it is reachable and the points are there. */
   unlockPalaceNode(nodeId: string): Result<PalaceUnlock>;
   /** Darkens the whole Palace and hands every spent point back (free, any time). */
@@ -1202,6 +1207,41 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
               events.emit({ type: 'idle.claimed', hours: result.value.hours, tier: result.value.tier });
               // The chest can carry a chronicle over a level; the celebration is the shared one.
               noteLevelUp(result.value.levelUp, 'idle');
+              return result;
+            },
+
+            collectMine() {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<MineCollectSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyMineCollect(state.save, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const { changes, gems, sigils } = result.value;
+              events.emit({ type: 'currency.changed', changes, reason: 'mine' });
+              events.emit({ type: 'mine.collected', gems, sigils });
+              return result;
+            },
+
+            upgradeMine() {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: Result<MineUpgradeSummary> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = applyMineUpgrade(state.save, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              events.emit({
+                type: 'currency.changed',
+                changes: result.value.changes,
+                reason: 'mine-upgrade',
+              });
+              events.emit({ type: 'mine.upgraded', level: result.value.level });
               return result;
             },
 

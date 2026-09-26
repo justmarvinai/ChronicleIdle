@@ -20,6 +20,7 @@ import {
 } from '@content/balance/dungeon';
 import { DISMANTLE_GOLD_REFUND, DISMANTLE_YIELD } from '@content/balance/gear';
 import { IDLE_CHANCES, IDLE_ENERGY_PER_HOUR, IDLE_GOLD_BASE, IDLE_MATERIALS } from '@content/balance/idle';
+import { MINE_LEVELS } from '@content/balance/mine';
 import { GOLD_MARKET_POOL } from '@content/balance/market';
 import { SHARD_CURRENCY, SHARD_EXCHANGE, SHARD_IDS } from '@content/balance/summon';
 import { TOWER_FLOORS } from '@content/balance/tower';
@@ -85,6 +86,12 @@ function whatEachPlacePays(): Paid {
   for (const roll of IDLE_CHANCES) {
     if (roll.currency) pay('idle_chest', roll.currency);
     if (roll.brew) for (const element of elements) pay('idle_chest', BREW_OF[element]);
+  }
+
+  // The Mine (MINE.md §3): gems at every level, Glyph Sigils from the level that first digs them.
+  for (const level of MINE_LEVELS) {
+    if (level.gemsPerDay > 0) pay('mine', 'gems');
+    if (level.sigilsPerDay > 0) pay('mine', 'mat_glyph_sigil');
   }
 
   // The two bosses' chests.

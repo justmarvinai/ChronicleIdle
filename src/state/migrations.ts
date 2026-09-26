@@ -6,6 +6,7 @@
 import { TUTORIAL_CHAPTERS } from '@content/tutorial/index';
 import { SaveError } from '@engine/errors';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
+import { newMine } from '@engine/mine/index';
 import { stepFeatureGates } from '@engine/tutorial/index';
 import { TOWER_KEY_CAP } from '@content/balance/tower';
 import { BOSS_STAGE_NUMBER, SETTLEMENT_COUNT } from '@content/balance/campaign';
@@ -388,6 +389,22 @@ export const MIGRATIONS: readonly MigrationStep[] = [
       boosts: {},
       market: { hour: -1, taken: {}, bundles: [] },
       login: { claimed: 0, lastKey: '' },
+    }),
+  },
+  {
+    from: 19,
+    to: 20,
+    /*
+     * The Mine (0.10.0). A chronicle that predates it gets the Mine a new one gets: level 1, its
+     * first store already full, stamped from the chronicle's last save. Nothing is back-paid for
+     * the months the Mine did not exist — a store holds half a day at most, and a veteran opening
+     * the update to a vein already dug to level 7 would skip the part of the Mine that is a
+     * decision. What they do find is the first store waiting, which is what the lesson collects.
+     */
+    migrate: (raw) => ({
+      ...raw,
+      saveVersion: 20,
+      mine: newMine(typeof raw['updatedAt'] === 'number' ? raw['updatedAt'] : 0),
     }),
   },
 ];

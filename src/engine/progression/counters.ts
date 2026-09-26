@@ -54,6 +54,14 @@ export const COUNTER_KEYS = [
   // The Idle Chest
   'idle.claims',
   'idle.hours',
+  // The Mine (MINE.md §7)
+  /** Collections the player asked for; the one an upgrade makes on its way down is not one. */
+  'mine.collections',
+  /** Gems and Glyph Sigils the Mine has paid, by whichever collection paid them. */
+  'mine.gems',
+  'mine.sigils',
+  /** Levels dug, which is the number the Mine's long goal is measured in. */
+  'mine.upgrades',
   // The period bosses
   'boss.fights',
   'boss.damage',

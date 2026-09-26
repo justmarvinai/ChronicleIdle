@@ -25,6 +25,7 @@ export const PLACE_IDS = [
   'missions',
   'login',
   'idle_chest',
+  'mine',
   'regeneration',
   'level_up',
   'daily_reset',

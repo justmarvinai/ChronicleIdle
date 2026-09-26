@@ -16,7 +16,8 @@ export interface CurrencyFlow {
 
 export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   // Stage drops, the bosses, the chest's hourly purse, the Tower and the Dungeons, both boards and
-  // the Path; the Gem Market's bundles carry some, and dismantling refunds a share.
+  // the Path; the Gem Market's bundles carry some, and dismantling refunds a share. Digging the Mine
+  // deeper is paid in gold before anything else.
   gold: {
     sources: [
       'campaign',
@@ -32,11 +33,22 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'market',
       'forge',
     ],
-    uses: ['tavern', 'armoury', 'forge', 'portal', 'market'],
+    uses: ['tavern', 'armoury', 'forge', 'portal', 'market', 'mine'],
   },
-  // First clears and star chests, the boards, the Path, the bosses, every fifth level.
+  // First clears and star chests, the boards, the Path, the bosses, every fifth level — and the Mine,
+  // which digs a few every hour of the day (MINE.md).
   gems: {
-    sources: ['campaign', 'quests', 'missions', 'gargoyle', 'titan', 'level_up', 'login', 'idle_chest'],
+    sources: [
+      'campaign',
+      'quests',
+      'missions',
+      'gargoyle',
+      'titan',
+      'level_up',
+      'login',
+      'mine',
+      'idle_chest',
+    ],
     uses: ['portal', 'market'],
   },
   energy: {
@@ -131,25 +143,27 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
     uses: ['tavern'],
   },
   tome_mythic: { sources: ['titan', 'missions'], uses: ['tavern'] },
+  // The Forge's metals are what the Mine is dug with (MINE.md §4): the pile that had nowhere else to go.
   mat_scrap_iron: {
     sources: ['campaign', 'forge', 'idle_chest', 'quests', 'missions', 'login', 'market'],
-    uses: ['forge'],
+    uses: ['forge', 'mine'],
   },
   mat_ember_alloy: {
     sources: ['campaign', 'forge', 'gargoyle', 'idle_chest', 'missions', 'quests', 'login', 'market'],
-    uses: ['forge'],
+    uses: ['forge', 'mine'],
   },
   mat_starsteel: {
     sources: ['campaign', 'forge', 'titan', 'gargoyle', 'idle_chest', 'missions', 'login', 'market'],
-    uses: ['forge'],
+    uses: ['forge', 'mine'],
   },
-  mat_arcane_dust: { sources: ['campaign', 'forge', 'quests', 'login', 'market'], uses: ['forge'] },
+  mat_arcane_dust: { sources: ['campaign', 'forge', 'quests', 'login', 'market'], uses: ['forge', 'mine'] },
   mat_refining_core: {
     sources: ['campaign', 'forge', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
-    uses: ['forge'],
+    uses: ['forge', 'mine'],
   },
+  // The Mine's deeper levels are the one steady supply (MINE.md §2); everything else is a chest.
   mat_glyph_sigil: {
-    sources: ['campaign', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
+    sources: ['campaign', 'mine', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
     uses: ['forge'],
   },
 };

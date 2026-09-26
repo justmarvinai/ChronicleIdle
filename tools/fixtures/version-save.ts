@@ -92,6 +92,10 @@ const COUNTERS: Readonly<Record<string, number>> = {
   'quests.daily.days5': 15,
   'missions.claimed': CHAPTERS_DONE * 12,
   'missions.chests': CHAPTERS_DONE,
+  'mine.collections': 41,
+  'mine.gems': 388,
+  'mine.sigils': 3,
+  'mine.upgrades': 4,
 };
 
 async function main(): Promise<void> {
@@ -253,6 +257,8 @@ async function main(): Promise<void> {
       ],
     },
     idle: { lastClaimAt: NOW - 7_200_000 },
+    // The Mine dug to level 5, part-way through a store, with fractions carried from the last visit.
+    mine: { level: 5, collectedAt: NOW - 5 * 3_600_000, carry: { gems: 0.4, sigils: 0.7 } },
     bosses: {
       'boss.gargoyle': {
         periodKey: base.periods.lastDailyKey,

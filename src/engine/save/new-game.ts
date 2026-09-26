@@ -15,6 +15,7 @@ import {
   type SaveGame,
   type Settings,
 } from '@engine/schema/save';
+import { newMine } from '@engine/mine/index';
 import { dailyKey, weeklyKey } from '@engine/time/clock';
 import { emptyTower } from '@engine/tower/tower';
 
@@ -82,5 +83,7 @@ export function createNewGame({ name, now, seedRoot, settings }: NewGameInput): 
     palace: emptyPalace(),
     brewery: emptyBrewery(),
     dungeons: emptyDungeons(),
+    // The Mine opens at level 6 already dug to its first level, its first store full (MINE.md §1).
+    mine: newMine(now),
   };
 }

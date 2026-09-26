@@ -37,6 +37,9 @@ export type DomainEvent =
       hours: number;
       tier: number;
     }
+  /** The Mine's store was emptied, or the Mine dug a level deeper (MINE.md). */
+  | { type: 'mine.collected'; gems: number; sigils: number }
+  | { type: 'mine.upgraded'; level: number }
   | {
       type: 'boss.fightFinished';
       bossId: string;

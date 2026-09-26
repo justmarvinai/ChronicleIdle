@@ -27,6 +27,11 @@ export interface EconomyScript {
   logins: number;
   /** Idle-chest claims per day (the chest holds a band of hours, so more claims is not more gold). */
   idleClaims: number;
+  /**
+   * Visits to the Mine a day, spread over the day's sittings. Its store is capped too (MINE.md §3),
+   * so a single visit loses the hours past a full store — which is the casual player's week.
+   */
+  mineVisits: number;
   /** Keys spent on the daily boss, and on the weekly one on its day. */
   dailyBossKeys: number;
   weeklyBossKeys: number;
@@ -90,6 +95,7 @@ export const MID_GAME: EconomyScript = {
   // drop of the day's regen is the ceiling, and `DEDICATED` below is what that ceiling pays.
   logins: 2,
   idleClaims: 2,
+  mineVisits: 2,
   dailyBossKeys: 3,
   weeklyBossKeys: 3,
   // Every run, on the mid-game stage: brews are the reason to open the mode at all.
@@ -122,6 +128,7 @@ export const CASUAL: EconomyScript = {
   label: 'mid-game, casual: one sitting a day, one chest, one boss key',
   logins: 1,
   idleClaims: 1,
+  mineVisits: 1,
   dailyBossKeys: 1,
   weeklyBossKeys: 1,
   breweryRunsPerDay: 6,
@@ -150,6 +157,7 @@ export const DEDICATED: EconomyScript = {
   label: 'mid-game, dedicated: four sittings a day, every drop of the regen spent',
   logins: 4,
   idleClaims: 3,
+  mineVisits: 3,
   // The ceiling: the day's twenty runs on the deepest stage a finished roster farms.
   breweryRunsPerDay: 20,
   breweryStage: 4,
@@ -216,7 +224,7 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     side: 'income',
     min: 1_150,
     max: 1_950,
-    why: 'ECONOMY.md §7: ~1,670 gems a week — ~600 the two bosses, ~240 the Rewards Calendar',
+    why: 'ECONOMY.md §7: ~1,830 gems a week — ~600 the two bosses, ~240 the Rewards Calendar, ~150 the Mine',
   },
   {
     script: 'mid_active',
@@ -322,6 +330,25 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
   },
   {
     script: 'mid_active',
+    line: 'mine',
+    currency: 'gems',
+    per: 'week',
+    side: 'income',
+    min: 100,
+    max: 250,
+    why: 'MINE.md §2: a steady tenth of an active week, collected morning and evening — never a second boss',
+  },
+  {
+    script: 'casual',
+    line: 'mine',
+    currency: 'gems',
+    per: 'week',
+    side: 'income',
+    min: 80,
+    why: 'MINE.md §3: one visit a day still takes a whole store, so the Mine is worth a light player’s while',
+  },
+  {
+    script: 'mid_active',
     line: 'gold market',
     currency: 'gold',
     per: 'day',
@@ -330,3 +357,11 @@ export const ECONOMY_BANDS: readonly EconomyBand[] = [
     why: 'MARKET.md §1: the stall is where a day of surplus gold goes, so a budget this size must find things to buy — if it cannot, the pool is priced out of reach',
   },
 ];
+
+/**
+ * The most days of a script's spare gold — the day's net, plus what it leaves at the stall — and of
+ * each material's net income that digging its Mine to the level its chronicle opens may take
+ * (MINE.md §4). The Mine is a goal, not a wall: a level that asked for a month's surplus would be
+ * priced for a player who does nothing else, and this is the check that says so.
+ */
+export const MINE_DIG_DAYS_MAX = 30;

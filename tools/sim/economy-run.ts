@@ -13,6 +13,7 @@
 import { ENERGY_COST, STAGES_PER_SETTLEMENT, globalStageIndex } from '@content/balance/campaign';
 import { ENERGY_REFILL_AMOUNT, ENERGY_REFILL_GEMS, ENERGY_REGEN_SECONDS } from '@content/balance/energy';
 import { FARM_TIER_BAND } from '@content/balance/idle';
+import { MINE_LEVELS } from '@content/balance/mine';
 import { LOGIN_DAYS } from '@content/balance/login';
 import { SHARD_EXCHANGE } from '@content/balance/summon';
 import {
@@ -30,6 +31,7 @@ import { breweryRewards, opensOn } from '@engine/brewery/index';
 import { craftCost } from '@engine/forge/craft';
 import { goldShelf, slotCost } from '@engine/market/index';
 import { flatMissions } from '@engine/missions/path';
+import { settleMine, type MineState } from '@engine/mine/index';
 import { levelUpGold } from '@engine/progression/tavern-level';
 import { visibleQuests } from '@engine/quests/board';
 import { createRng, type Rng } from '@engine/rng/rng';
@@ -333,8 +335,74 @@ function claimBoard(period: 'daily' | 'weekly', day: number, ledger: Ledger, scr
 export function simulate(script: EconomyScript, sample: number, days: number): Ledger {
   const ledger = new Ledger();
   const rng = createRng(`economy:${script.id}:${sample}`);
-  for (let day = 0; day < days; day += 1) playDay(script, day, ledger, rng);
+  // The Mine carries its fractions from one visit to the next, so it is walked across the month.
+  let mine: MineState = { level: mineLevelOf(script), collectedAt: 0, carry: { gems: 0, sigils: 0 } };
+  for (let day = 0; day < days; day += 1) {
+    playDay(script, day, ledger, rng);
+    mine = mineDay(script, day, mine, ledger);
+  }
   return ledger;
+}
+
+/**
+ * The Mine a script's chronicle has dug (MINE.md §2): the deepest level its chronicle level opens.
+ * A script is a player a month in, and `mineAudit` shows each level on the way costing days of
+ * surplus rather than weeks, so the ledger books the steady state; the digging itself is a one-off,
+ * reported beside the ledger the way the Gem Market's bundles are kept out of it.
+ */
+export function mineLevelOf(script: EconomyScript): number {
+  return MINE_LEVELS.reduce(
+    (deepest, level) => (level.opensAt <= script.playerLevel ? Math.max(deepest, level.level) : deepest),
+    1,
+  );
+}
+
+/**
+ * The day at the Mine: a visit at each of the script's sittings, each taking what has been dug since
+ * the last — through the engine's own `settleMine`, so the store's cap and the carried fractions are
+ * the game's own rather than a rate multiplied out.
+ */
+function mineDay(script: EconomyScript, day: number, mine: MineState, ledger: Ledger): MineState {
+  let current = mine;
+  for (let visit = 1; visit <= script.mineVisits; visit += 1) {
+    const at =
+      day * HOURS_PER_DAY * MS_PER_HOUR +
+      Math.round((visit * HOURS_PER_DAY * MS_PER_HOUR) / script.mineVisits);
+    const haul = settleMine(current, at);
+    ledger.earnAll('mine', haul.paid);
+    current = haul.mine;
+  }
+  return current;
+}
+
+/** One currency of the Mine's dig audit: what the levels up to the script's cost, against its income. */
+export interface MineDigLine {
+  currency: CurrencyId;
+  cost: number;
+  /** What a day frees up to pay it: the net income, and for gold the stall's budget as well. */
+  perDay: number;
+  days: number;
+}
+
+/**
+ * What digging a script's Mine to its level costs, currency by currency, in days of what the script
+ * has spare of each (MINE.md §4). `perDay` comes from the caller's own ledger, so the audit follows
+ * any retune of the income it is measured against.
+ */
+export function mineAudit(
+  script: EconomyScript,
+  spare: (currency: CurrencyId) => number,
+): { level: number; lines: MineDigLine[] } {
+  const level = mineLevelOf(script);
+  const totals = new Map<CurrencyId, number>();
+  for (const row of MINE_LEVELS)
+    if (row.level > 1 && row.level <= level)
+      for (const { currency, amount } of row.cost) totals.set(currency, (totals.get(currency) ?? 0) + amount);
+  const lines = [...totals].map(([currency, cost]) => {
+    const perDay = spare(currency) + (currency === 'gold' ? script.stallGoldPerDay : 0);
+    return { currency, cost, perDay, days: perDay > 0 ? cost / perDay : Number.POSITIVE_INFINITY };
+  });
+  return { level, lines };
 }
 
 /**
