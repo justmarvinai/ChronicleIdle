@@ -400,7 +400,7 @@ ships to the same Definition of Done as a phase (`AGENTS.md` §3).
 
 | Order | Work | Version | Status |
 | --- | --- | --- | --- |
-| 1 | The four bugs the audit found, and every open question settled on its recommendation | `0.9.10` | 🟨 in progress |
+| 1 | The four bugs the audit found, and every open question settled on its recommendation | `0.9.10` | ✅ shipped in 0.9.10 |
 | 2 | **The Mine** — an upgradable building that works while the chronicle is away, as in the references | `0.10.0` | ⬜ not started |
 | 3 | **Instant 3★ clears** — a stage mastered is a stage that no longer needs fighting | `0.11.0` | ⬜ not started |
 | 4 | **Challenges & Achievements** — long-term goals across every system | `0.12.0` | ⬜ not started |

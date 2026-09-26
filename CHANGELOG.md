@@ -6,10 +6,83 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending. Five questions are open for the owner: `USER_QUESTIONS.md` Q46 (what an audit can
-say about a game that never stops animating), Q47 (when a tower season starts counting), Q48 (a
-lost floor still spends its key), Q49 (nothing grants Eternal Keys yet) and Q57 (whether "the Intro
-Campaign" in the drop-rarity note meant the difficulty or the early settlements)._
+_Nothing pending, and no question open for the owner: the last nine were settled in `0.9.10`. Next,
+in the owner's order (`ROADMAP.md`): the Mine, instant 3★ clears, Challenges & Achievements, and the
+roguelite mode._
+
+## [0.9.10] — 2026-09-26 — Accounts Settled
+
+The owner asked for the four bugs an audit of the game turned up to be fixed, and for every open
+question to be settled on the recommendation it carried. Two of the nine answers are changes — an
+Easy tier for the Titan (Q41) and a gem refill for the Eternal Key (Q49) — and the other seven keep
+their defaults. `USER_QUESTIONS.md` §2; `docs/design/BOSSES.md` §3, `ECONOMY.md` §5.2,
+`ETERNAL_TOWER.md` §6, `DUNGEONS.md` §7, `SUMMONING.md` §3, `CHAMPIONS.md` §1;
+`docs/tech/UI_DESIGN.md` §5.13, §5.13a, §5.28.
+
+### Added
+
+- **The Titan's Easy tier** (Q41, `content/bosses/titan.ts`): 500,000 HP — a tenth of Normal — at
+  ATK 800 / DEF 600, the 2 % chorus of the other tiers, and a six-chest ladder that pays what a
+  level-15 chronicle is short of (an Epic 5★ piece and two Epic Tomes at the kill). Measured with the
+  sim's reference teams: a key banks ~5 % of it for the ungeared 4★ Epic roster, ~47 % for the
+  half-geared 5★ one, and a finished roster puts her down in one key — which pays the Palace's
+  weekly three points, as the Gargoyle's Easy tier pays its daily one.
+- **The Eternal Key refill** (Q49): `applyTowerKeyRefill` (`state/wallet.ts`) and the store's
+  `refillTowerKeys` — five keys for 150 gems through `addKeys`, the pool's grant, so a chronicle can
+  sit above the cap (16/10); counted in `tower.key_refills`. The Wallet's refill panel is one
+  `Refill` component for energy and the key; the tower's climb panel gains **Buy keys**, which opens
+  the Wallet on the Eternal Key.
+- `openingTier` (`ui/screens/bosses/boss-view.ts`): a boss gate opens on the deepest tier with damage
+  this period, else the deepest ever fought, else the first.
+- `flows.test.ts` (`content/currencies`): derives what every reward table in the game can pay —
+  campaign, Idle Chest, both bosses, the Tower, the Dungeons, the Brewery, Daily Rewards, both
+  shelves of the Market, the Path, both boards, level-ups, the Forge, the Portal and the clocks — and
+  holds `CURRENCY_FLOWS` to it in both directions.
+- The validator refuses any max-HP heal whose multiplier is more than the whole pool, in champion
+  and enemy kits alike; holds a champion's `campaign_drop` source to `CHAMPION_CHOICES`; and asks a
+  featured banner to name the same Mythic on every rotation or on none.
+- `sim:economy` audits the two gem refills beside the Gem Market's shelf: a refill may not pay its
+  own price back on average at the deepest farm it feeds (`refillAudit`, `tools/sim/economy-run.ts`).
+
+### Changed
+
+- The featured cycle (`content/banners/featured.ts`) is two wheels turning together — five
+  Legendaries, six Epic pairs — so every Legendary meets every pair once in thirty rotations and none
+  stands on two running; every row names Varkos for the Primordial Rotations. The Legendary wheel
+  starts where the rotation running at the re-cut (the 19th) and the five after it keep their
+  champions.
+- The Eternal Key refill is priced at 150 gems for five, not the drafted 40: floor 100's two shard
+  rolls are worth ~21 gems a key at the Portal's exchange, so 8 gems a key would have turned gems
+  into shards at 2.6×. At 30 a key it returns 69 % of its price on average.
+- The seven Epics list `campaign_drop` (the Intro mastery pick offers them), which now reads
+  *mastering a campaign difficulty*.
+- The weekly-boss spec picks Normal before it fights, since a chronicle that has never fought her
+  now opens on Easy; the Portal test reads today's rotation rather than assuming Aurelia, which
+  would have started failing when the wheel turned on 28 September.
+- Docs: bg4 is no longer reserved, the Market is off the backlog, 25 currencies, twelve finished
+  champion models, the Mythic Tome's real sources, the encounter index's comment, and the owner's
+  order for the next five pieces of work in `ROADMAP.md`.
+
+### Fixed
+
+- **The Pale Herald healed eight times its own pool** every fourth action: its heal was written
+  `8`, a percentage typed as a multiplier. It heals the 8 % its text always said, and its pool goes
+  back up to 1,400 from the 1,180 it had been cut to around the full heal, which puts the Pale
+  Expanse's Normal rungs with the other keeps; every dungeon band still holds.
+- **The Wallet missed sources** that really pay: the Tower (gold, energy, Universal Brews), the
+  Dungeons (gold, Faded and Ancient Shards), the Idle Chest's energy, the Gem Market bundles' gold,
+  the quest chests' Sacred Shard, the Path's Faded Shards and Scrap Iron — and, with the new tier,
+  the Titan's Faded Shards.
+- **Six food champions claimed to drop in the campaign**, which never drops a champion.
+- **Only one Primordial Rotation in three featured Varkos**, and **Aurelia led two rotations back
+  to back** each time the six-row list wrapped.
+
+### Removed
+
+- Constants nothing read: `CAMPAIGN_TURN_LIMIT_DEFAULT`, `BOSS_TURN_LIMIT_DAILY` and
+  `BOSS_TURN_LIMIT_WEEKLY` (the content carries its own limits), `CAMPAIGN_PARTY_SIZE`
+  (`PARTY_SIZE_CAMPAIGN` is the one read), `GOLD_MARKET_WEIGHT`, and `ELEMENT_WEAK_GLANCE_CHANCE`,
+  whose comment described a glancing-hit mechanic the engine never had (Q21 turned it off).
 
 ## [0.9.9] — 2026-09-25 — The Ledger and the Purse
 

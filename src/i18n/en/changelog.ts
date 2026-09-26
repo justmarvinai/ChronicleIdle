@@ -20,6 +20,22 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_9_10.name': 'Accounts Settled',
+  'release.0_9_10.titan_easy':
+    'The Titan has an Easy tier: a tenth of her Normal strength, so a team that has just reached her can take her first chests in the week she wakes.',
+  'release.0_9_10.eternal_keys':
+    'You can buy Eternal Keys: five for 150 gems in the Wallet, or from Buy keys in the Eternal Tower — even past the ten the clock stops at.',
+  'release.0_9_10.boss_gate':
+    'A boss gate opens on the tier you have been fighting, instead of always on the first.',
+  'release.0_9_10.pale_herald':
+    'The Pale Herald heals 8 % of its health, as its ability says, instead of healing all the way back every few turns.',
+  'release.0_9_10.wallet_sources':
+    'The Wallet names every place a currency comes from, including the Eternal Tower, the Dungeons and the energy in the Idle Chest.',
+  'release.0_9_10.varkos':
+    'Varkos is featured on every Primordial Rotation of the Summoning Portal, and no Legendary is featured two rotations in a row.',
+  'release.0_9_10.obtain':
+    'A champion’s page says truly where it comes from: the common champions no longer claim to drop in the campaign, and the Epics say they can be picked for mastering a campaign difficulty.',
+
   'release.0_9_9.name': 'The Ledger and the Purse',
   'release.0_9_9.path':
     'The Chronicler’s Path has a new look: the ten chapters as tabs that show how far each is walked, the chapter’s missions as tall cards marked with the kind of task they are, and Eldric beside the chapter’s chest, which now shows what it holds.',
