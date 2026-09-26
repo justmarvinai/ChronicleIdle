@@ -1,0 +1,217 @@
+/* The Mine's store (docs/tech/UI_DESIGN.md §5.29): the seam in its vault, the wait under it. */
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+/* The seam in its vault: the store's fill drawn round it, a cold light that warms as it fills. */
+.vault {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 300px;
+  height: 300px;
+}
+.glow {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(92, 198, 224, 0.26) 0%,
+    rgba(30, 52, 64, 0.22) 45%,
+    rgba(11, 10, 13, 0.92) 72%
+  );
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.85),
+    0 0 0 2px rgba(201, 162, 74, 0.35);
+}
+.vault[data-state='brimming'] .glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 224, 140, 0.48) 0%,
+    rgba(92, 198, 224, 0.22) 45%,
+    rgba(11, 10, 13, 0.9) 72%
+  );
+  animation: brim 2.4s ease-in-out infinite;
+}
+.vault[data-state='emptied'] .glow {
+  background: radial-gradient(
+    circle,
+    rgba(92, 198, 224, 0.14) 0%,
+    rgba(26, 36, 44, 0.24) 45%,
+    rgba(11, 10, 13, 0.92) 72%
+  );
+}
+@keyframes brim {
+  0%,
+  100% {
+    filter: brightness(0.9);
+  }
+  50% {
+    filter: brightness(1.25);
+  }
+}
+
+/* A full store throws light: slow-turning rays reaching a little past the ring. */
+.rays {
+  position: absolute;
+  inset: -16%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(160, 230, 255, 0.3) 0deg 5deg,
+    rgba(160, 230, 255, 0) 5deg 20deg
+  );
+  mask-image: radial-gradient(circle, transparent 20%, #000 34%, rgba(0, 0, 0, 0.55) 52%, transparent 70%);
+  animation: turn 40s linear infinite;
+  pointer-events: none;
+}
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.ring {
+  position: absolute;
+  inset: 12px;
+}
+
+/* The seam: the painted geode, round-cut like a lens into the rock. */
+.seam {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 188px;
+  height: 188px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 24px rgba(0, 0, 0, 0.9),
+    0 0 0 3px rgba(11, 10, 13, 0.9),
+    0 0 0 5px rgba(201, 162, 74, 0.45);
+}
+.seamArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.vault[data-state='brimming'] .seamArt {
+  filter: brightness(1.12) saturate(1.2);
+}
+.vault[data-state='emptied'] .seamArt {
+  filter: brightness(0.7) saturate(0.7);
+}
+
+/* Four-point glints on a full seam, each on its own beat. */
+.glint {
+  position: absolute;
+  width: var(--glint);
+  height: var(--glint);
+  translate: -50% -50%;
+  scale: 0;
+  background: radial-gradient(circle, #fff 0%, #d8f6ff 30%, rgba(92, 198, 224, 0) 72%);
+  clip-path: polygon(50% 0%, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0% 50%, 42% 42%);
+  animation: glint 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glint {
+  0%,
+  100% {
+    scale: 0;
+    rotate: 0deg;
+  }
+  18% {
+    scale: 1;
+    rotate: 45deg;
+  }
+  34% {
+    scale: 0;
+    rotate: 90deg;
+  }
+}
+
+/* The seam giving up its store: the crystal shatter, over the art. */
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+/* Whole gems held, against what the store holds: the figure the whole dialog is about. */
+.count {
+  position: absolute;
+  bottom: 10px;
+  padding: 0 12px;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-1);
+  background: rgba(11, 10, 13, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(92, 198, 224, 0.55);
+}
+.count small {
+  font-size: 17px;
+  color: var(--text-3);
+}
+
+/* The haul rising out of the vault the moment it is emptied. */
+.haul {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  translate: -50% 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px 2px 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-3);
+  background: rgba(11, 10, 13, 0.9);
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 213, 122, 0.55),
+    var(--glow-gold);
+}
+
+.readout {
+  margin: 6px 0 0;
+  font-size: 20px;
+  color: var(--text-1);
+}
+.readoutFull {
+  color: var(--gold-3);
+}
+.subline {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.overflow {
+  margin: 4px 0 0;
+  max-width: 320px;
+  font-size: 15px;
+  color: var(--warn);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault[data-state='brimming'] .glow,
+  .rays,
+  .glint {
+    animation: none;
+  }
+}

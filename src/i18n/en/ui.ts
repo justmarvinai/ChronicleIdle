@@ -74,6 +74,7 @@ export const ui = {
   'hub.navigation': 'Emberhold',
   'hub.battle': 'Battle',
   'hub.market': 'Market',
+  'hub.mine': 'The Mine',
 
   'topbar.profile': 'Profile',
   'topbar.accountPower': 'Account Power',
@@ -244,6 +245,8 @@ export const ui = {
   'welcome.title': 'Welcome back, Chronicler',
   'welcome.body': 'Emberhold kept the fires lit while you were away for {time}.',
   'welcome.energy': 'Energy regenerated',
+  'welcome.mine': 'Gems waiting in the Mine',
+  'welcome.mine.full': 'Gems waiting in the Mine — its store is full',
   'welcome.quests.daily': 'A new day’s quests are waiting in the ledger.',
   'welcome.quests.weekly': 'A new week’s quests are waiting in the ledger.',
 
@@ -258,6 +261,7 @@ export const ui = {
   'hub.hint.hall': 'The Chronicler’s Path: the long mission line, chapter by chapter.',
   'hub.hint.market': 'Two shelves of wares; the gold stall changes hands every hour.',
   'hub.hint.idle': 'Fills while you are away. Open it to claim what it holds.',
+  'hub.hint.mine': 'The Deepvein digs gems while you are away. Collect them, and dig it deeper.',
   'hub.status.campaign': '{settlement} · stage {stage}',
   'hub.status.portal.choice': 'A champion to choose',
   'hub.status.portal.shards': '{count} shards to open',
@@ -267,6 +271,9 @@ export const ui = {
   'hub.status.palace': '{count} points to spend',
   'hub.status.hall': '{count} ready to claim',
   'hub.status.market': 'Restocks in {time}',
+  'hub.status.mine.full': 'Store full · {gems} gems',
+  'hub.status.mine.waiting': 'Gems waiting: {gems}',
+  'hub.status.mine.next': 'Next gem in {time}',
   'hub.idleChest.body': 'Fills while you are away.',
 
   'starter.title': 'Bind your first champion',

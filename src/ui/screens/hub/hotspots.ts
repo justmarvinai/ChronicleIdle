@@ -141,6 +141,23 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     labelBelow: true,
   },
   {
+    /*
+     * The old fountain in the middle of the square: the Deepvein's shaft runs down beneath it
+     * (MINE.md). Its ring fills with the store, the way the Idle Chest's fills with its hours.
+     */
+    id: 'mine',
+    labelKey: 'hub.mine',
+    hintKey: 'hub.hint.mine',
+    x: 1238,
+    y: 752,
+    size: 96,
+    glyph: 'glyph.pickaxe',
+    feature: 'mine',
+    dialog: { name: 'mine' },
+    color: '#5cc6e0',
+    labelBelow: true,
+  },
+  {
     id: 'idle',
     labelKey: 'hub.idleChest',
     hintKey: 'hub.hint.idle',

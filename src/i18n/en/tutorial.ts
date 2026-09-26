@@ -63,6 +63,10 @@ export const tutorial = {
   'tut.5.2.text': 'This one is already done. Claim it.',
   'tut.5.3.text':
     'While you are away, Emberhold works for you. The chest fills with time — until it is full. Do not let it overflow.',
+  'tut.5.4.text':
+    'Beneath the market square runs the Deepvein. Its crews dig gems while you are away and set them aside — and they have been busy. Take what they found.',
+  'tut.5.5.text':
+    'Every level deeper digs more gems a day and holds more before the crews down tools; from the fourth, they bring up Glyph Sigils too. Each asks for a greater chronicle, gold, and the Forge’s spare metal.',
 
   // Chapter 6 — Steel and Bone
   'tut.6.1.text':

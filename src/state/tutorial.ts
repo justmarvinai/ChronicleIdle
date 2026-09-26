@@ -65,6 +65,7 @@ const DIALOG_OF_NAME: Readonly<Record<TutorialDialog, DialogRoute['name']>> = {
   'new-game': 'new-game',
   'gear-picker': 'gear-picker',
   'idle-chest': 'idle-chest',
+  mine: 'mine',
   'level-up': 'level-up',
 };
 

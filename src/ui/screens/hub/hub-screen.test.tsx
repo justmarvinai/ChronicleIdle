@@ -90,6 +90,20 @@ describe('the Emberhold hub', () => {
     expect(screen.getByTestId('hotspot-palace')).toHaveAccessibleName('Glorious Palace');
   });
 
+  it('shows the Mine by the fountain: shut before level 6, then calling while its store is full', () => {
+    const { unmount } = render(stage(<HubScreen route={HUB} />));
+    expect(screen.getByTestId('hotspot-mine')).toHaveTextContent('Unlocks at level 6');
+    unmount();
+
+    useGameStore.setState((state) => {
+      if (state.save) state.save.profile.level = 6;
+      return state;
+    });
+    render(stage(<HubScreen route={HUB} />));
+    // A Mine opens with its first store full: three gems, and the plate says the crews have stopped.
+    expect(screen.getByTestId('hotspot-mine')).toHaveTextContent('Store full · 3 gems');
+  });
+
   it('says what a building is for on hover', async () => {
     const user = userEvent.setup();
     render(stage(<HubScreen route={HUB} />));

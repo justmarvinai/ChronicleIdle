@@ -33,6 +33,9 @@ import { WelcomeBackDialog } from './WelcomeBackDialog';
 
 // Development-only tooling; the dynamic import sits in dead code in production builds.
 const DebugDialog = import.meta.env.DEV ? lazy(() => import('./DebugDialog')) : null;
+// The Mine is its own chunk: the initial route is held to its budget (CLAUDE.md §5.6), and a dialog
+// opened a few times a day can wait the moment its chunk takes to arrive.
+const MineDialog = lazy(() => import('./MineDialog'));
 
 /** Renders the open dialog (one at a time) with enter/exit animation. */
 export function DialogHost() {
@@ -102,6 +105,11 @@ export function DialogHost() {
         />
       ) : null}
       {dialog?.name === 'idle-chest' ? <IdleChestDialog key="idle-chest" onClose={closeDialog} /> : null}
+      {dialog?.name === 'mine' ? (
+        <Suspense key="mine" fallback={null}>
+          <MineDialog onClose={closeDialog} />
+        </Suspense>
+      ) : null}
       {dialog?.name === 'mission-gift' ? (
         <MissionGiftDialog key="mission-gift" onClose={closeDialog} />
       ) : null}

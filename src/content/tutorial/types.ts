@@ -32,6 +32,7 @@ export const TUTORIAL_TARGETS = [
   'hub.forge',
   'hub.hall',
   'hub.idle',
+  'hub.mine',
   'hub.quests',
   'hub.missions',
   'topbar.energy',
@@ -74,6 +75,8 @@ export const TUTORIAL_TARGETS = [
   'quests.login',
   'quests.track',
   'idle.claim',
+  'mine.collect',
+  'mine.dig',
   'missions.card',
   // Steel and bone
   'forge.craftTab',
@@ -111,7 +114,7 @@ export const TUTORIAL_SCREENS = [
 export type TutorialScreen = (typeof TUTORIAL_SCREENS)[number];
 
 /** Dialogs the script may name, checked against `DialogRoute` the same way. */
-export const TUTORIAL_DIALOGS = ['new-game', 'gear-picker', 'idle-chest', 'level-up'] as const;
+export const TUTORIAL_DIALOGS = ['new-game', 'gear-picker', 'idle-chest', 'mine', 'level-up'] as const;
 
 export type TutorialDialog = (typeof TUTORIAL_DIALOGS)[number];
 

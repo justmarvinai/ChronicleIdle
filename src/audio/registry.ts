@@ -41,6 +41,9 @@ export const SOUNDS = {
   'gate.portcullis': s('sfx.doors.portcullis_gate', 0.8, 0.02, 500),
   'torch.light': s('sfx.torch.light_torch', 0.6, 0.05, 200),
   'forge.hammer': s('sfx.mining.mine', 0.8, 0.06, 80),
+  // The Mine (MINE.md): a pick into the seam as the store is taken, the rock giving way a level down.
+  'mine.strike': s('sfx.mining.mine', 0.75, 0.08, 90),
+  'mine.deepen': s('sfx.spells.rock_wall', 0.8, 0.02, 600),
   // The summoning ritual (SUMMONING.md §5): the charge, a tell per rarity climbed (pitched by the
   // Portal), the held breath before gold, the wind-up, the shatter, and one reveal per tier; then
   // the cards: a flip for each of ten, a ping per star, a stamp under the rarest.

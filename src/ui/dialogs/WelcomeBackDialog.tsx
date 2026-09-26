@@ -1,13 +1,19 @@
 import { content } from '@content/registry';
 import { formatDuration } from '@engine/time/clock';
 import { t, translate, type I18nKey } from '@i18n/index';
+import { mineView } from '@state/mine';
 import { useGameStore } from '@state/store';
 import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
+import { useNow } from '@ui/hooks/useNow';
 import styles from './dialogs.module.css';
 
 export function WelcomeBackDialog({ onClose }: { onClose: () => void }) {
   const report = useGameStore((s) => s.lastOffline);
+  const save = useGameStore((s) => s.save);
+  const now = useNow(60_000);
+  // The Mine is derived rather than applied on load (MINE.md §6), so it is read here, not reported.
+  const mine = save ? mineView(save, now) : null;
   if (!report) return null;
   return (
     <Dialog
@@ -26,6 +32,12 @@ export function WelcomeBackDialog({ onClose }: { onClose: () => void }) {
         <span className={styles.rowLabel}>{t('welcome.energy')}</span>
         <span className={`num ${styles.rowValue}`}>+{report.energyGained}</span>
       </div>
+      {mine?.unlocked && mine.store.gems > 0 ? (
+        <div className={styles.row} data-testid="welcome-mine">
+          <span className={styles.rowLabel}>{t(mine.store.full ? 'welcome.mine.full' : 'welcome.mine')}</span>
+          <span className={`num ${styles.rowValue}`}>{mine.store.gems}</span>
+        </div>
+      ) : null}
       {report.questsRolled.length ? (
         <p className={styles.body} data-testid="welcome-quests">
           {t(report.questsRolled.includes('weekly') ? 'welcome.quests.weekly' : 'welcome.quests.daily')}

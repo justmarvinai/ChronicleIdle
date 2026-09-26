@@ -11,6 +11,7 @@ import { champions } from './champions';
 import { currencies } from './currencies';
 import { dungeons } from './dungeons';
 import { market } from './market';
+import { mine } from './mine';
 import { enemies } from './enemies';
 import { features } from './features';
 import { gear } from './gear';
@@ -44,6 +45,7 @@ export const en = {
   ...brewery,
   ...dungeons,
   ...market,
+  ...mine,
   ...palace,
   ...places,
   ...quests,

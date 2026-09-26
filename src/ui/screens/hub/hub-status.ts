@@ -11,6 +11,7 @@ import type { SaveGame } from '@engine/schema/save';
 import { t, translate } from '@i18n/index';
 import { currentPointer, stageRefOf } from '@state/campaign';
 import type { IdleView } from '@state/idle';
+import type { MineView } from '@state/mine';
 import { goldMarketView } from '@state/market';
 import { missionsClaimable } from '@state/missions';
 import { openChampionChoices } from '@state/summon';
@@ -48,7 +49,7 @@ const held = (save: SaveGame, ids: readonly CurrencyId[]): number =>
 export function hubStatuses(
   save: SaveGame,
   now: number,
-  input: { unseen: number; chest: IdleView | null; palaceOpen: boolean },
+  input: { unseen: number; chest: IdleView | null; mine: MineView | null; palaceOpen: boolean },
 ): Readonly<Record<string, HubStatus>> {
   const statuses: Record<string, HubStatus> = {};
 
@@ -100,6 +101,18 @@ export function hubStatuses(
     statuses.idle = input.chest.fill.full
       ? { line: t('hub.idleChest.full'), dot: true, ready: true }
       : { line: coarseDuration(input.chest.fill.msToFull) };
+
+  // The Mine calls only when its store has filled — the moment it stops digging (MINE.md §1).
+  // Before that it says what is waiting, or how long until there is something to take.
+  const store = input.mine?.unlocked ? input.mine.store : null;
+  if (store)
+    statuses.mine = store.full
+      ? { line: t('hub.status.mine.full', { gems: store.gems }), dot: true, ready: true }
+      : store.gems > 0
+        ? { line: t('hub.status.mine.waiting', { gems: store.gems }) }
+        : store.msToNextGem !== null
+          ? { line: t('hub.status.mine.next', { time: coarseDuration(store.msToNextGem) }) }
+          : {};
 
   return statuses;
 }

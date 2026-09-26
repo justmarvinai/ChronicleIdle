@@ -2,6 +2,7 @@ import { playSfx } from '@audio/index';
 import { t } from '@i18n/index';
 import { bossView } from '@state/bosses';
 import { idleView } from '@state/idle';
+import { mineView } from '@state/mine';
 import { missionsClaimable } from '@state/missions';
 import { loginView } from '@state/login';
 import { isPalaceUnlocked } from '@state/palace';
@@ -46,8 +47,9 @@ export default function HubScreen(_props: ScreenProps) {
   const now = useNow(30_000);
   useSceneAudio('hub', 'hub');
 
-  // The Idle Chest wears its fill on the building itself (`UI_DESIGN.md` §5.2).
+  // The Idle Chest wears its fill on the building itself (`UI_DESIGN.md` §5.2), and so does the Mine.
   const chest = save ? idleView(save, now) : null;
+  const mine = save ? mineView(save, now) : null;
   // The bosses live behind Battle now, not in panels pasted over the town (the owner's third
   // batch). What the hub keeps of them is the one thing worth interrupting a player for: a chest
   // their damage has already earned (BOSSES.md §4).
@@ -63,7 +65,9 @@ export default function HubScreen(_props: ScreenProps) {
   const rewards = save && loginView(save, now).claimable ? 1 : 0;
 
   // What each building says about itself: the next stage, a countdown, what is owed inside.
-  const statuses = save ? hubStatuses(save, now, { unseen: unseen.length, chest, palaceOpen: palace }) : {};
+  const statuses = save
+    ? hubStatuses(save, now, { unseen: unseen.length, chest, mine, palaceOpen: palace })
+    : {};
 
   const open = (def: HubHotspotDef, unlocked: boolean): void => {
     if (unlocked && def.dialog) actions.openDialog(def.dialog);
@@ -91,6 +95,7 @@ export default function HubScreen(_props: ScreenProps) {
           status={statuses[def.id]}
           {...(def.id === 'palace' ? { gate: palace } : {})}
           {...(def.id === 'idle' && chest ? { progress: chest.fill.fraction } : {})}
+          {...(def.id === 'mine' && mine ? { progress: mine.store.fraction } : {})}
         />
       ))}
 

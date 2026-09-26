@@ -147,6 +147,26 @@ describe('the tutorial script', () => {
     expect(chapterStatus(chapter(5), state, ctx({ playerLevel: 6 }))).toBe('open');
   });
 
+  it('teaches the Mine at level 6, after the chest: on the hub, then inside, then the level below', () => {
+    const state = upTo('tut.5.4');
+    // Level 5 has the board and the chest, but not the Mine: Routine waits on the hub.
+    expect(activeStep(CHAPTERS, state, ctx({ playerLevel: 5, screen: 'hub' }))).toBeNull();
+    // At 6 the lesson opens on the hub, or already inside the Mine if the player went in first.
+    expect(activeStep(CHAPTERS, state, ctx({ playerLevel: 6, screen: 'hub' }))?.id).toBe('tut.5.4');
+    expect(activeStep(CHAPTERS, state, ctx({ playerLevel: 6, dialog: 'mine' }))?.id).toBe('tut.5.4');
+    // The first collection is what finishes it — the store is full the moment the Mine opens.
+    const collected = withStarter();
+    collected.stats['mine.collections'] = 1;
+    const step = CHAPTERS.flatMap((one) => one.steps).find((one) => one.id === 'tut.5.4');
+    if (!step) throw new Error('no Mine lesson');
+    expect(stepSatisfied(step, ctx({ save: collected, playerLevel: 6, dialog: 'mine' }))).toBe(true);
+    expect(stepSatisfied(step, ctx({ save: withStarter(), playerLevel: 6, dialog: 'mine' }))).toBe(false);
+    // Then, still inside, the level below it — read rather than done.
+    const next = upTo('tut.5.5');
+    expect(activeStep(CHAPTERS, next, ctx({ playerLevel: 6, dialog: 'mine' }))?.id).toBe('tut.5.5');
+    expect(activeStep(CHAPTERS, next, ctx({ playerLevel: 6, screen: 'hub' }))).toBeNull();
+  });
+
   it("lets Steel and Bone's lessons stand alone", () => {
     const state: TutorialState = {
       completedSteps: CHAPTERS.slice(0, 5).flatMap((one) => one.steps.map((step) => step.id)),

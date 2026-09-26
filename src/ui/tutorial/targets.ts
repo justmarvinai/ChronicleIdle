@@ -27,6 +27,7 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'hub.forge': testId('hotspot-forge'),
   'hub.hall': testId('hotspot-hall'),
   'hub.idle': testId('hotspot-idle'),
+  'hub.mine': testId('hotspot-mine'),
   'hub.quests': testId('nav-quests'),
   'hub.missions': testId('nav-missions'),
   'topbar.energy': testId('pill-energy'),
@@ -71,6 +72,8 @@ export const TARGET_SELECTOR: Readonly<Record<TutorialTarget, string>> = {
   'quests.login': testId('quest-claim-quest.daily.login'),
   'quests.track': testId('quests-points'),
   'idle.claim': testId('idle-claim'),
+  'mine.collect': testId('mine-collect'),
+  'mine.dig': testId('mine-next'),
   'missions.card': testId('mission-claim-mission.01.01'),
 
   'forge.craftTab': testId('forge-tab-craft'),

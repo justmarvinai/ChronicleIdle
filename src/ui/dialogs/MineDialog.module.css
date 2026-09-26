@@ -1,0 +1,59 @@
+/* The Mine (docs/tech/UI_DESIGN.md §5.29): the store, the next level down, the whole shaft. */
+.layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr) 330px;
+  gap: 22px;
+  min-height: 560px;
+  align-items: start;
+}
+
+.store {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.subtitle {
+  margin: 0;
+  font-size: 15px;
+  text-align: center;
+  color: var(--text-3);
+}
+
+/* The level the crews work now: its name and what it digs, on an ink plate under the vault. */
+.plate {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 14px 12px;
+  background: rgba(11, 10, 13, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(92, 198, 224, 0.35);
+}
+.plateHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--text-1);
+}
+.plateLevel {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold-2);
+}
+.rates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.rate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: var(--text-2);
+}

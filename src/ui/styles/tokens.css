@@ -22,6 +22,8 @@
   --hp: #63c96a;
   --tm: #e2c04b;
   --shield: #6fc3e6;
+  /* The Mine's crystal light (MINE.md): its hub medallion, its store ring, its strata. */
+  --mine: #5cc6e0;
 
   /* Rarity */
   --r-common: #9a9a9a;

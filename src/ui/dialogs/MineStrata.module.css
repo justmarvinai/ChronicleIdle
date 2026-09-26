@@ -1,0 +1,189 @@
+/* The Deepvein top to bottom (docs/tech/UI_DESIGN.md §5.29): ten strata, dug, worked, next, dark. */
+.shaft {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.heading {
+  margin: 0;
+  font-size: 22px;
+  color: var(--gold-3);
+}
+.hint {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+.strata {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  /* The shaft's own wall, so the strata sit in rock rather than on the panel. */
+  padding: 6px;
+  background: linear-gradient(180deg, #2a2520 0%, #15121a 100%);
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(201, 162, 74, 0.35);
+}
+
+/*
+ * One stratum. The rock darkens with `--depth` (0 at the shaft head, 1 at the heart) and its vein
+ * brightens the other way — the deeper the level, the richer the seam it cuts.
+ */
+.stratum {
+  --rock-top: color-mix(in srgb, #4a3f33 calc(100% - var(--depth) * 70%), #141a24);
+  --rock-bottom: color-mix(in srgb, #2d261f calc(100% - var(--depth) * 60%), #0c1018);
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 10px 0 6px;
+  background:
+    repeating-linear-gradient(172deg, rgba(0, 0, 0, 0) 0 22px, rgba(0, 0, 0, 0.14) 22px 24px),
+    linear-gradient(180deg, var(--rock-top), var(--rock-bottom));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+  color: var(--text-3);
+  overflow: hidden;
+}
+/* The vein itself: a streak of crystal light through the rock, lit once the crews have reached it. */
+.stratum::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in srgb, var(--mine) calc(18% + var(--depth) * 26%), transparent) 52%,
+    transparent 70%
+  );
+  opacity: 0.25;
+  pointer-events: none;
+}
+.stratum[data-state='dug']::before,
+.stratum[data-state='here']::before {
+  opacity: 1;
+}
+.stratum[data-state='dug'],
+.stratum[data-state='here'] {
+  color: var(--text-1);
+}
+/* Where the crews work now: a lantern's warmth and the gold hairline of the building's plate. */
+.stratum[data-state='here'] {
+  box-shadow:
+    inset 0 0 0 2px var(--gold-2),
+    inset 0 0 22px rgba(255, 190, 90, 0.28);
+}
+.stratum[data-state='here']::after {
+  content: '';
+  position: absolute;
+  right: 44px;
+  top: 50%;
+  width: 60px;
+  height: 60px;
+  translate: 0 -50%;
+  background: radial-gradient(circle, rgba(255, 200, 110, 0.4), transparent 65%);
+  animation: lantern 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes lantern {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* The next level down: outlined in the vein's light, dashed while the chronicle cannot reach it. */
+.stratum[data-state='next'] {
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--mine);
+}
+.stratum[data-state='next'][data-open='false'] {
+  box-shadow: inset 0 0 0 1px rgba(92, 198, 224, 0.4);
+}
+.stratum[data-state='deep'] {
+  filter: brightness(0.7);
+}
+/* A level dug this sitting: the rock gives way in a flash of the vein's light. */
+.stratum[data-fresh='true'] {
+  animation: unearthed 1.1s var(--ease-out) both;
+}
+@keyframes unearthed {
+  0% {
+    filter: brightness(2.2);
+    transform: scaleY(0.6);
+  }
+  40% {
+    filter: brightness(1.6);
+    transform: scaleY(1.06);
+  }
+  100% {
+    filter: brightness(1);
+    transform: scaleY(1);
+  }
+}
+
+.depth {
+  position: relative;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  color: inherit;
+}
+.name {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.title {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.crew {
+  flex: none;
+  font-size: 13px;
+  color: var(--gold-3);
+}
+.rate,
+.gate {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.gate {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+.mark {
+  position: absolute;
+  right: 4px;
+  top: 3px;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stratum[data-state='here']::after,
+  .stratum[data-fresh='true'] {
+    animation: none;
+  }
+}

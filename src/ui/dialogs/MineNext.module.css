@@ -1,0 +1,118 @@
+/* The level below this one (docs/tech/UI_DESIGN.md §5.29): what it adds, costs and waits on. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px 18px 18px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(92, 198, 224, 0.14), transparent 60%),
+    linear-gradient(180deg, rgba(31, 28, 37, 0.95), rgba(15, 13, 19, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 74, 0.4),
+    inset 0 0 26px rgba(0, 0, 0, 0.6);
+}
+.done {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.deepest {
+  margin: 0;
+  max-width: 300px;
+  font-size: 18px;
+  color: var(--gold-3);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 12px;
+}
+.kicker {
+  grid-column: 1 / -1;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  color: var(--mine);
+}
+.name {
+  overflow: hidden;
+  font-size: 26px;
+  line-height: 1.15;
+  color: var(--text-1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.level {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-2);
+}
+
+.gains {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-block: var(--hairline);
+}
+.gain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ok);
+}
+
+.subhead {
+  margin: 2px 0 0;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.cost {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 8px;
+  font-size: 16px;
+  color: var(--text-1);
+  background: rgba(11, 10, 13, 0.45);
+}
+.held {
+  font-size: 15px;
+  color: var(--text-3);
+}
+.short {
+  color: var(--danger);
+  box-shadow: inset 2px 0 0 var(--danger);
+}
+.short .held {
+  color: var(--danger);
+}
+
+.gate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 0;
+  font-size: 16px;
+  color: var(--text-2);
+}
+.note {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--text-3);
+}
