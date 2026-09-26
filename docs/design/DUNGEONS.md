@@ -182,8 +182,8 @@ finished roster alone, which is what "very late endgame" means. `DUNGEON_BANDS_C
 `tools/sim/teams.ts` is that staircase written down, and `--strict` fails when one breaks. A `min`
 band is checked against the keep where it is *hardest* to keep and a `max` band against the keep
 where it is *easiest*, the same rule the Brewery's bands use — so the endgame roster's 100 % in
-Cindervault above is reported as the 67 % it manages in the Pale Expanse, the hardest of the four
-at that rung.
+Cindervault above is reported as the 88 % it manages in Ashenreach, the hardest of the four at
+that rung.
 
 The sim's day-one roster fights with **three** champions, not four, because that is what a new
 chronicle is given — so Normal 1 being clearable means clearable a slot short.
@@ -194,19 +194,25 @@ its runs — ×1 meaning the keep lands exactly on the curve for that team:
 
 | rung | team | Cindervault | Pale Expanse | Velkora's Cradle | Ashenreach |
 | --- | --- | --- | --- | --- | --- |
-| Normal 1 | starter Lv10 | ×1.56 | ×1.61 | ×1.42 | ×1.18 |
-| Normal 10 | mid Epic | ×1.74 | ×1.71 | ×1.70 | ×1.58 |
-| Normal 15 | late game | ×1.80 | ×1.82 | ×2.04 | ×1.78 |
-| Hard 20 | endgame | ×1.08 | ×0.98 | ×1.13 | ×1.03 |
+| Normal 1 | starter Lv10 | ×1.56 | ×1.49 | ×1.42 | ×1.18 |
+| Normal 10 | mid Epic | ×1.74 | ×1.89 | ×1.70 | ×1.58 |
+| Normal 15 | late game | ×1.80 | ×2.14 | ×2.04 | ×1.78 |
+| Hard 20 | endgame | ×1.08 | ×1.27 | ×1.13 | ×1.03 |
 
 A lower figure is a harder keep. Ashenreach is the tightest of the four everywhere on Normal,
-which is right — it is the keep that sells the best sets — and at Hard 20 the spread closes to
-about a tenth, with the Pale Expanse the narrowest at ×0.98. Getting there took a real fix rather
-than a nudge: the
-Pale Herald healed 18 % of its own max HP every third turn, and a percentage self-heal on an enemy
-whose pool *scales with the stage* gets relatively stronger the deeper you go, because the party's
-damage does not scale with it. At Hard 20 the Expanse measured 0 % for a finished roster where
-Cindervault measured 75 %.
+which is right — it is the keep that sells the best sets — and at Hard 20 the spread is about a
+quarter, with the Pale Expanse now the widest at ×1.27.
+
+That last figure is a bug fix rather than a tuning choice. The Pale Herald's self-heal was always
+meant to be 8 % of its own max HP (after an 18 % first draft proved a wall: a percentage heal on an
+enemy whose pool *scales with the stage* gets relatively stronger the deeper you go, because the
+party's damage does not scale with it). Until `0.9.10` it was written `8`, which the engine reads as
+eight times the pool — a full heal every fourth action — and the keep's HP had been cut to 1,180 to
+make up for it, which is where the ×0.98 this table used to print came from. With the heal at a true
+8 % the pool went back up to 1,400, which puts the Expanse's Normal rungs with the others. At Hard 20
+neither the keeper's pool, its attack, its enrage nor a heal of up to 16 % moves the figure: there
+the fight is decided by the Frostvein escorts, not the Herald. The validator now refuses any max-HP
+heal written above 1, so the slip cannot come back.
 
 Hard 20 sits right at the top of the sim endgame roster's reach. That roster carries no Palace, no
 optimised six-piece set and no element advantage; a real finished roster brings all three, so the

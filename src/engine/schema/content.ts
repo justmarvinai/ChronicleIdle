@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { RARITY_KIT, STAT_DEVIATION_TOLERANCE } from '@content/balance/stats';
-import { CHAMPION_IDS, STARTER_IDS, type ChampionDef } from '@content/champions/types';
+import { CHAMPION_IDS, STARTER_IDS, type ChampionDef, type PassiveEffect } from '@content/champions/types';
 import { CURRENCY_IDS } from '@content/currencies/types';
 import { PLACE_IDS } from '@content/places/types';
 import { PARTY_SIZE_BOSS, PARTY_SIZE_CAMPAIGN } from '@content/balance/battle';
@@ -1140,6 +1140,27 @@ function validateSettlements(
   return { issues, spawned, setPools };
 }
 
+/** The heal stats that read a max-HP pool, whose multiplier is therefore a share of that pool. */
+const MAX_HP_HEAL_STATS: ReadonlySet<string> = new Set(['HP', 'CASTER_MAX_HP', 'TARGET_MAX_HP']);
+
+/**
+ * Every max-HP heal in a kit whose multiplier is more than the whole pool. Such a heal is written
+ * as a fraction (`0.08` is 8 %); a whole number there is a percentage typed as a multiplier, and
+ * the engine reads it as that many pools — the Pale Herald healed eight times its own for a whole
+ * release that way, a full heal every fourth action.
+ */
+function oversizedHeals(effects: readonly PassiveEffect[]): number[] {
+  const found: number[] = [];
+  for (const effect of effects) {
+    if (effect.kind === 'heal' && MAX_HP_HEAL_STATS.has(effect.stat) && effect.mult > 1)
+      found.push(effect.mult);
+    if (effect.kind === 'conditional')
+      found.push(...oversizedHeals([...effect.then, ...(effect.else ?? [])]));
+    if (effect.kind === 'damage' && effect.onKill) found.push(...oversizedHeals(effect.onKill));
+  }
+  return found;
+}
+
 /** Every authored enemy must be fightable somewhere: a campaign wave or a standalone encounter. */
 function validateEnemyReach(
   enemyIds: ReadonlySet<string>,
@@ -1219,12 +1240,22 @@ function validateEnemies(
         error(`${path}.${ability.id}.icon`, `unknown asset key ${ability.icon}`);
       text(ability.name, `${path}.${ability.id}.name`);
       text(ability.description, `${path}.${ability.id}.description`);
+      for (const mult of oversizedHeals(ability.effects))
+        error(
+          `${path}.${ability.id}`,
+          `a max-HP heal is a fraction of the pool; ${mult} heals ${mult} pools`,
+        );
     });
     for (const passive of def.passives) {
       if (!refs.assetKeys.has(passive.icon))
         error(`${path}.${passive.id}.icon`, `unknown asset key ${passive.icon}`);
       text(passive.name, `${path}.${passive.id}.name`);
       text(passive.description, `${path}.${passive.id}.description`);
+      for (const mult of oversizedHeals(passive.effects))
+        error(
+          `${path}.${passive.id}`,
+          `a max-HP heal is a fraction of the pool; ${mult} heals ${mult} pools`,
+        );
     }
     if (def.boss) {
       const slots = new Set(def.abilities.map((a) => a.slot));
@@ -1355,6 +1386,11 @@ function validateChampions(champions: readonly unknown[], refs: ContentRefs): Va
       text(ability.name, `${path}.${ability.id}.name`);
       text(ability.description, `${path}.${ability.id}.description`);
       placeholders(ability.description, `${path}.${ability.id}.description`);
+      for (const mult of oversizedHeals(ability.effects))
+        error(
+          `${path}.${ability.id}`,
+          `a max-HP heal is a fraction of the pool; ${mult} heals ${mult} pools`,
+        );
       const maxUpgrades = ability.slot === 'a1' ? 2 : 4;
       if (ability.upgrades.length > maxUpgrades)
         error(`${path}.${ability.id}.upgrades`, `at most ${maxUpgrades} upgrade steps`);
@@ -1387,6 +1423,8 @@ function validateChampions(champions: readonly unknown[], refs: ContentRefs): Va
       if (abilityIds.has(extra.id)) error(`${path}.${extra.id}`, 'duplicate ability id');
       abilityIds.add(extra.id);
     }
+    for (const mult of oversizedHeals(def.passive?.effects ?? []))
+      error(`${path}.passive`, `a max-HP heal is a fraction of the pool; ${mult} heals ${mult} pools`);
 
     if ((STARTER_IDS as readonly string[]).includes(def.id) && !def.obtain.includes('starter'))
       error(`${path}.obtain`, 'starters must list the starter source');

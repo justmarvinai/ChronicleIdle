@@ -73,7 +73,7 @@ export const paleHerald = defineEnemy({
   archetype: 'boss',
   element: 'faith',
   role: 'support',
-  stats: [1_180, 94, 74, 96, 10, 50, 45, 40],
+  stats: [1_400, 94, 74, 96, 10, 50, 45, 40],
   art: { tint: '#b9cfe4', scale: 1.3 },
   abilities: [
     {
@@ -88,14 +88,17 @@ export const paleHerald = defineEnemy({
       icon: 'spell.fx_frost_comet',
       cooldown: 3,
       /*
-       * 8 %, not the 18 % this was first written at. A percentage self-heal on an enemy whose HP
-       * pool *scales with the stage* gets relatively stronger the deeper you go — the party's
-       * damage does not grow with the keeper's pool — so a number that reads fair at Normal 1 is
-       * an unbeatable wall at Hard 20. `pnpm sim:balance --dungeon` caught it: the Expanse sat at
-       * 0 % for a finished roster where Cindervault sat at 75 %. The HP pool below came down with
-       * it, because the fight was being lost to the turn limit rather than to the damage.
+       * 8 % of its own max HP. A percentage self-heal on an enemy whose HP pool *scales with the
+       * stage* gets relatively stronger the deeper you go — the party's damage does not grow with
+       * the keeper's pool — so a number that reads fair at Normal 1 is a wall at Hard 20.
+       *
+       * The heal's multiplier is a fraction like every other heal in the game: until 0.9.10 it was
+       * written `8`, which the engine reads as eight times the Herald's max HP — a full heal every
+       * fourth action, which is what had been carrying the keep's difficulty. The HP pool (above)
+       * went back up to 1,400 from the 1,180 it had been cut to around that full heal, which puts
+       * the Expanse's Normal rungs with the other three keeps (DUNGEONS.md §7).
        */
-      effects: [heal(8, 'self', 'CASTER_MAX_HP'), status('res_up', 3, { target: 'self', value: 25 })],
+      effects: [heal(0.08, 'self', 'CASTER_MAX_HP'), status('res_up', 3, { target: 'self', value: 25 })],
     },
     {
       slot: 'a3',

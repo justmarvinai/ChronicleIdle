@@ -54,6 +54,28 @@ describe('content registry', () => {
     ]);
   });
 
+  it('refuses a max-HP heal written as a percentage instead of a fraction', () => {
+    // The Pale Herald healed `8` — eight times its own pool — for a whole release; the validator
+    // now refuses any max-HP heal over the whole pool, wherever it sits in a kit.
+    const herald = content.enemies.find((enemy) => enemy.id === 'enemy.pale_herald');
+    expect(herald).toBeDefined();
+    if (!herald) return;
+    const broken = {
+      ...herald,
+      abilities: herald.abilities.map((ability) => ({
+        ...ability,
+        effects: ability.effects.map((effect) => (effect.kind === 'heal' ? { ...effect, mult: 8 } : effect)),
+      })),
+    };
+    const issues = validateContentRegistry(
+      { ...content, enemies: content.enemies.map((enemy) => (enemy.id === herald.id ? broken : enemy)) },
+      refs,
+    );
+    expect(
+      issues.filter((issue) => issue.severity === 'error' && issue.message.includes('fraction of the pool')),
+    ).toEqual([expect.objectContaining({ path: 'enemies.enemy.pale_herald.ab.pale_herald.the_long_white' })]);
+  });
+
   it('ships the fourteen gear sets, every one of them reachable (GEAR.md §5)', () => {
     expect(content.gearSets).toHaveLength(14);
     const twoPiece = content.gearSets.filter((s) => s.pieces === 2);
