@@ -20,7 +20,10 @@ test.describe('chronicle lifecycle', () => {
     await expect(page.getByTestId('screen-title')).toBeVisible({ timeout: 30_000 });
     await settle(page);
     await expect(page.getByTestId('btn-continue')).toBeVisible();
-    await expect(page.getByTestId('screen-title')).toContainText('Marvin · Level 1');
+    // The chronicle on this device is a card: its name, its level on the gem, when it was last played.
+    await expect(page.getByTestId('title-chronicle-name')).toHaveText('Marvin');
+    await expect(page.getByTestId('title-chronicle-level')).toHaveText('1');
+    await expect(page.getByTestId('title-chronicle-away')).toBeVisible();
     await page.getByTestId('btn-continue').click();
     await expect(page.getByTestId('screen-hub')).toBeVisible();
     await expect(page.getByTestId('profile-chip')).toContainText('Marvin');

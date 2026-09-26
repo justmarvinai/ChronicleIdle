@@ -6,8 +6,58 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending, and no question open for the owner. The owner's order of 26 September is
-complete (`ROADMAP.md`); what comes next is theirs to say._
+_Next: the `production` branch and a phased plan for the Electron (Windows desktop) build —
+documents only. No Electron code is written until the owner says go._
+
+## [0.13.1] — 2026-09-26 — Title Screen & Patch Notes
+
+The owner asked for three things, in this order: rework the title screen the way every other
+screen has been reworked, with the changelog staying an open window on it; rework the changelog's
+words — nothing said twice, not lore-heavy, straight to the point about what is new, changed and
+fixed; then plan the Electron build (the next entry). `docs/tech/UI_DESIGN.md` §5.1, §5.21;
+`CONTENT_AUTHORING.md` §13; `CLAUDE.md` §9.3; `AGENTS.md` (definition of done); ADR-049 addendum.
+
+### Changed
+
+- **The title screen** (`ui/screens/title/`) is three zones over the Eclipse gate: the wordmark,
+  the save slot and a row of plates on the left; the gate in the open middle (`Backdrop` takes a
+  `framing`, and the painting is drawn at `auto 116%` anchored right; the `title` ambient preset
+  puts its embers and two violet glows on the gate); the Chronicle of Changes open on the right from
+  the first frame, the full height between the top edge and the foot.
+- **The save slot.** `ChronicleCard` shows the chronicle on this device — its avatar in the worn
+  portrait frame with the level on a gold gem, the name and worn title, experience towards the next
+  level, Power, Champions, the campaign's next stage, and when it was last played — over the
+  primary *Continue*. `title-view.ts` reads all of it from the save and the engine
+  (`chronicleCardView`, `awayLabel`). Without a save, `FirstChronicleCard` offers *New Chronicle*.
+  *New Chronicle* (when a save exists), *Import Save* and *Settings* are plates under the slot, and
+  the foot says the chronicle lives on this device. The "Continue as … · Level n" line is gone
+  (`title.continueAs` removed; the `title.card.*` and `title.first.*` strings are new).
+- **The Chronicle of Changes panel** groups each release's lines by kind, in the chips' order,
+  under one heading each — the kind is said once per release instead of on every line — and a line
+  is a diamond in its kind's colour and the sentence. The chips fit one row without counts, the
+  order toggle is its hourglass alone (turned over for oldest first), and *Improved* is now
+  *Changed*, in faith blue.
+- **Every release rewritten** (`src/content/changelog/index.ts`, `src/i18n/en/changelog.ts`): 48
+  releases, from about 300 lore-heavy lines to 204 plain ones — each fact once, its numbers checked
+  against the content, no "New:" prefixes, and release names that say what shipped ("The Unwritten
+  (Roguelite)", "Hall of Deeds (Achievements & Challenges)"). Lines that were wrong are corrected:
+  Eternal Keys refill every 15 minutes (not three hours), Refine raises a piece's stars, rank-ups
+  use champions of the same star rank, champions have four roles and one to four abilities, and the
+  Titan's Easy tier is described by its health (a tenth of Normal's).
+- The changelog rule (`CLAUDE.md` §9.3, `AGENTS.md`, `CONTENT_AUTHORING.md` §13) now says how a
+  line is written: one fact, said once, with its numbers; no lore; never opening with its own kind.
+
+### Fixed
+
+- The changelog frame on the title screen showed empty while the panel's chunk loaded. The load is
+  one shared promise in `ui/changelog/load-changelog.ts`; the title screen starts it when its own
+  chunk is evaluated (`preloadChangelog`), and `ChangelogView` holds the frame with a skeleton of
+  lines until the words arrive.
+- The glint across the logo lit a lighter rectangle around the wordmark; the sweep is masked to the
+  logo's own shape.
+- Tests: `title-view.test.ts` (new) — the card's figures from a real save, the worn title and the
+  level cap, where the away time comes from, and minutes, hours and days. In e2e, `boot.spec.ts`
+  finds the first-chronicle slot and `chronicle.spec.ts` reads the card's name and level gem.
 
 ## [0.13.0] — 2026-09-26 — The Unwritten
 

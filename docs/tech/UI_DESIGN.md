@@ -141,14 +141,43 @@ Every component has states: default, hover, active, disabled, focus-visible, and
 Format: **Reference** → **Layout** → **Elements** → **Interactions** → **Motion & sound**.
 
 ### 5.1 Title
-- Reference: none (own). Backdrop `bg9` slow zoom + violet fog. Music: hub track. Entering "New
-  Chronicle" fades to the tutorial.
-- **Two columns**, like a launcher: the wordmark (`chronicle_idle.svg`, ember glint sweep) over the
-  menu on the left — *Continue* (if a save exists), *New Chronicle*, *Import Save*, *Settings* —
-  and the **Chronicle of Changes** on the right, a frame the height of the screen (§5.21). The
-  grid runs between the top edge and the corner controls and stretches, so the chronicle's frame
-  is exactly as tall as the space it is given. Save notices sit under the menu in the same column.
-- Corner controls bottom-right: fullscreen, credits, the version tag.
+- Reference: none (own), laid out like a launcher. Backdrop `bg9` drawn larger than the stage and
+  anchored right (`auto 116%` at `100% 40%`), so the Eclipse gate stands in the open middle of the
+  screen rather than behind a frame; pointer parallax; the ambient `title` preset puts embers and
+  two violet glows on the gate. A shade darkens the painting under both columns and the foot and
+  leaves the gate lit. Music: the title track. Entering "New Chronicle" fades to the tutorial.
+- **Three zones.** The **left column** (680 px, centred between the top edge and the foot): the
+  wordmark with a violet halo breathing behind it and an ember shine masked to its letters (the
+  sweep lights the letters, never the image's box); under it the **save slot**; under that one row
+  of stone plates. The **middle** is left open for the gate. On the **right**, the **Chronicle of
+  Changes** stands open the full height between the top edge and the foot (§5.21) — a window on the
+  screen from its first frame, never one that has to be opened.
+- **The save slot, with a chronicle on this device** (`ChronicleCard`, the kit's wide ember frame):
+  the chronicle's avatar in its worn portrait frame (148 px) with the level on a gold gem at its
+  foot; a *Your chronicle* kicker, the name and the worn title; a slim gold groove and "*x* / *y* XP
+  to level *n*" ("Highest level reached" at the cap); three plates — **Power** (Account Power, the
+  header's figure), **Champions**, **Campaign** (the next stage and its difficulty, or *Complete*
+  once Hard is cleared); and a foot with **Last played …** (minutes, hours, then days from two days
+  on — from the absence the boot measured, else the save's own stamp) and the primary **Continue**
+  button, which breathes. Everything on the card is read from the save and the engine
+  (`title-view.ts`), so the card and the game cannot disagree.
+- **The save slot, without one** (`FirstChronicleCard`): *Begin your chronicle* — the quill in the
+  kit's round frame over a dark disc (the hub medallions' construction), one line on what the game
+  is, and the primary **New Chronicle** button.
+- **The plates under the slot:** *New Chronicle* (only when a chronicle exists; it asks before
+  replacing it), *Import Save* and *Settings*. The save notices (a save from a newer version, a
+  save that could not be read) sit under them in the same column, each with *Export save*.
+- **The foot:** "Saved on this device — no account needed" on the left; fullscreen, credits and the
+  version tag on the right.
+- Fullscreen is offered on the first click anywhere on the screen (never forced); *Import Save* and
+  the fullscreen button opt out (`data-skip-fullscreen-offer`), because a fullscreen request would
+  spend the click they need.
+- The changelog's chunk starts loading when the title screen's own chunk is evaluated
+  (`preloadChangelog`, ADR-049), and its frame shows a skeleton of lines until the words arrive —
+  it is never an empty frame.
+- Motion: the wordmark settles in from above, the slot rises, the plates stagger in, the changelog
+  slides in from the right; the halo breathes and the shine sweeps every 7 s. Reduced motion stops
+  the loops.
 
 ### 5.2 Hub — Emberhold
 - Reference: `main_hub_screen.png` (structure), `main_hub_screen_alternative_2.png` (mood).
@@ -1097,21 +1126,25 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   differ in shape and have a small +/− mark.
 
 ### 5.21 The Chronicle of Changes
-- What the game tells the player about itself: every release, newest first, read as news rather
-  than as a commit log. It is a **frame on the title screen** (§5.1), always visible — never a
-  window that has to be opened — and the same view opens from *Settings → About → Chronicle of
-  Changes* while a chronicle is being played.
+- What the game tells the player about itself: every release, newest first — patch notes, short and
+  plain. It is a **window on the title screen** (§5.1), always open, and the same view opens from
+  *Settings → About → Chronicle of Changes* while a chronicle is being played.
 - A release prints its version in a gold plate, its name in the display face, a **LATEST** badge on
-  the newest one, and the day it shipped. Under it, one line per change: the kind's glyph, the
-  kind's name in its colour (**New** gold, **Content** epic violet, **Improved** justice blue,
-  **Balance** ember, **Fixed** buff green), then the sentence. A line marked as a highlight takes
-  the kind's colour as a left rail and a wash, and reads a point larger.
-- Above the list, a chip per kind with the number of lines it holds — the everything chip first —
-  and under them an order toggle that flips newest/oldest. A chip with no lines is disabled. The
-  content is authored newest first and printed as authored, so "oldest" is a reversal and the
-  panel never compares two version strings.
+  the newest one, and the day it shipped. Under it, its lines are **grouped by kind** in a fixed
+  order — **New** gold, **Content** epic violet, **Changed** faith blue, **Balance** ember, **Fixed**
+  buff green — each group under one heading (the kind's glyph and name in its colour), so a kind is
+  said once per release rather than on every line. A line is a small diamond in the kind's colour
+  and the sentence; a highlighted line (the one or two that lead a release) takes the kind's colour
+  as a left rail and a wash.
+- Above the list, **one row**: a chip per kind, the everything chip first (the kit's banner drawn
+  thin, no counts — a chip with no lines is disabled), and at the row's end an icon-only order
+  toggle whose hourglass turns over between newest and oldest (its label is its accessible name).
+  With a chip picked the list is one kind already, so the group headings are left out. The content
+  is authored newest first and printed as authored, so "oldest" is a reversal and the panel never
+  compares two version strings.
 - The view takes its height from its container (`100%` inside the title frame, a number inside the
-  dialog); the chips sit above and the list takes what is left and scrolls.
+  dialog); the chips sit above and the list takes what is left and scrolls. While the panel's chunk
+  loads (ADR-049), the frame holds its size with a skeleton of lines.
 - Content: `src/content/changelog/` with its strings in `src/i18n/en/changelog.ts`
   (`CONTENT_AUTHORING.md` §13). Every shipped version writes a release there — that rule is
   `CLAUDE.md` §9.3, and it is the owner's standing instruction.

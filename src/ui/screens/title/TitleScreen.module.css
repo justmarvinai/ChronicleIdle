@@ -1,82 +1,140 @@
+/*
+ * The title screen (docs/tech/UI_DESIGN.md §5.1): three zones over the Eclipse gate. The left
+ * column carries the wordmark, the chronicle's save slot and the way in; the middle is left open
+ * for the gate; the Chronicle of Changes stands open on the right. Class names are camel case —
+ * the bundler exposes CSS module locals in that form only.
+ */
 .root {
   position: absolute;
   inset: 0;
   overflow: hidden;
 }
-/* The wordmark and the sweep that crosses it ride together at the top of the left column. */
-.brand {
-  position: relative;
-  width: 660px;
-  max-width: 100%;
-}
-.logo {
-  display: block;
-  width: 100%;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 30px rgba(155, 93, 229, 0.35));
-}
-.glint {
+
+/* Darkens the painting under both columns and the foot, and leaves the gate in the middle lit. */
+.shade {
   position: absolute;
   inset: 0;
+  z-index: var(--z-scene);
   pointer-events: none;
-  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, 0.35) 50%, transparent 58%);
-  background-size: 300% 100%;
-  mix-blend-mode: overlay;
-  animation: glint 6s ease-in-out infinite;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7, 4, 13, 0.82) 0%,
+      rgba(7, 4, 13, 0.62) 30%,
+      rgba(7, 4, 13, 0) 45%,
+      rgba(7, 4, 13, 0) 58%,
+      rgba(7, 4, 13, 0.55) 68%,
+      rgba(7, 4, 13, 0.72) 100%
+    ),
+    linear-gradient(0deg, rgba(4, 3, 8, 0.85) 0%, rgba(4, 3, 8, 0) 14%);
 }
-@keyframes glint {
-  0%,
-  60% {
-    background-position: 120% 0;
-  }
-  80%,
-  100% {
-    background-position: -120% 0;
-  }
-}
-/*
- * The screen is two columns between the top edge and the corner controls (UI_DESIGN.md §5.1): the
- * wordmark over what you came to press on the left, the Chronicle of Changes on the right. The
- * grid stretches, so the chronicle's frame is exactly as tall as the space it is given — the news
- * runs the height of the screen the way a launcher's does.
- */
-.stage {
+
+/* ── The left column ─────────────────────────────────────────────────────────────────────────── */
+.left {
   position: absolute;
-  left: 56px;
-  right: 56px;
-  top: 88px;
+  left: 64px;
+  top: 40px;
   bottom: 84px;
+  width: 680px;
   z-index: var(--z-chrome);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 900px);
-  gap: 56px;
-  align-items: stretch;
-}
-.menuColumn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  min-width: 0;
+  gap: 22px;
 }
-.menu {
+
+/* The wordmark with the gate's violet breathing behind it and an ember sweep across its letters. */
+.brand {
+  position: relative;
+  width: 600px;
+  max-width: 100%;
+}
+.halo {
+  position: absolute;
+  inset: -22% -12%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 55%,
+    rgba(155, 93, 229, 0.42) 0%,
+    rgba(155, 93, 229, 0.14) 38%,
+    transparent 66%
+  );
+  animation: breathe 5s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+.logo {
+  position: relative;
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 28px rgba(155, 93, 229, 0.4));
+}
+.shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 214, 140, 0.85) 48%,
+    rgba(255, 248, 225, 0.95) 50%,
+    rgba(255, 214, 140, 0.85) 52%,
+    transparent 62%
+  );
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  background-position: 130% 0;
+  animation: shine 7s ease-in-out infinite;
+}
+@keyframes shine {
+  0%,
+  62% {
+    background-position: 130% 0;
+  }
+  86%,
+  100% {
+    background-position: -30% 0;
+  }
+}
+
+.slot {
+  width: 640px;
+  max-width: 100%;
+}
+
+/* What else the title screen offers, as one row of stone plates under the slot. */
+.actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 14px;
+  width: 640px;
+  max-width: 100%;
 }
-.menuButton {
-  width: 420px;
+.action {
+  width: 204px;
 }
-.continueAs {
-  margin-top: 6px;
-  text-align: center;
-  color: var(--gold-3);
-  font-size: 20px;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+.cog {
+  width: 26px;
+  height: 26px;
+  filter: brightness(1.15);
 }
+
 .notice {
-  width: 520px;
+  width: 640px;
   max-width: 100%;
 }
 .noticeTitle {
@@ -88,24 +146,17 @@
   color: var(--text-2);
   margin: 0 0 12px;
 }
-.corner {
+
+/* ── The Chronicle of Changes: a window on the screen, open from the first frame ─────────────── */
+.chronicle {
   position: absolute;
-  right: 28px;
-  bottom: 20px;
+  right: 56px;
+  top: 40px;
+  bottom: 84px;
+  width: 660px;
   z-index: var(--z-chrome);
   display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.version {
-  color: var(--text-3);
-  font-size: var(--fs-small);
-}
-
-/* The chronicle: a frame, always on the title screen, never a window you have to open. */
-.chronicle {
   min-height: 0;
-  display: flex;
 }
 .chroniclePanel {
   flex: 1;
@@ -119,23 +170,68 @@
 }
 .chronicleHead {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(201, 162, 74, 0.28);
 }
 .chronicleMark {
-  align-self: center;
+  flex: none;
   color: var(--gold-2);
+  filter: drop-shadow(0 0 6px rgba(240, 213, 122, 0.35));
+}
+.chronicleTitles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 .chronicleTitle {
   margin: 0;
-  font-size: 26px;
+  font-size: 28px;
+  line-height: 1.05;
   color: var(--gold-3);
 }
 .chronicleSubtitle {
-  flex: 1;
-  min-width: 0;
   color: var(--text-3);
   font-size: 14px;
-  text-align: right;
+}
+
+/* ── The foot: where the chronicle lives, and the corner controls ────────────────────────────── */
+.foot {
+  position: absolute;
+  left: 64px;
+  right: 56px;
+  bottom: 22px;
+  z-index: var(--z-chrome);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.local {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-3);
+  font-size: 15px;
+}
+.localGlyph {
+  color: var(--gold-1);
+}
+.corner {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+}
+.version {
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halo,
+  .shine {
+    animation: none;
+  }
 }

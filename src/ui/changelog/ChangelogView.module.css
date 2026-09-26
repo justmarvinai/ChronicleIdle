@@ -1,7 +1,7 @@
 /*
  * The Chronicle of Changes (docs/tech/UI_DESIGN.md §5.21). A column of releases read newest
- * first: a chip row that filters by kind and flips the order, then a scrolling list where every
- * line wears its kind's icon and colour, and a headline wears a rail.
+ * first: a chip row that filters by kind and flips the order, then a scrolling list where each
+ * release groups its lines under one heading per kind, and a headline wears a rail.
  *
  * Class names are camel case throughout — the bundler exposes CSS module locals in that form only
  * (`localsConvention: 'camelCaseOnly'` in vite.config.ts), and anything else silently applies to
@@ -14,27 +14,25 @@
   gap: 10px;
   min-height: 0;
 }
-/*
- * The chips get the whole width and the order toggle sits under them on the right: six chips and
- * a toggle do not share a line at this width, and a toggle wrapped alone looks like an accident.
- */
+/* One row: the kind chips, then the order toggle at its end. */
 .controls {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 7px;
+  align-items: center;
+  gap: 6px;
 }
 .chips {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
 }
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 30px;
-  padding: 0 8px;
+  height: 28px;
+  padding: 0 4px;
   color: var(--text-3);
   white-space: nowrap;
   transition:
@@ -65,17 +63,14 @@
   font-size: 13px;
   letter-spacing: 0.02em;
 }
-.chipCount {
-  font-size: 12px;
-  color: var(--text-3);
-}
 .order {
-  align-self: flex-end;
+  flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 9px;
+  justify-content: center;
+  width: 34px;
+  height: 28px;
+  padding: 0;
   color: var(--text-3);
   white-space: nowrap;
   transition:
@@ -90,10 +85,7 @@
 }
 .orderGlyph {
   color: var(--gold-2);
-}
-.orderLabel {
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  transition: transform var(--t-base) var(--ease-out);
 }
 /* Oldest first reads as a flip of the same control, so the mark turns over rather than changing. */
 .order[data-order='oldest'] .orderGlyph {
@@ -153,41 +145,55 @@
   color: var(--text-3);
   font-size: 13px;
 }
+/* A kind's lines under one heading: the kind is said once, not on every line. */
+.group + .group {
+  margin-top: 8px;
+}
+.groupHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 4px;
+}
+.groupGlyph {
+  color: var(--kind);
+}
+.groupLabel {
+  color: var(--kind);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
 .lines {
   margin: 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 4px;
 }
 .line {
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  padding: 3px 8px 3px 7px;
+  padding: 2px 8px 2px 7px;
   border-left: 2px solid transparent;
   line-height: 1.4;
   color: var(--text-2);
 }
-.lineGlyph {
+/* The kind's colour, as a small diamond — the heading above names it. */
+.bullet {
   flex: none;
-  margin-top: 2px;
-  color: var(--kind);
-}
-.lineBody {
-  flex: 1;
-  min-width: 0;
-}
-/* The kind's name opens the sentence, so a line says what it is before it says what it did. */
-.tag {
-  margin-right: 7px;
-  color: var(--kind);
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  background: var(--kind);
+  transform: rotate(45deg);
+  opacity: 0.85;
 }
 .text {
+  flex: 1;
+  min-width: 0;
   font-size: 15px;
 }
 /* A headline: the one or two lines of a release worth reading first. */
@@ -200,7 +206,50 @@
   font-size: 16px;
 }
 
-/* One custom property per kind, so a chip, a glyph, a tag and a rail all read from one place. */
+/*
+ * While the pages load: the shape of a release, faintly lit, so the window never stands empty.
+ * It is drawn for a frame or two on a warm cache and a beat on a cold one.
+ */
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 4px;
+}
+.skeletonHead,
+.skeletonLine,
+.skeletonLineShort {
+  display: block;
+  height: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(201, 162, 74, 0.08),
+    rgba(201, 162, 74, 0.2),
+    rgba(201, 162, 74, 0.08)
+  );
+  background-size: 200% 100%;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+.skeletonHead {
+  width: 55%;
+  height: 22px;
+}
+.skeletonLine {
+  width: 92%;
+}
+.skeletonLineShort {
+  width: 64%;
+}
+@keyframes skeleton {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* One custom property per kind, so a chip, a glyph, a heading and a rail all read from one place. */
 .kindAll {
   --kind: var(--gold-3);
 }
@@ -211,7 +260,7 @@
   --kind: var(--r-epic);
 }
 .kindChanged {
-  --kind: var(--el-justice);
+  --kind: var(--el-faith);
 }
 .kindBalance {
   --kind: var(--ember-3);

@@ -1,506 +1,423 @@
 /**
- * The Chronicle of Changes, in the words a player would use (docs/tech/CONTENT_AUTHORING.md §13).
- * One key per line of `src/content/changelog/index.ts`, grouped by release, newest first.
+ * The Chronicle of Changes: the patch notes the player reads on the title screen and in Settings
+ * (docs/tech/CONTENT_AUTHORING.md §13). One key per line of `src/content/changelog/index.ts`,
+ * grouped by release, newest first.
  *
- * Write for someone who plays the game and has never read a commit: name the thing that changed
- * and what it does for them. No file paths, no version numbers inside a line, no jargon.
+ * Plain and short: one fact per line, said once. Name the feature and what changed for the player
+ * — numbers, unlock levels, what it replaces. No lore, no file paths, no version numbers inside a
+ * line. The panel groups lines under New, Content, Changed, Balance and Fixed, so a line never
+ * starts with "New:" or "Fixed:" itself.
  *
  * This table is not part of the dictionary the first screen loads: it is the largest the game has
  * and it grows with every release, so it arrives with the panel that prints it and joins the
  * dictionary then (`registerStrings`, ADR-049). The panel's own labels live in `ui.ts`.
  */
 export const changelog = {
-  'release.0_13_0.name': 'The Unwritten',
+  'release.0_13_1.name': 'Title Screen & Patch Notes',
+  'release.0_13_1.title_screen':
+    'Reworked title screen: your saved game is shown as a card with portrait, level, XP, power, champions, campaign progress and when you last played.',
+  'release.0_13_1.patch_notes':
+    'Patch notes rewritten: shorter entries, nothing repeated, and each version grouped into New, Content, Changed, Balance and Fixed.',
+  'release.0_13_1.notes_loading':
+    'The patch notes window no longer shows up empty for a moment when the title screen opens.',
+  'release.0_13_1.logo_shine': 'The shine across the logo no longer lights up a box around it.',
+  'release.0_13_1.notes_facts':
+    'Corrected older patch notes: Eternal Key refill time, what Refine does and what rank-ups use.',
+
+  'release.0_13_0.name': 'The Unwritten (Roguelite)',
   'release.0_13_0.unwritten':
-    'A page has torn open over Emberhold’s square. From level 16 you can send a company into the Unwritten: three folios of lost history, each a map of branching roads that is never the same twice.',
-  'release.0_13_0.inscriptions':
-    'Every victory offers inscriptions to write into your company — fifty-four of them, in four inks. Write three of one ink and it illuminates, six and it blazes, and a company holding two inks is offered inscriptions that blend them.',
+    'The Unwritten, a roguelite game mode (unlocks at level 16): each run crosses three randomly drawn maps, and each map ends in a boss (Warden).',
   'release.0_13_0.company':
-    'Take up to six champions. Four go into each fight, and every wound is kept from one fight to the next, so choosing whom to send, where to rest and which road to take matters.',
-  'release.0_13_0.relics':
-    'Twenty-four relics bend the rules of an expedition and eight blots stain it. Between the fights wait twenty mysteries, shrines, a Peddler, reliquaries, and Echoes of champions who may join you for one expedition.',
-  'release.0_13_0.wardens':
-    'Each folio ends at its Warden: the Ink-Drowned Knight, the Hollow Choir and, last of all, the Unwriter.',
+    'Bring up to 6 champions per run (more with Scriptorium upgrades); 4 fight at a time and damage carries over between fights.',
+  'release.0_13_0.inscriptions':
+    '54 run-only upgrades (inscriptions) in four inks. Collecting 3 and 6 of one ink unlocks bonuses, and holding two inks unlocks blended inscriptions.',
+  'release.0_13_0.events':
+    'Map events: 20 mysteries, shrines, a shop (the Peddler), relic chests, and Echoes — champions who join you for one run.',
+  'release.0_13_0.relics': '24 relics and 8 curses (blots) that change the rules of a run.',
   'release.0_13_0.omens':
-    'Sixteen Omens, each harder than the last and each with a twist of its own. Win an expedition to open the next, and the first win under each Omen pays its seal — gems, and shards and Skill Tomes under the deeper ones.',
+    '16 difficulty levels (Omens), each adding a modifier. Your first win on each pays a one-time reward.',
   'release.0_13_0.scriptorium':
-    'Win or fall, every expedition brings Recovered Pages home. Write them into the Scriptorium’s sixteen folios for a stronger start to every expedition after.',
+    'Scriptorium: 16 permanent upgrades bought with Pages, which every run earns, win or lose.',
   'release.0_13_0.tithe':
-    'The first six Wardens you fell each week pay the Warden’s Tithe: gold, brews, materials and Skill Tomes — Legendary Tomes too, once you reach the eighth Omen.',
-  'release.0_13_0.tale':
-    'When an expedition ends its Tale is told — who went in, what they wrote, who fell — and the Records keep your last expeditions and your best.',
-  'release.0_13_0.saved':
-    'An expedition is saved as you walk it: close the game in the middle of a folio and it will be waiting where you left it.',
+    'Weekly reward: the first 6 Wardens you defeat each week pay gold, brews, materials and Skill Tomes (Legendary Tomes from Omen 8).',
+  'release.0_13_0.records': 'Run summary after every run, a Records tab, and runs that save mid-map.',
   'release.0_13_0.deeds':
-    'The Hall of Deeds gains the Unwritten’s own ledger: four achievements, four challenges, the Ink-Black portrait frame and the title Author of the Unwritten.',
-  'release.0_13_0.lesson': 'Eldric points the way to the Torn Page the day it opens.',
-  'release.0_13_0.modes':
-    'Game Modes lists the Unwritten between the Brewery and the Tower, with your open Omen and the week’s Tithe on its card; the rift on the square tells you the same.',
-  'release.0_13_0.wallet':
-    'The Wallet names the Unwritten wherever it pays gold, gems, shards, brews, tomes or materials, with the way there.',
-  'release.0_13_0.ranks':
-    'The Hall’s four highest ranks ask for a little more renown, now that the Hall holds more deeds to earn it with.',
+    'Hall of Deeds: new Unwritten category with 4 achievements, 4 challenges, a portrait frame and a title.',
+  'release.0_13_0.modes': 'Game Modes and the hub show your open Omen and the weekly rewards left.',
+  'release.0_13_0.wallet': 'The Wallet lists the Unwritten as a source for the currencies it pays.',
+  'release.0_13_0.ranks': 'Hall of Deeds ranks 7–10 now need 2,500 / 3,800 / 5,600 / 7,700 renown.',
 
-  'release.0_12_0.name': 'The Hall of Deeds',
-  'release.0_12_0.hall':
-    'The Hall of Deeds opens at level 13, on the hub’s bottom bar: thirty-seven achievements across every part of the game, each climbing through five tiers, each tier paid when you claim it.',
+  'release.0_12_0.name': 'Hall of Deeds (Achievements & Challenges)',
+  'release.0_12_0.hall': 'Hall of Deeds (unlocks at level 13): 37 achievements, each with 5 reward tiers.',
   'release.0_12_0.challenges':
-    'Twenty challenges dare you further — win a Hard stand with nothing better than Uncommon, fell a boss with a single champion, reach the top of the Tower — each paying once, and paying more.',
-  'release.0_12_0.renown':
-    'Everything you claim adds renown, and renown climbs ten ranks of the Hall, each with its own reward to claim.',
-  'release.0_12_0.frames':
-    'Ranks and the hardest challenges hang up portrait frames — bronze, silver, gold, ember, void, verdant and amethyst — to wear in your profile and around your portrait at the top of the screen.',
+    '20 one-time challenges, e.g. win a Hard stage with no champion above Uncommon, or beat a settlement boss on Hard with one champion.',
+  'release.0_12_0.renown': 'Claims give renown, which raises your Hall rank (10 ranks, each with a reward).',
+  'release.0_12_0.frames': '7 portrait frames earned from ranks and challenges.',
   'release.0_12_0.titles':
-    'Four new titles to wear: Rabble-Rouser, Banneret, Sovereign of the Tower and Legend of the Chronicle.',
-  'release.0_12_0.remembered':
-    'The Hall remembers everything your chronicle has already done, so the day it opens your first deeds are waiting — and Claim all takes them in one press.',
-  'release.0_12_0.lesson': 'Eldric points the way to the Hall the day it opens.',
-  'release.0_12_0.profile':
-    'The profile has a frame picker beside the avatar, showing every frame around your own portrait.',
+    '4 new titles: Rabble-Rouser, Banneret, Sovereign of the Tower and Legend of the Chronicle.',
+  'release.0_12_0.retroactive':
+    'Progress you made before the update counts, and Claim all collects every reward at once.',
+  'release.0_12_0.profile': 'Choose your portrait frame in the profile.',
   'release.0_12_0.gear':
-    'The gear your champions wear now counts in every fight. Its stats and its set bonuses were on their sheets but were being left out of battle — they now fight exactly as strong as their sheets say.',
-  'release.0_12_0.bulwark':
-    'Bulwark’s shield at the start of each wave now holds a fifth of the wearer’s health, as it always promised, instead of almost nothing.',
+    'Equipped gear stats and set bonuses now apply in battle (they were shown but ignored).',
+  'release.0_12_0.bulwark': 'Bulwark set shield now blocks 20% of max HP as described (was 0.2%).',
 
-  'release.0_11_0.name': 'The Chronicler’s Quill',
+  'release.0_11_0.name': 'Instant Clears',
   'release.0_11_0.instant':
-    'From level 11, a stand you have taken all three stars on can be cleared instantly from its battle setup: the same energy, the same spoils, no fight to watch.',
+    'Instant clears (unlocks at level 11): stages with 3 stars can be cleared without fighting, for the same energy and rewards.',
   'release.0_11_0.count':
-    'The auto-repeat count sets how many runs at once, and the page that follows counts them up, shows everything they paid and lets you go again.',
-  'release.0_11_0.team': 'The champions you seat still take the experience, as if they had fought.',
-  'release.0_11_0.marks':
-    'Mastered stands are marked on the stand list, and the victory that earns a stand its last star tells you what that star now allows.',
-  'release.0_11_0.lesson': 'Eldric shows you the new button the first time you open a mastered stand.',
-  'release.0_11_0.launch':
-    'The battle setup’s launch column is a little wider, with the repeat count and Manual or Auto side by side.',
+    'Clear several times at once with the repeat count; a results page totals the rewards.',
+  'release.0_11_0.team': 'Champions in the team still gain XP from instant clears.',
+  'release.0_11_0.marks': 'Stages with 3 stars are marked in the stage list.',
+  'release.0_11_0.launch': 'Battle setup shows the repeat count and Manual/Auto side by side.',
   'release.0_11_0.quests':
-    'Instant clears count for the daily quests that ask you to clear stages or spend energy, but not for the ones that ask you to win battles.',
+    'Instant clears count for ‘clear stages’ and ‘spend energy’ quests, but not for ‘win battles’.',
 
-  'release.0_10_0.name': 'The Deepvein',
+  'release.0_10_0.name': 'The Mine',
   'release.0_10_0.mine':
-    'The Mine opens at level 6: beneath the market square, its crews dig gems for you while you are away.',
+    'The Mine (unlocks at level 6): produces gems over time, even while you are offline.',
   'release.0_10_0.levels':
-    'Dig it deeper, ten levels in all, with gold and the Forge’s spare metal: every level digs more gems a day and holds more before the crews stop.',
-  'release.0_10_0.sigils':
-    'From its fourth level the Mine also brings up Glyph Sigils, the rarest thing the Forge needs.',
-  'release.0_10_0.store':
-    'The Mine keeps the part-gems a visit cannot pay whole, so collecting often never costs you anything — only leaving a full store does.',
-  'release.0_10_0.lesson':
-    'Eldric shows you the Mine the moment it opens, and what the level below it asks for.',
+    '10 upgrade levels, paid with gold and Forge materials; each level produces and stores more.',
+  'release.0_10_0.sigils': 'From level 4 the Mine also produces Glyph Sigils.',
+  'release.0_10_0.store': 'Partial gems carry over between collections, so collecting often loses nothing.',
   'release.0_10_0.fountain':
-    'The old fountain in the middle of Emberhold is the way down to the Mine, and it tells you when its store is full.',
-  'release.0_10_0.first_store':
-    'Every chronicle’s Mine opens with its first store already full, including the ones begun before it existed.',
+    'The Mine is entered from the fountain on the hub, which shows when storage is full.',
+  'release.0_10_0.first_store': 'The Mine starts with a full store, including on existing saves.',
 
-  'release.0_9_10.name': 'Accounts Settled',
-  'release.0_9_10.titan_easy':
-    'The Titan has an Easy tier: a tenth of her Normal strength, so a team that has just reached her can take her first chests in the week she wakes.',
+  'release.0_9_10.name': 'Titan Easy Tier, Eternal Keys & Fixes',
+  'release.0_9_10.titan_easy': 'Titan: new Easy tier with a tenth of Normal’s health.',
   'release.0_9_10.eternal_keys':
-    'You can buy Eternal Keys: five for 150 gems in the Wallet, or from Buy keys in the Eternal Tower — even past the ten the clock stops at.',
-  'release.0_9_10.boss_gate':
-    'A boss gate opens on the tier you have been fighting, instead of always on the first.',
+    'Eternal Keys can be bought: 5 for 150 gems in the Wallet or the Eternal Tower, even above the 10-key cap.',
+  'release.0_9_10.boss_gate': 'Boss screens open on the tier you last fought.',
   'release.0_9_10.pale_herald':
-    'The Pale Herald heals 8 % of its health, as its ability says, instead of healing all the way back every few turns.',
+    'Pale Herald heals 8% of its HP as its ability says, instead of healing fully.',
   'release.0_9_10.wallet_sources':
-    'The Wallet names every place a currency comes from, including the Eternal Tower, the Dungeons and the energy in the Idle Chest.',
+    'The Wallet lists every source of each currency, including the Eternal Tower, the Dungeons and Idle Chest energy.',
   'release.0_9_10.varkos':
-    'Varkos is featured on every Primordial Rotation of the Summoning Portal, and no Legendary is featured two rotations in a row.',
+    'Summoning Portal: Varkos is featured in every Primordial Rotation, and no Legendary is featured twice in a row.',
   'release.0_9_10.obtain':
-    'A champion’s page says truly where it comes from: the common champions no longer claim to drop in the campaign, and the Epics say they can be picked for mastering a campaign difficulty.',
+    'Champion pages show correct sources: Common champions no longer list campaign drops, and Epics note they can be picked for mastering a difficulty.',
 
-  'release.0_9_9.name': 'The Ledger and the Purse',
+  'release.0_9_9.name': 'Missions, Quests, Wallet & Bag Rework',
   'release.0_9_9.path':
-    'The Chronicler’s Path has a new look: the ten chapters as tabs that show how far each is walked, the chapter’s missions as tall cards marked with the kind of task they are, and Eldric beside the chapter’s chest, which now shows what it holds.',
-  'release.0_9_9.ledger':
-    'Your daily and weekly quests are laid out as a tally and a board: your points with every chest beside the mark it opens at and what it holds, and the quests as cards — the ones ready to claim first, the ones you have taken last.',
+    'Chronicler’s Path rework: chapter tabs with progress, mission cards by task type, and each chapter chest’s contents.',
   'release.0_9_9.go':
-    'A mission or quest you have not finished tells you where it is played and has a Go button that takes you straight there, instead of a Claim button you could not press.',
-  'release.0_9_9.daily_rewards':
-    'Daily Rewards shows all thirty days at once, with today’s day large beside them and what it pays; days that give an item, like the Brewery Token, now show the item itself.',
+    'Unfinished missions and quests have a Go button that takes you to where they are done.',
+  'release.0_9_9.ledger':
+    'Quests rework: a points track with every chest and its rewards; claimable quests are listed first.',
+  'release.0_9_9.daily_rewards': 'Daily Rewards shows all 30 days at once, with today’s reward highlighted.',
   'release.0_9_9.wallet':
-    'The Wallet shows everything you hold at a glance and each currency in full: how much you have, when more comes back, where it comes from and what it is for — with a way to each. The + next to a currency opens it on that currency.',
+    'Wallet rework: all holdings at a glance, and for each currency its amount, refill time, sources and uses, each with a Go button.',
   'release.0_9_9.energy_refill':
-    'You can buy energy in the Wallet: 50 gems for 100 energy, as often as you like, even past your cap.',
+    'Energy can be bought in the Wallet: 100 energy for 50 gems, even above the cap.',
   'release.0_9_9.bag':
-    'Your Bag is a grid of slots now, with the item you pick shown in full: what it does, and how the thing it acts on stands right now — a boost’s time left, the Brewery runs you have today.',
-  'release.0_9_9.wallet_zero': 'The Wallet no longer shows your energy and your keys as 0.',
-  'release.0_9_9.stage_numbers':
-    'A stage number such as 4-10 no longer breaks across two lines on a mission card.',
+    'Bag rework: an item grid with details for the selected item, such as boost time left and Brewery runs left.',
+  'release.0_9_9.wallet_zero': 'The Wallet no longer shows energy and keys as 0.',
+  'release.0_9_9.stage_numbers': 'Stage numbers such as 4-10 no longer wrap onto two lines on mission cards.',
 
-  'release.0_9_8.name': 'The Cask and the Crystal',
+  'release.0_9_8.name': 'Summoning, Portal & Brewery Rework',
   'release.0_9_8.summoning':
-    'Summoning is a ritual worth watching now. Your shard hangs in the gate as a crystal; press, and the runes kindle and light pours into it, then the gate shows its colours one by one — every colour it climbs is a rarer answer — and before gold it holds its breath. Then the crystal shatters, and the rarer the champion, the bigger the burst: a pillar of light for a Legendary, and slow motion for a Mythic.',
+    'New summoning animation: the gate builds up through the rarity colours, pauses before Legendary, and bursts bigger for rarer champions (slow motion for Mythic).',
   'release.0_9_8.brewery':
-    'The Brewery has a new look: the four halls as cards showing how deep you have gone and how many of their brews you hold, and a hall’s five stages side by side as a descent, with the guards standing on each, their power against your best team, and what a clear pays.',
+    'Brewery rework: hall cards show your progress and brews held; stages show their enemies, their power against your best team, and rewards.',
   'release.0_9_8.portal':
-    'The Summoning Portal is built around its gate: the crystal in the middle, its name, what it can give and both summon buttons right under it, the shards on the left each showing what they can give and how many you hold, and the chances and your mercy drawn as bars.',
+    'Summoning Portal rework: shards with their contents and counts, both summon buttons under the gate, and rates and pity shown as bars.',
   'release.0_9_8.cards':
-    'Summoned champions arrive with ceremony: a single card spins out of the gate, its stars pop in one by one and its rarity is stamped beneath it; ten cards are dealt face down and turned over one after another, with the best of them last.',
-  'release.0_9_8.sounds':
-    'Summoning has new sounds: a rising charge, a note for every colour — gold always rings the same bright one — a heartbeat before gold, the crystal breaking, and a flip, a ping and a stamp for the cards.',
+    'Summon results: single summons reveal one card; 10× summons deal ten cards face down and flip them, best last.',
+  'release.0_9_8.sounds': 'New summoning sounds for the charge, each rarity, the reveal and the cards.',
   'release.0_9_8.brewery_week':
-    'Each Brewery hall shows the days of the week it opens with today marked, and the Brewery tells you how much the runs you have left today could still pour.',
+    'Brewery halls show their open days and how many brews your remaining runs can still earn today.',
   'release.0_9_8.tutorial_strip':
-    'When Eldric asks you to press something low on the screen, his reminder moves to the top, so it never covers what he is asking for.',
-  'release.0_9_8.owed':
-    'A champion the campaign owes you now waits on its own card under the shards, where you cannot miss it.',
+    'Tutorial hints move to the top of the screen when the highlighted button is near the bottom.',
+  'release.0_9_8.owed': 'Champions the campaign owes you appear on their own card in the Portal.',
 
-  'release.0_9_7.name': 'The Crest and the Climb',
+  'release.0_9_7.name': 'Battle Screens, Tower & Settings Rework',
   'release.0_9_7.results':
-    'The end of every fight has been rebuilt. A victory rises in gold with its stars landing one by one; your champions stand as cards showing what each of them did, with the fight’s best marked MVP; and everything the fight paid is laid out as tiles.',
+    'Battle results rework: animated stars, stats per champion with an MVP, and rewards as tiles.',
   'release.0_9_7.tower':
-    'The Eternal Tower looks like a tower now: a hundred stone floors climbing upward. Pick any floor to see who holds it, their strength and what a clear pays; the season, your keys and all ten keepers sit beside it at a glance.',
+    'Eternal Tower rework: floors drawn as a tower; select any floor to see its enemies, power and rewards.',
   'release.0_9_7.defeat':
-    'After a loss, the screen shows how close you came and what went wrong — out-sped, a healer left standing, champions below the enemy’s level — with a button straight to where each can be fixed, and quick ways to grow stronger.',
+    'The defeat screen shows why you lost (speed, healers, level gap) with buttons to what fixes it.',
   'release.0_9_7.battle_setup':
-    'The screen before a fight is a face-off: your team on one side and the enemy on the other, the power of each, a scout’s report on who is strong against whom, the stars there are to earn, and one clear button to begin.',
+    'Battle setup rework: your team against the enemy with power, matchups and the stars to earn.',
   'release.0_9_7.battle_hud':
-    'The battle screen is sharper: clear counters for the wave, the turns and the time, a tidier dock for Auto and speed, and banners that announce each turn and each new wave.',
+    'Battle HUD: clearer wave, turn and time counters, a tidier Auto and speed dock, and turn and wave banners.',
   'release.0_9_7.profile':
-    'Your profile in the corner shows your level on a gold gem, your title, your progress to the next level and your power, and opens a new profile page with your standing, your stars and every title there is to earn.',
+    'The profile chip shows level, title, XP progress and power; the profile page lists your stats and every title.',
   'release.0_9_7.settings':
-    'Settings are arranged in sections with a short line explaining every option, new switches, and the battle speed as a row of plates you can press.',
-  'release.0_9_7.pause':
-    'The pause menu shows where the fight stands, and asks once, clearly, before you retreat.',
+    'Settings are grouped into sections with a description for every option; battle speed is a row of buttons.',
+  'release.0_9_7.pause': 'The pause menu shows the battle state and asks before you retreat.',
   'release.0_9_7.tutorial_marks':
-    'When Eldric only asks you to read, what he is talking about now lights up while he speaks — the stars and the spoils after your first victory, the energy he hands you, and each new feature as he introduces it.',
-  'release.0_9_7.ability_numbers':
-    'An ability’s description in battle now shows its numbers with your skill upgrades counted in.',
+    'The tutorial highlights what Eldric is talking about during read-only steps.',
+  'release.0_9_7.ability_numbers': 'Ability descriptions in battle include your skill upgrades.',
   'release.0_9_7.team_button':
-    'The end of a lost fight no longer offers the same button twice, and the end of a tower, boss, brewery or dungeon fight no longer offers a Team button that led to the campaign.',
-  'release.0_9_7.first_team':
-    'Your very first fight now seats Bran and Wenna beside your champion, just as Eldric says, instead of whichever companions happened to be strongest.',
+    'Result screens no longer show a duplicate button, or a Team button that opened the campaign after tower, boss, Brewery and Dungeon fights.',
+  'release.0_9_7.first_team': 'Your first battle uses Bran and Wenna, as the tutorial says.',
 
-  'release.0_9_6.name': 'The Stall and the Shelf',
+  'release.0_9_6.name': 'Market Rework',
   'release.0_9_6.gold_market':
-    'The Gold Market lays its six wares out as proper cards: each on a lit stand with what it is for and how many you already hold, how many are left, and a count to buy — from one to all your purse can reach — with the total before you pay.',
+    'Gold Market rework: each item on its own card with its use, how many you own, stock left, and a quantity picker with the total price.',
   'release.0_9_6.gem_market':
-    'The Gem Market reads as a shelf: the nine things that never run out, each in its rarity’s colour with what it does and how many are in your Bag, then the four bundles with everything they hold shown by its icon, what those parts would cost on their own, and how much the bundle saves.',
+    'Gem Market rework: 9 consumables with their effects and Bag counts, and 4 bundles with contents, value and savings.',
   'release.0_9_6.rare_finds':
-    'When the stall carries something rare — a Legendary Tome, an Ancient Shard or a Sacred Shard — it is framed in gold and marked as a rare find, so you will not walk past it.',
+    'Rare Gold Market items (Legendary Tome, Ancient or Sacred Shard) are highlighted.',
   'release.0_9_6.stamps':
-    'Buying shows what you got right on the card, and a ware you have bought out or a bundle you have taken keeps its place with a stamp across it.',
+    'Purchases show what you got on the card; sold-out items and claimed bundles are stamped.',
 
-  'release.0_9_5.name': 'Hearth and Harbour',
+  'release.0_9_5.name': 'Tavern, Forge, Hub & Idle Chest Rework',
   'release.0_9_5.tavern':
-    'The Tavern has been rebuilt around the champion you are raising. They stand framed between the seats, a road beneath them shows how far the table takes them towards their level cap, brews sit on a shelf showing what each is worth to them, and the panel shows their health, attack, defence and power before and after.',
+    'Tavern rework: the champion in focus, level-cap progress, brews with their XP values, and stats before and after.',
   'release.0_9_5.forge':
-    'The Forge feels like a smithy now. A storeroom beside every bench shows what you hold and what the next strike will take, crafting walks you through slot, tier and set with each tier’s odds and how many times you can afford it, and the anvil burns and rings when you strike.',
+    'Forge rework: material counts and costs on every bench; crafting shows each tier’s odds and how many crafts you can afford.',
   'release.0_9_5.tavern_helpers':
-    'In the Tavern, Pour to the cap picks the fewest brews that reach the level cap, your champion’s own element first. Filling the seats now leaves out anyone Rare or better or already levelled, and stops once the cap is reached.',
+    'Tavern: ‘Pour to the cap’ picks the fewest brews to reach the level cap, matching element first; auto-fill skips Rare and better and already levelled champions.',
   'release.0_9_5.forge_benches':
-    'Dismantling gathers what you pick on a scrap heap with everything it gives back, and refining sets the piece before and after side by side on a whetstone.',
+    'Dismantle shows everything you get back; Refine shows the piece before and after.',
   'release.0_9_5.hub':
-    'Emberhold’s buildings wear lit medallions instead of red banners, and each says what is waiting inside: the next campaign stage, points to spend, missions to claim, when the market restocks. A ripple rolls out from any building with something for you, and resting your cursor on one tells you what it is for.',
+    'Hub buildings show status lines (next stage, points, missions, restock time) and pulse when something is ready.',
   'release.0_9_5.idle_chest':
-    'The Dockside Chest glows and throws light when it is full, shows how much of each reward it gathers an hour, and lists the odds of its lucky finds. Before your first boss falls, it shows what it will gather and offers the way to the Campaign.',
-  'release.0_9_5.chest_ring': 'An emptied idle chest no longer shows a stray dot at the top of its ring.',
+    'The Idle Chest shows its hourly rewards and bonus-find odds, and glows when full.',
+  'release.0_9_5.chest_ring': 'An emptied Idle Chest no longer shows a stray dot on its ring.',
 
-  'release.0_9_4.name': 'Every Mark in Its Place',
+  'release.0_9_4.name': 'Gear Tooltips & Champions Rework',
   'release.0_9_4.gear_tooltips':
-    'Rest your cursor on a piece of gear — in the Armoury, on a champion, at the Forge or in a battle’s spoils — and it tells you everything about it: its power, its main stat, each substat with how many times it rolled, and its set’s bonus.',
+    'Gear tooltips everywhere: power, main stat, substats with roll counts, and set bonus.',
   'release.0_9_4.champions':
-    'The Champions screen has been rebuilt around the portrait. The name, rarity, element and role sit on the painting itself, the champion steps out of the frame’s corner in battle form, and a row of their abilities waits underneath — rest on one to read it, press it to open the full list. The stats carry icons, and what the champion wears is shown right under them.',
+    'Champions screen rework: name, rarity, element and role on the portrait, abilities below it, and stats with icons and equipped gear.',
   'release.0_9_4.drops_marked':
-    'A settlement’s drop list shows everything by its mark: each gear set by its emblem, each material and shard by its icon, with how many you get and how often. The Dungeons show each keep’s sets by their emblems too, and a keep’s stages name their rarities in their own colours.',
-  'release.0_9_4.icons_everywhere':
-    'Rewards and prices show their icons wherever they are listed: after a battle and a tower floor, when you level up, at the Forge, in the Tavern and in the boss chests.',
+    'Settlement drop lists show set emblems and item icons with amounts and rates; Dungeons show their sets by emblem.',
+  'release.0_9_4.icons_everywhere': 'Rewards and prices show their icons everywhere.',
   'release.0_9_4.header':
-    'The currencies across the top of the screen sit in round bronze sockets on a slim bar, and the Bag and the idle chest are built to match.',
+    'Top bar: currencies in bronze sockets, with the Bag and Idle Chest restyled to match.',
   'release.0_9_4.difficulty_list':
-    'The campaign’s difficulty list opens upwards when there is no room below it, so Normal and Hard can be chosen again.',
-  'release.0_9_4.tooltip_edge':
-    'Tall tooltips near the bottom of the screen open above your cursor instead of running off the edge.',
+    'The campaign difficulty list opens upwards when there is no room below, so Normal and Hard can be selected.',
+  'release.0_9_4.tooltip_edge': 'Tall tooltips near the bottom of the screen open above the cursor.',
 
-  'release.0_9_3.name': 'Marks of the Fourteen',
-  'release.0_9_3.paintings':
-    'Every piece of gear has its own painting now. All fourteen sets were drawn piece by piece — six pictures each, from the weapon down to the boots — so an Ember Guard helmet looks like an Ember Guard helmet, and no two pieces of a set look alike.',
-  'release.0_9_3.emblems':
-    'Every set has its own emblem — Ember Guard’s burning sword, Executioner’s skull and axe, Swiftfoot’s winged boot and the rest — and every piece wears its set’s emblem in the corner wherever it turns up: in the Armoury, on your champions, at the Forge and in whatever a battle drops.',
+  'release.0_9_3.name': 'Gear Art & Set Emblems',
+  'release.0_9_3.paintings': 'Every gear piece has its own art: 14 sets × 6 pieces.',
+  'release.0_9_3.emblems': 'Every set has an emblem, shown on its pieces everywhere.',
   'release.0_9_3.index_sets':
-    'The Gear Sets page of the Chronicle Index leads each set with its emblem and shows all six of its pieces, so you know what you are hunting for before it ever drops.',
+    'Chronicle Index: the Gear Sets page shows each set’s emblem and all six pieces.',
   'release.0_9_3.drops':
-    'After a campaign victory, each piece that dropped is shown as a small picture with its set’s emblem, named in the colour of its rarity. A long auto-repeat shows the first dozen and counts the rest, instead of a list running off the bottom of the panel.',
+    'Battle drops show each piece with its emblem and rarity colour; long auto-repeats list the first 12 and count the rest.',
 
-  'release.0_9_2.name': 'Three Faces Out of the Stone',
-  'release.0_9_2.varkos':
-    'Varkos Sunderking has his own face at last. The Mythic orc king — half grey, half red, under a golden crown — now stands in the Chronicle Index, on the battlefield and anywhere else you meet him, instead of the lizard that was standing in for him.',
-  'release.0_9_2.bosses':
-    'The Gargoyle and the Titan have their own art too. The Gargoyle is a horned, moss-stained thing that crouches at the gate; the Titan is a mountain of scarred plate carrying a hammer the size of a door. Both of them were the same tinted lizard until now.',
-  'release.0_9_2.facing':
-    'Both bosses are drawn facing left, and the Boss Gate used to turn them around to face right — so the Gargoyle stood looking over its own shoulder. They now stand the way they were painted.',
+  'release.0_9_2.name': 'Varkos & Boss Art',
+  'release.0_9_2.varkos': 'Varkos Sunderking has his own art (he used a placeholder).',
+  'release.0_9_2.bosses': 'The Gargoyle and the Titan have their own art (they used placeholders).',
+  'release.0_9_2.facing': 'Bosses face the right way on the boss screen.',
 
-  'release.0_9_1.name': 'A Clearer Bar',
+  'release.0_9_1.name': 'Bottom Bar, Boosts & Bag',
   'release.0_9_1.bottom_bar':
-    'The row of buttons along the bottom of Emberhold has been rebuilt. The five places you go — Champions, Armoury, Missions, Quests and the Index — now sit together on one rail, each with its own coloured mark above its name, so you can find the one you want without reading all five. Battle stays where it was, in red, on the right.',
+    'Hub bottom bar rework: Champions, Armoury, Missions, Quests and Index on one rail with colour-coded icons; Battle stays on the right.',
   'release.0_9_1.boost_slots':
-    'Your three boosts now always have a place beside your portrait, whether or not they are running. A boost that is active lights up in its own colour and counts down; one that is not sits there as an empty slot you can hover to see what it does and where to get it. Before, an inactive boost showed nothing at all, which told you nothing.',
+    'All three boosts have fixed slots next to your portrait; active ones count down, inactive ones explain where to get them.',
   'release.0_9_1.daily_rewards':
-    'The thirty-day calendar is called Daily Rewards now, and its button on the bottom bar simply says Rewards. It used to be called the Standing Welcome, which is a strange thing to say to someone who has been here for a year.',
-  'release.0_9_1.bag_moved':
-    'Your Bag has moved up to the top bar, next to your gold and your chest, with a count of what is in it. It opens from every screen now instead of only from Emberhold — which is the point of an item you use when you decide to.',
+    'The ‘Standing Welcome’ is renamed Daily Rewards (its button reads Rewards).',
+  'release.0_9_1.bag_moved': 'The Bag moved to the top bar with an item count and opens from every screen.',
 
-  'release.0_9_0.name': 'The Market and the Standing Welcome',
+  'release.0_9_0.name': 'Market, Bag, Boosts & Login Rewards',
   'release.0_9_0.market':
-    'There is a Market in Emberhold now, open from your very first hour, and it has two counters. Neither of them takes real money — nothing in this game ever will. One takes gold, the other takes gems, and they could not be less alike.',
+    'The Market, open from the start: a Gold Market and a Gem Market. No real money is used anywhere in the game.',
   'release.0_9_0.welcome':
-    'And there is a Standing Welcome: thirty days of rewards, one waiting for you each day you come back. Miss a day and you lose nothing at all — the board simply waits. The day you were owed is still the day you are owed.',
-  'release.0_9_0.gold_stall':
-    'The Gold Market is a stall that changes hands every hour. Six things, chosen at random, in whatever quantity the trader happened to bring: mostly iron, dust, brews and tomes, but now and then a Legendary Tome, and very rarely a Sacred Shard at a price you will have to save for. When the hour turns, everything changes, so a stall worth raiding is worth raiding now.',
+    'Login calendar: 30 days with one reward for each day you play. There is no streak to lose, and it repeats after day 30.',
+  'release.0_9_0.gold_stall': 'Gold Market: 6 random items that change every hour.',
   'release.0_9_0.gem_shelf':
-    'The Gem Market never changes and never runs out. A Brewery Token puts your twenty daily runs back to twenty. Three boosts double your champions’ experience, your own experience, or the brews the cellars pour, each for a day. Two vouchers put a quest board back to untouched. A Mission Skip Token closes the step you are stuck on — unpaid, but properly closed. And for the very patient: the Champion’s Chicken, which takes one champion straight to the top of their stars, and the Champion’s Cheatmeal, which gives them every star they could ever wear.',
-  'release.0_9_0.bundles':
-    'Four bundles sit at the end of that shelf, each close to a third cheaper than buying its parts one at a time — and each can be taken once per chronicle, so choose your moment.',
-  'release.0_9_0.bag':
-    'Everything you buy goes into a Bag rather than being used on the spot, and there it waits until you say so. Every row tells you exactly what using it would do, because you will have forgotten by the time you want it.',
+    'Gem Market: 9 consumables with unlimited stock — Brewery Token, three 24-hour boosts, two quest vouchers, Mission Skip Token, Champion’s Chicken and Champion’s Cheatmeal.',
+  'release.0_9_0.bundles': '4 one-time bundles at about 30% off.',
+  'release.0_9_0.bag': 'Bag: bought items are stored and used when you choose.',
   'release.0_9_0.boosts':
-    'Boosts stack in time, not in strength: use three Chronicle XP Boosts and you have seventy-two hours of double experience, not one hour of eight times. While one is running it wears a small badge beside your portrait at the top of the screen, counting down, on every screen you visit.',
-  'release.0_9_0.no_streak':
-    'The Welcome has no streak to break and never resets — the rewards are scattered across the thirty days rather than climbing, except for the last three, which are the best on the board. Claim the thirtieth and the board starts again at the first, for as long as you keep playing.',
+    'Boosts stack in duration, not strength; active boosts show a timer next to your portrait.',
 
-  'release.0_8_0.name': 'The Five Keeps',
+  'release.0_8_0.name': 'Dungeons',
   'release.0_8_0.dungeons':
-    'There are Dungeons now, on the Battle menu between the Campaign and the Bosses, and they are open from your very first hour. Four keeps stand ready — Cindervault, the Pale Expanse, Velkora’s Cradle and Ashenreach — each one held by a keeper who never leaves it.',
-  'release.0_8_0.sets_per_keep':
-    'Every gear set in the game belongs to exactly one keep, so at last you can go and farm the set you actually want. Cindervault holds the armour a new roster is built on; the Pale Expanse holds resistance, accuracy and regeneration; Velkora’s Cradle holds the crit sets; and Ashenreach, the hardest of the four, holds speed, the extra turn, lifesteal and the stun.',
+    'Dungeons, open from the start: 4 dungeons, each dropping specific gear sets, so you can farm the sets you want.',
   'release.0_8_0.forty_rungs':
-    'Each keep is twenty stages on Normal and twenty more on Hard. Stages are taken in order, and Hard opens in a keep only once you have taken that keep’s twentieth stage on Normal. Stage one is a fight for your first evening; stage twenty is not.',
+    '20 Normal and 20 Hard stages per dungeon; Hard unlocks after Normal stage 20.',
   'release.0_8_0.what_falls':
-    'Every clear leaves a piece of gear behind, always, and deeper stages can leave two. The deeper you go the better the stars and the better the rarity — and the more energy a run costs, so the price of a stage tells you what it pays. There is gold and experience as well, and, very rarely, a shard for the Portal.',
+    'Every clear drops gear; deeper stages drop better gear, can drop two pieces and cost more energy. Also gold, XP and rare Portal shards.',
   'release.0_8_0.gilded_veil':
-    'A fifth keep, the Gilded Veil, can be seen but not yet entered: it guards necklaces, rings and trinkets, and there is nowhere to wear those yet. It will open when there is.',
-  'release.0_8_0.softer_campaign':
-    'The campaign hits a little less hard on all three difficulties — every enemy on the map is about eight per cent weaker than it was. Nothing else about a stand has changed.',
-  'release.0_8_0.more_chronicle_xp':
-    'Campaign stands pay a little more of your own experience again, on top of the last increase.',
+    'A fifth dungeon (necklaces, rings, trinkets) is shown locked until accessories exist.',
+  'release.0_8_0.softer_campaign': 'Campaign enemies are about 8% weaker on all difficulties.',
+  'release.0_8_0.more_chronicle_xp': 'Campaign stages give more player XP.',
 
-  'release.0_7_2.name': 'A Kinder Campaign, a Stingier Armoury',
-  'release.0_7_2.campaign_xp':
-    'Campaign stands pay more experience than they did — a little more for you, a bit more for the champions who fought. The same map, climbed faster.',
-  'release.0_7_2.brew_xp':
-    'Every brew is worth more champion experience: 1,700 instead of 1,500, and 2,550 when it matches the champion’s element.',
+  'release.0_7_2.name': 'Campaign XP & Drops',
+  'release.0_7_2.campaign_xp': 'Campaign stages give more player and champion XP.',
+  'release.0_7_2.brew_xp': 'Brews give 1,700 champion XP (was 1,500), or 2,550 when the element matches.',
   'release.0_7_2.more_drops':
-    'Campaign stands leave gear behind more often — roughly one run in four or five rather than one in five or six, and one boss stand in two.',
+    'Gear drops more often: about 1 in 4–5 stages (was 1 in 5–6), and 1 in 2 boss stages.',
   'release.0_7_2.rarity_ladder':
-    'What falls is more modest, though, and a difficulty now has a ceiling. Intro stands drop nothing better than Rare, Normal opens Epic and the occasional Legendary, and only Hard will ever leave a Mythic on the ground. Epic armour is still there for the taking long before Hard — at the Forge, and in the chests the Gargoyle and the Titan pay.',
+    'Drop rarity is capped by difficulty: Intro up to Rare, Normal up to Epic with some Legendary, Mythic only on Hard. Epic gear also comes from the Forge and boss chests.',
 
-  'release.0_7_1.name': 'The Gargoyle and the Titan',
-  'release.0_7_1.names':
-    'The two bosses have names now. The one you fight every day is the Gargoyle, the Waking Stone; the one you fight every week is the Titan, the Sunless. Nothing calls them "the daily boss" and "the weekly boss" any more — though that is still exactly how often each of them opens.',
+  'release.0_7_1.name': 'Boss Names: Gargoyle & Titan',
+  'release.0_7_1.names': 'The daily boss is now called the Gargoyle and the weekly boss the Titan.',
   'release.0_7_1.bosses_menu':
-    'Both of them live behind one Bosses card on the Battle menu, which opens a menu of their own: a card each, with what it is, how often it opens and how many keys are waiting at it.',
+    'Both are on one Bosses card in Game Modes, with a menu showing their schedule and keys.',
   'release.0_7_1.kit_names':
-    'Their abilities were renamed to match: the Gargoyle throws a Granite Fist and a Stonequake and wears Weathered Stone, and the Titan gathers its chorus with Titan’s Embrace.',
-  'release.0_7_1.keys':
-    'Their keys took the new names with them — Gargoyle Keys and Titan Keys — and so did every quest that asks you to spend one.',
-  'release.0_7_1.nothing_lost':
-    'Everything you had already done to them came with the new names: this period’s damage, the chests you have taken, and every personal best you have ever set.',
+    'Their abilities and keys were renamed to match (Gargoyle Keys, Titan Keys), including in quests.',
+  'release.0_7_1.nothing_lost': 'Your damage, chests and records carry over.',
 
   'release.0_7_0.name': 'The Brewery',
   'release.0_7_0.brewery':
-    'Four brew halls have opened, one for each element, and they are where brews come from now. The Gilded Cask, the Ember Vats, the Frostwell Cellar and the Waning Cellar are on the Battle menu from level 3 — so you can finally farm the brews your own champions need instead of the ones the map happens to drop.',
-  'release.0_7_0.twenty_runs':
-    'You get twenty runs a day, and all four halls draw on the same twenty. Which element needs brews most today is yours to decide — and the runs come back at midnight.',
-  'release.0_7_0.five_stages':
-    'Every hall has five stages. The first falls on your first day; the fifth is for a finished roster. The deeper you go the more brews a run pours — one at the first stage, five at the last.',
+    'The Brewery (unlocks at level 3): four halls, one per element, where you farm the brews that level champions.',
+  'release.0_7_0.twenty_runs': '20 runs per day, shared across all halls; they reset at midnight.',
+  'release.0_7_0.five_stages': '5 stages per hall; stage N gives N brews.',
   'release.0_7_0.waning_cellar':
-    'The Waning Cellar keeps the old calendar: the cult brews on Wednesday, Saturday and Sunday, and bars its doors the rest of the week. A barred door never costs you a run.',
-  'release.0_7_0.element_wheel':
-    'Each hall is held by the factions of its own element, and tells you which champions have the advantage inside it. Eclipse is the one nothing counters, so the Waning Cellar says to bring your strongest.',
+    'The Eclipse hall opens on Wednesday, Saturday and Sunday only; a closed hall costs no runs.',
+  'release.0_7_0.element_wheel': 'Each hall shows which elements have the advantage inside.',
 
   'release.0_6_0.name': 'The Glorious Palace',
   'release.0_6_0.palace':
-    'A palace has opened on the hill above Emberhold, and inside it a tree of 133 nodes. Its heart gives every champion you own a little more health; its four branches — one for each element — give every champion of that element a little more of everything, for good. Nothing in it is large. All of it is permanent.',
+    'The Glorious Palace: a 133-node skill tree with permanent bonuses — HP for all champions, plus one branch per element.',
   'release.0_6_0.points':
-    'Skill points come from finishing things: one for every settlement you beat on every difficulty, one for every fifth floor of the Eternal Tower and again each season, one for emptying the Gargoyle’s pool and three for the Titan’s.',
+    'Skill points come from settlement bosses (on each difficulty), every 5th Eternal Tower floor (each season), and emptying the Gargoyle’s (1) or Titan’s (3) damage pool.',
   'release.0_6_0.purple_line':
-    'A champion’s stats now show what the Palace gives them in purple, beside what their gear gives them in green — so you can always see which of the two is carrying them.',
-  'release.0_6_0.free_reset':
-    'Changed your mind? Reclaim every point at any time, as often as you like. It costs nothing.',
-  'release.0_6_0.old_chronicles':
-    'Chronicles that had already beaten settlements were paid for them: open the Palace and the points your campaign earned are waiting.',
+    'Champion stats show the Palace bonus in purple next to gear bonuses in green.',
+  'release.0_6_0.free_reset': 'Reset all points at any time for free.',
+  'release.0_6_0.old_chronicles': 'Existing saves receive the points already earned from beaten settlements.',
 
-  'release.0_5_1.name': 'Four Faces',
+  'release.0_5_1.name': 'Champion Art: Bran, Maelis, Reva & Corvin',
   'release.0_5_1.four_champions':
-    'Bran, Maelis, Reva and Corvin have their own art — portraits, battle sprites and idle animations. Eleven of the twenty-three champions are drawn now; the rest still stand in as the lizard until their art is done.',
-  'release.0_5_1.first_hours':
-    'All four are champions you meet in your first hour: the three you can bind first, and the militiaman who fights beside you at Thornwood Crossing.',
+    'Bran, Maelis, Reva and Corvin have their own art: portraits, battle sprites and idle animations.',
 
-  'release.0_5_0.name': 'The Chronicle of Changes',
+  'release.0_5_0.name': 'Patch Notes',
   'release.0_5_0.chronicle_of_changes':
-    'The title screen now keeps a chronicle of everything that changes in the game — what is new, what improved, what was fixed — sorted newest first and filtered by what you care to read.',
-  'release.0_5_0.settings_button':
-    'The same chronicle opens from Settings while you play, so you never have to leave a chronicle to catch up.',
-  'release.0_5_0.title_layout':
-    'The title screen holds its menu to the left of the chronicle, and the logo sits above both.',
+    'Patch notes on the title screen, newest first, with filters by type.',
+  'release.0_5_0.settings_button': 'The same patch notes open from Settings.',
+  'release.0_5_0.title_layout': 'Title screen layout: menu on the left, patch notes on the right.',
 
-  'release.0_4_2.name': 'A Legible Battle Log',
+  'release.0_4_2.name': 'Battle Log',
   'release.0_4_2.battle_log':
-    'The battle log reads at a glance: every line opens with an icon for what happened and carries a coloured rail — gold for a turn, ember for a critical hit, green for a heal, red for a fall.',
+    'Battle log lines have icons and coloured markers for turns, critical hits, heals and deaths.',
   'release.0_4_2.log_names':
-    'Champions are named in their rarity’s colour and enemies in their element’s, damage and healing are called out in their own tones, and every buff and debuff carries its icon.',
-  'release.0_4_2.log_colours':
-    'The log used to print in a single grey no matter what happened in the fight. It does not any more.',
+    'Champion names use rarity colours and enemy names element colours; buffs and debuffs show their icons.',
 
-  'release.0_4_1.name': 'Round Icons',
+  'release.0_4_1.name': 'Ability Icons',
   'release.0_4_1.ability_icons':
-    'Ability icons were being squeezed into eggs wherever they sat in a narrow row — in the Index, the bestiary and the champion sheet. They are round everywhere again.',
-  'release.0_4_1.ability_rows':
-    'An ability list names its slot beside the ability instead of stamping it over the art.',
+    'Ability icons are round again in narrow lists (Index, bestiary, champion page).',
+  'release.0_4_1.ability_rows': 'Ability lists show the slot next to the ability instead of over its icon.',
 
-  'release.0_4_0.name': 'One Name, One Target',
-  'release.0_4_0.one_word_names':
-    'Champions go by one name. Only a Legendary or a Mythic earns a second — Aurelia Dawnwarden, Kaelith Stormcaller, Varkos Sunderking.',
+  'release.0_4_0.name': 'Targeting, Names & Index Sorting',
   'release.0_4_0.target_then_ability':
-    'Choosing an enemy no longer spends your turn: mark the target first, then pick the ability you want to cast on it.',
+    'Select a target first, then an ability — selecting a target no longer ends your turn.',
+  'release.0_4_0.one_word_names':
+    'Champions use one name; only Legendary and Mythic champions have a second.',
   'release.0_4_0.index_sorted':
-    'The Index sorts champions under a heading per element and per role, and a champion’s page scrolls all the way to the end of their lore.',
-  'release.0_4_0.gear_rack':
-    'A worn piece shows its rarity on the rack, and Take off and Upgrade sit where you can find them.',
-  'release.0_4_0.cooldown_on_icon':
-    'An ability on cooldown prints the turns left on its icon instead of hiding them behind a hover.',
-  'release.0_4_0.summon_buttons': 'The buttons under a summon are centred again.',
+    'The Index groups champions by element and role; champion pages scroll to the end of their lore.',
+  'release.0_4_0.gear_rack': 'Equipped gear shows its rarity, and Take off and Upgrade are easier to find.',
+  'release.0_4_0.cooldown_on_icon': 'Abilities on cooldown show the turns left on their icon.',
+  'release.0_4_0.summon_buttons': 'The buttons under summon results are centred again.',
 
-  'release.0_3_0.name': 'Your Call in Battle',
+  'release.0_3_0.name': 'Chronicle Index & Enemy Targeting',
   'release.0_3_0.index':
-    'The Chronicle Index is open: every champion, the bestiary of everything you have fought, all fourteen gear sets and every status effect in the game.',
-  'release.0_3_0.mark_enemy':
-    'Mark the enemy your team goes after and they all go after it — on auto as well as by hand — until it falls.',
-  'release.0_3_0.drag_scroll': 'Hold the left button and drag to scroll anywhere the wheel scrolls.',
-  'release.0_3_0.gear_from_level_1':
-    'Gear can be worn from level 1, so the pieces the first stands drop are useful the moment they drop.',
+    'The Chronicle Index: every champion, a bestiary, all gear sets and every status effect.',
+  'release.0_3_0.mark_enemy': 'Mark an enemy as the whole team’s target, in manual and auto.',
+  'release.0_3_0.drag_scroll': 'Drag with the left mouse button to scroll anywhere the mouse wheel scrolls.',
+  'release.0_3_0.gear_from_level_1': 'Gear can be equipped from level 1.',
   'release.0_3_0.boss_cards':
-    'The boss notices left Emberhold’s sky; the keys you hold are on the mode cards where you pick the fight.',
-  'release.0_3_0.hotkey_clipped': 'The key that casts an ability is readable on its icon.',
+    'Boss notices were removed from the hub; boss keys show on the Game Modes cards.',
+  'release.0_3_0.hotkey_clipped': 'The ability hotkey number is readable on its icon.',
 
   'release.0_2_0.name': 'The Eternal Tower',
   'release.0_2_0.tower':
-    'A hundred floors, climbed in order, opened by clearing the whole Intro campaign. Every tenth floor is a boss, and the climb resets with the season.',
-  'release.0_2_0.eternal_key':
-    'Eternal Keys pay for each attempt: one every three hours, ten in hand at most.',
-  'release.0_2_0.account_power': 'The header carries your Account Power — every champion you own, summed.',
+    'The Eternal Tower, unlocked by clearing all Intro stages: 100 floors, a boss every 10th floor, and the climb resets each 30-day season.',
+  'release.0_2_0.eternal_key': 'Eternal Keys pay for attempts: one every 15 minutes, up to 10.',
+  'release.0_2_0.account_power': 'Account Power (the combined power of all your champions) in the top bar.',
 
-  'release.0_1_2.name': 'Second Batch',
-  'release.0_1_2.battle_log_frame':
-    'The battle log stays inside its panel instead of growing off the screen.',
-  'release.0_1_2.summon_gate': 'A summoned champion lands in the middle of the ritual gate.',
+  'release.0_1_2.name': 'Battle & Summon Fixes',
+  'release.0_1_2.battle_log_frame': 'The battle log stays inside its panel.',
+  'release.0_1_2.summon_gate': 'Summoned champions appear in the centre of the gate.',
   'release.0_1_2.champion_facing':
-    'Five champions were fighting with their backs to the enemy. Every model’s facing is checked now.',
+    'Five champions faced away from the enemy; all champions now face the right way.',
 
-  'release.0_1_1.name': 'First Batch',
-  'release.0_1_1.path_at_level_1':
-    'The Chronicler’s Path opens at level 1 — the missions are what teach the game, so they start with it.',
-  'release.0_1_1.gear_one_place':
-    'A piece of gear lives in exactly one place: on the champion wearing it, or in the Armoury, never both.',
-  'release.0_1_1.armoury_by_set': 'The Armoury groups the racks by gear set, each under its own crest.',
+  'release.0_1_1.name': 'Missions & Armoury',
+  'release.0_1_1.path_at_level_1': 'The Chronicler’s Path unlocks at level 1.',
+  'release.0_1_1.gear_one_place': 'Equipped gear no longer also appears in the Armoury.',
+  'release.0_1_1.armoury_by_set': 'The Armoury groups gear by set.',
 
   'release.0_1_0.name': 'Early Access',
   'release.0_1_0.early_access':
-    'Early Access 0.1: the campaign, battles, champions, gear, the Forge, the Portal, both bosses, quests, the Chronicler’s Path, the Idle Chest and the tutorial, all playable end to end.',
-  'release.0_1_0.economy_measured':
-    'A simulated month of play found the game about 1.8× more generous than planned, and the numbers in the design were corrected to what it actually pays.',
+    'First Early Access build: campaign, battles, champions, gear, Forge, Summoning Portal, both bosses, quests, the Chronicler’s Path, Idle Chest and tutorial.',
   'release.0_1_0.screen_errors':
-    'A screen that fails now shows an in-world panel with a way back to Emberhold and a way to export your chronicle, instead of taking the game with it.',
-  'release.0_1_0.copy_pass': 'Every line of text in the game was read through once for tone and punctuation.',
+    'If a screen fails, an error panel lets you return to the hub or export your save.',
 
-  'release.0_0_14.name': 'Onboarding',
+  'release.0_0_14.name': 'Tutorial',
   'release.0_0_14.tutorial':
-    'Eldric walks you through the first hours: the first stand, your first summon, your first piece of gear — and you can wave him off at any point.',
-  'release.0_0_14.provisions': 'The Chronicler’s Provisions pay you for each chapter you finish with him.',
+    'Tutorial with Eldric covering the first hours: first stage, first summon and first gear. It can be skipped.',
+  'release.0_0_14.provisions': 'Tutorial chapters reward energy (Chronicler’s Provisions).',
 
-  'release.0_0_13.name': 'The Chronicler’s Path',
-  'release.0_0_13.path':
-    'Ten chapters of missions that run the length of the game, each with a chest at the end.',
-  'release.0_0_13.missions': '120 missions, from your first clear to mastering the campaign on Hard.',
+  'release.0_0_13.name': 'The Chronicler’s Path (Missions)',
+  'release.0_0_13.path': 'The Chronicler’s Path: 120 missions in 10 chapters, with a chest for each chapter.',
   'release.0_0_13.eldric':
-    'Eldric Lorekeeper joins the roster for finishing the last chapter — he cannot be summoned.',
+    'Finishing the last chapter unlocks Eldric Lorekeeper, a champion who cannot be summoned.',
 
-  'release.0_0_12.name': 'Quests',
-  'release.0_0_12.quests': 'Ten daily quests and eight weekly ones, rolling over at midnight and on Monday.',
-  'release.0_0_12.points_track':
-    'Each board has a points track with chests along it, so a partly finished day still pays.',
+  'release.0_0_12.name': 'Daily & Weekly Quests',
+  'release.0_0_12.quests': 'Daily (10) and weekly (8) quests, resetting at midnight and on Monday.',
+  'release.0_0_12.points_track': 'Quest points unlock chests along a track.',
 
-  'release.0_0_11.name': 'The Titan',
+  'release.0_0_11.name': 'The Titan (Weekly Boss)',
   'release.0_0_11.weekly_boss':
-    'Titan, over three tiers, with a chorus that shields it and a health pool that takes a week of attempts to empty.',
-  'release.0_0_11.phases':
-    'Bosses change as they fall: new abilities, new immunities, an escort that must go first.',
-  'release.0_0_11.titan_phases':
-    'Titan turns at 90 % and 75 % of its pool rather than far down it, so a single key gets to see its second face.',
+    'Weekly boss: the Titan, with three tiers, a chorus that shields it, and a damage pool that takes a week to empty.',
+  'release.0_0_11.phases': 'Bosses change phases, with new abilities, immunities and escorts.',
+  'release.0_0_11.titan_phases': 'The Titan’s phases start at 90% and 75% of its pool.',
 
-  'release.0_0_10.name': 'The Gargoyle',
+  'release.0_0_10.name': 'The Gargoyle (Daily Boss)',
   'release.0_0_10.daily_boss':
-    'Gargoyle, over four tiers: spend a key, do as much damage as you can, and take the chest your total earns.',
-  'release.0_0_10.boss_records':
-    'Every boss keeps your best damage per tier, so there is always a number to beat.',
-  'release.0_0_10.mechanics_sheet':
-    'A sheet before the fight says how the boss fights, what it shrugs off, and when it enrages.',
+    'Daily boss: the Gargoyle, with four tiers. Spend a key, deal as much damage as you can, and earn chests by total damage.',
+  'release.0_0_10.boss_records': 'Your best damage is recorded for each boss tier.',
+  'release.0_0_10.mechanics_sheet': 'A boss sheet shows its mechanics, immunities and enrage.',
 
-  'release.0_0_9_1.name': 'Chest Pass',
-  'release.0_0_9_1.chest_priced':
-    'The Idle Chest pays against a single campaign run at the tier it farms — a good bonus for being away, never a reason to stay away.',
+  'release.0_0_9_1.name': 'Idle Chest Rebalance',
+  'release.0_0_9_1.chest_priced': 'Idle Chest rewards reduced to a small bonus based on one campaign run.',
   'release.0_0_9_1.chest_materials':
-    'The chest pays the materials of the settlement it farms, not of every settlement at once.',
+    'The Idle Chest gives the materials of the settlement it farms, not of every settlement.',
 
   'release.0_0_9.name': 'The Idle Chest',
-  'release.0_0_9.idle_chest':
-    'A chest at the docks fills whether the game is open or closed, up to twelve hours at a time.',
-  'release.0_0_9.farm_tier': 'What it pays follows the furthest settlement whose boss you have beaten.',
-  'release.0_0_9.silent_summon': 'A summon can no longer spend your shards and show you nothing.',
+  'release.0_0_9.idle_chest': 'Idle Chest: collects rewards over time, even while the game is closed.',
+  'release.0_0_9.farm_tier': 'Its rewards scale with the furthest settlement boss you have beaten.',
+  'release.0_0_9.silent_summon': 'Summoning no longer spends shards without showing the result.',
 
   'release.0_0_8.name': 'The Summoning Portal',
-  'release.0_0_8.portal': 'Four shards, two banners and a featured champion that turns over every fortnight.',
-  'release.0_0_8.pity':
-    'Mercy is printed where you can read it: how many pulls until a guarantee, and what that guarantee rolls with.',
-  'release.0_0_8.reveal':
-    'The reveal is its own ritual — runes, a shard, a gate, and ten cards with the best saved for last.',
+  'release.0_0_8.portal':
+    'Summoning Portal: 4 shard types, 2 banners, and a featured champion that changes every 14 days.',
+  'release.0_0_8.pity': 'Pity counters show how many summons are left until a guarantee.',
+  'release.0_0_8.reveal': 'Summon reveal animation; 10× summons reveal the best champion last.',
 
   'release.0_0_7.name': 'The Forge',
   'release.0_0_7.forge':
-    'Strike new gear from materials, break what you do not want back down, and put stars on what you keep.',
-  'release.0_0_7.refine': 'Refining a piece rerolls a substat for a price you can see before you pay it.',
+    'Forge: craft gear from materials, dismantle gear you do not want, and refine gear to raise its stars.',
 
   'release.0_0_6.name': 'Gear',
-  'release.0_0_6.gear':
-    'Six slots per champion, six rarities, main stats and substats, and levels that pay for themselves.',
-  'release.0_0_6.gear_sets': 'Fourteen gear sets, two- and four-piece, each with its own bonus.',
+  'release.0_0_6.gear': 'Gear: 6 slots, 6 rarities, main stats and substats, and upgrade levels.',
+  'release.0_0_6.gear_sets': '14 gear sets with 2- and 4-piece bonuses.',
 
   'release.0_0_5.name': 'The Tavern',
   'release.0_0_5.tavern':
-    'Level a champion on food, raise their rank with the same champion again, and sharpen their skills with tomes.',
-  'release.0_0_5.ranks': 'Ranking up lifts a champion’s level cap and every stat they own.',
+    'Tavern: level up champions, rank them up by using champions of the same star rank, and upgrade skills with tomes.',
+  'release.0_0_5.ranks': 'Ranking up raises a champion’s level cap and stats.',
 
-  'release.0_0_4.name': 'The Chronicle Level',
+  'release.0_0_4.name': 'Player Level & Titles',
   'release.0_0_4.chronicle_level':
-    'Your own level rises with every stand you clear, raising your energy cap and opening the game a piece at a time.',
-  'release.0_0_4.titles': 'Titles are earned for what you have done, and worn on your profile.',
+    'Player level: earned by clearing stages; raises your energy cap and unlocks features.',
+  'release.0_0_4.titles': 'Titles are earned by reaching milestones and shown on your profile.',
 
   'release.0_0_3.name': 'The Campaign',
-  'release.0_0_3.campaign':
-    'Twelve settlements, ten stands each, over three difficulties — 360 fights between Thornwood Crossing and the far side of Veyrath.',
-  'release.0_0_3.stars':
-    'Each stand keeps three stars for how well you cleared it, and pays a chest for filling them.',
-  'release.0_0_3.energy': 'Energy refills on its own, all day, whether or not the game is open.',
+  'release.0_0_3.campaign': 'Campaign: 12 settlements × 10 stages on 3 difficulties (360 stages).',
+  'release.0_0_3.stars': 'Up to 3 stars per stage, with chests for collecting stars.',
+  'release.0_0_3.energy': 'Energy refills over time, even while the game is closed.',
 
-  'release.0_0_2_1.name': 'A Coat of Paint',
-  'release.0_0_2_1.ui_pass':
-    'Panels, bars and sliders were rebuilt out of the game’s own frames, so no screen looks like a web page.',
+  'release.0_0_2_1.name': 'UI Polish',
+  'release.0_0_2_1.ui_pass': 'Panels, bars and sliders use the game’s own UI art.',
 
   'release.0_0_2.name': 'Battles',
-  'release.0_0_2.battles':
-    'Turn-based fights on a turn meter: four champions, up to three waves, by hand or on auto.',
-  'release.0_0_2.speeds': 'Battles run at ×1 to ×4, and the faster speeds are earned in the campaign.',
-  'release.0_0_2.statuses':
-    'Twenty-six status effects, from Attack Up to Fear, each with its own icon and its own rules.',
+  'release.0_0_2.battles': 'Turn-based battles on a turn meter, with up to three waves, in manual or auto.',
+  'release.0_0_2.speeds': 'Battle speed ×1 to ×4; the faster speeds unlock through the campaign.',
+  'release.0_0_2.statuses': '26 status effects, each with its own icon.',
 
   'release.0_0_1.name': 'Champions',
-  'release.0_0_1.champions':
-    'Collect champions across four elements, three roles and six rarities, each with four abilities of their own.',
-  'release.0_0_1.roster': 'Twenty-three champions to find, and a starter of your choosing to begin with.',
+  'release.0_0_1.champions': 'Champions across 4 elements, 4 roles and 6 rarities, each with 1–4 abilities.',
+  'release.0_0_1.roster': '23 champions to collect, and a starter of your choice.',
 
-  'release.0_0_0.name': 'Emberhold',
-  'release.0_0_0.emberhold':
-    'The first build: Emberhold, the title screen, the settings and the shell the rest of the game is built inside.',
-  'release.0_0_0.saves':
-    'Your chronicle is saved on your own device, with no account, and can be exported to a file at any time.',
+  'release.0_0_0.name': 'First Build',
+  'release.0_0_0.emberhold': 'The hub (Emberhold), the title screen and settings.',
+  'release.0_0_0.saves': 'Your save is stored on your device with no account, and can be exported to a file.',
 } as const;

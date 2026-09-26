@@ -627,6 +627,9 @@ panel's own labels stay typed in `ui.ts`. Validation and tests read every table 
 screen's frame paints a beat before its text — a precached local chunk, so a frame or two. The
 same mechanism is how a large feature's words can ship in its own chunk later: a table that only
 one screen reads can be registered by that screen's loader, the way this one is.
+**Addendum (0.13.1).** The load lives in `ui/changelog/load-changelog.ts` as one shared promise. The
+title screen starts it the moment its own chunk is evaluated (`preloadChangelog`), so the window it
+keeps open fills with the screen, and the frame shows a skeleton of lines for the beat it waits.
 
 
 ## ADR-050 — A whole mode in its own chunk, and a step that commits a copy

@@ -413,6 +413,16 @@ difficulty with their own twists, a sixteen-folio Scriptorium of permanent upgra
 every expedition, a weekly Tithe of Skill Tomes, a ninth ledger in the Hall of Deeds, and a
 headless simulator that holds its difficulty curve to bands in the gate. Save v22.
 
+## Next — the owner's second order of 26 September 2026
+
+Three pieces, in this order; the third starts only after the first two ship.
+
+| Order | Work | Version | Status |
+| --- | --- | --- | --- |
+| 1 | **The title screen reworked** like every other screen, with the Chronicle of Changes kept open on it | `0.13.1` | ✅ shipped in 0.13.1 (`UI_DESIGN.md` §5.1) |
+| 2 | **The Chronicle of Changes rewritten** — plain patch notes, nothing said twice, no lore | `0.13.1` | ✅ shipped in 0.13.1 (`CONTENT_AUTHORING.md` §13) |
+| 3 | **The Electron build** — a `production` branch and a phased plan to a Windows desktop game | — | ⏳ plan next; no Electron code until the owner says go |
+
 ---
 
 ## Backlog (after EA-0.1 — not scheduled)

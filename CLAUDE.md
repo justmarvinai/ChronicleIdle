@@ -293,9 +293,11 @@ next phase starts.
   title screen and from Settings (owner's instruction), and every shipped version writes a release
   there in the same commit: a name, the date, and one short sentence per change, tagged
   `added` / `content` / `changed` / `balance` / `fixed`, with the one or two lines that lead marked
-  as highlights. Write those lines for someone who plays the game and has never read a commit — no
-  file paths, no jargon, no version numbers inside a line. `pnpm content:validate` fails when a
-  release is missing a string or is out of order.
+  as highlights. They are patch notes, plain and informational (owner's instruction): each fact
+  said once, with its numbers, no lore, and no line that repeats its own kind ("New: …"). Write
+  them for someone who plays the game and has never read a commit — no file paths, no jargon, no
+  version numbers inside a line (`docs/tech/CONTENT_AUTHORING.md` §13). `pnpm content:validate`
+  fails when a release is missing a string or is out of order.
 
 ### 9.4 Branch policy
 

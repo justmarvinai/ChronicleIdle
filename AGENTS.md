@@ -55,8 +55,10 @@ Performance
 Documentation
 - [ ] `CHANGELOG.md` updated (Added / Changed / Fixed / Balance).
 - [ ] The **Chronicle of Changes** has a release for this version in `src/content/changelog/`, with
-      its strings in `src/i18n/en/changelog.ts` — one short player-facing sentence per change
-      (`CLAUDE.md` §9.3). This is what the player reads on the title screen; `CHANGELOG.md` is not.
+      its strings in `src/i18n/en/changelog.ts` — one short, plain player-facing sentence per
+      change, each fact said once and every number checked against the content (`CLAUDE.md` §9.3,
+      `CONTENT_AUTHORING.md` §13). This is what the player reads on the title screen;
+      `CHANGELOG.md` is not.
 - [ ] `ROADMAP.md` phase status set to `✅ shipped in x.y.z`.
 - [ ] Any new tunable documented in the relevant `docs/design/*.md` table.
 - [ ] Any new question added to `USER_QUESTIONS.md` with its default.

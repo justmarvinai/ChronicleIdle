@@ -600,13 +600,28 @@ release('0.5.0', '2026-09-20', [
 2. Add the strings under the same prefix in `src/i18n/en/changelog.ts`:
 
 ```ts
-'release.0_5_0.name': 'The Chronicle of Changes',
-'release.0_5_0.chronicle_of_changes': 'The title screen now keeps a chronicle of …',
+'release.0_5_0.name': 'Patch Notes',
+'release.0_5_0.chronicle_of_changes': 'Patch notes on the title screen, newest first, with filters by type.',
 ```
 
-   Write for someone who plays the game and has never read a commit. Name the thing that changed
-   and what it does for them. No file paths, no jargon, no version numbers inside a line, and
-   nothing a player cannot see — a refactor that changed no behaviour is not news.
+   These are patch notes: plain, short and informational (the owner's instruction, 0.13.1). Write
+   for someone who plays the game and has never read a commit.
+
+   - **One fact per line, said once.** Name the feature and what changed for the player — the
+     numbers, the unlock level, what it replaces ("Brews give 1,700 champion XP (was 1,500)").
+     If two lines say the same thing, merge them; if a later release repeats an earlier one, it
+     says only what is new.
+   - **No lore and no flourish.** Not "a page has torn open over Emberhold's square" but "The
+     Unwritten, a roguelite game mode (unlocks at level 16): …". Game names are fine; explain an
+     in-game term the first time a line uses it ("16 difficulty levels (Omens)").
+   - **Never start a line with its kind.** The panel groups lines under New, Content, Changed,
+     Balance and Fixed, so "New:" or "Fixed:" says it twice.
+   - **One sentence, about 25 words at most.** A feature that needs more gets more lines, not
+     longer ones.
+   - **Check every number against the content** before it ships; a wrong number in the notes is a
+     bug like any other.
+   - No file paths, no jargon, no version numbers inside a line, and nothing a player cannot see —
+     a refactor that changed no behaviour is not news.
 
 3. `pnpm content:validate` checks that every line has a string, that the id matches the version,
    and that the list really is newest first.

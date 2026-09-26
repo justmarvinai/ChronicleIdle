@@ -27,13 +27,18 @@ export const AMBIENT_PRESETS: Record<'hub' | 'title' | 'interior' | 'unwritten' 
     rays: null,
     glows: [],
   },
+  // The title screen (UI_DESIGN.md §5.1): the Eclipse gate sits between the two columns at the
+  // framing the screen gives the painting, so its light and the sparks it breathes out sit there too.
   title: {
     fog: { count: 14, tint: 0x9b5de5, alpha: 0.2, speed: 6, band: [300, 1080] },
-    embers: { count: 90, area: [560, 200, 800, 700], tint: [0xc58cff, 0x9b5de5, 0xffffff] },
+    embers: { count: 90, area: [860, 240, 460, 700], tint: [0xc58cff, 0x9b5de5, 0xffffff] },
     fireflies: null,
     motes: { count: 80, tint: 0xd9c8ff },
     rays: { count: 5, tint: 0xb28cff, alpha: 0.08 },
-    glows: [],
+    glows: [
+      { x: 1075, y: 600, size: 620, color: 0x9b5de5, flicker: 0.12 },
+      { x: 1075, y: 640, size: 240, color: 0xe6d6ff, flicker: 0.25 },
+    ],
   },
   // The Unwritten (UNWRITTEN.md §21): violet fog low on the page, ink flecks drifting up out of it.
   unwritten: {

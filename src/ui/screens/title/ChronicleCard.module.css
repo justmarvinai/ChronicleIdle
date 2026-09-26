@@ -1,0 +1,236 @@
+/*
+ * The chronicle saved on this device (docs/tech/UI_DESIGN.md §5.1): a save slot in the kit's wide
+ * ember frame. Class names are camel case — the bundler exposes CSS module locals in that form only.
+ */
+.card {
+  width: 640px;
+  max-width: 100%;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 22px;
+}
+
+/* The portrait wears the chronicle's frame; the level sits on a gold gem at its foot. */
+.portraitWrap {
+  position: relative;
+  width: 148px;
+  height: 148px;
+}
+.levelGem {
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  min-width: 44px;
+  height: 34px;
+  padding: 0 10px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(14% 0, 86% 0, 100% 50%, 86% 100%, 14% 100%, 0 50%);
+  background: linear-gradient(180deg, var(--gold-3), var(--gold-1));
+  color: var(--bg-0);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.kicker {
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.name {
+  overflow: hidden;
+  font-size: 38px;
+  line-height: 1.05;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+.title {
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  color: var(--gold-2);
+}
+/* Experience towards the next level: a slim lit groove, the same gold as the header's. */
+.xp {
+  position: relative;
+  height: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(201, 162, 74, 0.35);
+}
+.xpFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+  box-shadow: 0 0 8px rgba(240, 213, 122, 0.45);
+}
+.xpLine {
+  font-size: 15px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* How far the chronicle has come: three plates on one hairline row. */
+.stats {
+  display: grid;
+  grid-template-columns: 0.9fr 0.8fr 1.3fr;
+  gap: 8px;
+  margin-top: 26px;
+}
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.25));
+  border: 1px solid rgba(201, 162, 74, 0.28);
+}
+.statGlyph {
+  flex: none;
+  color: var(--gold-2);
+}
+.statText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.statLabel {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.statValue {
+  overflow: hidden;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--gold-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+.away {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+.awayGlyph {
+  color: var(--gold-2);
+}
+/* Continue is the one thing a returning player came for, so it breathes. */
+.continue {
+  width: 330px;
+  animation: beckon 2.8s ease-in-out infinite;
+}
+@keyframes beckon {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(240, 213, 122, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(240, 213, 122, 0.45));
+  }
+}
+
+/* No chronicle yet: the quill in a ring, what the game is, and the way in. */
+.first {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 22px;
+}
+/* The kit's round frame over a dark disc, the way the hub's medallions are drawn. */
+.firstMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+}
+.firstDisc {
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(155, 93, 229, 0.45) 0%, transparent 62%),
+    radial-gradient(circle, rgba(18, 15, 22, 0.92) 0%, rgba(8, 7, 10, 0.96) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.8),
+    0 0 26px rgba(155, 93, 229, 0.35);
+}
+.firstRing {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 6px rgba(155, 93, 229, 0.55));
+  pointer-events: none;
+}
+.firstGlyph {
+  position: relative;
+  color: var(--gold-3);
+  filter: drop-shadow(0 0 8px rgba(240, 213, 122, 0.55));
+}
+.firstText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.firstTitle {
+  font-size: 34px;
+  line-height: 1.05;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+.firstBody {
+  margin: 4px 0 0;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.firstAction {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.firstAction .continue,
+.firstAction > * {
+  width: 330px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .continue {
+    animation: none;
+  }
+}

@@ -4,7 +4,7 @@ import { hasKey, t, templateParts, translate } from './index';
 describe('i18n', () => {
   it('interpolates params', () => {
     expect(t('common.unlocksAtLevel', { level: 7 })).toBe('Unlocks at level 7');
-    expect(t('title.continueAs', { name: 'Eldric', level: 3 })).toBe('Eldric · Level 3');
+    expect(t('title.card.xp', { xp: '40', next: '120', level: 4 })).toBe('40 / 120 XP to level 4');
   });
   it('returns the key and warns once for unknown keys', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);

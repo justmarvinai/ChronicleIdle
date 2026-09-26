@@ -7,6 +7,8 @@ test.describe('boot', () => {
     await page.goto('/');
     await expect(page.getByTestId('screen-title')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('loading-screen')).toHaveCount(0);
+    // No chronicle on this device yet: the slot invites a new one instead of offering Continue.
+    await expect(page.getByTestId('title-first')).toBeVisible();
     await expect(page.getByTestId('btn-new-chronicle')).toBeVisible();
     await expect(page.getByTestId('btn-continue')).toHaveCount(0);
     expect(problems).toEqual([]);
