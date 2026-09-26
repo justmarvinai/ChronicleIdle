@@ -7,7 +7,51 @@ All notable changes to ChronicleIdle are documented here. The format follows
 ## [Unreleased]
 
 _Nothing pending, and no question open for the owner. Next, in the owner's order (`ROADMAP.md`):
-instant 3★ clears, Challenges & Achievements, and the roguelite mode._
+Challenges & Achievements, then the roguelite mode._
+
+## [0.11.0] — 2026-09-26 — The Chronicler's Quill
+
+The owner asked for instant three-star clears: a stand already mastered should not need watching to
+be farmed. `docs/design/CAMPAIGN.md` §10; `docs/tech/UI_DESIGN.md` §5.7, §5.8, §5.10, §5.30;
+`TUTORIAL.md` §6; `GAME_DESIGN.md` §6; `QUESTS_MISSIONS.md` §1; `ARCHITECTURE.md` §3; ADR-047.
+
+### Added
+
+- **Instant clears** (`engine/campaign/instant.ts`, `state/instant.ts`). A stand at every star it can
+  hold on a difficulty (`STAGE_MAX_STARS`, new in `balance/campaign.ts`) can be cleared without a
+  fight from chronicle level 11 (`FEATURE_UNLOCK_LEVEL.instant_clear`). Each run costs a fought
+  run's energy and pays a fought three-star repeat's rewards, rolled through `rollRunRewards` on the
+  same seed scheme and the next run index, with no first clear, star chest or milestone in it;
+  `instantBlock` names what stands in the way — the level, the stars, the energy. A batch is the
+  auto-repeat count, capped by the energy, charged and paid one run at a time.
+- Store action `instantClear` and the event `campaign.instantCleared`; the counter
+  `campaign.instant`. Each run is also a `campaign.runs`, a `campaign.cleared` and an
+  `energy.spent`, and none is a battle.
+- **The press** on the battle setup's launch column — *Instant ×10 · 40 ⚡* on a mastered stand,
+  dead with its reason on one short of its stars or a purse short of a run — and **the page** it
+  opens (`InstantClearDialog`, its own lazily loaded chunk; `InstantLedger`, `InstantTeam`): the
+  runs counted up a page at a time under the quill, what they cost, the team's XP and levels, the
+  result screen's own spoils panel, and *Again*.
+- The settlement's stand list marks every mastered stand **Instant**; the victory that takes a
+  stand to its last star says what that star buys (`SpoilsPanel`'s `mastered` banner).
+- **The lesson** (Steel and Bone, 6.9): on a mastered stand's setup from level 11, Eldric points at
+  the press. It waits on a new tutorial condition, `stand_mastered`, read off the router and the
+  save (`standMastered` in `state/tutorial.ts`), and a new target, `setup.instant`.
+- The sound `instant.write`, a page turned per run counted.
+- Tests: the engine (7), the state bookkeeping (8) — among them the proof that a batch written down
+  leaves the wallet, energy, chronicle, roster and armoury exactly as the same runs fought
+  flawlessly would — the battle setup's press, the page, the settlement mark, the victory banner and
+  the lesson; e2e `instant.spec.ts` on a fixture written by `tools/fixtures/instant-chronicle.ts`.
+
+### Changed
+
+- `applyRunFinish` settles through four helpers now shared with instant clears (`claimRunIndex`,
+  `runRng`, `mintRunDrops`, `payChampionXp`); what a fought run pays is unchanged.
+- The battle setup's launch column is 480 px, with the repeat count and the control switch side by
+  side, so the instant press fits above *Start battle*.
+- `STARS_PER_SETTLEMENT` is ten stands times `STAGE_MAX_STARS` rather than a literal three.
+- A dialog may carry a read-only payload (`openDialog` hands it to the draft with immer's
+  `castDraft`).
 
 ## [0.10.0] — 2026-09-26 — The Deepvein
 

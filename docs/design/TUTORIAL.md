@@ -85,17 +85,27 @@ so 4.4 always has something to collect, however fast the chronicle got there. A 
 already finished this chapter before `0.10.0` is shown them on its next visit to the hub; one whose
 Routine was waved off, or marked off when it predated the tutorial, is not.
 
-## Chapter 6 — Steel and Bone (levels 7–15: Rank-up, Forge, Skills, Bosses)
+## Chapter 6 — Steel and Bone (levels 7–20: Rank-up, Forge, Skills, Bosses, Instant clears)
 
 Short, single-step lessons triggered on first visit: Rank-up (7), Forge (8), Skill upgrade (9),
 the Gargoyle (10, includes the "damage accumulates, chests at thresholds, keys reset" explanation),
-Weekly Quests (12), the Titan (15), Refine (18), Auto-repeat (5/20/30). Each is one dialogue +
-one spotlighted action.
+Weekly Quests (12), the Titan (15), Refine (18), Auto-repeat (5/20/30), and — since `0.11.0` —
+Instant clears (11). Each is one dialogue + one spotlighted action.
+
+| # | Where | Spotlight | Eldric says | Done when |
+| --- | --- | --- | --- | --- |
+| 6.9 | The battle setup of a stand with all three stars, from level 11 | The *Instant ×N* press | "Three stars here, and the chronicle already knows how this fight ends. Clear it instantly: the same energy, the same spoils, the XP to the team you seat — and no fight to watch. The repeat sets how many." | read |
+
+6.9 waits on the condition `stand_mastered` — *the battle setup on screen is for a stand the
+chronicle holds every star of* — rather than on the screen alone: on any other stand the press is
+there but dead, and a lesson that points at a press that does nothing teaches the wrong thing
+(`CAMPAIGN.md` §10). A chronicle that had walked chapter 6 before `0.11.0` hears it the first time it
+opens a mastered stand's setup; one whose chapter was waved off does not.
 
 ## Data shape
 
 **As shipped (0.0.14).** The script lives in `src/content/tutorial/`, one file per chapter named
-for it (`awakening`, `the_path`, `the_hold`, `the_binding`, `routine`, `steel_and_bone`; 35 steps)
+for it (`awakening`, `the_path`, `the_hold`, `the_binding`, `routine`, `steel_and_bone`; 38 steps)
 with `index.ts` holding the order, and is validated with everything else by
 `pnpm content:validate`; the overlay is
 `src/ui/tutorial/TutorialOverlay.tsx` and the step machine `src/engine/tutorial/script.ts`.

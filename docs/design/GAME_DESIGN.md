@@ -137,6 +137,7 @@ after the first stand.
 | 8 | Forge (crafting, dismantle) |
 | 9 | Tavern: Skill upgrades |
 | 10 | The Gargoyle |
+| 11 | **Instant clears** (a stand with all three stars cleared without a fight, `CAMPAIGN.md` §10) |
 | 12 | Weekly Quests |
 | 15 | The Titan |
 | 18 | Gear refine (star-up) |

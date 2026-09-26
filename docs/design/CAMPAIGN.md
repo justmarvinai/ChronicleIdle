@@ -167,3 +167,39 @@ them; moving `DIFFICULTY_MULT.intro` would quietly retune three other modes.
 Available from player level 5 (×10), 20 (×25), 30 (×50). Runs the same stage repeatedly at the
 chosen speed with a compact HUD: run counter, drops so far, stop button. Stops on defeat or when
 energy runs out. Results panel at the end summarises everything gained.
+
+## 10. Instant clears
+
+A stand the chronicle has **mastered** — all three stars on that difficulty (`STAGE_MAX_STARS`) —
+can be written into the chronicle instead of fought. It opens at **chronicle level 11**
+(`FEATURE_UNLOCK_LEVEL.instant_clear`), the one level between the Gargoyle and the weekly board
+that opens nothing else: late enough that the first settlements were three-starred by hand.
+
+**What it costs and pays.** An instant run costs the energy a fought run of that stand costs (§2)
+and pays what a fought three-star repeat pays (§7): the gold, the materials, the chance of a
+Faded Shard, a brew and a piece, the champion XP and the chronicle XP, each boosted as a fight's
+would be. It is rolled through the same `rollRunRewards` on the same seed a fought run of its index
+uses (`campaign:<seedRoot>:<stage>:<difficulty>:<runIndex>`), and takes the next run index like
+one — so a batch written down pays *exactly* what the same runs fought to three stars would have,
+which a test holds it to. What it cannot pay is anything a stand pays **once**: the first clear, a
+star chest, the difficulty's milestone. A mastered stand has paid all three already. It moves no
+stars and no best turns — nothing was fought — and it is not a battle: `battles.*` do not count it.
+
+**How many.** The count is the auto-repeat selector's (§9): ×1, then ×10, ×25 and ×50 as the
+chronicle's level opens them. A batch clears as many of them as the energy pays for, charged,
+rolled and paid one run at a time in order, so a level crossed partway pays its refill exactly as a
+fought batch's would. It is refused whole — nothing spent — before level 11, on a stand short of
+its stars, with no team seated, or when the energy does not cover one run.
+
+**Who takes the XP.** The team seated on the battle setup, three at most, as if they had fought.
+
+**Counters.** Each run is a `campaign.runs`, a `campaign.cleared` (so *Clear 5 campaign stages*
+counts it) and an `energy.spent` (so does *Spend 60 energy*), and a `campaign.instant`; the daily
+quest that asks for battles *won* does not, because none was.
+
+**Where.** The battle setup's launch column, above *Start battle*: *Instant ×10 · 40 ⚡* on a
+mastered stand; the same press, dead, with the reason under it on a stand short of its stars or a
+purse short of a run; nothing at all before level 11. The results open on a page of their own
+(`UI_DESIGN.md` §5.30) with *Again*. The settlement's stand list marks every mastered stand
+*Instant*, and the victory that takes a stand to its last star says what that star buys.
+

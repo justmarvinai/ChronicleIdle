@@ -20,6 +20,20 @@ export const changelog = {
   'changelog.oldestFirst': 'Oldest first',
   'changelog.open': 'Chronicle of Changes',
 
+  'release.0_11_0.name': 'The Chronicler’s Quill',
+  'release.0_11_0.instant':
+    'From level 11, a stand you have taken all three stars on can be cleared instantly from its battle setup: the same energy, the same spoils, no fight to watch.',
+  'release.0_11_0.count':
+    'The auto-repeat count sets how many runs at once, and the page that follows counts them up, shows everything they paid and lets you go again.',
+  'release.0_11_0.team': 'The champions you seat still take the experience, as if they had fought.',
+  'release.0_11_0.marks':
+    'Mastered stands are marked on the stand list, and the victory that earns a stand its last star tells you what that star now allows.',
+  'release.0_11_0.lesson': 'Eldric shows you the new button the first time you open a mastered stand.',
+  'release.0_11_0.launch':
+    'The battle setup’s launch column is a little wider, with the repeat count and Manual or Auto side by side.',
+  'release.0_11_0.quests':
+    'Instant clears count for the daily quests that ask you to clear stages or spend energy, but not for the ones that ask you to win battles.',
+
   'release.0_10_0.name': 'The Deepvein',
   'release.0_10_0.mine':
     'The Mine opens at level 6: beneath the market square, its crews dig gems for you while you are away.',

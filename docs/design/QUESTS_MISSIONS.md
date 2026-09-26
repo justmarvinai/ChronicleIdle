@@ -5,6 +5,10 @@ Related: `ECONOMY.md`, `docs/tech/UI_DESIGN.md` §5.14–5.15.
 Quests and missions share one **goal DSL** evaluated against lifetime stat counters and state
 predicates, so adding a quest is a data change.
 
+An instant clear (`CAMPAIGN.md` §10) is a clear and an energy spend like a fought run —
+`clear_stages` and `spend_energy` count it — but it is not a battle, so `win_battles` and
+`win_manual` do not.
+
 ## 1. Goal DSL
 
 Shipped in 0.0.12 (the quests' own types, `src/content/quests/types.ts`): `login`, `any`,

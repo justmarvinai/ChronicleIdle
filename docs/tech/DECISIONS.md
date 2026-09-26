@@ -564,3 +564,25 @@ a reload, an import or a clock moved backwards (which leaves `collectedAt` where
 twice. The tutorial's first collection is guaranteed three gems however fast the chronicle got
 there. The cost is two floats in the save — schema-checked to `[0, 1)` — and a `collectedAt` that
 can be earlier than `createdAt`, which is true of nothing else in the save and is the whole point.
+
+## ADR-047 — An instant clear is a fought run's settlement without the fight
+**Context.** The owner asked for instant three-star clears: a stand already mastered should not have
+to be watched again to be farmed. The shapes that suggest themselves each drift from the fight they
+replace. A separate reward table for instant runs would be a second set of numbers to keep in step
+with `CAMPAIGN.md` §7; a discount or a ticket would make the fought run and the written one pay
+differently and push the player to one of them; and a synthetic three-star `BattleOutcome` fed to
+`settleRun` would record best turns nobody fought and touch the stars, the chests and the
+milestone logic for nothing.
+**Decision.** An instant run spends what a fought run spends and pays through `rollRunRewards` with
+`firstClear: false`, no chest thresholds and no milestone — exactly the arguments a fought repeat of
+a mastered stand passes — on the same seed scheme and the next run index. The bookkeeping a fought
+run and an instant one share was lifted out of `applyRunFinish` into four helpers
+(`claimRunIndex`, `runRng`, `mintRunDrops`, `payChampionXp`), so there is one code path for what a
+run mints and who it pays. Only a stand at `STAGE_MAX_STARS` qualifies, and nothing the feature
+does writes stars, best turns or the `battles.*` counters.
+**Consequences.** The equivalence is testable and tested: a batch of instant runs leaves the wallet,
+the energy, the chronicle, the roster and the armoury identical to the same runs fought flawlessly
+(`state/instant.test.ts`). Changing a reward in §7 changes both at once; the economy simulation
+needs no new line, because instant clears move no number it measures — they only save the time a
+fight takes. The cost is that an instant clear can never be *better* than a fight (no bonus for the
+convenience), which is the point: the choice between them is only about time.

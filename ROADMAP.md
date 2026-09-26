@@ -402,7 +402,7 @@ ships to the same Definition of Done as a phase (`AGENTS.md` §3).
 | --- | --- | --- | --- |
 | 1 | The four bugs the audit found, and every open question settled on its recommendation | `0.9.10` | ✅ shipped in 0.9.10 |
 | 2 | **The Mine** — an upgradable building that works while the chronicle is away, as in the references | `0.10.0` | ✅ shipped in 0.10.0 (`MINE.md`) |
-| 3 | **Instant 3★ clears** — a stage mastered is a stage that no longer needs fighting | `0.11.0` | ⬜ not started |
+| 3 | **Instant 3★ clears** — a stage mastered is a stage that no longer needs fighting | `0.11.0` | ✅ shipped in 0.11.0 (`CAMPAIGN.md` §10) |
 | 4 | **Challenges & Achievements** — long-term goals across every system | `0.12.0` | ⬜ not started |
 | 5 | **The roguelite mode** — the game's deepest mode, built and polished as its flagship | `0.13.0` | ⬜ not started |
 
@@ -419,7 +419,7 @@ ships to the same Definition of Done as a phase (`AGENTS.md` §3).
 | Dungeon variants for materials | the five keeps ship in `0.8.0` and pay gear; a potion/tome keep would be a sixth |
 | Events & limited banners | timed content with deterministic schedule |
 | Achievements & titles expansion | Steam-compatible |
-| Skip tickets / instant battle | after ×4 speed |
+| ~~Skip tickets / instant battle~~ | shipped as instant clears in `0.11.0` (`CAMPAIGN.md` §10): the energy is the ticket |
 | Multiple save slots, cloud-free sync via export | slots in UI |
 | Localization (German first) | i18n keys already in place |
 | Controller support | Steam Deck friendliness |

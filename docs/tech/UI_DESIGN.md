@@ -336,6 +336,9 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   scrolling stand rows — stage number, stars, best turns, enemy count and plate level, enemy chips
   with their element sigils, the star and defeat turn limits, and a **Battle · ⚡cost** button. The
   boss stand uses the ember frame and is labelled; a locked stand names the stand it waits on.
+- From level 11 a stand with all three stars wears the **Instant** tag beside them — the quill on a
+  gold hairline — because it can be cleared without a fight (`CAMPAIGN.md` §10); the press itself
+  is on the battle setup.
 - The difficulty is the one chosen on the map; auto-repeat lives on the Battle setup screen.
 
 ### 5.8 Battle setup
@@ -371,11 +374,14 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
 - **Roster** (the dock's left): every champion strongest first in a virtualised strip of 96 px
   cards, narrowed by element and role chips in its head; a seated champion is dimmed and carries its
   seat's number on its shoulder (the leader's in gold).
-- **Launch column** (420 px): *Auto-repeat* where a stand or a keep takes it (a locked tier carries
-  the shackle and says which level opens it; above one run, how many runs the energy covers), the
-  **Manual | Auto** switch — one `role="switch"` with two lit halves — and **Start battle** with the
-  price on it: `6 ⚡`, `1 key`, `One run`. Too little energy disables it and says what the stand
-  costs.
+- **Launch column** (480 px): *Auto-repeat* where a stand or a keep takes it (a locked tier carries
+  the shackle and says which level opens it) side by side with the **Manual | Auto** switch — one
+  `role="switch"` with two lit halves — and, under both, above one run, how many runs the energy
+  covers. On a campaign stand from level 11, the **instant clear** press (`CAMPAIGN.md` §10): the
+  quill, *Instant ×10 · 40 ⚡* — the count the energy covers and what it costs — and one line under
+  it; on a stand short of its stars the same press, dead, saying three stars open it, and on a purse
+  short of one run, dead, saying what one costs. Then **Start battle** with the price on it:
+  `6 ⚡`, `1 key`, `One run`. Too little energy disables it and says what the stand costs.
 - Click-to-place, as before: a champion who is not seated takes the next empty seat, or the last
   seat of a full team.
 
@@ -492,8 +498,10 @@ loss). It stops above the buttons and scrolls inside itself, so a long batch nev
 them.
 - Every mode draws its spoils in the same two pieces:
   - **Banners**: a glyph and a sentence on a band of their tone. Gold for a first clear, a star
-    chest, a chronicle level, a record or a chest earned; purple for a champion owed at the Portal
-    or a boss floor's shards; red for a floor, run or keep that held.
+    chest, a chronicle level, a record or a chest earned, and — with the quill — the run that took a
+    stand to its last star (*Stand mastered: clear it instantly from now on*, or before level 11 the
+    level instant clears open at); purple for a champion owed at the Portal or a boss floor's
+    shards; red for a floor, run or keep that held.
   - **Reward tiles**, four to a row, landing one after another: the currency's icon, what came in,
     and its name. Champion XP and chronicle XP get blue tiles under their boosts' marks; shards get
     a purple tile in their own light.
@@ -1054,6 +1062,7 @@ recipes). Variants are chosen round-robin with slight pitch jitter.
 | `battle.step.{dirt,stone,water,wood}` | `Footsteps/*` (lunge steps, surface per settlement) |
 | `forge.hammer` / `gear.upgrade` | `Chopping and Mining/mine 1–5` |
 | `mine.strike` / `mine.deepen` (the Mine) | `Chopping and Mining/mine 1–5` / `Spells/Rock Wall 1–2` |
+| `instant.write` (an instant clear's page turning, once per run counted) | the synthesised card flip the Portal's reveal uses (`sfx.summon.flip`) |
 | `gear.equip` | `Attacks/Sword Unsheath 1–2` |
 | `summon.charge` / `summon.crack` | generated: a rising filtered swell with four rune taps / dry splinters over a low strain |
 | `summon.reveal.*` | generated, one per tier: a two-note chime (Common/Uncommon), a bright triad (Rare), a violet swell with bells (Epic), a bass hit with brass and falling bells (Legendary), and a detonation with a shockwave and a crystalline sequence nothing else plays (Mythic) |
@@ -1377,3 +1386,25 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   flash of light.
 - Sound: `mine.strike` + `reward.medium` on a collection, `mine.deepen` (a rock wall giving way) +
   `reward.large` on a level; the toast says the new rate, or the gems the settled store paid.
+
+### 5.30 Instant clear (`docs/design/CAMPAIGN.md` §10)
+- Opened by the battle setup's instant press, which has already cleared the runs: the page is what
+  they wrote into the chronicle. Its own code chunk (`React.lazy`), like the Mine's — it carries the
+  result screen's spoils panel with it. Two columns in 1,320 px.
+- **The page** (`InstantLedger`), on vellum under a gold hairline: *Written into the chronicle*, the
+  stand (*Stand 1-3 · Intro*) and its encounter's name, its three stars; the quill in a gold-edged
+  diamond — the VS medal turned to the pen — rocking while it writes; *Cleared* and the runs counted
+  up a page at a time (*×10*, about a second whatever the count, never faster than a page every
+  28 ms, a page turned — `instant.write` — at each), the diamond flaring (`fx.gamefx.light_cast`)
+  on the last; then *40 ⚡ spent*, and when the energy covered fewer runs than were asked, how many
+  of how many.
+- **The team** (`InstantTeam`) under it: each champion seated, framed in their rarity, the level on
+  its plate and a *Level up* (or *+3 levels*) stamp across the top when the batch carried them past
+  one, the bar towards the next level in the result screen's XP blue, and *+2,380 XP* — *Max level*
+  in gold for a champion at their stars' cap.
+- **The spoils** on the right: the result screen's own `SpoilsPanel` — the tiles landing one after
+  another, the chronicle-level banner when one was crossed, the drops as paintings named in their
+  rarity (a dozen, then a count) and the pieces the armoury had no room for.
+- Footer: **Again ×10 · 40 ⚡** clears the stand once more with the same team and count, and the
+  page counts again; when the energy no longer covers a run it is dead and says so. **Done** closes;
+  a chronicle level the batch paid is celebrated then, never over the page.

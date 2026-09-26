@@ -163,6 +163,14 @@ the deepest, the chronicle's level, or the currencies short, by how much). `stat
 bookkeeping around it — the wallet, the counters and the view the hub and the dialog read
 (`docs/design/MINE.md`).
 
+`engine/campaign/instant.ts` is the campaign's second way through a stand (`docs/design/CAMPAIGN.md`
+§10): whether a stand is mastered, what blocks an instant clear (the chronicle's level, the stars,
+the energy), charging one run, and rolling its rewards through `rollRunRewards` with nothing a stand
+pays once. `state/instant.ts` runs a batch one run at a time through the same helpers a fought run
+settles with (`claimRunIndex`, `runRng`, `mintRunDrops`, `payChampionXp` in `state/campaign.ts`),
+which is what makes a batch written down pay exactly what the same runs fought would — a state test
+holds the two side by side.
+
 `engine/summon/` is four files: `summon.ts` (the rarity row and the champion roll), `pity.ts`
 (mercy counters, guarantees, soft climbs), `rotation.ts` (the fourteen-day wheel from a fixed UTC
 epoch, and which mercy rules a Primordial Rotation swaps in) and `choices.ts` (which champion
