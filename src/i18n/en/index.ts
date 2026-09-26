@@ -16,6 +16,7 @@ import { enemies } from './enemies';
 import { features } from './features';
 import { gear } from './gear';
 import { idle } from './idle';
+import { instant } from './instant';
 import { indexScreen } from './index-screen';
 import { sets } from './sets';
 import { summoning } from './summoning';
@@ -36,6 +37,7 @@ export const en = {
   ...features,
   ...gear,
   ...idle,
+  ...instant,
   ...indexScreen,
   ...sets,
   ...summoning,

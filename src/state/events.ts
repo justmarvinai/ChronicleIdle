@@ -111,7 +111,9 @@ export type DomainEvent =
       difficulty: Difficulty;
       stars: number;
       firstClear: boolean;
-    };
+    }
+  /** A mastered stand written down `runs` times without a battle (CAMPAIGN.md §10). */
+  | { type: 'campaign.instantCleared'; stageId: string; difficulty: Difficulty; runs: number };
 
 export type EventListener = (event: DomainEvent) => void;
 

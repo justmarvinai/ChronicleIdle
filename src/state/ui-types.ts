@@ -4,6 +4,7 @@ import type { CurrencyAmount, CurrencyId } from '@content/currencies/types';
 import type { QuestPeriod } from '@content/quests/types';
 import type { I18nKey, I18nParams } from '@i18n/index';
 import type { DecodedChronicle } from './chronicle-file';
+import type { InstantClearSummary } from './instant';
 
 /** Screens (docs/tech/ARCHITECTURE.md §6): an in-memory stack; the URL is not used. */
 export type ChampionTab = 'info' | 'abilities' | 'lore' | 'gear';
@@ -113,6 +114,11 @@ export type DialogRoute =
   | { name: 'idle-chest' }
   /** The Mine under the market square (`MINE.md`): its store, its level and the next one down. */
   | { name: 'mine' }
+  /**
+   * What an instant clear paid (CAMPAIGN.md §10), with the team and the count asked for, so the
+   * dialog can clear the stand again without going back to the battle setup.
+   */
+  | { name: 'instant-clear'; summary: InstantClearSummary; team: string[]; requested: number }
   /** A boss's mechanics sheet: its kit, what never lands on it, and how to fight it. */
   | { name: 'boss-sheet'; bossId: string }
   | { name: 'level-up' }

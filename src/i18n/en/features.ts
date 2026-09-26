@@ -29,6 +29,8 @@ export const features = {
   'feature.tavern_skills.hint': 'Sharpen abilities with tomes.',
   'feature.daily_boss.name': 'Gargoyle',
   'feature.daily_boss.hint': 'The gate on the hill opens every day, for keys and brews.',
+  'feature.instant_clear.name': 'Instant clears',
+  'feature.instant_clear.hint': 'A stand you have mastered can be cleared without a fight, for the same energy.',
   'feature.quests_weekly.name': 'Weekly Quests',
   'feature.quests_weekly.hint': 'A longer list, a heavier chest.',
   'feature.weekly_boss.name': 'The Titan',

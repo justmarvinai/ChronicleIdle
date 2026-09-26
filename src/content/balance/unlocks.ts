@@ -16,6 +16,7 @@ export const FEATURE_IDS = [
   'forge',
   'tavern_skills',
   'daily_boss',
+  'instant_clear',
   'quests_weekly',
   'weekly_boss',
   'gear_refine',
@@ -62,6 +63,13 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
   forge: 8,
   tavern_skills: 9,
   daily_boss: 10,
+  /**
+   * Instant clears (CAMPAIGN.md §10): a mastered stand written down rather than fought. Late
+   * enough that the first settlements were fought and three-starred by hand, and the one level
+   * between the Gargoyle (10) and the weekly board (12) that opens nothing else, so its lesson has
+   * the battle setup to itself.
+   */
+  instant_clear: 11,
   quests_weekly: 12,
   weekly_boss: 15,
   gear_refine: 18,

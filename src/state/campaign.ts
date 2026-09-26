@@ -26,7 +26,7 @@ import { addEnergy } from '@engine/economy/energy';
 import { grant, type CurrencyChange } from '@engine/economy/wallet';
 import { fail, ok, type Result } from '@engine/errors';
 import { bumpCounter, counter } from '@engine/progression/counters';
-import { createRng } from '@engine/rng/rng';
+import { createRng, type Rng } from '@engine/rng/rng';
 import type { GearInstance } from '@engine/gear/instance';
 import { applyGearDrop } from './gear';
 import { NO_LEVEL_UP, applyPlayerXp, type LevelUpResult } from './progression';
@@ -65,6 +65,21 @@ export interface RunStarted {
 const RUN_COUNTER = 'campaign.runs' as const;
 
 /**
+ * Takes the next run index of the campaign. Every run — fought or written down (§10) — takes one,
+ * and its drops are seeded on it, so no two runs of a chronicle ever roll the same stream.
+ */
+export function claimRunIndex(save: SaveGame): number {
+  const runIndex = counter(save, RUN_COUNTER) + 1;
+  save.stats[RUN_COUNTER] = runIndex;
+  return runIndex;
+}
+
+/** The stream a run's rewards and its dropped piece are rolled from. */
+export function runRng(save: SaveGame, ref: StageRef, runIndex: number): Rng {
+  return createRng(`campaign:${save.seedRoot}:${ref.stage.id}:${ref.difficulty}:${runIndex}`);
+}
+
+/**
  * Charges a run and points the save at it. Energy is spent *before* the battle, so a crash or a
  * reload mid-fight cannot yield a free run (ROADMAP Phase 3 acceptance).
  */
@@ -78,10 +93,9 @@ export function applyRunStart(save: SaveGame, pointer: StagePointer, now: number
     now,
   });
   if (!begun.ok) return begun;
-  const runIndex = counter(save, RUN_COUNTER) + 1;
   save.energy = begun.value.energy;
   save.campaign.selected = pointer;
-  save.stats[RUN_COUNTER] = runIndex;
+  const runIndex = claimRunIndex(save);
   // What the run cost, for the daily quest that asks for energy spent (QUESTS_MISSIONS.md §2).
   bumpCounter(save, 'energy.spent', begun.value.cost);
   return ok({
@@ -135,9 +149,7 @@ export interface RunSummary {
 export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<RunSummary> {
   const ref = stageRefOf(input.pointer);
   if (!ref) return fail('invalid_argument', `No stage ${input.pointer.settlement}.${input.pointer.stage}`);
-  const rng = createRng(
-    `campaign:${save.seedRoot}:${ref.stage.id}:${input.pointer.difficulty}:${input.runIndex}`,
-  );
+  const rng = runRng(save, ref, input.runIndex);
   const settled = settleRun(ref, { progress: progressOf(save), energySpent: input.cost }, input.outcome, rng);
   save.campaign.stars = settled.record.progress.stars;
   save.campaign.bestTurns = settled.record.progress.bestTurns;
@@ -180,28 +192,10 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   }
 
   // A dropped piece is rolled now, from the same seed the rest of the run used.
-  for (const drop of rewards.gear) {
-    const piece = applyGearDrop(save, {
-      settlementIndex: input.pointer.settlement,
-      difficulty: input.pointer.difficulty,
-      fromSetPool: drop.fromSetPool,
-      source: 'campaign_drop',
-      now: input.now,
-      rng,
-    });
-    if (piece) summary.gear.push(piece);
-    else summary.gearLost += 1;
-  }
-
-  for (const instanceId of input.party) {
-    const champion = save.roster[instanceId];
-    if (!champion) continue;
-    const gain = addChampionXp(champion, boostedChampionXp(save, rewards.championXp, input.now));
-    champion.level = gain.level;
-    champion.xp = gain.xp;
-    if (gain.levelsGained > 0)
-      summary.levelUps.push({ instanceId, level: gain.level, levelsGained: gain.levelsGained });
-  }
+  const dropped = mintRunDrops(save, input.pointer, rewards, rng, input.now);
+  summary.gear = dropped.gear;
+  summary.gearLost = dropped.lost;
+  summary.levelUps = payChampionXp(save, input.party, rewards.championXp, input.now).levelUps;
 
   // Chronicle XP is the last thing a run pays, so a level-up's refill lands on the new cap.
   const levelUp = applyPlayerXp(save, boostedPlayerXp(save, rewards.playerXp, input.now), input.now);
@@ -214,6 +208,58 @@ export function applyRunFinish(save: SaveGame, input: RunFinishInput): Result<Ru
   bumpCounter(save, 'campaign.stars', settled.record.starsAfter - settled.record.starsBefore);
   bumpCounter(save, 'campaign.gearDrops', rewards.gear.length);
   return ok(summary);
+}
+
+/**
+ * Mints the pieces a run's rewards say fell, from the run's own stream; a piece the armoury has no
+ * room for is lost and counted (GEAR.md §7).
+ */
+export function mintRunDrops(
+  save: SaveGame,
+  pointer: StagePointer,
+  rewards: RunRewards,
+  rng: Rng,
+  now: number,
+): { gear: GearInstance[]; lost: number } {
+  const gear: GearInstance[] = [];
+  let lost = 0;
+  for (const drop of rewards.gear) {
+    const piece = applyGearDrop(save, {
+      settlementIndex: pointer.settlement,
+      difficulty: pointer.difficulty,
+      fromSetPool: drop.fromSetPool,
+      source: 'campaign_drop',
+      now,
+      rng,
+    });
+    if (piece) gear.push(piece);
+    else lost += 1;
+  }
+  return { gear, lost };
+}
+
+/**
+ * Pays a run's champion XP, boosted, to each champion that took part. Returns the XP each one took
+ * and who levelled.
+ */
+export function payChampionXp(
+  save: SaveGame,
+  party: readonly string[],
+  xp: number,
+  now: number,
+): { xp: number; levelUps: ChampionLevelUp[] } {
+  const boosted = boostedChampionXp(save, xp, now);
+  const levelUps: ChampionLevelUp[] = [];
+  for (const instanceId of party) {
+    const champion = save.roster[instanceId];
+    if (!champion) continue;
+    const gain = addChampionXp(champion, boosted);
+    champion.level = gain.level;
+    champion.xp = gain.xp;
+    if (gain.levelsGained > 0)
+      levelUps.push({ instanceId, level: gain.level, levelsGained: gain.levelsGained });
+  }
+  return { xp: boosted, levelUps };
 }
 
 /** How many runs of the pointed stage the wallet can pay for right now (CAMPAIGN.md §9). */

@@ -34,6 +34,11 @@ export const COUNTER_KEYS = [
   'campaign.cleared',
   'campaign.stars',
   'campaign.gearDrops',
+  /**
+   * Runs written down rather than fought (CAMPAIGN.md §10). Each is also a `campaign.cleared` and
+   * a `campaign.runs`, so a quest that asks for stands cleared counts them; none is a battle.
+   */
+  'campaign.instant',
   /** Energy the campaign and the boss gate have charged, for "spend N energy". */
   'energy.spent',
   // The Tavern

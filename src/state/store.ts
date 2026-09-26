@@ -5,6 +5,7 @@
 import { create, type Mutate, type StoreApi, type UseBoundStore } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { castDraft } from 'immer';
 import { PLAYER_NAME_MAX_LENGTH, PLAYER_NAME_MIN_LENGTH } from '@content/balance/economy';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
 import { TUTORIAL_SUMMON_RARITY } from '@content/balance/tutorial';
@@ -44,7 +45,7 @@ import { sanitizeTeam, validateTeam } from '@engine/battle/teams';
 import type { Clock } from '@engine/time/clock';
 import { createRng, hashString } from '@engine/rng/rng';
 import { systemClock } from '@platform/clock';
-import { maxBattleSpeed, type StagePointer } from '@engine/campaign/progress';
+import { maxBattleSpeed, stageIdOf, type StagePointer } from '@engine/campaign/progress';
 import {
   applyRunFinish,
   applyRunStart,
@@ -55,6 +56,7 @@ import {
   type RunSummary,
 } from './campaign';
 import { EventBus } from './events';
+import { applyInstantClear, type InstantClearInput, type InstantClearSummary } from './instant';
 import type { Offering } from '@engine/progression/tavern-level';
 import {
   applyEquip,
@@ -391,6 +393,11 @@ export interface GameActions {
   startCampaignRun(pointer: StagePointer): Result<RunStarted>;
   /** Records a finished run: stars, best turns, rewards, champion and player XP. */
   finishCampaignRun(input: RunFinishInput): Result<RunSummary>;
+  /**
+   * Clears a mastered stand `runs` times without a battle (CAMPAIGN.md §10): each run charged,
+   * rolled and paid as a fought three-star repeat would be, the champion XP to `party`.
+   */
+  instantClear(input: Omit<InstantClearInput, 'now'>): Result<InstantClearSummary>;
   /** Dev/debug (Chronicle Debug panel): the player level, for verifying level gates. */
   debugSetPlayerLevel(level: number): void;
   /** Dev/debug: marks a whole difficulty cleared, for verifying the unlock chain. */
@@ -734,7 +741,9 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
             },
             openDialog(dialog) {
               set((state) => {
-                state.ui.dialog = dialog;
+                // A dialog may carry a read-only payload (an instant clear's summary); the draft
+                // only ever replaces it whole, so it is safe to hand over as is.
+                state.ui.dialog = castDraft(dialog);
               });
             },
             closeDialog() {
@@ -1777,6 +1786,32 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 difficulty: input.pointer.difficulty,
                 stars: summary.stars,
                 firstClear: summary.firstClear,
+              });
+              return result;
+            },
+
+            instantClear(input) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              let result: Result<InstantClearSummary> = fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              set((state) => {
+                if (!state.save) return;
+                result = applyInstantClear(state.save, { ...input, now });
+                if (result.ok) state.save.updatedAt = now;
+              });
+              if (!result.ok) return result;
+              const summary = result.value;
+              const total = get().save?.energy.value ?? 0;
+              events.emit({ type: 'energy.changed', delta: -summary.energySpent, total });
+              if (summary.changes.length)
+                events.emit({ type: 'currency.changed', changes: summary.changes, reason: 'campaign' });
+              // The batch paid the levels already; the celebration waits for the results to close.
+              noteLevelUp(summary.levelUp, 'campaign', false);
+              events.emit({
+                type: 'campaign.instantCleared',
+                stageId: stageIdOf(input.pointer.settlement, input.pointer.stage),
+                difficulty: input.pointer.difficulty,
+                runs: summary.runs,
               });
               return result;
             },

@@ -33,8 +33,13 @@ export const DEFEAT_TURN_LIMIT_BOSS = 50;
 
 /** Stars per settlement + difficulty at which a star chest is granted (CAMPAIGN.md §7). */
 export const STAR_CHEST_THRESHOLDS = [10, 20, 30] as const;
+/**
+ * Stars a stand can hold (CAMPAIGN.md §3): the clear, no one down, inside the turn limit. A stand
+ * at this many is *mastered*, and a mastered stand can be cleared instantly (§10).
+ */
+export const STAGE_MAX_STARS = 3;
 /** Stars available per settlement and difficulty. */
-export const STARS_PER_SETTLEMENT = STAGES_PER_SETTLEMENT * 3;
+export const STARS_PER_SETTLEMENT = STAGES_PER_SETTLEMENT * STAGE_MAX_STARS;
 
 /**
  * The campaign's own difficulty dial, on top of `DIFFICULTY_MULT` and `stageScale`
