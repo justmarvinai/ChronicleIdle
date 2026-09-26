@@ -52,7 +52,12 @@ export function firePassives(
     const active = passive.effects.filter(isActive);
     if (active.length) {
       fired = true;
-      ctx.runEffects(active, unit, extra.target ?? extra.healed ?? extra.debuffed ?? null);
+      ctx.runEffects(
+        active,
+        unit,
+        extra.target ?? extra.healed ?? extra.debuffed ?? null,
+        extra.attacker ?? null,
+      );
     }
     if (fired) ctx.events.push({ type: 'passive.triggered', unitId: unit.id, passiveId: passive.id });
   }

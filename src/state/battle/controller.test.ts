@@ -113,6 +113,48 @@ describe('battle controller', () => {
     expect(dressed.passives.some((p) => p.id.startsWith('gear_set.bulwark'))).toBe(true);
   });
 
+  it('fights an encounter built for the one fight, with what the fight carries', () => {
+    const roster = rosterOf(STARTERS);
+    const base = content.encounterById('encounter.stage.01.01.intro');
+    if (!base) throw new Error('no stand');
+    // The Unwritten builds its passages itself: the id is its own, and the registry never saw it.
+    const encounter = { ...base, id: 'encounter.unwritten.test', partySize: 4 };
+    const corvin = Object.values(roster).find((c) => c.defId === 'champ.ser_corvin');
+    if (!corvin) throw new Error('no Corvin');
+    const controller = createBattleController();
+    const result = controller.start({
+      encounterId: encounter.id,
+      encounter,
+      instanceIds: Object.keys(roster),
+      roster,
+      palace: NO_PALACE,
+      inventory: {},
+      control: 'manual',
+      speed: 1,
+      seed: 'built',
+      shaping: { allyHp: { [corvin.instanceId]: 0.5 } },
+    });
+    expect(result.ok).toBe(true);
+    const unit = Object.values(controller.simulation()?.units ?? {}).find(
+      (u) => u.defId === 'champ.ser_corvin',
+    );
+    expect(unit?.hp).toBe(Math.round((unit?.maxHp ?? 0) * 0.5));
+    controller.end();
+    // An encounter whose id is not the one asked for is refused, not silently fought.
+    const mismatched = createBattleController().start({
+      encounterId: 'encounter.unwritten.other',
+      encounter,
+      instanceIds: Object.keys(roster),
+      roster,
+      palace: NO_PALACE,
+      inventory: {},
+      control: 'manual',
+      speed: 1,
+      seed: 'built',
+    });
+    expect(mismatched.ok).toBe(false);
+  });
+
   it('sends champions in with the Glorious Palace behind them', () => {
     const roster = rosterOf(STARTERS);
     const start = (palace: PalaceBonus) => {

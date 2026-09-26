@@ -17,7 +17,7 @@ export interface AmbientPreset {
   glows: GlowPoint[];
 }
 
-export const AMBIENT_PRESETS: Record<'hub' | 'title' | 'interior' | 'none', AmbientPreset> = {
+export const AMBIENT_PRESETS: Record<'hub' | 'title' | 'interior' | 'unwritten' | 'none', AmbientPreset> = {
   none: { fog: null, embers: null, fireflies: null, motes: null, rays: null, glows: [] },
   hub: {
     fog: { count: 10, tint: 0x8fa3c8, alpha: 0.16, speed: 9, band: [520, 1080] },
@@ -33,6 +33,15 @@ export const AMBIENT_PRESETS: Record<'hub' | 'title' | 'interior' | 'none', Ambi
     fireflies: null,
     motes: { count: 80, tint: 0xd9c8ff },
     rays: { count: 5, tint: 0xb28cff, alpha: 0.08 },
+    glows: [],
+  },
+  // The Unwritten (UNWRITTEN.md §21): violet fog low on the page, ink flecks drifting up out of it.
+  unwritten: {
+    fog: { count: 12, tint: 0x5f4a9a, alpha: 0.2, speed: 5, band: [260, 1080] },
+    embers: { count: 46, area: [0, 260, 1920, 820], tint: [0xb89cff, 0x8a6fd1, 0xeae2ff] },
+    fireflies: null,
+    motes: { count: 90, tint: 0xcbb8ff },
+    rays: { count: 3, tint: 0x9d85e0, alpha: 0.06 },
     glows: [],
   },
   interior: {

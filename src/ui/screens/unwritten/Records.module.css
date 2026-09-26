@@ -1,0 +1,132 @@
+/* The Records (docs/tech/UI_DESIGN.md §5.32). */
+.records {
+  display: grid;
+  grid-template-columns: 560px minmax(0, 1fr);
+  gap: 18px;
+  height: 100%;
+  min-height: 0;
+}
+
+.standing {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 16px 18px 14px;
+  background: linear-gradient(180deg, rgba(36, 26, 61, 0.82), rgba(14, 10, 22, 0.9));
+  border: 1px solid rgba(138, 111, 209, 0.35);
+  box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.55);
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  color: var(--text-1);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 19px;
+  color: var(--gold-3);
+  letter-spacing: 0.06em;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(138, 111, 209, 0.25);
+}
+
+.stats dt {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.stats dd {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+}
+
+.tales {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0 8px 0 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  font: inherit;
+  text-align: left;
+  color: var(--text-1);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(141, 133, 119, 0.2);
+  border-left: 3px solid #8a6fd1;
+  cursor: var(--cursor-pointer);
+}
+
+.victory {
+  border-left-color: var(--gold-3);
+}
+
+.defeat {
+  border-left-color: #ff5b5b;
+}
+
+.row:hover,
+.rowOn {
+  border-color: rgba(203, 184, 255, 0.55);
+  background: rgba(58, 45, 90, 0.45);
+}
+
+.rowText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowResult {
+  font-family: var(--font-display);
+  font-size: 17px;
+}
+
+.rowMeta {
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.empty {
+  margin: 0;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-3);
+}
+
+.page {
+  min-height: 0;
+}

@@ -76,6 +76,7 @@ export const ui = {
   'hub.battle': 'Battle',
   'hub.market': 'Market',
   'hub.mine': 'The Mine',
+  'hub.unwritten': 'The Torn Page',
 
   'topbar.profile': 'Profile',
   'topbar.accountPower': 'Account Power',
@@ -100,6 +101,11 @@ export const ui = {
   'gameModes.tower.locked': 'Finish the Intro campaign — all twelve settlements — and the tower opens.',
   'gameModes.tower.gate': 'Clear the Intro campaign',
   'gameModes.boss.keys': '{boss} {left}/{total}',
+  'gameModes.unwritten': 'The Unwritten',
+  'gameModes.unwritten.body':
+    'Three folios of torn history, drawn anew every time. Write inscriptions into a company that keeps its wounds, and bring the pages home.',
+  'gameModes.unwritten.note': 'Omen {omen} open · Tithes {left}/{total}',
+  'gameModes.unwritten.noteRun': 'Expedition under way · Folio {folio} · Omen {omen}',
   'gameModes.enter': 'Enter',
 
   'locked.title': 'Not yet written',
@@ -286,6 +292,8 @@ export const ui = {
   'hub.hint.market': 'Two shelves of wares; the gold stall changes hands every hour.',
   'hub.hint.idle': 'Fills while you are away. Open it to claim what it holds.',
   'hub.hint.mine': 'The Deepvein digs gems while you are away. Collect them, and dig it deeper.',
+  'hub.hint.unwritten':
+    'A rift where the Chronicle’s torn pages fall. Expeditions into the Unwritten set out from here.',
   'hub.status.campaign': '{settlement} · stage {stage}',
   'hub.status.portal.choice': 'A champion to choose',
   'hub.status.portal.shards': '{count} shards to open',
@@ -298,6 +306,8 @@ export const ui = {
   'hub.status.mine.full': 'Store full · {gems} gems',
   'hub.status.mine.waiting': 'Gems waiting: {gems}',
   'hub.status.mine.next': 'Next gem in {time}',
+  'hub.status.unwritten.run': 'Folio {folio} · Omen {omen}',
+  'hub.status.unwritten.tithe': 'Tithes this week: {left}/{total}',
   'hub.idleChest.body': 'Fills while you are away.',
 
   'starter.title': 'Bind your first champion',
@@ -544,6 +554,9 @@ export const ui = {
   'pause.settings': 'Settings',
   'pause.retreat': 'Retreat',
   'pause.retreatConfirm': 'Leave the battle? The fight counts as a retreat.',
+  /** In the Unwritten a retreat is not a reset (UNWRITTEN.md §4.2). */
+  'pause.retreatConfirm.unwritten':
+    'Fall back? Both sides keep every wound they took, and the passage stays contested until it is won.',
   'pause.retreatYes': 'Retreat',
   'pause.stay': 'Stay and fight',
   'pause.hint': 'Esc resumes the fight.',

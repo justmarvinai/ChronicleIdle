@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- In-house (ChronicleIdle, CC0, docs/tech/CREDITS.md): a banded chest with a glint, the Unwritten's reliquaries. -->
+<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path fill-rule="evenodd" d="M8 30 C8 14.6 56 14.6 56 30 Z M18.4 19.8 C19.6 22.8 20 26 20 30 H22.6 C22.6 25.6 22.2 22.2 21 18.8 Z M45.6 19.8 C44.4 22.8 44 26 44 30 H41.4 C41.4 25.6 41.8 22.2 43 18.8 Z"/>
+  <path fill-rule="evenodd" d="M8 32.6 H56 V55.6 H8 Z M20 32.6 H22.6 V55.6 H20 Z M41.4 32.6 H44 V55.6 H41.4 Z M27.8 32.6 H36.2 V43.4 H27.8 Z"/>
+  <path d="M32 35 A2.2 2.2 0 1 1 31.99 35 Z M31 37.8 H33 L33.6 41.4 H30.4 Z"/>
+  <path d="M53 3.6 L54.6 7.6 L58.6 9.2 L54.6 10.8 L53 14.8 L51.4 10.8 L47.4 9.2 L51.4 7.6 Z"/>
+  <path d="M8.6 7 L9.5 9.3 L11.8 10.2 L9.5 11.1 L8.6 13.4 L7.7 11.1 L5.4 10.2 L7.7 9.3 Z"/>
+</svg>

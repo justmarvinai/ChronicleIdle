@@ -10,10 +10,12 @@ import { ENERGY_PROVISIONS } from '@content/balance/energy';
 import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
 import { abilityNumbers, passiveNumbers } from '@engine/champions/describe';
 import { validateContentRegistry } from '@engine/schema/content';
+import { validateUnwritten } from '@engine/schema/unwritten';
 import { ALL_I18N_KEYS, allTextOf } from '@i18n/catalog';
 import { translate } from '@i18n/index';
 import { RELEASES } from './changelog/index';
 import { content as registry } from './registry';
+import { UNWRITTEN } from './unwritten/index';
 
 const manifest = JSON.parse(readFileSync('public/assets/generated/manifest.json', 'utf8')) as AssetManifest;
 const refs = {
@@ -300,5 +302,50 @@ describe('content registry', () => {
       'tut.4.2',
     ]);
     expect(content.tutorialStepById('tut.1.6')?.complete).toEqual({ type: 'ability_used', slot: 'a1' });
+  });
+});
+
+describe("the Unwritten's content (UNWRITTEN.md, CONTENT_AUTHORING.md §20)", () => {
+  const unwrittenRefs = { ...refs, factions: registry.factions };
+
+  it('validates: every line has its numbers, every door opens, every Warden is a real foe', () => {
+    expect(validateUnwritten(UNWRITTEN, unwrittenRefs)).toEqual([]);
+    expect(UNWRITTEN.inscriptions).toHaveLength(54);
+    expect(UNWRITTEN.inscriptions.filter((def) => def.inks.length === 2)).toHaveLength(6);
+    expect(UNWRITTEN.relics).toHaveLength(24);
+    expect(UNWRITTEN.blots).toHaveLength(8);
+    expect(UNWRITTEN.affixes).toHaveLength(8);
+    expect(UNWRITTEN.omens).toHaveLength(16);
+    expect(UNWRITTEN.scriptorium).toHaveLength(16);
+    expect(UNWRITTEN.mysteries).toHaveLength(20);
+    expect(UNWRITTEN.folios).toHaveLength(3);
+  });
+
+  it('catches a line that prints a number it was never given', () => {
+    const [first] = UNWRITTEN.inscriptions;
+    if (!first) throw new Error('no inscriptions');
+    const issues = validateUnwritten(UNWRITTEN, {
+      ...unwrittenRefs,
+      i18nText: (key) => (key === first.text ? 'Deals {zz}% more damage.' : allTextOf(key)),
+    });
+    expect(issues.map((issue) => issue.message)).toContain(
+      `${first.text} prints {zz}, which it has no number for`,
+    );
+  });
+
+  it('holds the Wardens to the campaign’s checks: a DEF-ignore is a share, never a percentage', () => {
+    const [warden, ...rest] = UNWRITTEN.enemies;
+    if (!warden) throw new Error('no Wardens');
+    const broken = {
+      ...warden,
+      abilities: warden.abilities.map((ability) => ({
+        ...ability,
+        effects: ability.effects.map((effect) =>
+          effect.kind === 'damage' ? { ...effect, defIgnore: 30 } : effect,
+        ),
+      })),
+    };
+    const issues = validateUnwritten({ ...UNWRITTEN, enemies: [broken, ...rest] }, unwrittenRefs);
+    expect(issues.some((issue) => issue.path.startsWith('unwritten.enemies'))).toBe(true);
   });
 });

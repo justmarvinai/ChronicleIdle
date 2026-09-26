@@ -81,6 +81,8 @@ export interface ResolveInput {
   chosen: BattleUnit | null;
   /** Set once a damage effect resolved, for `adjacent_to_target` and `provoker`. */
   lastHit: BattleUnit | null;
+  /** The foe whose hit set off the passive being resolved (`attacker`); null outside one. */
+  attacker?: BattleUnit | null;
 }
 
 /** Units an effect applies to, in slot order; dead units are excluded except for revives. */
@@ -124,6 +126,10 @@ export function resolveTargets(input: ResolveInput, target: Target, forRevive = 
       case 'provoker': {
         const p = provoker(state, actor);
         return p ? [p] : enemies.slice(0, 1);
+      }
+      case 'attacker': {
+        const attacker = input.attacker;
+        return attacker && attacker.alive && attacker.side !== actor.side ? [attacker] : [];
       }
       default:
         return [];

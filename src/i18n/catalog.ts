@@ -6,8 +6,9 @@
  */
 import { changelog } from './en/changelog';
 import { en } from './en/index';
+import { unwritten } from './en/unwritten';
 
-const every: Readonly<Record<string, string>> = { ...en, ...changelog };
+const every: Readonly<Record<string, string>> = { ...en, ...changelog, ...unwritten };
 
 export const ALL_I18N_KEYS: ReadonlySet<string> = new Set(Object.keys(every));
 

@@ -69,7 +69,7 @@ export default tseslint.config(
         layer('i18n', 'i18n'),
         layer('assets', 'assets'),
       ],
-      'boundaries/ignore': ['**/*.test.{ts,tsx}', 'src/*.d.ts'],
+      'boundaries/ignore': ['**/*.test.{ts,tsx}', '**/*.test-support.ts', 'src/*.d.ts'],
     },
     rules: {
       ...reactHooks.configs['recommended-latest'].rules,
@@ -192,7 +192,7 @@ export default tseslint.config(
   },
   {
     // Tests may assert non-null where the assertion itself is the check (CLAUDE.md §6).
-    files: ['tests/**/*.ts', 'src/**/*.test.{ts,tsx}'],
+    files: ['tests/**/*.ts', 'src/**/*.test.{ts,tsx}', 'src/**/*.test-support.ts'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
   },
   prettier,

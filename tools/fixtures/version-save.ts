@@ -26,6 +26,9 @@ import { flatMissions } from '@engine/missions/path';
 import { createRng } from '@engine/rng/rng';
 import { createNewGame } from '@engine/save/new-game';
 import { SAVE_VERSION } from '@engine/schema/save';
+import { emptyUnwritten, type UnwrittenSave } from '@engine/schema/unwritten-save';
+import { beginExpedition, chooseOffer, enterPassage, reachable, settleFight } from '@engine/unwritten/index';
+import { UNWRITTEN_WORLD } from '@state/unwritten/world';
 
 const REPO_ROOT = join(import.meta.dirname, '..', '..');
 const OUT = join(REPO_ROOT, 'tests', 'fixtures', 'saves', `v${SAVE_VERSION}.json`);
@@ -98,7 +101,85 @@ const COUNTERS: Readonly<Record<string, number>> = {
   'mine.upgrades': 4,
   'feat.solo': 2,
   'feat.last_stand': 1,
+  'unwritten.expeditions': 5,
+  'unwritten.victories': 1,
+  'unwritten.folios': 4,
+  'unwritten.wardens': 4,
+  'unwritten.passages': 41,
+  'unwritten.inscriptions': 23,
+  'unwritten.relics': 6,
 };
+
+/**
+ * The Unwritten part-way into its ladder: two Scriptorium folios written, Omen 2 open, a Tale in
+ * the Records — and an expedition under way, walked by the engine itself so every field is one a
+ * real run writes: its first Skirmish won with wounds kept, an inscription written, and the
+ * company standing at the next passage with that passage's choice in hand.
+ */
+function unwrittenOf(roster: Roster, company: readonly string[], weekKey: string): UnwrittenSave {
+  const unwritten = emptyUnwritten();
+  unwritten.pages = 140;
+  unwritten.scriptorium = ['scriptorium.deeper_purse', 'scriptorium.field_dressing'];
+  unwritten.omen = { open: 2, best: 1, sealed: [0, 1] };
+  unwritten.tithe = { weekKey, paid: 3 };
+  unwritten.records = { expeditions: 4, victories: 1, wardens: 4, fastestMs: 2_460_000 };
+  unwritten.tales = [
+    {
+      omen: 1,
+      result: 'victory',
+      startedAt: NOW - 3 * 86_400_000,
+      endedAt: NOW - 3 * 86_400_000 + 2_460_000,
+      folio: 3,
+      company: company.map((id) => roster[id]?.defId ?? id),
+      inks: { gold: 3, crimson: 2, azure: 1, violet: 0 },
+      relics: 3,
+      pages: 38,
+      wardens: 3,
+      entries: [
+        { kind: 'illuminated', folio: 2, ink: 'gold', tier: 1 },
+        { kind: 'warden', folio: 3, id: 'enemy.unwritten_unwriter' },
+      ],
+    },
+  ];
+  const ctx = { unwritten, world: UNWRITTEN_WORLD, roster, now: NOW, weekKey };
+  const begun = beginExpedition(ctx, { omen: 1, company, seedRoot: SEED });
+  const run = unwritten.run;
+  if (!begun.ok || !run) throw new Error('the fixture expedition would not begin');
+  const [first] = reachable(run.map, run.walked);
+  if (!first) throw new Error('the fixture map has no first row');
+  enterPassage(ctx, first.id);
+  if (run.pending?.kind === 'fight') {
+    const shares = [0.62, 0.8, 1, 0.45];
+    settleFight(ctx, {
+      kind: 'victory',
+      turns: 18,
+      allyTurns: 9,
+      wavesCleared: 2,
+      waveCount: 2,
+      enemyHpLeft: 0,
+      seed: `${SEED}:fight`,
+      decisions: [],
+      units: company.slice(0, 4).map((id, slot) => ({
+        unitId: `a${slot}`,
+        side: 'ally' as const,
+        defId: roster[id]?.defId ?? id,
+        instanceId: id,
+        alive: true,
+        died: false,
+        damageDealt: 9_000,
+        damageTaken: 2_000,
+        healingDone: 0,
+        kills: 1,
+        hp: Math.round((shares[slot] ?? 1) * 1_000),
+        maxHp: 1_000,
+      })),
+    });
+  }
+  if (unwritten.run?.pending?.kind === 'offer') chooseOffer(ctx, 0);
+  const [next] = unwritten.run ? reachable(unwritten.run.map, unwritten.run.walked) : [];
+  if (next) enterPassage(ctx, next.id);
+  return unwritten;
+}
 
 async function main(): Promise<void> {
   const base = createNewGame({ name: 'Marvin', now: NOW, seedRoot: SEED });
@@ -316,6 +397,7 @@ async function main(): Promise<void> {
       completedSteps: TUTORIAL_CHAPTERS.flatMap((chapter) => chapter.steps.map((step) => step.id)),
       skippedChapters: [],
     },
+    unwritten: unwrittenOf(roster, instanceIds.slice(0, 5), base.periods.lastWeeklyKey),
     updatedAt: NOW,
   };
 

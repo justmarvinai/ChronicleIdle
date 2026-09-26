@@ -181,7 +181,11 @@ Format: **Reference** → **Layout** → **Elements** → **Interactions** → *
   since `0.10.0`, **the Mine** at the old fountain in the middle of the square, where the Deepvein's
   shaft goes down — its medallion wears the in-house pick-over-a-gem glyph, its ring fills with
   the store in the crystal colour `--mine`, and its plate reads *Gems waiting: 9*, *Next gem in
-  2h 10m* or, full, *Store full · 17 gems* with the dot and the ripple (§5.29).
+  2h 10m* or, full, *Store full · 17 gems* with the dot and the ripple (§5.29). Since `0.13.0`,
+  **the Torn Page** hangs above the square by the church spire: a violet rift into the Unwritten
+  whose medallion wears the burning scroll over a slow tear of light (`FxSprite`, the nebula
+  flipbook, tinted `--unwritten`), and whose plate reads the expedition under way (*Folio II ·
+  Omen 3*) or, between expeditions, the week's Tithes (*Tithes this week: 4/6*) (§5.32).
   Each is a **medallion** — the kit's metal ring (`frame-round-lg`) around a dark disc lit from
   inside in the building's own colour, a soft halo breathing behind it; the Portal also wears a
   slow-turning rune ring (`FxSprite`) — over its **name on a patch of ink** with a hairline and a
@@ -959,8 +963,10 @@ Rules the overlay holds to:
   (how many keeps are open and the deepest any of them has been taken — `4 keeps · deepest Normal
   14`, §5.24), Bosses (the keys left at each gate, named — `Gargoyle 2/2 · Titan 3/3`, the number
   the hub's panels used to carry, §5.2),
-  **The Eternal Tower** (`Floor n · Keys k/c`, the floor a key would open and the ring held). The
-  Dungeons card sits between Campaign and Bosses, where the owner asked for it. A
+  **The Unwritten** (`Omen III open · Tithes 4/6`, or *Expedition under way · Folio II · Omen III*
+  while one is, §5.32) and **The Eternal Tower** (`Floor n · Keys k/c`, the floor a key would open
+  and the ring held). The Dungeons card sits between Campaign and Bosses, where the owner asked for
+  it; the Unwritten's between the Brewery and the tower, on the lone wanderer's road (`bg.bg2`). A
   card that is still shut reports nothing live; its button says what opens it — a chronicle level
   for most, and *Clear the Intro campaign* for the tower, which is gated on progress rather than
   on a level (`ETERNAL_TOWER.md` §1). Backlog cards (Events) do not exist in EA-0.1.
@@ -1434,7 +1440,7 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   ladder — a hexagonal seal with the number, the name, the renown it stands on, its purse as slots
   and the frame or the title it hangs up as a tinted tag; claimed rungs gold-sealed and stepped
   back, a reached one outlined in gold, the rest dim.
-- **Achievements** (right): a row of ledger filters — *All* and the eight ledgers, each with a dot
+- **Achievements** (right): a row of ledger filters — *All* and the nine ledgers, each with a dot
   for what it owes — over two columns of cards (`AchievementCard`, 168 px): the emblem in a
   gold-edged bevelled plate with the five tiers as diamonds under it (gold for claimed, lit and
   breathing for waiting, dark for still to earn); the name, and at the right the ledger and the
@@ -1449,3 +1455,82 @@ variants are used for Duskmere Marsh and Frostvein Pass.
   **Claim**, **Go**, or a *Claimed* seal.
 - A claim pays with the reward chime and a toast carrying the purse; a rank claim with the larger
   chime; a title or a frame a claim hangs up gets its own toast (*Frame earned: Bronze*).
+
+### 5.32 The Unwritten (`docs/design/UNWRITTEN.md`)
+- Reached from the Torn Page on the hub (§5.2) and its card on Game Modes (§5.19); before level 16 a
+  single violet panel names the level. The screen, its words and its engine are one lazy chunk
+  (ADR-050). A darkened page over the folio's own backdrop — the Drowned Margins, the Hollow Choir,
+  the Blotted Heart, each under its grade — with violet motes and ink drifting through it
+  (`AmbientLayer` preset `unwritten`) and the void drone under the dungeon's caves.
+- **Head:** three tabs — *Expedition*, *Scriptorium*, *Records* — then where the company is
+  (*FOLIO II* in violet capitals and the folio's name) or, between expeditions, the mode's line;
+  at the right two chips, the Recovered Pages held and the week's Tithes left.
+- **The threshold** (between expeditions): the **Omens** as a ladder on the left, sixteen rungs with
+  their numerals, their names and their twists; the open ones pressable, the sealed ones dim with a
+  shackle, a seal won marked with the cup. On the right the **reading** of the Omen chosen — *Omen
+  III · Bitter Ink*, the foes' strength against the First Page (×2.3), the Pages multiplier, the
+  Tithes left, every twist in force (its own and all beneath it), and the seal the first victory
+  breaks — then the roster to **choose the company** from, nine across with a third row peeking,
+  strongest first, each pick numbered in the order it will stand, *4 of 6 chosen*; the rule under
+  it and **Begin the expedition**.
+- **The expedition:** the **company** on the left (360 px) — every champion's card and a health
+  groove, the fallen veiled under a skull with *Rekindle* when a token allows, an Echo badged — and
+  on the right the **folio's map** beside the **codex** (420 px).
+  - *The map* is ink on a darkened page: diamond passages of vellum with their glyphs upright
+    (crossed blades, the spiked cleaver, the quill, the candle, the coin purse, the chest, the
+    cloaked figure), a hand-drawn wobble so no two folios sit on a grid, and the Warden above the
+    last row, larger, in blood. Roads are strokes: the route walked in solid gold, the roads open to
+    the company dashed and flowing, the ones still ahead dotted, the lost ones faint. Open passages
+    breathe; one pressed lifts in gold and a strip rises from the page's foot with its name, what it
+    holds and **Enter** (a double press enters at once). The page's foot says *Choose where the
+    company goes next* while nothing is waiting.
+  - *The codex:* the purse (gilt, Pages — with the multiplier they come home at — and the Omen);
+    each ink as a ribbon in its element's colour with its count toward illumination (*4 / 6*), two
+    pips for its two tiers and the inscriptions written in it as rows (icon, name, level numeral,
+    the line at that level); the blends; the relics as icons with their lines on hover; the blots
+    in their own violet; the redraws left; and **Abandon expedition**, asked once on a red leaf that
+    says how many Pages come home.
+- **The passage in hand** is a **leaf** laid over the map and codex (the company stays pressable
+  beside it), headed by the passage's glyph, a kicker and a title:
+  - *A fight* — the foes of the first wave standing (a health groove where a lost fight left them
+    wounded), *+N more in the waves behind*, the marks the Unwritten put on them (or *hidden* until
+    a Keen Reader reads them), and the muster: the healthiest four chosen for you, changed from the
+    company column (seat 1 leads), and **Fight**. A lost fight says so on its return: the passage
+    is contested, both sides keep their wounds.
+  - *An offer* — the spoils of the victory in a strip (gilt, Pages, a relic, the Tithe), then three
+    **tall inscription cards**: the ink down the spine (a blend's two meeting in the middle), the
+    rarity and the ink named at the top, the icon, the name, the three levels as numerals with the
+    one it writes lit, the line at that level, whom it is written into and *New* or *Deepens I →
+    II*. Under them *Draw again (N left)* and *Leave them unwritten (+10 gilt)*.
+  - *A relic* (a Reliquary, a Warden's hoard) — the relics side by side, large, with their lines.
+  - *A mystery* — the scene's painting beside its words, and its choices as rows, each with what it
+    costs and may bring; one the company cannot take says what it still needs, a gamble names its
+    odds to a Keen Reader, and the last choice is always open.
+  - *A shrine* — four offerings, one to take: Rest, Rekindle (the fallen by name), Re-ink (the
+    inscriptions that can go deeper), Scrape (the blots), each saying what it does at the share the
+    rules leave it.
+  - *The Peddler* (a wide leaf) — three inscriptions as compact cards and two relics on the cloth,
+    priced in gilt and greyed the moment the purse cannot meet them; the five services under them
+    (Salve, Phoenix Ash, Deepening Ink, Scraper, Fresh Stock), the once-a-visit ones marked when
+    spent; and **Leave the Peddler**.
+  - *Echoes* — two champions the Unwritten remembers as large cards badged *Echo*, what an Echo's
+    resolve gives, **Join the company**, or *Send them away (+25 gilt)*.
+- **Moments:** an ink lit rises over the page in its own colour — *Crimson Ink Illuminated* and what
+  it now does — with a rising chord; a folio turned darkens the page for its name and the rest the
+  company took; a victory returns straight from the battle to the folio (no result screen: the
+  offer is the reward); a quill scratches as an inscription is written, a page turns as a passage
+  is entered, a blot lands dull and wet.
+- **The Tale** closes an expedition, laid over everything until it is closed: *A Tale of Omen III*,
+  the ending as its title (*The Pages Are Recovered*, *The Company Has Fallen*, *The Company Turned
+  Back*) under a gold, blood or violet glow; the folio reached, Wardens felled, Pages brought home,
+  relics carried and the time; the four inks as tallies; the company named; then folio by folio
+  what happened, each line marked — a fall in blood, a Warden or a lit ink in gold, a blot in
+  violet. Its foot says what came home to the wallet (a Tithe, a seal).
+- **Scriptorium:** four shelves of four folios as cards — glyph, name, what it changes — with the
+  price in Pages on the button; written ones in gold with *Written*, a shelf still shut dim with
+  *Opens once 2 folios of Shelf I are written*, and every button out while an expedition is under
+  way (*The candles are out…*).
+- **Records:** the standing — expeditions, victories, Wardens felled, the best Omen won, the fastest
+  victory, the highest Omen open — over the last eight Tales as rows (result, Omen, folio, Pages);
+  pressing one opens it beside them, whole.
+

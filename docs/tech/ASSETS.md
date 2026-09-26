@@ -20,7 +20,7 @@ recorded in `CREDITS.md`.
 | UI kit: dark-ember | `assets/ui/dark-ember/` | 42 | PNG 64²–1024×1536 | ember buttons, frames, banners, bars, ornate panels, 4 skill icons, 3 item icons, 2 silhouettes |
 | UI kit: stone-vine | `assets/ui/stone-vine/` | 37 | PNG | stone panels/slots/buttons, icon buttons, health/mana/stamina bars, 10 item icons, vine divider, dark scene bg 1920×1047 |
 | Pixel deco frames | `assets/ui/deco-frames/` | 140 | 32 frames × {line, solid, soft, scrim} 96² + 6 dividers + 6 fade dividers | 9-slice with 32 px insets; `line` is the bare outline, `solid` adds an opaque inner band, `soft`/`scrim` are the 50 % alpha versions |
-| Line glyphs | `assets/ui/line-glyphs/` | 40 | SVG, black | recolourable via CSS mask / Pixi tint; one more is drawn in-house in `tools/assets/glyphs/` (the Mine's pick, `0.10.0`) and built by the same step |
+| Line glyphs | `assets/ui/line-glyphs/` | 40 | SVG, black | recolourable via CSS mask / Pixi tint; five more are drawn in-house in `tools/assets/glyphs/` (the Mine's pick, `0.10.0`; the Unwritten's quill, candle, coin purse and chest, `0.13.0`) and built by the same step |
 | Spell icons | `assets/ui/spell-icons/` | 235 | WebP, painted | families: blood 25, crest 6, earth 40, fire 40, fx 12, hero 15, hunt 25, icon 4, orb 4, rune 19, skill 4, tech 25, weapon 16 |
 | Gear set paintings | `assets/gear_sets/<set>/<set>_<slot>.png` | 14 × 6 = 84 | PNG 1254², RGB, a full painted scene behind each piece (1.3–2.8 MB) | one per slot of every set; four files spell their slot differently (`lifedrinker_boot`, `swiftfoot_gauntlet`, `relentless_gauntlents`, `stunlock_sword`) and are read as they are |
 | Gear set emblems | `assets/gear_sets/!gear_set_identifier_icons/<set>_identifier.png` | 14 | PNG 1254², RGB, a flat single-colour emblem on black (0.7–0.9 MB) | the set's identifier; the black is keyed out at build time |
@@ -49,7 +49,7 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | --- | --- | --- | --- | --- |
 | Free Pixel Effects Pack | `vfx/Free Pixel Effects Pack/` | 20 sheets + README | PNG grids of 100 × 100 px frames (600²–1100²) | public domain (README); magicspell, magic8, bluefire, casting, magickahit, flamelash, firespin, protectioncircle, brightfire, weaponhit, fire, nebula, vortex, phantom, loading, sunburn, felspell, midnight, freezing, magicbubbles |
 | GameFX export | `vfx/GameFXExport/SPRITESHEET_Files/` (+ `GIF_Files/` previews) | 22 strips + 22 GIFs | PNG horizontal strips, 64 / 96 / 133 px frames, 28–89 frames | Explosion ×3, FireBall ×3, FireBurst, FireCast, HolyExplosion, IceCast, IcePick, IceShatter ×2, LightCast, MagicBarrier, MediumStar, SmallStar, PoisonCast, PoisonClaw, Tornado ×3 |
-| Generated sounds (in-house) | `tools/audio/recipes.ts` and `summon-recipes.ts` → `public/assets/generated/audio/generated/` | 29 files | OGG Vorbis, mono-summed to stereo, loudness reported in the manifest | UI ticks, rewards, stingers, ambience drone, and the fourteen summon-ritual sounds (`sfx.summon.*`); rendered by `pnpm assets:build`, cached on the recipe sources |
+| Generated sounds (in-house) | `tools/audio/recipes.ts`, `summon-recipes.ts` and `unwritten-recipes.ts` → `public/assets/generated/audio/generated/` | 33 files | OGG Vorbis, mono-summed to stereo, loudness reported in the manifest | UI ticks, rewards, stingers, ambience drone, the fourteen summon-ritual sounds (`sfx.summon.*`) and the Unwritten's four (`sfx.unwritten.*`); rendered by `pnpm assets:build`, cached on the recipe sources |
 | Generated flipbooks (in-house) | `tools/vfx/recipes.ts` → `public/assets/generated/vfx/generated/` | 5 strips | PNG horizontal strips, 96 / 128 px frames, 8–16 frames, 20–30 fps | `fx.gen.slash_arc`, `sparks`, `rune_ring`, `smoke`, `speed_lines`; rendered by `pnpm assets:build`, cached on the recipe sources |
 
 ## 2. Usage map
@@ -80,6 +80,7 @@ Every kit folder also contains a `thumb/` copy (ignored by the pipeline).
 | Settlement 8 (Frostvein) | `Forest Day Storm` low-passed | none |
 | Settlement 11 (Citadel) | `Torch Loop` + `Interior Night` | none |
 | Settlement 12; the Titan; Summoning; Title | `Cave ambience` (MP3) pitched down + generated void drone | none |
+| The Unwritten | generated void drone over `Cave` (the `unwritten` bed in `audio/registry.ts`), with violet fog and ink flecks as its ambient layer | none |
 
 ### SFX → sound keys
 See `UI_DESIGN.md` §7 for the full key table. Highlights: sword/bow packs drive melee/ranged
@@ -231,6 +232,7 @@ Still needed for EA-0.1 and how they are covered:
 | UI ticks, confirms, cancels, tabs, errors | generated (`tools/audio`) |
 | Reward, level-up, rank-up, victory/defeat stingers | generated, layered with the owner's `Spells` pack |
 | Summon ritual: `sfx.summon.charge`, `tell`, `stall`, `windup`, `crack`, `shatter`, `reveal_{common,rare,epic,legendary,mythic}`; the cards: `flip`, `star`, `stamp` | generated (`tools/audio/summon-recipes.ts`): a riser for the charge, a crystal note per tell (the Portal pitches it a whole tone per rarity), two heartbeats for the held breath before gold, a reversed swell into the burst, a shatter under every burst and one reveal per tier over it |
+| The Unwritten: `sfx.unwritten.page`, `quill`, `illuminate`, `blot` | generated (`tools/audio/unwritten-recipes.ts`): a page turned between passages, a quill's scratch as an inscription is written, a rising chord when an ink illuminates, a wet thud when a blot lands |
 | Void/Eclipse and holy/Justice cast layers | generated drones/chimes layered on owner sounds |
 | Summon and title ambience | generated void drone + owner `Cave ambience` |
 | Slash arcs, impact sparks, rune rings, smoke, speed lines (shipped); rarity bursts (Summoning) | generated (`tools/vfx`) |

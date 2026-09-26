@@ -26,6 +26,7 @@ import {
 } from '@state/dungeon-session';
 import { palaceBonusOf } from '@state/palace';
 import { useGameStore } from '@state/store';
+import { clearUnwrittenSession } from '@state/unwritten-session';
 
 export interface DungeonLaunchInput {
   slug: string;
@@ -94,6 +95,7 @@ export function launchDungeonRun(input: DungeonLaunchInput): Result<void> {
   clearBossSession();
   clearTowerSession();
   clearBrewerySession();
+  clearUnwrittenSession();
   beginDungeonBatch({
     slug: input.slug,
     difficulty: input.difficulty,

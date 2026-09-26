@@ -158,6 +158,24 @@ export const HUB_HOTSPOTS: readonly HubHotspotDef[] = [
     labelBelow: true,
   },
   {
+    /*
+     * The Torn Page: a violet rift hanging over the square, where the Eclipse's torn pages fall
+     * into the Unwritten (UNWRITTEN.md §2). It opens with the mode.
+     */
+    id: 'unwritten',
+    labelKey: 'hub.unwritten',
+    hintKey: 'hub.hint.unwritten',
+    x: 640,
+    y: 330,
+    size: 96,
+    glyph: 'glyph.burning_scroll',
+    feature: 'unwritten',
+    route: { name: 'unwritten' },
+    color: '#8a6fd1',
+    aura: 'fx.pixel.nebula',
+    labelBelow: true,
+  },
+  {
     id: 'idle',
     labelKey: 'hub.idleChest',
     hintKey: 'hub.hint.idle',

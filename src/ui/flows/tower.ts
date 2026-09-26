@@ -13,6 +13,7 @@ import { clearCampaignSession } from '@state/campaign-session';
 import { clearBossSession } from '@state/boss-session';
 import { progressOf } from '@state/campaign';
 import { useGameStore } from '@state/store';
+import { clearUnwrittenSession } from '@state/unwritten-session';
 import {
   beginTowerFloor,
   clearTowerSession,
@@ -34,6 +35,7 @@ export function launchTowerFloor(input: TowerLaunchInput): Result<void> {
   // A climb is never repeated and never carries another mode's session into the HUD.
   clearCampaignSession();
   clearBossSession();
+  clearUnwrittenSession();
   const charged = actions.startTowerFloor(input.floor);
   if (!charged.ok) return charged;
 

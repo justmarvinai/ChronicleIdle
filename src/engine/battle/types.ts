@@ -174,6 +174,12 @@ export interface UnitReport {
   damageTaken: number;
   healingDone: number;
   kills: number;
+  /**
+   * The HP the unit ended the fight on, and its max HP then — what the Unwritten keeps between
+   * fights (UNWRITTEN.md §4.2). Written by `finish`.
+   */
+  hp: number;
+  maxHp: number;
 }
 
 export interface BattleOutcome {

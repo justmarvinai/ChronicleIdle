@@ -15,6 +15,7 @@ import { PALACE_POINT_SOURCES } from '@content/balance/palace';
 import { progressKey, stageIdOf } from '@engine/campaign/progress';
 import { settlementKey } from '@engine/palace/index';
 import { SAVE_VERSION, emptyDeeds, saveSchema, type SaveGame } from '@engine/schema/save';
+import { emptyUnwritten } from '@engine/schema/unwritten-save';
 
 export interface MigrationStep {
   from: number;
@@ -416,6 +417,16 @@ export const MIGRATIONS: readonly MigrationStep[] = [
      * tier the veteran already passed is waiting to be claimed the day the Hall opens.
      */
     migrate: (raw) => ({ ...raw, saveVersion: 21, deeds: emptyDeeds() }),
+  },
+  {
+    from: 21,
+    to: 22,
+    /*
+     * The Unwritten (0.13.0). Nobody has walked it yet: no Pages, nothing written, Omen 0 open and
+     * no expedition in hand. It opens at level 16 like any feature, so a chronicle already past 16
+     * finds it waiting.
+     */
+    migrate: (raw) => ({ ...raw, saveVersion: 22, unwritten: emptyUnwritten() }),
   },
 ];
 

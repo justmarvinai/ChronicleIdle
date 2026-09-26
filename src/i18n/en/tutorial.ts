@@ -89,4 +89,6 @@ export const tutorial = {
     'Three stars here, and the chronicle already knows how this fight ends. Clear it instantly: the same energy, the same spoils, the XP to the team you seat — and no fight to watch. The repeat sets how many.',
   'tut.6.10.text':
     'The Hall of Deeds is open. Everything this chronicle has done is written there, from the first stand — so deeds are already waiting. Claim them for their spoils and their renown; renown raises your rank in the Hall, and the ranks pay shards, titles and frames for your portrait.',
+  'tut.6.11.text':
+    'A page has torn open over the square. Beyond it lies the Unwritten: three folios of lost history, never the same twice. Take up to six champions — four fight at a time, and every wound is kept. Each victory writes an inscription into the company; gather one ink and it shines. Win or fall, the Recovered Pages come home.',
 } as const;

@@ -22,6 +22,7 @@ import { clearTowerSession } from '@state/tower-session';
 import { progressOf } from '@state/campaign';
 import { palaceBonusOf } from '@state/palace';
 import { useGameStore } from '@state/store';
+import { clearUnwrittenSession } from '@state/unwritten-session';
 
 export interface BreweryLaunchInput {
   element: Element;
@@ -39,6 +40,7 @@ export function launchBreweryRun(input: BreweryLaunchInput): Result<void> {
   clearCampaignSession();
   clearBossSession();
   clearTowerSession();
+  clearUnwrittenSession();
   const charged = actions.startBreweryRun(input.element, input.stage);
   if (!charged.ok) return charged;
 

@@ -20,6 +20,7 @@ export const DEED_LEDGERS = [
   'portal',
   'trials',
   'halls',
+  'unwritten',
   'emberhold',
   'ledgers',
 ] as const;

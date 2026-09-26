@@ -35,6 +35,8 @@ const ally = (instanceId: string, over: Partial<UnitReport> = {}): UnitReport =>
   damageTaken: 0,
   healingDone: 0,
   kills: 0,
+  hp: 100,
+  maxHp: 100,
   ...over,
 });
 

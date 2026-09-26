@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { emptyUnwritten } from '@engine/schema/unwritten-save';
 import { nextStage } from '@engine/campaign/progress';
 import { createNewGame } from '@engine/save/new-game';
 import { mineLevel, mineStore } from '@engine/mine/index';
@@ -290,9 +291,9 @@ describe('migrateSave', () => {
       'tut.the_binding',
       'tut.routine',
     ]);
-    // …Steel and Bone's lessons up to level 16 count as read — the instant clear's (11) and the
-    // Hall of Deeds' (13) among them, since the rule is the level, not the version a lesson arrived
-    // in…
+    // …Steel and Bone's lessons up to level 16 count as read — the instant clear's (11), the Hall of
+    // Deeds' (13) and the Unwritten's (16) among them, since the rule is the level, not the version
+    // a lesson arrived in…
     expect(result.save.tutorial.completedSteps).toEqual([
       'tut.6.1',
       'tut.6.2',
@@ -302,6 +303,7 @@ describe('migrateSave', () => {
       'tut.6.6',
       'tut.6.9',
       'tut.6.10',
+      'tut.6.11',
     ]);
     // …and Refine (18) and auto-repeat (20) are still ahead of it.
     expect(result.save.tutorial.completedSteps).not.toContain('tut.6.7');
@@ -364,6 +366,18 @@ describe('migrateSave', () => {
     const store = mineStore(migrated.mine, fixture['updatedAt'] as number);
     expect(store.full).toBe(true);
     expect(store.gems).toBe(mineLevel(1).storeGems);
+  });
+
+  it('gives a v21 chronicle an Unwritten nobody has entered (21 → 22)', () => {
+    const fixture = JSON.parse(readFileSync('tests/fixtures/saves/v21.json', 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    expect(fixture['unwritten'], 'the v21 fixture predates the Unwritten').toBeUndefined();
+    const { save: migrated } = migrateSave(fixture);
+    expect(migrated.unwritten).toEqual(emptyUnwritten());
+    // Nothing else moves: the Hall the chronicle already climbed is still there.
+    expect(migrated.deeds).toEqual(fixture['deeds']);
   });
 
   it('runs migration steps in order', () => {

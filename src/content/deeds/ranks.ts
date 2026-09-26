@@ -4,7 +4,7 @@
  * name the rank as their source (`frames.ts`, `titles/index.ts`), so this table is the ladder
  * and its purse.
  *
- * The whole Hall is worth about 7,700 renown, so the tenth rank asks for nearly all of it; the
+ * The whole Hall is worth about 8,800 renown, so the tenth rank asks for nearly all of it; the
  * first is a morning's claiming the day the Hall opens.
  */
 import type { CurrencyAmount } from '@content/currencies/types';
@@ -42,19 +42,19 @@ export const HALL_RANKS: readonly HallRankDef[] = [
     { currency: 'shard_ancient', amount: 2 },
     { currency: 'tome_legendary', amount: 1 },
   ]),
-  rank(7, 2_300, [
+  rank(7, 2_500, [
     { currency: 'gems', amount: 500 },
     { currency: 'shard_sacred', amount: 1 },
   ]),
-  rank(8, 3_400, [
+  rank(8, 3_800, [
     { currency: 'gems', amount: 600 },
     { currency: 'shard_sacred', amount: 2 },
   ]),
-  rank(9, 5_000, [
+  rank(9, 5_600, [
     { currency: 'gems', amount: 800 },
     { currency: 'shard_primordial', amount: 1 },
   ]),
-  rank(10, 7_000, [
+  rank(10, 7_700, [
     { currency: 'gems', amount: 1_000 },
     { currency: 'shard_primordial', amount: 1 },
     { currency: 'tome_mythic', amount: 1 },

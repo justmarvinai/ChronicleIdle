@@ -54,6 +54,8 @@ function fought(damage: number, kind: BattleOutcome['kind'] = 'timeout'): Battle
         damageTaken: damage,
         healingDone: 0,
         kills: 0,
+        hp: 100,
+        maxHp: 100,
       },
     ],
     enemyHpLeft: 0.5,

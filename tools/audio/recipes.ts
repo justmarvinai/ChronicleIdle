@@ -6,6 +6,7 @@
  */
 import { chime, type Recipe } from './recipe.ts';
 import { SUMMON_RECIPES } from './summon-recipes.ts';
+import { UNWRITTEN_RECIPES } from './unwritten-recipes.ts';
 import {
   SR,
   adsr,
@@ -443,6 +444,7 @@ export const RECIPES: Recipe[] = [
     },
   },
   ...SUMMON_RECIPES,
+  ...UNWRITTEN_RECIPES,
 ];
 
 export const RECIPE_KEYS = RECIPES.map((r) => r.key);

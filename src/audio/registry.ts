@@ -46,6 +46,12 @@ export const SOUNDS = {
   'mine.deepen': s('sfx.spells.rock_wall', 0.8, 0.02, 600),
   // An instant clear (CAMPAIGN.md §10): a page of the chronicle turned, once per run the ledger counts.
   'instant.write': s('sfx.summon.flip', 0.6, 0.08, 45),
+  // The Unwritten (UNWRITTEN.md §21): a page turned between passages, a quill writing an inscription,
+  // the chord an ink illuminates with, a blot landing on the page.
+  'unwritten.page': s('sfx.unwritten.page', 0.55, 0.06, 150),
+  'unwritten.quill': s('sfx.unwritten.quill', 0.7, 0.05, 120),
+  'unwritten.illuminate': s('sfx.unwritten.illuminate', 0.85, 0, 800),
+  'unwritten.blot': s('sfx.unwritten.blot', 0.75, 0.04, 300),
   // The summoning ritual (SUMMONING.md §5): the charge, a tell per rarity climbed (pitched by the
   // Portal), the held breath before gold, the wind-up, the shatter, and one reveal per tier; then
   // the cards: a flip for each of ten, a ping per star, a stamp under the rarest.
@@ -106,7 +112,7 @@ export interface AmbienceBed {
 }
 
 /** Ambience beds per scene (docs/tech/ASSETS.md §2). */
-export const AMBIENCE: Record<'title' | 'hub' | 'interior' | 'none', AmbienceBed[]> = {
+export const AMBIENCE: Record<'title' | 'hub' | 'interior' | 'unwritten' | 'none', AmbienceBed[]> = {
   none: [],
   title: [
     { asset: 'ambience.generated.void_drone', gain: 0.7 },
@@ -117,6 +123,11 @@ export const AMBIENCE: Record<'title' | 'hub' | 'interior' | 'none', AmbienceBed
     { asset: 'ambience.night.alt_1', gain: 0.4 },
   ],
   interior: [{ asset: 'ambience.interior_night.clear', gain: 0.6 }],
+  // The Unwritten (UNWRITTEN.md §21): the void's low drone under a cave's hollow air.
+  unwritten: [
+    { asset: 'ambience.generated.void_drone', gain: 0.55 },
+    { asset: 'ambience.cave.alt_1', gain: 0.45 },
+  ],
 };
 
 /** Target RMS (dBFS) for SFX so packs with different mastering sit at one level. */

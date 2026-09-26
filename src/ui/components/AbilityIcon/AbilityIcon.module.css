@@ -20,6 +20,11 @@
 .button[aria-disabled='true'] {
   cursor: var(--cursor-disabled);
 }
+/* An image inside a control: the control's cursor and press, never its own. */
+.still {
+  display: inline-block;
+  cursor: inherit;
+}
 .pressable:hover {
   transform: translateY(-3px) scale(1.04);
   filter: brightness(1.15);

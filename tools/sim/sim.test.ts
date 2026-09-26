@@ -3,7 +3,8 @@ import { SETTLEMENT_COUNT } from '@content/balance/campaign';
 import { content } from '@content/registry';
 import { levelCap } from '@engine/champions/stats';
 import { simulateStage } from './run';
-import { BANDS, SIM_TEAMS, TEAM_BY_ID, buildParty } from './teams';
+import { BANDS, SIM_TEAMS, TEAM_BY_ID, UNWRITTEN_BANDS, UNWRITTEN_COMPANY, buildParty } from './teams';
+import { playExpedition } from './unwritten';
 
 describe('balance harness', () => {
   it('builds every reference team inside its own star caps', () => {
@@ -51,5 +52,22 @@ describe('balance harness', () => {
       expect(band.min ?? band.max, `${band.team} ${band.difficulty}`).toBeDefined();
       expect(band.why.length).toBeGreaterThan(8);
     }
+  });
+
+  it('plays an expedition into the Unwritten to its end, the same way twice', () => {
+    const team = TEAM_BY_ID['endgame'];
+    const extra = UNWRITTEN_COMPANY['endgame'];
+    if (!team || !extra) throw new Error('endgame');
+    const company = [...team.champions, ...(team.fourth ? [team.fourth] : []), ...extra.extra];
+    const once = () => playExpedition(team, company, 0, 'sim-test', []);
+    const first = once();
+    // A finished roster walks the First Page: three Wardens, a dozen fights and more.
+    expect(first.won).toBe(true);
+    expect(first.wardens).toBe(3);
+    expect(first.fights).toBeGreaterThanOrEqual(9);
+    expect(first.pages).toBeGreaterThan(0);
+    expect(once()).toEqual(first);
+    // Every band names a team the Unwritten has a company for.
+    for (const band of UNWRITTEN_BANDS) expect(UNWRITTEN_COMPANY[band.team], band.team).toBeDefined();
   });
 });

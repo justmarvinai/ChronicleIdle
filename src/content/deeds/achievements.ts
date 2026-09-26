@@ -1,5 +1,5 @@
 /**
- * The thirty-seven achievements (docs/design/ACHIEVEMENTS.md §5), ledger by ledger in the order
+ * The forty-one achievements (docs/design/ACHIEVEMENTS.md §5), ledger by ledger in the order
  * the Hall lists them. The first tier of most is days into a chronicle; the fifth is a year or more.
  *
  * Where a part of the game has a top — the Tower's hundredth floor, the Mine's tenth level, the
@@ -260,6 +260,38 @@ export const ACHIEVEMENTS: readonly AchievementDef[] = [
     icon: 'glyph.shield_block',
     place: 'dungeons',
     goals: counts('dungeon.cleared', [5, 20, 60, 120, 160]),
+  }),
+
+  // ── The Unwritten ────────────────────────────────────────────────────────────────────────────
+  achievement({
+    slug: 'folios_turned',
+    ledger: 'unwritten',
+    icon: 'glyph.burning_scroll',
+    place: 'unwritten',
+    // A Warden felled turns its folio; an expedition won is three.
+    goals: counts('unwritten.folios', [3, 30, 100, 250, 500]),
+  }),
+  achievement({
+    slug: 'inscribed',
+    ledger: 'unwritten',
+    icon: 'glyph.quill',
+    place: 'unwritten',
+    goals: counts('unwritten.inscriptions', [10, 100, 400, 1_000, 2_500]),
+  }),
+  achievement({
+    slug: 'relic_bearer',
+    ledger: 'unwritten',
+    icon: 'glyph.chest',
+    place: 'unwritten',
+    goals: counts('unwritten.relics', [5, 50, 200, 500, 1_200]),
+  }),
+  achievement({
+    slug: 'omens_read',
+    ledger: 'unwritten',
+    icon: 'glyph.cursed_eye',
+    place: 'unwritten',
+    // Omens won, Omen 0 counted as one; Omen 15, the last, is The Last Page Turned's.
+    goals: counts('unwritten.omens', [1, 4, 7, 10, 13]),
   }),
 
   // ── Emberhold ────────────────────────────────────────────────────────────────────────────────

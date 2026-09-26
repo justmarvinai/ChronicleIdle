@@ -237,6 +237,47 @@ export const DUNGEON_BANDS_CHECK: readonly DungeonBandCheck[] = [
   },
 ];
 
+// ── The Unwritten (UNWRITTEN.md §20) ──────────────────────────────────────────────────────────
+
+/**
+ * The company each reference team takes into the Unwritten: its four, and two more at the same
+ * stars, level and gear, so the company is the six a chronicle sets out with and can rest its
+ * wounded. What of the Scriptorium such a chronicle has written goes with it.
+ */
+export const UNWRITTEN_COMPANY: Readonly<Record<string, { extra: readonly string[]; shelves: number }>> = {
+  mid_epic: { extra: ['champ.thordakk', 'champ.darius'], shelves: 0 },
+  late_game: { extra: ['champ.thordakk', 'champ.darius'], shelves: 2 },
+  endgame: { extra: ['champ.morrigan_nightweaver', 'champ.kaelith_stormcaller'], shelves: 4 },
+};
+
+export interface UnwrittenBand {
+  team: string;
+  omen: number;
+  /** Inclusive bounds on the share of expeditions won. */
+  min?: number;
+  max?: number;
+  why: string;
+}
+
+export const UNWRITTEN_BANDS: readonly UnwrittenBand[] = [
+  {
+    team: 'mid_epic',
+    omen: 0,
+    min: 0.55,
+    why: 'the level-16 chronicle wins the First Page more often than it falls',
+  },
+  { team: 'mid_epic', omen: 3, max: 0.45, why: 'the Omens are a ladder, not a formality' },
+  { team: 'late_game', omen: 5, min: 0.45, why: 'a late roster reads the middle Omens' },
+  { team: 'endgame', omen: 10, min: 0.4, why: 'a finished roster lives in the high Omens' },
+  {
+    team: 'endgame',
+    omen: 15,
+    min: 0.05,
+    max: 0.35,
+    why: 'the Blotted Heart can be won, and is not won often',
+  },
+];
+
 /** The champion definition a team fights with: authored stats times its modelled gear. */
 function geared(def: ChampionDef, gearMult: number): ChampionDef {
   if (gearMult === 1) return def;

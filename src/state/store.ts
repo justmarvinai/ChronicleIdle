@@ -418,6 +418,13 @@ export interface GameActions {
    * rolled and paid as a fought three-star repeat would be, the champion XP to `party`.
    */
   instantClear(input: Omit<InstantClearInput, 'now'>): Result<InstantClearSummary>;
+  /**
+   * Commits a step worked out by a mode that loads in its own chunk (ADR-050). The store cannot
+   * name such a mode's reducers without folding them into the first screen's bundle, so the mode
+   * hands its step in. `apply` writes into the draft and returns plain data — never a draft, which
+   * immer revokes the moment the step is committed.
+   */
+  transact<T>(apply: (save: SaveGame, now: number) => Result<T>): Result<T>;
   /** Dev/debug (Chronicle Debug panel): the player level, for verifying level gates. */
   debugSetPlayerLevel(level: number): void;
   /** Dev/debug: marks a whole difficulty cleared, for verifying the unlock chain. */
@@ -1901,6 +1908,18 @@ export function createGameStore(deps: StoreDeps): { store: GameStoreApi; events:
                 save.profile.level = Math.max(1, Math.min(PLAYER_MAX_LEVEL, Math.round(level)));
                 save.profile.xp = 0;
               });
+            },
+
+            transact(apply) {
+              if (!get().save) return fail('invalid_argument', 'No chronicle loaded');
+              const now = clock.now();
+              let result: ReturnType<typeof apply> = fail('invalid_argument', 'No chronicle loaded');
+              set((state) => {
+                if (!state.save) return;
+                result = apply(state.save, now);
+                if (result.ok) state.save.updatedAt = now;
+              });
+              return result;
             },
 
             debugClearCampaign(difficulty, stars = 3) {

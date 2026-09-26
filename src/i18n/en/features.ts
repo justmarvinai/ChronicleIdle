@@ -38,6 +38,9 @@ export const features = {
   'feature.deeds.hint': 'Achievements and challenges for the long road: renown, ranks, titles and frames.',
   'feature.weekly_boss.name': 'The Titan',
   'feature.weekly_boss.hint': 'The hardest fight the week has.',
+  'feature.unwritten.name': 'The Unwritten',
+  'feature.unwritten.hint':
+    'An expedition into the torn pages: a new map every time, wounds that last, powers you write as you go.',
   'feature.eternal_tower.name': 'The Eternal Tower',
   'feature.eternal_tower.hint': 'A hundred floors, and a key every quarter hour.',
   'feature.brewery.name': 'The Brewery',

@@ -76,7 +76,12 @@ export type Target =
   | 'all_dead_allies'
   | { adjacent_to_target: number }
   | 'highest_atk_enemies_2'
-  | 'provoker';
+  | 'provoker'
+  /**
+   * The foe whose hit set off an `onHitTaken` or `onAllyHit` passive (the Unwritten's Verdict and
+   * Iron Maiden, UNWRITTEN.md §7). Resolves to nobody anywhere else.
+   */
+  | 'attacker';
 
 export type Condition =
   | { targetHas: StatusId }
@@ -92,7 +97,9 @@ export type Condition =
   | { waveStart: true }
   /** The caster's boss phase has reached `n` (BOSSES.md §3: Titan's Un-light in phase III). */
   | { selfPhaseAtLeast: number }
-  | { attackerElement: Element };
+  | { attackerElement: Element }
+  /** I carry this status right now (the Unwritten's Crusader's Zeal: while shielded). */
+  | { selfHas: StatusId };
 
 export type DamageStat = 'ATK' | 'DEF' | 'HP' | 'TARGET_MAX_HP';
 export type HealStat = 'ATK' | 'HP' | 'CASTER_MAX_HP' | 'TARGET_MAX_HP';

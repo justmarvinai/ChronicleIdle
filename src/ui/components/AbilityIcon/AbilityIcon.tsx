@@ -25,6 +25,11 @@ export interface AbilityIconProps {
    * up only as a castable ability would.
    */
   inspect?: boolean;
+  /**
+   * Drawn only: the icon sits inside something that is itself pressed — a card, a row — so it is
+   * an image there, never a second button nested in the first.
+   */
+  decorative?: boolean;
   onClick?: () => void;
 }
 
@@ -39,6 +44,7 @@ export function AbilityIcon({
   selected = false,
   badge,
   inspect = false,
+  decorative = false,
   onClick,
 }: AbilityIconProps) {
   const ready = cooldown === 0 && !disabled && !passive;
@@ -47,6 +53,36 @@ export function AbilityIcon({
   // frame is a transparent ring and always goes on top.
   const ring = imageUrl('ui.dark_ember.frame_round_sm');
   const glow = ready ? imageUrl('ui.dark_ember.frame_round_sm_lit') : null;
+  const face = (
+    <>
+      {glow ? (
+        <span className={styles.glow} style={{ backgroundImage: `url("${glow}")` }} aria-hidden="true" />
+      ) : null}
+      <span className={styles.art} style={{ backgroundImage: `url("${imageUrl(icon, 'full')}")` }} />
+      <span className={styles.frame} style={{ backgroundImage: `url("${ring}")` }} aria-hidden="true" />
+      {cooldown > 0 ? (
+        <span className={styles.cooldown} aria-hidden="true">
+          <span className={`num ${styles.cooldownTurns}`}>{cooldown}</span>
+        </span>
+      ) : null}
+      {badge ? (
+        <span className={`num ${styles.badge}`} aria-hidden="true">
+          {badge}
+        </span>
+      ) : null}
+    </>
+  );
+  if (decorative)
+    return (
+      <span
+        role="img"
+        aria-label={label}
+        className={[styles.button, styles.still, selected ? styles.selected : ''].join(' ')}
+        style={{ width: size, height: size, ['--ability-size' as string]: `${size}px` }}
+      >
+        {face}
+      </span>
+    );
   return (
     <button
       type="button"
@@ -63,21 +99,7 @@ export function AbilityIcon({
       onMouseEnter={() => pressable && playSfx('ui.hover')}
       onClick={() => pressable && onClick && (playSfx('ui.tab'), onClick())}
     >
-      {glow ? (
-        <span className={styles.glow} style={{ backgroundImage: `url("${glow}")` }} aria-hidden="true" />
-      ) : null}
-      <span className={styles.art} style={{ backgroundImage: `url("${imageUrl(icon, 'full')}")` }} />
-      <span className={styles.frame} style={{ backgroundImage: `url("${ring}")` }} aria-hidden="true" />
-      {cooldown > 0 ? (
-        <span className={styles.cooldown} aria-hidden="true">
-          <span className={`num ${styles.cooldownTurns}`}>{cooldown}</span>
-        </span>
-      ) : null}
-      {badge ? (
-        <span className={`num ${styles.badge}`} aria-hidden="true">
-          {badge}
-        </span>
-      ) : null}
+      {face}
     </button>
   );
 }

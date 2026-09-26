@@ -886,3 +886,49 @@ for what a tier pays and the feats' thresholds. Titles the Hall hangs up live wi
 - **Adding to the Hall later is safe**: the save keeps claims by id, so a new achievement or
   challenge simply opens — already met, if the chronicle has done the thing. Never reuse an id, and
   never lower a target a chronicle may already have claimed past.
+
+## 20. The Unwritten (`src/content/unwritten/`)
+
+The Unwritten is its own content bundle (`UNWRITTEN` in `index.ts`), not part of the eager registry:
+it loads with the mode's screen (ADR-050), and its strings live in `src/i18n/en/unwritten.ts`, which
+ships in the same chunk. The engine takes the bundle as an argument; `pnpm content:validate` reads
+it directly (`validateUnwritten` in `engine/schema/unwritten.ts`). Every number a line prints comes
+from the definition's own `show` table — never type a number into an Unwritten string.
+
+- **An inscription** is `inscription({ slug, ink, rarity, icon, bearer?, volume?, values, fixed?,
+  grant })` in `inscriptions/<ink>.ts`. `values` names each number's three levels (`a: [10, 15,
+  20]`), `fixed` the numbers every level shares (`t: 2` turns); `grant` receives one level's numbers
+  and returns the passives it writes into the company, built from the DSL's helpers (`statik`,
+  `onWave`, `onHitTaken`, `onDeath`, `inflict`, `damage`, `guard`, `pct`). The line is
+  `unwritten.inscription.<slug>.text` with `{a}`, `{t}` in it; the validator refuses a slot the
+  `show` table cannot fill and a level that asks for less than the one before it. `bearer` is
+  `'each'` (default), `'leader'` for a field-wide effect that would stack absurdly if four carried
+  it, or `{ element }` for kinship. Volume I is always three Common, two Rare, two Epic and one
+  Legendary per ink; `volume: 2` puts one behind the Scriptorium's *Second Volume*.
+- **A blend** is an Epic `inscription` with two inks, in `inscriptions/blends.ts`, one per pair.
+- **An illumination** (`inks.ts`) is `illumination({ ink, icon, glyph, colour, values, fixed?,
+  grant })` with two tiers (`values: { a: [12, 20] }`) and lines `unwritten.ink.<ink>.illumination.1`
+  and `.2`.
+- **A relic** is `relic({ slug, icon, volume?, price, values, grant })`; its grant is rules
+  (`rule('price_mult', -0.25)`), passives or both. **A blot** is `blot({ slug, icon, values, grant
+  })`, an **affix** `affix({ slug, icon, values, passives })` — a mark an Elite or a Warden wears.
+- **A rule** is one of the ids in `RULE_BASE` (`content/balance/unwritten.ts`), combined with its
+  base by `RULE_MODE` (sum, min or max). A rule that is a share (`PERCENT_RULES`) prints ×100 in a
+  line: `ruleShow` letters an Omen's or a folio's rules `a`, `b`, `c` in order, so an Omen's line
+  reads `Foes have {a}% more HP.`
+- **A mystery** is `mystery({ slug, art, choices })`; each choice has a `key` (its label and hint
+  are `unwritten.mystery.<slug>.<key>` and `.hint`), optional `requires` (gilt by the amount; a
+  relic, a fallen champion, an inscription or a blot — one of each at most, since the panel names
+  one), and `outcomes` or a `gamble` (`{ chance, otherwise }`). The **last choice must always be
+  open** — a mystery can always be walked away from. The hint's numbers come from the outcomes
+  (`{cost}`, `{gilt}`, `{heal}`, `{wound}`, `{pages}`, `{chance}` …).
+- **An Omen** is a row of `TWISTS` in `omens.ts` — its slug and its rules — in ladder order;
+  `omen()` gives it its id, its scale from `OMEN_SCALE` and its line (a rung with no rules has
+  none). **A Scriptorium folio** is `folio({ slug, shelf, cost, icon, rules })`; a folio may not
+  cost more than the cheapest one on a higher shelf.
+- **A folio of the map** (`folios.ts`) is a plain `FolioDef`: the factions it remembers, the shape
+  of its waves and an Elite's escort, its Warden and the Warden's scale, and the backdrop and grade
+  it is drawn on. The Wardens and their adds are enemies in `wardens.ts`, validated like any other.
+- **Balance** is `content/balance/unwritten.ts`: the map's shape, the passage weights, the Omen
+  curve, prices, heals, what an expedition pays. Any change to the curve is checked with
+  `pnpm sim:balance --unwritten` against its bands (`tools/sim/teams.ts`).

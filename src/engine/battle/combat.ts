@@ -100,6 +100,8 @@ export function report(ctx: ActionContext, unitId: string): UnitReport {
     damageTaken: 0,
     healingDone: 0,
     kills: 0,
+    hp: unit?.hp ?? 0,
+    maxHp: unit?.maxHp ?? 0,
   };
   ctx.state.reports[unitId] = fresh;
   return fresh;

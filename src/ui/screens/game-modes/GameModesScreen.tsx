@@ -8,7 +8,9 @@ import { currentPointer } from '@state/campaign';
 import { bossKeysNote } from '@ui/screens/bosses/boss-view';
 import { breweryView } from '@state/brewery';
 import { dungeonsNote } from '@ui/screens/dungeons/dungeons-view';
+import { numeral } from '@ui/screens/unwritten/marks';
 import { isTowerUnlocked, towerView } from '@state/tower';
+import { unwrittenGlance } from '@state/unwritten-glance';
 import { selectActions, selectSave } from '@state/selectors';
 import { useGameStore } from '@state/store';
 import { AmbientLayer } from '@render/ambient/AmbientLayer';
@@ -81,6 +83,15 @@ const MODES: readonly ModeDef[] = [
     route: { name: 'brewery' },
   },
   {
+    id: 'unwritten',
+    feature: 'unwritten',
+    titleKey: 'gameModes.unwritten',
+    bodyKey: 'gameModes.unwritten.body',
+    art: 'bg.bg2',
+    glyph: 'glyph.quill',
+    route: { name: 'unwritten' },
+  },
+  {
     id: 'tower',
     feature: 'eternal_tower',
     titleKey: 'gameModes.tower',
@@ -126,6 +137,20 @@ export default function GameModesScreen(_props: ScreenProps) {
         total: view.runsTotal,
         halls: view.openHalls,
       });
+    }
+    // The Unwritten names the expedition under way, or else the Omen open and the week's Tithes.
+    if (mode.id === 'unwritten') {
+      const glance = unwrittenGlance(save, now);
+      return glance.run
+        ? t('gameModes.unwritten.noteRun', {
+            folio: numeral(glance.run.folio),
+            omen: numeral(glance.run.omen),
+          })
+        : t('gameModes.unwritten.note', {
+            omen: numeral(glance.open),
+            left: glance.titheLeft,
+            total: glance.tithePerWeek,
+          });
     }
     if (mode.id === 'tower') {
       const view = towerView(save, now);

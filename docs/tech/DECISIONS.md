@@ -628,3 +628,34 @@ screen's frame paints a beat before its text — a precached local chunk, so a f
 same mechanism is how a large feature's words can ship in its own chunk later: a table that only
 one screen reads can be registered by that screen's loader, the way this one is.
 
+
+## ADR-050 — A whole mode in its own chunk, and a step that commits a copy
+**Context.** The Unwritten (0.13.0) is the largest mode the game has: fifty-four inscriptions,
+twenty-four relics, twenty mysteries, sixteen Omens, three folios of foes, its own engine and about
+four hundred strings. Loaded with the first screen it would have broken the 350 kB budget ADR-049
+had just made room under. Its engine also works differently from every mode before it: an
+expedition is a long-lived object in the save that dozens of small steps edit — and some of what a
+step hands back (the Tale an ending writes) is held by the screen long after the step is done.
+**Decision.**
+1. *The mode is one lazy chunk.* Its content (`content/unwritten`), engine (`engine/unwritten`),
+   world (`state/unwritten/world.ts`), commands (`state/unwritten/commands.ts`), strings
+   (`i18n/en/unwritten.ts`, registered by `ui/screens/unwritten/strings.ts` the way ADR-049's
+   changelog is) and screens load with the Unwritten's screen and nowhere else. The save's slice
+   and its Zod schema stay eager — a save must load whole — and so does a small glance
+   (`state/unwritten-glance.ts`) the hub's rift and the Game Modes card read.
+2. *A fight is handed off through an eager hook.* The battle screen settles every fight through
+   the mode that started it, but it cannot import the Unwritten's engine. The lazy launcher leaves
+   its settle in `state/unwritten-session.ts` (twenty lines, eager); the battle screen asks it first
+   and, when the fight was the Unwritten's, goes straight back to the folio instead of the result
+   screen. Every other launcher clears it, so a stale settle can never catch another mode's fight.
+3. *A step commits a copy.* Each command runs the engine on `structuredClone(current(slice))`
+   inside the store's `transact`, then puts the copy in the save. The engine never writes into an
+   immer draft, so nothing it returns can be revoked under the screen holding it; `current` alone
+   is not enough, because it hands back the frozen base for any subtree the step did not touch.
+**Consequences.** The first screen is 342.8 kB gzipped with a mode of this size shipped (338 kB
+before it: the slice's schema, the glance, the fight hook and the words the rift and the card
+print). The Unwritten's screen opens a beat later the first time (a precached local chunk).
+Validation and tests read its strings through `i18n/catalog.ts`, like every lazy table. The copy
+costs a clone of one slice per step — a few kilobytes, far below a frame — and buys steps that can
+never corrupt the save they are written into. The pattern (lazy chunk, eager glance, eager fight
+hook, commit a copy) is the template for the next mode of this size.

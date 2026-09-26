@@ -28,6 +28,7 @@ export const TITLES: readonly TitleDef[] = [
   // CAMPAIGN.md §7: the Hard all-3★ milestone.
   title('warden_of_veyrath', { kind: 'difficulty_mastered', difficulty: 'hard' }),
   title('sovereign_of_the_tower', { kind: 'challenge', id: 'challenge.sovereign' }),
+  title('author_of_the_unwritten', { kind: 'challenge', id: 'challenge.last_page_turned' }),
   title('loremaster', { kind: 'level', level: 100 }),
   title('legend_of_the_chronicle', { kind: 'hall_rank', rank: 10 }),
 ];

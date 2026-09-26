@@ -404,7 +404,14 @@ ships to the same Definition of Done as a phase (`AGENTS.md` §3).
 | 2 | **The Mine** — an upgradable building that works while the chronicle is away, as in the references | `0.10.0` | ✅ shipped in 0.10.0 (`MINE.md`) |
 | 3 | **Instant 3★ clears** — a stage mastered is a stage that no longer needs fighting | `0.11.0` | ✅ shipped in 0.11.0 (`CAMPAIGN.md` §10) |
 | 4 | **Challenges & Achievements** — long-term goals across every system | `0.12.0` | ✅ shipped in 0.12.0 — the Hall of Deeds (`ACHIEVEMENTS.md`) |
-| 5 | **The roguelite mode** — the game's deepest mode, built and polished as its flagship | `0.13.0` | ⬜ not started |
+| 5 | **The roguelite mode** — the game's deepest mode, built and polished as its flagship | `0.13.0` | ✅ shipped in 0.13.0 — the Unwritten (`UNWRITTEN.md`) |
+
+All five are shipped. The Unwritten is the largest of them: expeditions of one to six champions
+through three branching folios, fifty-four inscriptions in four inks with illumination and blends,
+twenty-four relics, twenty mysteries, the Peddler, shrines, Echoes, kept wounds, sixteen Omens of
+difficulty with their own twists, a sixteen-folio Scriptorium of permanent upgrades, the Tale of
+every expedition, a weekly Tithe of Skill Tomes, a ninth ledger in the Hall of Deeds, and a
+headless simulator that holds its difficulty curve to bands in the gate. Save v22.
 
 ---
 

@@ -12,8 +12,9 @@ import { CURRENCY_IDS } from '@content/currencies/types';
 import { HISTORY_LIMIT, SHARD_IDS, type ShardId } from '@content/balance/summon';
 import { MINE_MAX_LEVEL } from '@content/balance/mine';
 import { ACHIEVEMENT_TIERS } from '@content/balance/deeds';
+import { unwrittenSchema } from './unwritten-save';
 
-export const SAVE_VERSION = 21 as const;
+export const SAVE_VERSION = 22 as const;
 
 export const walletSchema = z.object(
   Object.fromEntries(CURRENCY_IDS.map((id) => [id, z.number().min(0)])) as Record<
@@ -475,7 +476,8 @@ export type SaveGameV18 = z.infer<typeof saveSchemaV18>;
 export type SaveGameV19 = z.infer<typeof saveSchemaV19>;
 export type SaveGameV20 = z.infer<typeof saveSchemaV20>;
 export type SaveGameV21 = z.infer<typeof saveSchemaV21>;
-export type SaveGame = SaveGameV21;
+export type SaveGameV22 = z.infer<typeof saveSchemaV22>;
+export type SaveGame = SaveGameV22;
 export type DeedsSave = z.infer<typeof deedsSchema>;
 export type MineSave = z.infer<typeof mineSchema>;
 export type PalaceSave = z.infer<typeof palaceSchema>;
@@ -515,8 +517,14 @@ export const saveSchemaV21 = saveSchemaV20.extend({
   deeds: deedsSchema,
 });
 
+/** v22 adds the Unwritten (UNWRITTEN.md §18); everything else is v21's. */
+export const saveSchemaV22 = saveSchemaV21.extend({
+  saveVersion: z.literal(22),
+  unwritten: unwrittenSchema,
+});
+
 /** The schema of the current SAVE_VERSION. */
-export const saveSchema = saveSchemaV21;
+export const saveSchema = saveSchemaV22;
 
 /** A Hall nobody has claimed in: no tiers, no challenges, no ranks and the chronicle's own frame. */
 export function emptyDeeds(): DeedsSave {

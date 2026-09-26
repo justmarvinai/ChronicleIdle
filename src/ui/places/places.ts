@@ -114,6 +114,13 @@ export const PLACES: Readonly<Record<PlaceId, PlaceDef>> = {
     feature: 'brewery',
     way: { route: { name: 'brewery' } },
   },
+  unwritten: {
+    name: 'place.unwritten.name',
+    to: 'place.unwritten.to',
+    glyph: 'glyph.quill',
+    feature: 'unwritten',
+    way: { route: { name: 'unwritten' } },
+  },
   palace: {
     name: 'place.palace.name',
     to: 'place.palace.to',

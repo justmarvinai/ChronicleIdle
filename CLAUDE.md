@@ -106,10 +106,12 @@ each other's internals.
     quests/                   Daily/weekly quests, mission-line evaluation
     rng/                      Seeded RNG, weighted tables
     time/                     Clock abstraction, reset boundaries, offline elapsed time
+    unwritten/                The Unwritten (roguelite): maps, fights, inscriptions, rules, rewards, Scriptorium
     schema/                   Zod schemas for content and saves
   content/                    Game data only (see docs/tech/CONTENT_AUTHORING.md)
     champions/  abilities/  enemies/  gear/  sets/  stages/  bosses/  banners/  brewery/
-    quests/  missions/  deeds/  currencies/  balance/  tutorial/  unlocks/  palace/  changelog/  registry.ts
+    quests/  missions/  deeds/  currencies/  balance/  tutorial/  unlocks/  palace/  changelog/  unwritten/
+    registry.ts
   state/                      Zustand store: slices, selectors, persistence, migrations
   ui/                         React: screens/, components/, hooks/, styles/ (tokens, mixins)
   render/                     Pixi: battle stage, sprite/atlas loading, FX library, camera, ambient
@@ -333,6 +335,7 @@ docs/design/GLORIOUS_PALACE.md the account-wide skill tree: the mandala, the poi
 docs/design/BREWERY.md         the four brew halls: the five stages, the twenty runs, the calendar
 docs/design/QUESTS_MISSIONS.md daily/weekly quests and the Chronicler's Path mission line
 docs/design/ACHIEVEMENTS.md    the Hall of Deeds: achievements, challenges, renown, ranks, frames
+docs/design/UNWRITTEN.md       the roguelite: expeditions, folios, inscriptions, relics, Omens, the Scriptorium
 docs/design/TUTORIAL.md        interactive onboarding script
 docs/tech/ARCHITECTURE.md      runtime architecture, engine design, state, saves, rendering
 docs/tech/UI_DESIGN.md         design tokens, layout grid, every screen, animation language
@@ -361,7 +364,7 @@ pnpm assets:check       fail when the committed manifest no longer matches /game
 pnpm perf:battle        frame-time bench on a running preview (--strict fails over budget, --software = SwiftShader)
 pnpm perf:budget        the static §5.6 budgets against a build: initial-route JS, code-splitting, texture sizes (--strict)
 pnpm perf:lighthouse    audits the preview as a desktop page; gates accessibility, SEO and the paint budgets (--strict)
-pnpm sim:balance        headless campaign simulations: difficulty-curve report and win-rate bands (--strict fails on a broken band, --scan prints what each reference team can take)
+pnpm sim:balance        headless campaign simulations: difficulty-curve report and win-rate bands (--strict fails on a broken band, --scan prints what each reference team can take; --brewery, --dungeon and --unwritten run one mode's curve and bands alone)
 pnpm sim:economy        a scripted month for three activity levels: income and spend per currency against ECONOMY.md §7–§8 (--strict)
 pnpm fixtures:version   writes tests/fixtures/saves/v<SAVE_VERSION>.json — run it once per save-version bump
 ```

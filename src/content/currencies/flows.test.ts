@@ -25,6 +25,7 @@ import { GOLD_MARKET_POOL } from '@content/balance/market';
 import { SHARD_CURRENCY, SHARD_EXCHANGE, SHARD_IDS } from '@content/balance/summon';
 import { TOWER_FLOORS } from '@content/balance/tower';
 import { PLAYER_MAX_LEVEL } from '@content/balance/unlocks';
+import { OMEN_SCALE, OMEN_SEALS, TITHE } from '@content/balance/unwritten';
 import { ELEMENTS } from '@content/champions/types';
 import type { Grant } from '@content/grants';
 import { LOGIN_BOARD } from '@content/login/index';
@@ -36,6 +37,7 @@ import { BREW_OF, CAMPAIGN_SHARD } from '@engine/campaign/rewards';
 import { dungeonGold } from '@engine/dungeon/rewards';
 import { levelUpReward } from '@engine/progression/level-rewards';
 import { shardOdds, towerFloorPayout } from '@engine/tower/rewards';
+import { titheOf } from '@engine/unwritten/rewards';
 import { CURRENCY_FLOWS } from './flows';
 import { CURRENCY_IDS, type CurrencyId } from './types';
 
@@ -125,6 +127,13 @@ function whatEachPlacePays(): Paid {
   for (const hall of content.breweries)
     for (const stage of hall.stages)
       for (const row of breweryRewards(hall, stage)) pay('brewery', row.currency);
+
+  // The Unwritten: every folio's Warden Tithe at every Omen, and each Omen's seal. Recovered Pages
+  // are the mode's own and never reach the wallet.
+  for (let folio = 1; folio <= TITHE.length; folio += 1)
+    for (let omen = 0; omen < OMEN_SCALE.length; omen += 1)
+      for (const row of titheOf(folio, omen)) pay('unwritten', row.currency);
+  for (const seal of OMEN_SEALS) for (const row of seal) pay('unwritten', row.currency);
 
   // Daily Rewards, and both shelves of the Market.
   for (const day of LOGIN_BOARD) grants('login', day.rewards);

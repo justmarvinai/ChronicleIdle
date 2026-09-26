@@ -11,6 +11,8 @@ export type ChampionTab = 'info' | 'abilities' | 'lore' | 'gear';
 export type TavernTab = 'level' | 'rank' | 'skills';
 export type ForgeTab = 'craft' | 'dismantle' | 'refine';
 export type IndexTab = 'champions' | 'bestiary' | 'sets' | 'statuses';
+/** The Unwritten's three pages: the expedition, the Scriptorium, the Records (`UNWRITTEN.md` §21). */
+export type UnwrittenTab = 'expedition' | 'scriptorium' | 'records';
 
 export type Route =
   | { name: 'title' }
@@ -37,6 +39,8 @@ export type Route =
   | { name: 'deeds'; tab?: DeedsTab }
   /** The Eternal Tower; `floor` scrolls the ladder to one (`ETERNAL_TOWER.md` §7). */
   | { name: 'tower'; floor?: number }
+  /** The Unwritten, the roguelite; `tab` opens on one of its pages (`UNWRITTEN.md`). */
+  | { name: 'unwritten'; tab?: UnwrittenTab }
   /** The Glorious Palace, the account-wide skill tree (`GLORIOUS_PALACE.md`). */
   | { name: 'palace' }
   /** The Brewery; `hall` opens on one of its four halls (`BREWERY.md`). */

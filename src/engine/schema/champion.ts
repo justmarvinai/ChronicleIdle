@@ -38,6 +38,7 @@ export const targetSchema: z.ZodType<Loosen<Target>> = z.union([
   z.object({ adjacent_to_target: z.number().int().min(1).max(2) }),
   z.literal('highest_atk_enemies_2'),
   z.literal('provoker'),
+  z.literal('attacker'),
 ]);
 
 export const conditionSchema: z.ZodType<Loosen<Condition>> = z.union([
@@ -58,6 +59,7 @@ export const conditionSchema: z.ZodType<Loosen<Condition>> = z.union([
   }),
   z.object({ waveStart: z.literal(true) }),
   z.object({ attackerElement: z.enum(ELEMENTS) }),
+  z.object({ selfHas: z.enum(STATUS_IDS) }),
 ]);
 
 export const effectSchema: z.ZodType<Loosen<Effect>> = z.lazy(() =>

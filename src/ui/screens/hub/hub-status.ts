@@ -15,6 +15,8 @@ import type { MineView } from '@state/mine';
 import { goldMarketView } from '@state/market';
 import { missionsClaimable } from '@state/missions';
 import { openChampionChoices } from '@state/summon';
+import { unwrittenGlance } from '@state/unwritten-glance';
+import { numeral } from '@ui/screens/unwritten/marks';
 
 export interface HubStatus {
   /** The line under the building's name. */
@@ -49,7 +51,13 @@ const held = (save: SaveGame, ids: readonly CurrencyId[]): number =>
 export function hubStatuses(
   save: SaveGame,
   now: number,
-  input: { unseen: number; chest: IdleView | null; mine: MineView | null; palaceOpen: boolean },
+  input: {
+    unseen: number;
+    chest: IdleView | null;
+    mine: MineView | null;
+    palaceOpen: boolean;
+    unwrittenOpen: boolean;
+  },
 ): Readonly<Record<string, HubStatus>> {
   const statuses: Record<string, HubStatus> = {};
 
@@ -113,6 +121,22 @@ export function hubStatuses(
         : store.msToNextGem !== null
           ? { line: t('hub.status.mine.next', { time: coarseDuration(store.msToNextGem) }) }
           : {};
+
+  // The Torn Page names the expedition under way; else the Tithes the week still has, while any do.
+  if (input.unwrittenOpen) {
+    const glance = unwrittenGlance(save, now);
+    if (glance.run)
+      statuses.unwritten = {
+        line: t('hub.status.unwritten.run', {
+          folio: numeral(glance.run.folio),
+          omen: numeral(glance.run.omen),
+        }),
+      };
+    else if (glance.titheLeft > 0)
+      statuses.unwritten = {
+        line: t('hub.status.unwritten.tithe', { left: glance.titheLeft, total: glance.tithePerWeek }),
+      };
+  }
 
   return statuses;
 }

@@ -1,5 +1,5 @@
 /**
- * The twenty challenges (docs/design/ACHIEVEMENTS.md §6): one-off feats a chronicle has to set out
+ * The twenty-four challenges (docs/design/ACHIEVEMENTS.md §6): one-off feats a chronicle has to set out
  * to do. The first seven name *how* a fight was won and read the feat counters a victory writes
  * (`@engine/deeds/feats`); the rest are the tops of the game's long climbs.
  *
@@ -9,6 +9,7 @@
 import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MINE_MAX_LEVEL } from '@content/balance/mine';
 import { TOWER_FLOORS } from '@content/balance/tower';
+import { OMEN_SCALE } from '@content/balance/unwritten';
 import { MISSIONS } from '@content/missions/index';
 import { PALACE_NODES } from '@content/palace/index';
 import { challenge } from './dsl';
@@ -124,6 +125,41 @@ export const CHALLENGES: readonly ChallengeDef[] = [
     icon: 'glyph.cursed_eye',
     place: 'titan',
     goal: { type: 'boss_percent', boss: 'boss.titan', tier: 'nightmare', pct: 100 },
+    renown: 150,
+    rewards: [{ currency: 'shard_primordial', amount: 1 }],
+  }),
+
+  // ── The Unwritten ────────────────────────────────────────────────────────────────────────────
+  challenge({
+    slug: 'unbroken_company',
+    icon: 'glyph.nature_shield',
+    place: 'unwritten',
+    goal: { type: 'counter', key: 'feat.unwritten_unbroken', count: 1 },
+    renown: 100,
+    rewards: [{ currency: 'gems', amount: 300 }],
+  }),
+  challenge({
+    slug: 'company_of_one',
+    icon: 'glyph.bow_and_arrow',
+    place: 'unwritten',
+    goal: { type: 'counter', key: 'feat.unwritten_lone', count: 1 },
+    renown: 150,
+    rewards: [{ currency: 'shard_sacred', amount: 1 }],
+  }),
+  challenge({
+    slug: 'illuminated_manuscript',
+    icon: 'glyph.spell_book',
+    place: 'unwritten',
+    goal: { type: 'counter', key: 'feat.unwritten_illuminated', count: 1 },
+    renown: 100,
+    rewards: [{ currency: 'gems', amount: 300 }],
+  }),
+  challenge({
+    slug: 'last_page_turned',
+    icon: 'glyph.skull_wreath',
+    place: 'unwritten',
+    // Every Omen won, the last one too.
+    goal: { type: 'counter', key: 'unwritten.omens', count: OMEN_SCALE.length },
     renown: 150,
     rewards: [{ currency: 'shard_primordial', amount: 1 }],
   }),

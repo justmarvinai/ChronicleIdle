@@ -40,6 +40,8 @@ export const places = {
   'place.login.to': 'Daily Rewards',
   'place.idle_chest.name': 'Idle Chest',
   'place.idle_chest.to': 'the Idle Chest',
+  'place.unwritten.name': 'The Unwritten',
+  'place.unwritten.to': 'the Unwritten',
   'place.mine.name': 'The Mine',
   'place.mine.to': 'the Mine',
   'place.regeneration.name': 'Comes back over time',

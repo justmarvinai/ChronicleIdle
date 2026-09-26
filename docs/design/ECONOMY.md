@@ -14,25 +14,25 @@ All constants live in `src/content/balance/economy.ts`, `energy.ts`, `xp.ts`, `i
 
 | Id | Name | Icon (asset key) | Main sources | Main sinks |
 | --- | --- | --- | --- | --- |
-| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, Daily Rewards | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market**, **the Mine's levels** |
-| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards, **the Mine** | Ancient/Sacred Shards, energy and Eternal Key refills, **the Gem Market** |
+| `gold` | Gold | stone-vine/icon-coins | campaign, idle chest, quests, bosses, dismantle, Daily Rewards, **the Unwritten's Tithe** | gear levels, refine, rank-up, tavern, crafting, Faded Shards, **the Gold Market**, **the Mine's levels** |
+| `gems` | Gems | spell-icons/rune-radiant-gem | first clears, star chests, quests, missions, bosses, level-ups, Daily Rewards, **the Mine**, the Unwritten's Omen Seals (once each) | Ancient/Sacred Shards, energy and Eternal Key refills, **the Gem Market** |
 | `energy` | Energy | spell-icons/fx-storm-bolt | +1/min regen, level-ups, Chronicler's Provisions (tutorial), first clears, missions, quests, idle chest | campaign stages |
 | `key_daily` | Gargoyle Key | stone-vine/icon-key | daily reset (2) | the Gargoyle |
 | `key_weekly` | Titan Key | stone-vine/icon-key (violet tint) | weekly reset (3) | the Titan |
 | `key_eternal` | Eternal Key | stone-vine/icon-key (gold tint) | 1 per 15 min, capped at 10; the gem refill (5 for 150, past the cap) | the Eternal Tower (1 a floor) |
 | `shard_faded` | Faded Shard | spell-icons/earth-dark-crystal | gold exchange, drops, quests | summon |
-| `shard_ancient` | Ancient Shard | spell-icons/earth-sapphire-shard | first clears, chests, gems, missions | summon |
-| `shard_sacred` | Sacred Shard | spell-icons/earth-citrine-shard | Hard clears, weekly boss, missions, gems | summon |
-| `shard_primordial` | Primordial Shard | spell-icons/earth-amethyst-cluster | milestones, weekly boss top chests, missions | summon |
+| `shard_ancient` | Ancient Shard | spell-icons/earth-sapphire-shard | first clears, chests, gems, missions, the first Omen Seal | summon |
+| `shard_sacred` | Sacred Shard | spell-icons/earth-citrine-shard | Hard clears, weekly boss, missions, gems, two Omen Seals | summon |
+| `shard_primordial` | Primordial Shard | spell-icons/earth-amethyst-cluster | milestones, weekly boss top chests, missions, the last Omen Seal | summon |
 | `brew_justice` / `brew_valor` / `brew_faith` / `brew_eclipse` | Elemental Brew | stone-vine/icon-potion (tinted) | **the Brewery**, campaign, idle chest, quests, bosses | champion XP (1.5× when element matches) |
-| `brew_universal` | Universal Brew | stone-vine/icon-potion (white) | star chests, quests, missions | champion XP (1×) |
-| `tome_rare` / `tome_epic` / `tome_legendary` / `tome_mythic` | Skill Tome | stone-vine/icon-scroll (tinted) | bosses, missions, weekly quests, first clears | skill upgrades |
+| `brew_universal` | Universal Brew | stone-vine/icon-potion (white) | star chests, quests, missions, the Tithe | champion XP (1×) |
+| `tome_rare` / `tome_epic` / `tome_legendary` / `tome_mythic` | Skill Tome | stone-vine/icon-scroll (tinted) | bosses, missions, weekly quests, first clears, **the Unwritten's Tithe** (§13) | skill upgrades |
 | `mat_scrap_iron` | Scrap Iron | spell-icons/earth-fractured-block | Intro/Normal campaign, dismantle | Forge I, the Mine's levels |
 | `mat_ember_alloy` | Ember Alloy | spell-icons/earth-molten-vein | Normal/Hard campaign, daily boss | Forge II, the Mine's levels |
 | `mat_starsteel` | Starsteel | spell-icons/earth-star-medallion | Hard campaign, weekly boss, dismantle L/M | Forge III, the Mine's levels |
 | `mat_arcane_dust` | Arcane Dust | spell-icons/rune-astral-burst | everywhere in small amounts | all Forge tiers, the Mine's levels |
-| `mat_refining_core` | Refining Core | spell-icons/earth-geode-crystal | star chests, bosses, dismantle | refine, the Mine's deepest levels |
-| `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | 20-star chests (Q38, kept by Q45), **the Mine from its fourth level**, bosses, missions, weekly quests | choose set when crafting |
+| `mat_refining_core` | Refining Core | spell-icons/earth-geode-crystal | star chests, bosses, dismantle, the Tithe | refine, the Mine's deepest levels |
+| `mat_glyph_sigil` | Glyph Sigil | spell-icons/rune-gilded-script | 20-star chests (Q38, kept by Q45), **the Mine from its fourth level**, bosses, missions, weekly quests, the Tithe | choose set when crafting |
 
 25 wallet entries. Quest points and mission progress are tracked separately (not wallet items).
 
@@ -303,11 +303,15 @@ shelf returns a gem, the Mission Skip Token included: a skipped step is marked d
 > that sign-off set rather than widening it: ~1,828 against a 1,950 ceiling.
 
 **One-off pools are not in the table.** The Hall of Deeds (0.12.0, `ACHIEVEMENTS.md` §9) pays each
-tier, challenge and rank once in a chronicle's life: 18,590 gems in all, with 50 Ancient, 10 Sacred
-and 5 Primordial Shards and 3.5 million gold besides. Earned over the one to two years most of it
-takes, that is 180–360 gems a week on top of the table — arriving in the order the play earns it, so
-it rewards the long haul rather than widening any week's band. `sim:economy` does not model it, for
-the same reason it does not model the first-clear bundles of settlements already beaten.
+tier, challenge and rank once in a chronicle's life: 20,470 gems in all, with 54 Ancient, 11 Sacred
+and 6 Primordial Shards and 3.6 million gold besides. Earned over the one to two years most of it
+takes, that is 200–390 gems a week on top of the table — arriving in the order the play earns it, so
+it rewards the long haul rather than widening any week's band. The Unwritten's sixteen Omen Seals
+(0.13.0, `UNWRITTEN.md` §14.3) are the same kind of pool: the first expedition won at each Omen
+pays its seal once, 5,080 gems in all with an Ancient, two Sacred and a Primordial Shard, four Epic
+and five Legendary Tomes, and the ladder they sit on takes months to climb. `sim:economy` models
+neither, for the same reason it does not model the first-clear bundles of settlements already
+beaten. The Unwritten pays no gems by the week: its weekly line is gold and tomes (§8, §13).
 
 ## 8. Gold budget (sanity)
 
@@ -318,17 +322,23 @@ the same reason it does not model the first-clear bundles of settlements already
 | The idle chest | ~58k | two claims a day at farm tier 20 (§6) |
 | The boards, the bosses' weekly, the Path | ~30k | |
 | Daily Rewards | ~4.3k | the board's gold, spread over its thirty tiles (`LOGIN.md` §5) |
-| **Income** | **~326k** | |
+| The Warden's Tithe | ~27k | six Wardens a week at Omen 2 (`UNWRITTEN.md` §14.2) |
+| **Income** | **~354k** | |
 | Spend: gear levels | ~90k | 24 levels a day on 5★ pieces around +9 |
 | Spend: the Tavern | ~68k | 40 champion levels a day around level 34 |
 | Spend: the Gold Market | ~59k | the day's surplus, left at the hourly stall (`MARKET.md` §1) |
 | Spend: Faded Shards | ~40k | eight a day at 5k each |
 | Spend: crafting | ~12k | an Ember craft a day, with its Glyph Sigil |
-| **Net** | **~57k** | |
+| **Net** | **~85k** | |
 
 Gold should feel tight but never blocking, and no script of any activity level ends a day in the red
-— that invariant is a band, not a hope. A casual player earns ~222k a day (the boss and the chest do
+— that invariant is a band, not a hope. A casual player earns ~235k a day (the boss and the chest do
 not care how long you play) and spends ~82k of it.
+
+The Tithe (0.13.0) raised every script's income by a line the size of the boards' — ~13k a day for a
+casual player's three Wardens a week at Omen 1, ~27k for the active player's six at Omen 2, ~34k for
+a dedicated player's six at Omen 5 — and nothing else moved: the net it leaves is the gold the
+Unwritten's own champions will be levelled with.
 
 **The Gold Market is where the surplus goes.** Before it there was nothing to do with a day's
 leftover gold once the gear and the Tavern had been fed, and the net above was ~112k a day of money
@@ -424,3 +434,38 @@ levelling what it drops costs gold, and the shards are the "very rarely" the own
 remains the campaign's job, brews the Brewery's, and gear the keeps'. `pnpm sim:economy`'s gold
 bands are therefore unchanged by the mode — a player who spends a day in the keeps earns less gold
 than one who spends it on the map, and comes out with an armoury instead.
+
+## 13. Skill Tomes (the Unwritten)
+
+The Unwritten (`UNWRITTEN.md`) costs nothing to enter — no energy, no keys, no gold — and pays three
+ways: **Recovered Pages** every expedition, which buy the Scriptorium and nothing else (like the
+Palace's points, never a wallet row); the **Warden's Tithe**, a chest from each of the first six
+Wardens felled every week; and an **Omen Seal** the first time each Omen falls (§7, one-off).
+
+The Tithe is the economy's line, and what it carries is **Skill Tomes**, the Tavern's slowest shelf
+to fill:
+
+| A week's six Wardens | Gold | Tomes | Besides |
+| --- | --- | --- | --- |
+| two of Folio I | 2 × 15,000 × m | 2 Rare | 4 Universal Brews |
+| two of Folio II | 2 × 25,000 × m | 2 Epic | 2 Refining Cores |
+| two of Folio III | 2 × 40,000 × m | 2 Epic, and 2 Legendary from Omen 8 | 2 Glyph Sigils |
+
+`m = 1 + 0.1 × Omen`. Six Wardens is two expeditions won; a week that only reaches Folio II still
+pays its first four, and the week's count resets with the weekly board (§9). Measured by
+`pnpm sim:economy`:
+
+| Script | Wardens a week | At Omen | Tithe gold a day |
+| --- | --- | --- | --- |
+| casual | 3 | 1 | ~12.6k |
+| mid-game, active | 6 | 2 | ~27.4k |
+| dedicated | 6 | 5 | ~34.3k |
+
+Measured against the rest of the game for the active player, the Tithe's four Epic Tomes a week
+match the first clears' and sit behind only the Gargoyle's seven — half an Epic champion's eight
+ability steps every week. The Legendary Tomes are where it leads: from Omen 8 its two a week are
+about three times what every other scheduled source together pays (the Gold Market's odd one and the
+calendar's, ~0.7), so a company deep enough finishes a Legendary's eleven steps in under six weeks.
+That is the size a new source of a bottleneck should be — the best way there, never the only one.
+Nothing the Unwritten pays can be bought back with what it pays: the Pages have one shelf, and the
+wallet lines are currencies the rest of the game already spends.

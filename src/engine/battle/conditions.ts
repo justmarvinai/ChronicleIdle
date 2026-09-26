@@ -63,6 +63,7 @@ export function evaluateCondition(state: BattleState, condition: Condition, ctx:
   }
   if ('waveStart' in condition) return state.waveFresh;
   if ('attackerElement' in condition) return ctx.attackerElement === condition.attackerElement;
+  if ('selfHas' in condition) return self.statuses.some((s) => s.id === condition.selfHas);
   return false;
 }
 

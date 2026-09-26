@@ -33,6 +33,7 @@ export const TUTORIAL_TARGETS = [
   'hub.hall',
   'hub.idle',
   'hub.mine',
+  'hub.unwritten',
   'hub.deeds',
   'hub.quests',
   'hub.missions',
@@ -48,6 +49,8 @@ export const TUTORIAL_TARGETS = [
   'setup.instant',
   // The Hall of Deeds
   'deeds.claimAll',
+  // The Unwritten
+  'unwritten.omen',
   // The fight
   'battle.ability1',
   'battle.ability2',
@@ -108,6 +111,7 @@ export const TUTORIAL_SCREENS = [
   'quests',
   'missions',
   'deeds',
+  'unwritten',
   'game-modes',
   'campaign',
   'settlement',

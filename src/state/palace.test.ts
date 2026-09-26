@@ -88,6 +88,8 @@ function bossFight(damage: number, kind: BattleOutcome['kind'] = 'timeout'): Bat
         damageTaken: damage,
         healingDone: 0,
         kills: 0,
+        hp: 100,
+        maxHp: 100,
       },
     ],
     enemyHpLeft: kind === 'victory' ? 0 : 0.5,

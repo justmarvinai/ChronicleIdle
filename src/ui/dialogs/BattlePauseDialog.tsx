@@ -4,6 +4,7 @@ import { battleController } from '@state/battle/index';
 import { t, translate } from '@i18n/index';
 import { selectActions } from '@state/selectors';
 import { useGameStore } from '@state/store';
+import { unwrittenFightInFlight } from '@state/unwritten-session';
 import { Button } from '@ui/components/Button/Button';
 import { Dialog } from '@ui/components/Dialog/Dialog';
 import { Glyph } from '@ui/components/Glyph/Glyph';
@@ -65,7 +66,7 @@ export function BattlePauseDialog({ onClose }: { onClose: () => void }) {
           <section className={styles.confirm} data-testid="pause-retreat-card">
             <p className={styles.confirmText}>
               <Glyph glyph="glyph.nature_shield" size={22} color="#ff9d88" />
-              {t('pause.retreatConfirm')}
+              {unwrittenFightInFlight() ? t('pause.retreatConfirm.unwritten') : t('pause.retreatConfirm')}
             </p>
             <div className={styles.row}>
               <Button variant="secondary" size="md" onClick={() => setConfirming(false)}>

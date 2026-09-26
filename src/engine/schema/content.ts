@@ -1168,7 +1168,7 @@ function validateEnemyReach(
     }));
 }
 
-function validateEnemies(
+export function validateEnemies(
   enemies: readonly unknown[],
   refs: ContentRefs,
 ): { issues: ValidationIssue[]; ids: Set<string> } {

@@ -16,6 +16,7 @@ import { FARM_TIER_BAND } from '@content/balance/idle';
 import { MINE_LEVELS } from '@content/balance/mine';
 import { LOGIN_DAYS } from '@content/balance/login';
 import { SHARD_EXCHANGE } from '@content/balance/summon';
+import { TITHE_PER_WEEK, UNWRITTEN_FOLIOS } from '@content/balance/unwritten';
 import {
   TOWER_BOSS_EVERY,
   TOWER_FLOORS,
@@ -36,6 +37,7 @@ import { levelUpGold } from '@engine/progression/tavern-level';
 import { visibleQuests } from '@engine/quests/board';
 import { createRng, type Rng } from '@engine/rng/rng';
 import { shardOdds } from '@engine/tower/rewards';
+import { titheOf } from '@engine/unwritten/rewards';
 import { levelCost } from '@state/gear';
 import type { EconomyScript } from './economy-script';
 
@@ -218,6 +220,11 @@ function playDay(script: EconomyScript, day: number, ledger: Ledger, rng: Rng): 
     for (const chest of tier.chests)
       if (chest.pct <= script.bossDamagePct) ledger.earnAll(`${boss.period} boss`, chest.currencies);
   }
+
+  // ── The Unwritten: the Warden's Tithe, for the week's first six Wardens, folio by folio.
+  if (endOfWeek)
+    for (let warden = 0; warden < Math.min(script.unwrittenWardensPerWeek, TITHE_PER_WEEK); warden += 1)
+      ledger.earnAll('warden tithe', titheOf((warden % UNWRITTEN_FOLIOS) + 1, script.unwrittenOmen));
 
   // ── The Path: the missions of the week, drawn in order, and a chapter chest as one closes.
   if (endOfWeek) {

@@ -39,6 +39,11 @@ export const PORTRAIT_FRAMES: readonly PortraitFrameDef[] = [
     { kind: 'challenge', id: 'challenge.master_hard' },
   ),
   frame(
+    'ink_black',
+    { deco: 26, tint: '#4a3a6e', glow: '#8a6fd1', shimmer: true },
+    { kind: 'challenge', id: 'challenge.last_page_turned' },
+  ),
+  frame(
     'amethyst',
     { deco: 9, tint: '#c77dff', glow: '#b35cff', shimmer: true },
     { kind: 'challenge', id: 'challenge.titan_falls' },

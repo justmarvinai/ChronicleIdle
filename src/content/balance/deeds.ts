@@ -82,6 +82,14 @@ export const LEDGER_TIER_REWARDS: Readonly<Record<DeedLedger, readonly (readonly
     [{ currency: 'brew_universal', amount: 15 }],
     [{ currency: 'brew_universal', amount: 25 }],
   ],
+  // The Unwritten's Tithe pays Skill Tomes every week (UNWRITTEN.md §14.2); its deeds pay them too.
+  unwritten: [
+    [{ currency: 'tome_rare', amount: 1 }],
+    [{ currency: 'tome_rare', amount: 2 }],
+    [{ currency: 'tome_epic', amount: 1 }],
+    [{ currency: 'tome_epic', amount: 2 }],
+    [{ currency: 'tome_legendary', amount: 1 }],
+  ],
   emberhold: [
     [{ currency: 'gold', amount: 10_000 }],
     [{ currency: 'gold', amount: 25_000 }],

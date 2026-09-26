@@ -23,11 +23,19 @@ export interface EffectRun {
   source: BattleUnit;
   /** Explicit target of the decision (or the unit a passive reacts to). */
   chosen: BattleUnit | null;
+  /** The foe whose hit set off the passive these effects belong to, if one did. */
+  attacker?: BattleUnit | null;
 }
 
 /** Runs effects in order; each resolves its own targets against the current state. */
 export function runEffectList(run: EffectRun, effects: readonly Effect[]): void {
-  const input: ResolveInput = { state: run.ctx.state, actor: run.source, chosen: run.chosen, lastHit: null };
+  const input: ResolveInput = {
+    state: run.ctx.state,
+    actor: run.source,
+    chosen: run.chosen,
+    lastHit: null,
+    attacker: run.attacker ?? null,
+  };
   for (const effect of effects) resolveEffect(run, input, effect);
 }
 

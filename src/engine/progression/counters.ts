@@ -135,6 +135,33 @@ export const COUNTER_KEYS = [
   'feat.kindred',
   /** A Hard stand won with nobody better than Uncommon. */
   'feat.rabble',
+  // The Unwritten (UNWRITTEN.md §19)
+  /** Expeditions begun, and won. */
+  'unwritten.expeditions',
+  'unwritten.victories',
+  /**
+   * Omens won: the highest an expedition has been won at, plus one — the ladder opens in order, so
+   * that is every rung beneath it too. Written as a maximum rather than added to.
+   */
+  'unwritten.omens',
+  /** Folios turned: every Warden felled ends one. */
+  'unwritten.folios',
+  'unwritten.wardens',
+  /** Passages finished, fights and mysteries alike. */
+  'unwritten.passages',
+  /** Inscriptions written, a new one or a new level. */
+  'unwritten.inscriptions',
+  'unwritten.relics',
+  'unwritten.echoes',
+  /** Scriptorium folios written, and the Pages they took. */
+  'unwritten.scriptorium',
+  'unwritten.pagesSpent',
+  /** An expedition won with no champion ever fallen. */
+  'feat.unwritten_unbroken',
+  /** An expedition won by a company of one. */
+  'feat.unwritten_lone',
+  /** All four inks illuminated in one expedition. */
+  'feat.unwritten_illuminated',
 ] as const;
 
 /** A quest chest's own claim count, for a chest whose payout runs on a cadence. */

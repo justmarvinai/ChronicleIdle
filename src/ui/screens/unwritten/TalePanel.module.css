@@ -1,0 +1,187 @@
+/* An expedition's Tale (docs/tech/UI_DESIGN.md §5.32). */
+.tale {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+  padding: 18px 22px 16px;
+  background:
+    radial-gradient(80% 45% at 50% 0%, var(--tale-glow, rgba(138, 111, 209, 0.22)), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 5px),
+    linear-gradient(180deg, #1c1527 0%, #0f0b16 100%);
+  border: 1px solid var(--tale-edge, rgba(138, 111, 209, 0.5));
+  box-shadow:
+    inset 0 0 44px rgba(0, 0, 0, 0.55),
+    0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.victory {
+  --tale-glow: rgba(240, 213, 122, 0.25);
+  --tale-edge: rgba(240, 213, 122, 0.6);
+}
+
+.defeat {
+  --tale-glow: rgba(255, 91, 91, 0.18);
+  --tale-edge: rgba(255, 91, 91, 0.45);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #cbb8ff;
+}
+
+.title {
+  margin: 0;
+  font-size: 34px;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 30px;
+  margin: 0;
+}
+
+.facts div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.facts dt {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.facts dd {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--gold-3);
+}
+
+.inks {
+  display: flex;
+  gap: 10px;
+}
+
+.ink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 10px;
+  border-left: 3px solid var(--ink);
+  background: color-mix(in srgb, var(--ink) 12%, rgba(0, 0, 0, 0.4));
+}
+
+.inkName {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.inkCount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.company {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.folio {
+  margin-bottom: 12px;
+  padding-right: 10px;
+}
+
+.folioTitle {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--gold-3);
+  letter-spacing: 0.08em;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0 0 0 14px;
+  list-style: none;
+  border-left: 1px solid rgba(138, 111, 209, 0.35);
+}
+
+.entry {
+  position: relative;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--text-1);
+}
+
+.entry::before {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  background: #8a6fd1;
+}
+
+.entryFell::before {
+  background: #ff5b5b;
+}
+
+.entryWarden::before,
+.entryIlluminated::before {
+  background: var(--gold-3);
+}
+
+.entryBlot::before {
+  background: #d58cff;
+}
+
+.entryFell {
+  color: #ffb0a8;
+}
+
+.entryWarden,
+.entryIlluminated {
+  color: var(--gold-3);
+}
+
+.quiet {
+  margin: 0;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-3);
+}

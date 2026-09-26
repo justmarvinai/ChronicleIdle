@@ -3,7 +3,7 @@
 A 2D pixel-art, dark-fantasy, **turn-based idle gacha champion-collection RPG** for desktop
 browsers (and later Steam via Electron). Single player, no accounts, no monetisation.
 
-> Status: **`0.12.0` — The Hall of Deeds.** Early Access 0.1 shipped as `0.1.0`
+> Status: **`0.13.0` — The Unwritten.** Early Access 0.1 shipped as `0.1.0`
 > with all fifteen phases in: the game shell, 23 champions, deterministic animated battles, the
 > twelve-settlement campaign, chronicle levels and titles, the Tavern, gear and its fourteen sets,
 > the Forge, the Portal, the idle chest, the two period bosses, quests, the Chronicler's Path and
@@ -11,8 +11,10 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 > of Changes (`0.5.0`), the Glorious Palace (`0.6.0`), the Brewery (`0.7.0`), the Dungeons
 > (`0.8.0`), the Market, the Bag, the three boosts and the thirty-day Daily Rewards calendar
 > (`0.9.0`), the Mine, dug ten levels deep beneath the market square (`0.10.0`), instant
-> clears for every stand taken to three stars (`0.11.0`), and the Hall of Deeds — achievements,
-> challenges, renown, ranks and portrait frames (`0.12.0`) — and the patches since, from the owner's
+> clears for every stand taken to three stars (`0.11.0`), the Hall of Deeds — achievements,
+> challenges, renown, ranks and portrait frames (`0.12.0`) — and the Unwritten, the roguelite:
+> expeditions through three branching folios with inscriptions, relics, kept wounds, sixteen Omens
+> and a Scriptorium of permanent folios (`0.13.0`) — and the patches since, from the owner's
 > play: every gear piece painted and every set
 > given its emblem (`0.9.3`), then gear tooltips, a rebuilt Champions overview and every drop list
 > shown by its marks (`0.9.4`), then a reworked Tavern, Forge, hub and Idle Chest (`0.9.5`),
@@ -46,6 +48,7 @@ browsers (and later Steam via Electron). Single player, no accounts, no monetisa
 | `LOGIN.md` — Daily Rewards: thirty days, and no streak | |
 | `MINE.md` — the Deepvein: ten levels, a store by the clock | |
 | `ACHIEVEMENTS.md` — the Hall of Deeds: achievements, challenges, ranks | |
+| `UNWRITTEN.md` — the roguelite: expeditions, inscriptions, relics, Omens | |
 | `DUNGEONS.md`, `BREWERY.md`, `GLORIOUS_PALACE.md`, `ETERNAL_TOWER.md` | |
 | `SUMMONING.md`, `BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md` | |
 

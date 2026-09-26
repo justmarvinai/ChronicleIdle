@@ -15,6 +15,8 @@ export const ENCOUNTER_KINDS = [
   'brewery',
   'dungeon',
   'bench',
+  /** A passage of the Unwritten (UNWRITTEN.md §6), built from an expedition rather than authored. */
+  'unwritten',
 ] as const;
 export type EncounterKind = (typeof ENCOUNTER_KINDS)[number];
 

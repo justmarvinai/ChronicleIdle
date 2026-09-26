@@ -1,0 +1,208 @@
+/* The codex (docs/tech/UI_DESIGN.md §5.32): the expedition's build, read at a glance. */
+.codex {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 14px 14px 12px;
+  background:
+    linear-gradient(180deg, rgba(36, 26, 61, 0.78), rgba(14, 10, 22, 0.86)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 4px);
+  border: 1px solid rgba(138, 111, 209, 0.35);
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.55),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+.purse {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(138, 111, 209, 0.25);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.value {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--text-1);
+}
+
+.label {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.omen {
+  margin-left: auto;
+  padding: 4px 10px 3px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: #cbb8ff;
+  border: 1px solid rgba(138, 111, 209, 0.5);
+  background: rgba(36, 26, 61, 0.6);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.inks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 8px;
+}
+
+.ink {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink, #8a6fd1) 10%, rgba(0, 0, 0, 0.45)),
+    rgba(0, 0, 0, 0.3)
+  );
+  border-left: 3px solid color-mix(in srgb, var(--ink, #8a6fd1) 55%, transparent);
+}
+
+.lit {
+  border-left-color: var(--ink);
+  box-shadow: inset 12px 0 18px -12px var(--ink);
+}
+
+.inkHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.inkName {
+  font-size: 18px;
+  color: var(--ink, var(--text-1));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.inkCount {
+  font-family: var(--font-num);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.pips {
+  display: flex;
+  gap: 6px;
+}
+
+.pip {
+  width: 12px;
+  height: 12px;
+  transform: rotate(45deg);
+  border: 1px solid color-mix(in srgb, var(--ink) 60%, transparent);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.pipLit {
+  background: var(--ink);
+  box-shadow: 0 0 10px var(--ink);
+}
+
+.held {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shelf {
+  margin-top: 12px;
+  padding-right: 8px;
+}
+
+.shelfTitle {
+  margin: 0 0 8px;
+  font-size: 17px;
+  color: var(--gold-3);
+  letter-spacing: 0.06em;
+}
+
+.blotTitle {
+  color: #d58cff;
+}
+
+.keepsakes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keepsake {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid rgba(240, 213, 122, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  outline: none;
+}
+
+.keepsake:focus-visible {
+  border-color: var(--gold-3);
+}
+
+.blot {
+  border-color: rgba(213, 140, 255, 0.45);
+  filter: hue-rotate(10deg);
+}
+
+.empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.tipName {
+  color: var(--gold-3);
+  font-size: 17px;
+}
+
+.tipBlot {
+  color: #d58cff;
+  font-size: 17px;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(138, 111, 209, 0.25);
+}
+
+.rerolls {
+  font-size: 14px;
+  color: var(--text-2);
+}

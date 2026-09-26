@@ -63,6 +63,8 @@ function allies(): UnitReport[] {
     damageTaken: 100,
     healingDone: 0,
     kills: n,
+    hp: 100,
+    maxHp: 100,
   }));
 }
 

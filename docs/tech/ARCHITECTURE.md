@@ -86,6 +86,13 @@ autoDecide(state, unit) → Decision · snapshot(state) → BattleView · retrea
   `passives.ts`, `stats.ts` and `damage.ts`.
 - `wave.started` carries the spawned units' `UnitView`s so presenters never reach into the state;
   `snapshot` produces the same view for the HUD and the result screen.
+- `BattleShaping` (0.13.0, optional on the setup) is what a fight carries beyond its encounter,
+  champions and gear: extra passives per ally, the share of max HP each ally enters at, and the
+  entry HP of the first wave's foes. It is part of the setup, so `replay` still reproduces the
+  fight from `(setup, seed, decisions)`. It is the Unwritten's seam (`UNWRITTEN.md` §4.2, §7), and
+  it brought two small additions every kit can use: the `attacker` target (the foe whose hit set
+  off the passive being resolved) and the `selfHas` condition. Every `UnitReport` also carries the
+  HP and max HP the unit ended on, which is what an expedition keeps between fights.
 
 ### 3.3 Battle controller (state layer)
 
@@ -100,7 +107,10 @@ for bench fights, the stage's frame statistics. `awaitPresenter` (set by the UI 
 pump until the battle screen attaches its stage presenter, so no turn resolves off-screen; tests
 and headless runs use the `instantPresenter` and never wait. Switching to auto answers an open
 request with the AI policy; speed changes alter presenter timing only; `retreat()` ends the
-fight; `end()` tears the session down after the result screen.
+fight; `end()` tears the session down after the result screen. `start` also takes an `encounter`
+built for one fight (its id must equal `encounterId`), an `enemyById` for foes the registry does
+not hold (an Elite's affixes, a Warden and its choir) and a `shaping` — the Unwritten passes all
+three, and every other mode none.
 
 ### 3.4 Presenter (render layer)
 
@@ -324,6 +334,37 @@ keys as the period's allowance less what it has spent, the rest from their walle
 `applyEnergyRefill` and `applyTowerKeyRefill` buy energy and Eternal Keys with gems (`ECONOMY.md`
 §5, §5.2) — the keys through `addKeys`, the pool's grant, so they pass the cap.
 
+### 3.7e Unwritten module
+
+`engine/unwritten/` is the roguelite (`UNWRITTEN.md`, ADR-050) and the largest engine module: pure,
+seeded from the expedition's own seed, and written into the slice it is handed. It never imports
+content data — `world.ts` defines the `UnwrittenWorld` the state layer hands in (the mode's own
+content bundle, and the factions, foes and champions it borrows from the campaign), so every
+function is testable with a small world.
+
+- `lifecycle.ts` — begin, enter a passage, finish it, the interlude, abandon, and the ending that
+  banks the Pages, pays the seal and writes the Tale. `map.ts` draws a folio (four walks over
+  eight rows that never cross, kinds under the fairness rules); `choices.ts` settles whatever a
+  passage waits on (an offer, relics, a shrine, the Peddler, a reliquary, an Echo, a mystery, a
+  Rekindle token); `write.ts` writes an inscription, a relic or a blot and watches the inks.
+- `encounter.ts` builds a passage's fight from the expedition (never authored), pitched at Intro
+  and stage 0 so `unwrittenScale` is the one curve on a foe; `fight.ts` is the plan a battle
+  starts from and the settle that folds its outcome back (wounds kept on both sides);
+  `shaping.ts` and `passives.ts` turn inscriptions, illuminations, relics, blots and wounds into
+  the `BattleShaping` above; `company.ts` keeps who stands and the HP shares they carry.
+- `rules.ts` folds every source that bends the mode's numbers — Omens, Scriptorium, relics, blots,
+  inscriptions — into one `Rules` record by `RULE_MODE` (sum, lowest or highest); `offers.ts`
+  draws an inscription offer; `rewards.ts` is the Pages, the Tithe and the seals;
+  `scriptorium.ts` writes a folio (closed while an expedition is out).
+
+Every reducer returns a receipt (`context.ts`) of what reaches past the slice — currency for the
+wallet, counters for the lifetime ledger, the Tale — and `state/unwritten/commands.ts` pays it.
+That file, `state/unwritten/world.ts` and the content load only with the Unwritten's screen;
+`state/unwritten-glance.ts` (what the hub's rift and the Game Modes card say) and
+`state/unwritten-session.ts` (the fight's settle, left for the battle screen) are the only eager
+pieces (ADR-050). `tools/sim/unwritten.ts` plays whole expeditions headlessly through the same
+engine for `sim:balance --unwritten`.
+
 ### 3.8 Time
 
 `Clock` interface (`now(): number`, `todayKey()`, `weekKey()`) with `SystemClock` and
@@ -333,7 +374,8 @@ keys as the period's allowance less what it has spent, the rest from their walle
 ## 4. State (Zustand)
 
 Slices: `profile`, `wallet`, `energy`, `roster`, `gear`, `campaign`, `bosses`, `tower`, `summon`,
-`quests`, `missions`, `idle`, `bag`, `boosts`, `market`, `login`, `tutorial`, `settings`, `stats`,
+`quests`, `missions`, `idle`, `palace`, `brewery`, `dungeons`, `bag`, `boosts`, `market`, `login`,
+`mine`, `deeds`, `unwritten`, `tutorial`, `settings`, `stats`,
 `ui` (transient: screen stack, dialogs, selection), `battle` (transient controller). Persisted slices form `SaveGame`; `ui` and `battle`
 are not persisted (an interrupted battle is forfeited, energy already spent — standard for the
 genre; a "battle in progress" flag prevents double-spend on reload).
@@ -366,7 +408,8 @@ back-paid thirty days it never claimed, and the market's `hour` starts at −1 s
 collide with it) and v20 (0.10.0: `mine` — a veteran gets the Mine a new chronicle gets, level 1
 with its first store full, stamped from its last save; nothing is back-paid and no level handed
 over) and v21 (0.12.0: `deeds` — an empty Hall, because the Hall reads the lifetime counters and a
-veteran's tiers are waiting the day it opens; ADR-048). Fields
+veteran's tiers are waiting the day it opens; ADR-048) and v22 (0.13.0: `unwritten` — no Pages,
+nothing written, Omen 0 open and no expedition in hand; ADR-050). Fields
 below that no phase has shipped yet are the planned shape and are added by their phase with a
 migration and a fixture in `tests/fixtures/saves/`.
 
@@ -462,6 +505,17 @@ interface SaveGame {
   // achievement, challenge ids, ranks — and the frame worn. Renown, rank, progress, earned frames
   // and titles are all derived (ADR-048).
   deeds: { achievements: Record<string, number>; challenges: string[]; ranks: number; frame: string | null };
+  // Shipped in save v22. The Unwritten (UNWRITTEN.md §18): the Pages held and the Scriptorium
+  // written, the Omens opened, won and sealed, the week's Tithe, the records, the last Tales — and
+  // the expedition in hand, whole (its seed, its drawn map, its company and their HP shares, what it
+  // has written, the choice it waits on), so closing the game mid-folio loses nothing.
+  unwritten: {
+    pages: number; scriptorium: string[];
+    omen: { open: number; best: number | null; sealed: number[] };
+    tithe: { weekKey: string; paid: number };
+    records: { expeditions: number; victories: number; wardens: number; fastestMs: number | null };
+    tales: Tale[]; run: Expedition | null;
+  };
   // Shipped in save v12. Which lesson is open is derived from these and where the player is
   // standing (ADR-042), so the save cannot disagree with the step it is on: what it keeps is what
   // Eldric has taught and which chapters were waved off — the latter also carrying the chapters a
@@ -529,7 +583,9 @@ interface SaveGame {
   through `GoButton` or `useGo`, and none of them knows where anything is.
 - **Strings** (`i18n/`): one flat dictionary of English, typed by the eager tables in
   `i18n/en/index.ts`. A table only one panel reads can ship in that panel's chunk instead and join
-  the dictionary through `registerStrings` when it loads — the Chronicle of Changes does (ADR-049).
+  the dictionary through `registerStrings` when it loads — the Chronicle of Changes does (ADR-049),
+  and the Unwritten ships its whole mode that way: content, engine, commands, strings and screens
+  in its screen's chunk, with only a glance and the fight's hand-off eager (ADR-050).
   Validators and tests check keys against `i18n/catalog.ts`, which holds every table.
 
 ## 7. Audio

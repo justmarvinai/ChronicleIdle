@@ -44,8 +44,13 @@ function makeContext(
     primaryTarget: null,
     killedThisAction: false,
     counterDepth: 0,
-    runEffects(effects: readonly Effect[], source: BattleUnit, target: BattleUnit | null): void {
-      runEffectList({ ctx, source, chosen: target }, effects);
+    runEffects(
+      effects: readonly Effect[],
+      source: BattleUnit,
+      target: BattleUnit | null,
+      attacker = null,
+    ): void {
+      runEffectList({ ctx, source, chosen: target, attacker }, effects);
     },
     trigger(trigger, unit, extra?: TriggerExtra): void {
       firePassives(ctx, trigger, unit, extra);
@@ -58,7 +63,8 @@ registerCounterattack((ctx, unit, target) => {
   const a1 = unit.abilities.find((a) => a.slot === 'a1');
   if (!a1 || !target.alive) return;
   const nested: ActionContext = { ...ctx, actor: unit, abilityId: a1.id, counterDepth: ctx.counterDepth + 1 };
-  nested.runEffects = (effects, source, chosen) => runEffectList({ ctx: nested, source, chosen }, effects);
+  nested.runEffects = (effects, source, chosen, attacker = null) =>
+    runEffectList({ ctx: nested, source, chosen, attacker }, effects);
   nested.trigger = (trigger, u, extra) => firePassives(nested, trigger, u, extra);
   ctx.events.push({
     type: 'ability.cast',
@@ -276,8 +282,12 @@ function finish(state: BattleState, kind: BattleOutcomeKind, events: BattleEvent
       damageTaken: 0,
       healingDone: 0,
       kills: 0,
+      hp: unit.hp,
+      maxHp: unit.maxHp,
     };
     r.alive = unit.alive;
+    r.hp = unit.alive ? unit.hp : 0;
+    r.maxHp = unit.maxHp;
     if (!unit.alive) r.died = true;
     state.reports[id] = r;
   }

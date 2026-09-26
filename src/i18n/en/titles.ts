@@ -28,6 +28,9 @@ export const titles = {
   'title.banneret.description': 'The fifth rank of the Hall of Deeds.',
   'title.sovereign_of_the_tower.name': 'Sovereign of the Tower',
   'title.sovereign_of_the_tower.description': 'The Eternal Tower climbed to its hundredth floor.',
+  'title.author_of_the_unwritten.name': 'Author of the Unwritten',
+  'title.author_of_the_unwritten.description':
+    'An expedition won under every Omen, the Blotted Heart last of all.',
   'title.legend_of_the_chronicle.name': 'Legend of the Chronicle',
   'title.legend_of_the_chronicle.description': 'The tenth and last rank of the Hall of Deeds.',
 } as const;

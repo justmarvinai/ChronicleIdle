@@ -85,18 +85,19 @@ so 4.4 always has something to collect, however fast the chronicle got there. A 
 already finished this chapter before `0.10.0` is shown them on its next visit to the hub; one whose
 Routine was waved off, or marked off when it predated the tutorial, is not.
 
-## Chapter 6 — Steel and Bone (levels 7–20: Rank-up, Forge, Skills, Bosses, Instant clears, the Hall)
+## Chapter 6 — Steel and Bone (levels 7–20: Rank-up, Forge, Skills, Bosses, Instant clears, the Hall, the Unwritten)
 
 Short, single-step lessons triggered on first visit: Rank-up (7), Forge (8), Skill upgrade (9),
 the Gargoyle (10, includes the "damage accumulates, chests at thresholds, keys reset" explanation),
 Weekly Quests (12), the Titan (15), Refine (18), Auto-repeat (5/20/30), and — since `0.11.0` —
-Instant clears (11), and — since `0.12.0` — the Hall of Deeds (13). Each is one dialogue + one
-spotlighted action.
+Instant clears (11), since `0.12.0` the Hall of Deeds (13), and since `0.13.0` the Unwritten (16).
+Each is one dialogue + one spotlighted action.
 
 | # | Where | Spotlight | Eldric says | Done when |
 | --- | --- | --- | --- | --- |
 | 6.9 | The battle setup of a stand with all three stars, from level 11 | The *Instant ×N* press | "Three stars here, and the chronicle already knows how this fight ends. Clear it instantly: the same energy, the same spoils, the XP to the team you seat — and no fight to watch. The repeat sets how many." | read |
 | 6.10 | The hub or the Hall of Deeds, from level 13 | The hub's *Deeds* button, or *Claim all* inside the Hall | "The Hall of Deeds is open. Everything this chronicle has done is written there, from the first stand — so deeds are already waiting. Claim them for their spoils and their renown; renown raises your rank in the Hall, and the ranks pay shards, titles and frames for your portrait." | read |
+| 6.11 | The hub or the Unwritten, from level 16 | The *Torn Page* over the square, or the Omen reading inside | "A page has torn open over the square. Beyond it lies the Unwritten: three folios of lost history, never the same twice. Take up to six champions — four fight at a time, and every wound is kept. Each victory writes an inscription into the company; gather one ink and it shines. Win or fall, the Recovered Pages come home." | read |
 
 6.9 waits on the condition `stand_mastered` — *the battle setup on screen is for a stand the
 chronicle holds every star of* — rather than on the screen alone: on any other stand the press is
@@ -110,6 +111,17 @@ lesson below a chronicle's level as read, whichever version the lesson came in.
 fallback order: on the hub it rests on the Hall's button, and a chronicle that walks into the Hall
 first — through the button's dot — hears it pointing at *Claim all* instead (`ACHIEVEMENTS.md` §8).
 Every chronicle past level 13 hears it once when `0.12.0` arrives: the Hall is new to all of them.
+
+6.11 is built the same way: on the hub it rests on the rift (*The Torn Page*, `UI_DESIGN.md` §5.2),
+and a chronicle that reaches the Unwritten first — through Game Modes — hears it pointing at the
+Omen reading on the threshold, the line that says what the expedition it is about to set out on
+will ask (`UNWRITTEN.md` §2). It says only what the first expedition needs: six to choose, four to
+a fight, wounds kept, inscriptions and their inks, and that nothing is lost by falling. Relics,
+blots, the Peddler and the Scriptorium are met on the page itself, each with its own line. Like
+6.10, every chronicle already past level 16 hears it once when `0.13.0` arrives — the Unwritten is
+new to all of them — except one whose chapter 6 was waved off, and one that predated the tutorial
+itself: the v11 → v12 migration counts every lesson below that chronicle's level as read, whichever
+version the lesson came in.
 
 ## Data shape
 

@@ -32,6 +32,7 @@ const selectMissions = selectFeatureUnlocked('missions');
 const selectQuests = selectFeatureUnlocked('quests_daily');
 const selectGear = selectFeatureUnlocked('gear');
 const selectDeeds = selectFeatureUnlocked('deeds');
+const selectUnwritten = selectFeatureUnlocked('unwritten');
 
 /** Emberhold — the home screen (clones the reference hub: hotspots on the art, chrome around it). */
 export default function HubScreen(_props: ScreenProps) {
@@ -42,6 +43,7 @@ export default function HubScreen(_props: ScreenProps) {
   const quests = useGameStore(selectQuests);
   const gear = useGameStore(selectGear);
   const deedsOpen = useGameStore(selectDeeds);
+  const unwrittenOpen = useGameStore(selectUnwritten);
   const unseen = useGameStore(selectUnseen);
   const save = useGameStore(selectSave);
   // The Palace waits on the first settlement falling rather than on a level (owner's answer).
@@ -71,7 +73,7 @@ export default function HubScreen(_props: ScreenProps) {
 
   // What each building says about itself: the next stage, a countdown, what is owed inside.
   const statuses = save
-    ? hubStatuses(save, now, { unseen: unseen.length, chest, mine, palaceOpen: palace })
+    ? hubStatuses(save, now, { unseen: unseen.length, chest, mine, palaceOpen: palace, unwrittenOpen })
     : {};
 
   const open = (def: HubHotspotDef, unlocked: boolean): void => {

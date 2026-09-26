@@ -23,6 +23,7 @@ import {
 import { pointerCost, progressOf, stageRefOf } from '@state/campaign';
 import { useGameStore } from '@state/store';
 import { tutorialScript, worldOf } from '@state/tutorial';
+import { clearUnwrittenSession } from '@state/unwritten-session';
 import { TUTORIAL_BATTLE_SEED } from '@content/balance/tutorial';
 
 export interface CampaignLaunchInput {
@@ -72,6 +73,7 @@ export function launchCampaignRun(input: CampaignLaunchInput): Result<void> {
   const repeat = Math.max(1, input.repeat ?? 1);
   // A stand is not a boss: whatever a previous race left behind must not settle this fight.
   clearBossSession();
+  clearUnwrittenSession();
   beginCampaignBatch({ pointer: input.pointer, team: input.instanceIds, control, requested: repeat });
   const started = startRunBattle(input.pointer, input.instanceIds, control);
   if (!started.ok) {

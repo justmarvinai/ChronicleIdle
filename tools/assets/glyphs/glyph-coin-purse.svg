@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- In-house (ChronicleIdle, CC0, docs/tech/CREDITS.md): a tied purse and a coin, the Unwritten's Peddler. -->
+<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path fill-rule="evenodd" d="M15.6 29.6 C5.6 39.6 7.6 58.4 29.6 58.4 C38 58.4 43.4 55.6 45.6 51.4 A11.2 11.2 0 0 1 44.2 35.6 C42.4 33.2 40.6 31.2 39.6 29.6 Z M15.4 31.4 H39.8 V34 H15.4 Z"/>
+  <path d="M17.4 21 Q21 13 25.2 19.2 Q29.2 10.4 33.2 19.2 Q37.4 13 41.6 21 L38.8 27.6 H20.4 Z"/>
+  <path fill-rule="evenodd" d="M53.2 36.4 A9.2 9.2 0 1 1 53.19 36.4 Z M53.2 39.4 A6.2 6.2 0 1 0 53.21 39.4 Z"/>
+  <path d="M53.2 41.6 L55.4 45.6 L53.2 49.6 L51 45.6 Z"/>
+</svg>

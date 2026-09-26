@@ -6,6 +6,7 @@
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import { content } from '@content/registry';
 import type { EncounterDef } from '@content/encounters/types';
+import type { EnemyDef } from '@content/enemies/types';
 import {
   createBattle,
   retreat as retreatBattle,
@@ -15,6 +16,7 @@ import {
   step,
   type BattleEvent,
   type BattleOutcome,
+  type BattleShaping,
   type BattleState,
   type BattleView,
   type Decision,
@@ -84,6 +86,16 @@ export interface StartBattleInput {
   speed: BattleSpeed;
   /** Deterministic seed material (the save's seedRoot + a counter). */
   seed: string;
+  /**
+   * An encounter built for this one fight, used in place of looking `encounterId` up — the
+   * Unwritten's passages are drawn from an expedition, not from the registry (UNWRITTEN.md §6).
+   * Its id must be `encounterId`.
+   */
+  encounter?: EncounterDef;
+  /** Resolves this fight's foes when they are not the registry's (an Elite's affixes, a Warden). */
+  enemyById?: (id: string) => EnemyDef | undefined;
+  /** What the fight carries beyond the encounter and the champions (the Unwritten's run). */
+  shaping?: BattleShaping;
   /**
    * Hold the simulation until a presenter attaches (the battle screen mounting its stage), so no
    * turn is resolved off-screen. Headless runs leave it off and play through the instant presenter.
@@ -200,8 +212,9 @@ export function createBattleController(): BattleController {
   return {
     store,
     start(input) {
-      const encounter = content.encounterById(input.encounterId);
-      if (!encounter) return fail('invalid_argument', `Unknown encounter ${input.encounterId}`);
+      const encounter = input.encounter ?? content.encounterById(input.encounterId);
+      if (!encounter || encounter.id !== input.encounterId)
+        return fail('invalid_argument', `Unknown encounter ${input.encounterId}`);
       const team = validateTeam(input.roster, input.instanceIds, encounter.partySize);
       if (!team.ok) return team;
       const party = team.value.instanceIds.map((id) => {
@@ -218,10 +231,11 @@ export function createBattleController(): BattleController {
         {
           encounter,
           party,
-          enemyById: (id) => content.enemyById(id),
+          enemyById: input.enemyById ?? ((id) => content.enemyById(id)),
           setById: (id) => content.gearSetById(id),
           palace: input.palace,
           control: input.control,
+          ...(input.shaping ? { shaping: input.shaping } : {}),
         },
         seed,
       );

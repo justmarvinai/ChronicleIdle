@@ -4,7 +4,7 @@ Status: planning baseline. Every number here is a **default** that lives in `src
 and may be tuned; the structure is the contract.
 
 Related: `CHAMPIONS.md`, `BATTLE.md`, `CAMPAIGN.md`, `GEAR.md`, `ECONOMY.md`, `SUMMONING.md`,
-`BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md`.
+`BOSSES.md`, `QUESTS_MISSIONS.md`, `TUTORIAL.md`, `UNWRITTEN.md`.
 
 ---
 
@@ -38,11 +38,14 @@ short sessions of decisions, long tails of accumulation.
   Brewery's twenty runs on whichever element needs brews, spend energy farming a target stage/set on
   auto-repeat, tavern upgrades, summon if shards.
 - **Weekly:** weekly boss ×3 keys, weekly quests, featured banner rotation, push a new
-  difficulty/settlement.
+  difficulty/settlement, and two expeditions into the Unwritten for the Warden's Tithe — a sitting
+  of its own, three folios deep, with a company and a history that belong to that expedition alone
+  (`UNWRITTEN.md`).
 - **Monthly (once Intro is behind you):** climb the Eternal Tower for as long as the keys hold, then
   come back when the season turns and climb it again (`ETERNAL_TOWER.md`).
 - **Long-term (weeks/months):** complete Hard, 6★ the roster, perfect gear, finish the Chronicler's
-  Path, unlock ×4 speed, stand higher in the tower than last season, dig the Mine to its heart.
+  Path, unlock ×4 speed, stand higher in the tower than last season, dig the Mine to its heart, write
+  the Scriptorium full and win the Unwritten under its sixteenth Omen.
 
 ## 2. Core loop
 
@@ -79,7 +82,8 @@ first clears, the Eternal Tower is the next number to raise, and it raises itsel
 | Daily Rewards | Thirty days of rewards, one per day the player comes back; no streak to lose, and the board loops forever | `LOGIN.md` |
 | Quests | Daily (10) and weekly (8) quests → points → chests | `QUESTS_MISSIONS.md` |
 | Missions | The Chronicler's Path: 10 chapters × 12 missions, final reward a Legendary champion | `QUESTS_MISSIONS.md` |
-| Hall of Deeds | 37 achievements in five tiers and 20 challenges read off the whole chronicle; renown, ten ranks, titles and portrait frames | `ACHIEVEMENTS.md` |
+| The Unwritten | The roguelite: an expedition of one to six champions through three folios of a branching map — fights, mysteries, shrines, a Peddler — writing inscriptions and carrying relics that last only that expedition; wounds are kept, sixteen Omens of difficulty, and a Scriptorium of permanent folios bought with the Pages every expedition brings home | `UNWRITTEN.md` |
+| Hall of Deeds | 41 achievements in five tiers and 24 challenges read off the whole chronicle; renown, ten ranks, titles and portrait frames | `ACHIEVEMENTS.md` |
 | Tutorial | Interactive scripted onboarding with Eldric Lorekeeper | `TUTORIAL.md` |
 | Player level | XP from battles; unlocks features and raises energy cap | `ECONOMY.md` §4 |
 
@@ -142,6 +146,7 @@ after the first stand.
 | 12 | Weekly Quests |
 | 13 | **The Hall of Deeds** (achievements and challenges, `ACHIEVEMENTS.md`) |
 | 15 | The Titan |
+| 16 | **The Unwritten** (the roguelite, `UNWRITTEN.md`; its Omens open one expedition won at a time) |
 | 18 | Gear refine (star-up) |
 | 20 | Auto-repeat ×25 (×10 from level 5) |
 | 30 | Auto-repeat ×50 |
@@ -185,3 +190,10 @@ the tower is what is waiting for them (`ETERNAL_TOWER.md` §1, `GLORIOUS_PALACE.
 | Chronicler's Provisions | Energy bundles granted by the tutorial chapters (500 + 4 × 250) |
 | Floor | One fight in the Eternal Tower; every tenth is a boss floor |
 | Season | The tower's thirty-day period; the climb resets, the best floor does not |
+| Expedition | One run into the Unwritten, from choosing the company to its Tale; won, fallen or turned back |
+| Folio / passage | One of an expedition's three maps, and one node on it (a fight, a mystery, a shrine…) |
+| Inscription | An expedition-only power the company writes as it goes, carried into every fight; four inks, three levels |
+| Relic / blot | A rule bent in the company's favour for the rest of an expedition, and one bent against it |
+| Omen | The Unwritten's difficulty, 0–15; each one won opens the next |
+| Recovered Pages | What every expedition brings home; they write the Scriptorium's permanent folios |
+| Warden's Tithe | The wallet chest each of the week's first six Wardens pays |

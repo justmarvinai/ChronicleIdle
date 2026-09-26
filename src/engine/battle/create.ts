@@ -23,6 +23,7 @@ import {
   type ChampionStats,
   type EncounterDef,
   type EnemyDef,
+  type PassiveDef,
 } from './imports';
 import { entryMaxHp } from './stats';
 import type { BattleState, BattleUnit, UnitFlags, WaveSpec } from './types';
@@ -48,6 +49,28 @@ export interface BattleSetup {
   /** The Glorious Palace's bonus, so a fight is fought with the stats the sheet shows. */
   palace?: PalaceBonus;
   control: 'manual' | 'auto';
+  /** What the fight carries beyond its encounter and its champions (the Unwritten's run). */
+  shaping?: BattleShaping;
+}
+
+/**
+ * What a fight carries beyond its encounter, its champions and their gear: the Unwritten's
+ * inscriptions and relics, and the wounds its passages keep (docs/design/UNWRITTEN.md §4.2, §7).
+ * Part of the setup, so `replay` still reproduces the fight from the setup and the seed.
+ */
+export interface BattleShaping {
+  /** Passives an ally fights with beyond their kit and their sets, by roster instance id. */
+  allyPassives?: Readonly<Record<string, readonly PassiveDef[]>>;
+  /** The share of max HP an ally enters at (0 < share ≤ 1), by roster instance id; absent is full. */
+  allyHp?: Readonly<Record<string, number>>;
+  /** The first wave's foes' entry HP as shares of their max HP, by slot; absent is full. */
+  firstWaveHp?: readonly number[];
+}
+
+/** HP a share of `maxHp` comes to on entry: never below 1, since a unit on the field is alive. */
+function entryHp(maxHp: number, share: number | undefined): number {
+  if (share === undefined) return maxHp;
+  return Math.max(1, Math.min(maxHp, Math.round(maxHp * share)));
 }
 
 function freshFlags(): UnitFlags {
@@ -255,16 +278,24 @@ export function createBattle(setup: BattleSetup, seed: string): BattleState {
     reports: {},
     outcome: null,
   };
+  const shaping = setup.shaping ?? {};
   for (const unit of allies) {
+    const carried = unit.instanceId ? shaping.allyPassives?.[unit.instanceId] : undefined;
+    if (carried?.length) unit.passives = [...unit.passives, ...carried];
     state.units[unit.id] = unit;
     state.order.push(unit.id);
   }
-  // Static HP modifiers (auras, passives) settle max HP once everyone is on the field.
+  // Static HP modifiers (auras, passives) settle max HP once everyone is on the field; a kept
+  // wound is a share of that max HP, not of the one the champion had when they took it.
   for (const unit of allies) {
     unit.maxHp = entryMaxHp(state, unit);
-    unit.hp = unit.maxHp;
+    unit.hp = entryHp(unit.maxHp, unit.instanceId ? shaping.allyHp?.[unit.instanceId] : undefined);
   }
-  spawnWave(state, waves[0] as WaveSpec);
+  const first = waves[0] as WaveSpec;
+  spawnWave(state, first);
+  first.enemies.forEach(({ unit }, slot) => {
+    unit.hp = entryHp(unit.maxHp, shaping.firstWaveHp?.[slot]);
+  });
   return state;
 }
 

@@ -1,0 +1,570 @@
+/* The passage in hand (docs/tech/UI_DESIGN.md §5.32): a leaf laid over the map. */
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: radial-gradient(ellipse at center, rgba(12, 8, 20, 0.55), rgba(8, 5, 14, 0.82));
+  animation: veilIn var(--t-slow) var(--ease-out);
+}
+
+@keyframes veilIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.leaf {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 1060px;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 20px 26px 22px;
+  background:
+    radial-gradient(90% 50% at 50% 0%, rgba(138, 111, 209, 0.2), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 5px),
+    linear-gradient(180deg, #1c1527 0%, #110c19 100%);
+  border: 1px solid rgba(138, 111, 209, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.7),
+    inset 0 0 50px rgba(0, 0, 0, 0.55),
+    0 24px 60px rgba(0, 0, 0, 0.7);
+  animation: leafIn var(--t-slow) var(--ease-out);
+}
+
+/* The offer and the Peddler lay out more than a mystery does. */
+.wide {
+  max-width: 1400px;
+}
+
+@keyframes leafIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+}
+
+/* Gold hairline corners, the same ornament every leaf of the Chronicle carries. */
+.leaf::before,
+.leaf::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--gold-2);
+  pointer-events: none;
+}
+
+.leaf::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.leaf::after {
+  right: -1px;
+  bottom: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #cbb8ff;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.05;
+  color: var(--text-1);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+
+.sub {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-2);
+}
+
+/* What a victory just paid, laid above the offer. */
+.spoils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 8px 14px;
+  background: linear-gradient(90deg, rgba(240, 213, 122, 0.14), rgba(240, 213, 122, 0.02));
+  border-left: 3px solid var(--gold-3);
+  font-size: 16px;
+  color: var(--text-1);
+}
+
+.spoil {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spoilValue {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--gold-3);
+}
+
+.notice {
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #ffd2c2;
+  background: linear-gradient(90deg, rgba(216, 85, 47, 0.2), rgba(216, 85, 47, 0.03));
+  border-left: 3px solid var(--ember-3);
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* A relic laid out to be taken: its icon, its name, its line. */
+.relics {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.relic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 280px;
+  padding: 16px 16px 14px;
+  font: inherit;
+  text-align: center;
+  color: var(--text-1);
+  background: linear-gradient(180deg, rgba(58, 41, 16, 0.45), rgba(12, 9, 6, 0.8));
+  border: 1px solid rgba(240, 213, 122, 0.4);
+  box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.6);
+  cursor: var(--cursor-pointer);
+  transition:
+    transform var(--t-base) var(--ease-out),
+    box-shadow var(--t-base) ease,
+    border-color var(--t-base) ease;
+}
+
+.relic:hover:not(:disabled),
+.relic:focus-visible {
+  transform: translateY(-5px);
+  border-color: var(--gold-3);
+  box-shadow:
+    inset 0 0 26px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(240, 213, 122, 0.35);
+  outline: none;
+}
+
+.relic:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.relicName {
+  font-size: 22px;
+  color: var(--gold-3);
+}
+
+.relicLine {
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--gold-3);
+}
+
+.priceShort {
+  color: var(--danger);
+}
+
+/* A mystery: the painting on the left, the scene and its choices on the right. */
+.mystery {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.art {
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: radial-gradient(circle, rgba(138, 111, 209, 0.25), rgba(0, 0, 0, 0.5));
+  border: 1px solid rgba(138, 111, 209, 0.4);
+  filter: drop-shadow(0 0 18px rgba(138, 111, 209, 0.35));
+}
+
+.scene {
+  margin: 0 0 14px;
+  font-size: 19px;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--text-1);
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 16px 11px;
+  font: inherit;
+  text-align: left;
+  color: var(--text-1);
+  background: linear-gradient(90deg, rgba(58, 45, 90, 0.55), rgba(18, 13, 26, 0.7));
+  border: 1px solid rgba(138, 111, 209, 0.4);
+  border-left: 3px solid #8a6fd1;
+  cursor: var(--cursor-pointer);
+  transition:
+    transform var(--t-fast) ease,
+    border-color var(--t-fast) ease,
+    background var(--t-fast) ease;
+}
+
+.choice:hover:not(:disabled),
+.choice:focus-visible {
+  transform: translateX(4px);
+  border-color: #cbb8ff;
+  background: linear-gradient(90deg, rgba(80, 62, 124, 0.65), rgba(22, 16, 32, 0.75));
+  outline: none;
+}
+
+.choice:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.choiceLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 21px;
+}
+
+.odds {
+  font-family: var(--font-num);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--warn);
+}
+
+.choiceHint {
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+.need {
+  font-size: 14px;
+  color: var(--danger);
+}
+
+/* The shrine's four offers, one of which may be taken. */
+.options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 260px;
+  padding: 14px 14px 12px;
+  background: linear-gradient(180deg, rgba(40, 30, 64, 0.6), rgba(12, 9, 18, 0.8));
+  border: 1px solid rgba(138, 111, 209, 0.35);
+}
+
+.optionHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.optionName {
+  font-size: 22px;
+  color: var(--text-1);
+}
+
+.optionLine {
+  margin: 0;
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+.targets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.target {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text-1);
+  text-align: left;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(141, 133, 119, 0.25);
+  cursor: var(--cursor-pointer);
+}
+
+.target:hover:not(:disabled) {
+  border-color: #cbb8ff;
+}
+
+.target:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.none {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+/* The Peddler's cloth: the wares above, the services below. */
+.cloth {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.wares {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sold {
+  opacity: 0.35;
+  filter: grayscale(0.8);
+}
+
+.services {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(240, 213, 122, 0.25);
+}
+
+.serviceName {
+  font-size: 18px;
+  color: var(--gold-3);
+}
+
+.serviceLine {
+  margin: 0;
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+/* The foes a fight fields, and the marks on them. */
+.foes {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+  min-height: 190px;
+  padding: 10px 0 6px;
+  background: radial-gradient(ellipse at 50% 90%, rgba(216, 85, 47, 0.16), transparent 70%);
+}
+
+.foe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 150px;
+}
+
+.foeArt {
+  display: grid;
+  place-items: end center;
+  height: 140px;
+}
+
+.foeName {
+  font-family: var(--font-display);
+  font-size: 15px;
+  text-align: center;
+  color: var(--text-1);
+}
+
+.marked .foeName {
+  color: #ff9a5a;
+}
+
+.later {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+.affixes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.affix {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 330px;
+  padding: 6px 10px 6px 6px;
+  background: rgba(58, 16, 22, 0.55);
+  border: 1px solid rgba(255, 91, 91, 0.4);
+}
+
+.affixText {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+.affixName {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: #ff8b8b;
+}
+
+.muster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 17px;
+  color: var(--text-2);
+}
+
+.musterCount {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text-1);
+}
+
+/* An Echo who may join. */
+.echoes {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.echo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, rgba(138, 111, 209, 0.22), rgba(12, 9, 18, 0.75));
+  border: 1px solid rgba(138, 111, 209, 0.5);
+  filter: drop-shadow(0 0 14px rgba(138, 111, 209, 0.25));
+}
+
+.echoName {
+  font-size: 22px;
+  color: var(--text-1);
+}
+
+.echoMeta {
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veil,
+  .leaf {
+    animation: none;
+  }
+}

@@ -19,6 +19,7 @@ export const PLACE_IDS = [
   'tower',
   'dungeons',
   'brewery',
+  'unwritten',
   'palace',
   'market',
   'quests',

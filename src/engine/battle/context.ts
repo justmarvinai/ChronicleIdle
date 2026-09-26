@@ -28,7 +28,13 @@ export interface ActionContext {
   killedThisAction: boolean;
   /** Nested counterattack depth; counters never counter counters. */
   counterDepth: number;
-  runEffects(effects: readonly Effect[], source: BattleUnit, target: BattleUnit | null): void;
+  /** `attacker` is the foe whose hit set off the passive running these effects, for the `attacker` target. */
+  runEffects(
+    effects: readonly Effect[],
+    source: BattleUnit,
+    target: BattleUnit | null,
+    attacker?: BattleUnit | null,
+  ): void;
   trigger(trigger: PassiveTrigger, unit: BattleUnit, extra?: TriggerExtra): void;
 }
 

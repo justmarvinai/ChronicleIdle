@@ -16,6 +16,7 @@ import { settleBossFight } from '@ui/flows/boss';
 import { settleBreweryRun } from '@ui/flows/brewery';
 import { settleDungeonRun } from '@ui/flows/dungeon';
 import { settleTowerFloor } from '@ui/flows/tower';
+import { settleUnwrittenFight } from '@state/unwritten-session';
 import { settleCampaignRun } from '@ui/flows/campaign';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
@@ -139,6 +140,12 @@ export default function BattleScreen({ route }: ScreenProps) {
     // A victory the player steered every turn of counts for the daily quest; one the AI touched
     // does not (QUESTS_MISSIONS.md §2).
     actions.recordBattle(outcome, encounter.id, !usedAuto);
+    // An Unwritten passage keeps its wounds and goes back to the map, where what the fight left is
+    // told (UNWRITTEN.md §4.2): no result screen stands between one passage and the next.
+    if (settleUnwrittenFight(outcome)) {
+      const id = window.setTimeout(() => actions.replace({ name: 'unwritten' }), RESULT_DELAY_MS);
+      return () => window.clearTimeout(id);
+    }
     // A boss fight banks its damage here, a tower floor its climb, a brewery run its brews; a
     // campaign stand and a dungeon run pay out and may start the next of a batch. Each says
     // whether the fight was theirs, so only one of them acts.

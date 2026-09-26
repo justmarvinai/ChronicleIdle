@@ -2,7 +2,7 @@
 
 Related: `QUESTS_MISSIONS.md` §1 (the goal DSL both ledgers are written in), `ECONOMY.md` §4
 (titles) and §7 (one-off rewards), `docs/tech/UI_DESIGN.md` §5.31, `TUTORIAL.md` §6,
-`GAME_DESIGN.md` §6, `docs/tech/DECISIONS.md` ADR-048.
+`GAME_DESIGN.md` §6, `UNWRITTEN.md` §19, `docs/tech/DECISIONS.md` ADR-048.
 
 The owner asked for **challenges and achievements, so players have long-term goals**. The daily and
 weekly boards are a habit and the Chronicler's Path is a road with an end; neither says *how far* a
@@ -30,7 +30,7 @@ the day it opens, the first tiers of a dozen achievements are already waiting to
 Mine's tenth level, the Palace's last node, the Path's last page, every star of a difficulty —
 reaching it is a challenge, and the achievement that climbs towards it stops a rung below (*Climber*
 at 90 floors, *The Glorious* at 120 nodes, *Pathfinder* at 110 missions, *Star-gatherer* at 1,000
-stars). The Mine has no level ladder at all: *Deep Pockets* counts what it pays and *The Heart of the
+stars, *Omens Read* at thirteen of the Unwritten's sixteen Omens). The Mine has no level ladder at all: *Deep Pockets* counts what it pays and *The Heart of the
 Vein* is its top.
 
 ## 2. Renown and the ranks of the Hall
@@ -48,14 +48,16 @@ claimed by hand, in order, for its reward:
 | 4 | Sworn Blade | 500 | 200 gems, 1 Ancient Shard, 2 Epic Tomes | the **Silver** frame |
 | 5 | Banneret | 900 | 300 gems, 1 Sacred Shard | the title *Banneret* |
 | 6 | Knight of Deeds | 1,500 | 400 gems, 2 Ancient Shards, 1 Legendary Tome | the **Gold** frame |
-| 7 | Captain of the Hall | 2,300 | 500 gems, 1 Sacred Shard | |
-| 8 | Lord of Deeds | 3,400 | 600 gems, 2 Sacred Shards | the **Ember** frame |
-| 9 | Paragon | 5,000 | 800 gems, 1 Primordial Shard | |
-| 10 | Legend of the Chronicle | 7,000 | 1,000 gems, 1 Primordial Shard, 1 Mythic Tome | the **Void** frame and the title *Legend of the Chronicle* |
+| 7 | Captain of the Hall | 2,500 | 500 gems, 1 Sacred Shard | |
+| 8 | Lord of Deeds | 3,800 | 600 gems, 2 Sacred Shards | the **Ember** frame |
+| 9 | Paragon | 5,600 | 800 gems, 1 Primordial Shard | |
+| 10 | Legend of the Chronicle | 7,700 | 1,000 gems, 1 Primordial Shard, 1 Mythic Tome | the **Void** frame and the title *Legend of the Chronicle* |
 
-The whole Hall is worth 7,685 renown (37 achievements × 155 = 5,735, and 1,950 from the twenty
-challenges), so the tenth rank asks for 91 % of it. The content validator refuses a ladder whose last
-rank stands on more renown than the Hall can pay.
+The whole Hall is worth 8,805 renown (41 achievements × 155 = 6,355, and 2,450 from the twenty-four
+challenges), so the tenth rank asks for 87 % of it. The content validator refuses a ladder whose last
+rank stands on more renown than the Hall can pay, and a test keeps it above 85 % of what the Hall
+can pay. The Unwritten's deeds (0.13) added 1,120 renown, and the upper four ranks rose with them so
+the tenth still asks for nearly everything.
 
 ## 3. Portrait frames
 
@@ -72,6 +74,7 @@ the avatar is round, the ring takes the frame's colour and its light.
 | Ember | 17 | ember | a fire glow | rank 8 |
 | Void | 30 | violet | a deep glow and a gleam | rank 10 |
 | Verdant | 29 | green | a green glow | the challenge *Master of Hard* |
+| Ink-Black | 26 | ink violet | a violet glow and a gleam | the challenge *The Last Page Turned* |
 | Amethyst | 9 | amethyst | a glow and a gleam | the challenge *The Titan Falls* |
 
 A frame is derived from a claimed rank or challenge, never stored; the save keeps only which one is
@@ -81,9 +84,10 @@ earns them.
 
 ## 4. Titles
 
-Four titles join the eleven a chronicle already earns (`ECONOMY.md` §4): *Rabble-Rouser* (the
+Five titles join the eleven a chronicle already earns (`ECONOMY.md` §4): *Rabble-Rouser* (the
 challenge *The Rabble Rises*), *Banneret* (rank 5), *Sovereign of the Tower* (the challenge of that
-name) and *Legend of the Chronicle* (rank 10). Like every title they are derived from the save — a
+name), *Author of the Unwritten* (the challenge *The Last Page Turned*) and *Legend of the
+Chronicle* (rank 10). Like every title they are derived from the save — a
 rank claimed, a challenge claimed — never stored, and a claim that earns one says so.
 
 ## 5. The achievements
@@ -122,6 +126,10 @@ counter read from the chronicle's first day (`counter` in the goal DSL).
 | Halls | Hall-walker | Brewery stages first cleared (`brewery.cleared`) | 2 | 5 | 10 | 15 | 20 |
 | Halls | Keep-raider | pieces from the Dungeons (`dungeon.gear`) | 10 | 100 | 500 | 1,500 | 4,000 |
 | Halls | Rung by Rung | Dungeon stages first cleared (`dungeon.cleared`) | 5 | 20 | 60 | 120 | 160 |
+| Unwritten | Folios Turned | folios turned — a Warden felled (`unwritten.folios`) | 3 | 30 | 100 | 250 | 500 |
+| Unwritten | Inscribed | inscriptions written (`unwritten.inscriptions`) | 10 | 100 | 400 | 1,000 | 2,500 |
+| Unwritten | Relic-bearer | relics carried (`unwritten.relics`) | 5 | 50 | 200 | 500 | 1,200 |
+| Unwritten | Omens Read | Omens won, Omen 0 counted as one (`unwritten.omens`) | 1 | 4 | 7 | 10 | 13 |
 | Emberhold | Deep Pockets | gems from the Mine (`mine.gems`) | 30 | 300 | 1,500 | 4,000 | 8,000 |
 | Emberhold | Dockhand | Idle Chest claims (`idle.claims`) | 10 | 100 | 500 | 1,500 | 3,500 |
 | Emberhold | Patron | Market purchases (`market.purchases`) | 10 | 100 | 500 | 1,500 | 4,000 |
@@ -133,8 +141,9 @@ counter read from the chronicle's first day (`counter` in the goal DSL).
 
 The pacing behind the numbers: two Gargoyle keys a day make *Stonebreaker* V a year and a quarter,
 three Titan keys a week make *The Titan's Due* V a year and a half, and a Brewery's twenty runs a day
-make *Brewmaster* V seven months at the very least. The validator checks that each chain's targets
-climb.
+make *Brewmaster* V seven months at the very least, and an expedition won turns three folios, so
+*Folios Turned* V is well over a hundred won expeditions. The validator checks that each chain's
+targets climb.
 
 **What a tier pays** (`balance/deeds.ts`). Every tier pays the same base — I 10,000 gold, II 20 gems,
 III 50 gems, IV 100 gems, V 150 gems and an Ancient Shard — and its ledger adds what that part of the
@@ -148,6 +157,7 @@ game runs on:
 | Portal | 1 Faded Shard | 2 Faded Shards | 1 Ancient Shard | 2 Ancient Shards | 1 Sacred Shard |
 | Trials | 10,000 gold | 20,000 gold | 40,000 gold | 80,000 gold | 160,000 gold |
 | Halls | 3 Universal Brews | 6 | 10 | 15 | 25 |
+| Unwritten | 1 Rare Tome | 2 Rare Tomes | 1 Epic Tome | 2 Epic Tomes | 1 Legendary Tome |
 | Emberhold | 10,000 gold | 25,000 gold | 50,000 gold | 100,000 gold | 200,000 gold |
 | Ledgers | 1 Rare Tome | 2 Rare Tomes | 1 Epic Tome | 2 Epic Tomes | 1 Legendary Tome |
 
@@ -170,6 +180,10 @@ No keys: a key is a period's allowance, not a thing to bank.
 | Sovereign of the Tower | the Eternal Tower's hundredth floor | 150 | 1 Primordial Shard, the title *Sovereign of the Tower* |
 | The Gargoyle Broken | the Gargoyle's Brutal pool emptied in a single day | 100 | 1 Sacred Shard |
 | The Titan Falls | the Titan's Nightmare pool emptied in a single week | 150 | 1 Primordial Shard, the **Amethyst** frame |
+| The Unbroken Company | an Unwritten expedition won without a champion ever falling | 100 | 300 gems |
+| A Company of One | an Unwritten expedition won with a company of one | 150 | 1 Sacred Shard |
+| Illuminated Manuscript | an Unwritten expedition won with all four inks illuminated | 100 | 300 gems |
+| The Last Page Turned | an Unwritten expedition won under Omen 15, the Blotted Heart | 150 | 1 Primordial Shard, the **Ink-Black** frame, the title *Author of the Unwritten* |
 | A Mythic Stands | a Mythic champion held | 100 | 300 gems |
 | A Legend Perfected | every ability of a Legendary champion at its last step | 100 | 1 Sacred Shard |
 | Dressed for War | six 6★ pieces on one champion | 75 | 5 Glyph Sigils |
@@ -200,6 +214,13 @@ chronicle's first stands are fought by the starter alone, before there is anyone
 it, and a challenge that pays for the first hour is not a challenge. An instant clear is not a battle
 and writes none of them. The thresholds live in `balance/deeds.ts`.
 
+The Unwritten's three feats are an expedition's, not a battle's, so its engine writes them on the
+receipt of an expedition won (`engine/unwritten/lifecycle.ts`, `UNWRITTEN.md` §19):
+`feat.unwritten_unbroken` when nobody in the company fell all the way through, `feat.unwritten_lone`
+when the company was one champion, and `feat.unwritten_illuminated` when every ink was illuminated
+at some point of the expedition. *The Last Page Turned* reads `unwritten.omens`, the highest Omen won
+plus one.
+
 ## 8. When it opens
 
 At chronicle level 13 (`FEATURE_UNLOCK_LEVEL.deeds`), the one level between the weekly board (12)
@@ -211,10 +232,10 @@ points at the Hall's button on the hub or at *Claim all* inside the Hall.
 ## 9. The economy
 
 A tier, a challenge and a rank each pay once in a chronicle's life, like a bundle (`ECONOMY.md` §7):
-the Hall is not a weekly rate and `sim:economy` does not model it. Its whole pool is 18,590 gems,
-3.5 million gold, 2,240 energy, 50 Ancient, 11 Faded, 10 Sacred and 5 Primordial Shards, 290
-Universal Brews, 49 tomes (9 Rare, 29 Epic, 10 Legendary, 1 Mythic) and 130 of the Forge's scarcer
-materials. Spread over the one to two years a chronicle takes to earn most of it, that is 180–360
+the Hall is not a weekly rate and `sim:economy` does not model it. Its whole pool is 20,470 gems,
+3.6 million gold, 2,240 energy, 54 Ancient, 11 Faded, 11 Sacred and 6 Primordial Shards, 290
+Universal Brews, 77 tomes (21 Rare, 41 Epic, 14 Legendary, 1 Mythic) and 130 of the Forge's scarcer
+materials. Spread over the one to two years a chronicle takes to earn most of it, that is 200–390
 gems a week — a tenth to a fifth on top of an active player's ~1,830 — and it arrives in the order the
 play earns it. The burst the day the Hall opens is mostly gold: the first tiers of the achievements a
 level-13 chronicle has already passed pay 10,000 each, and the first two ranks 150 gems.

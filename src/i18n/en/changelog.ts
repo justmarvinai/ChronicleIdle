@@ -10,6 +10,37 @@
  * dictionary then (`registerStrings`, ADR-049). The panel's own labels live in `ui.ts`.
  */
 export const changelog = {
+  'release.0_13_0.name': 'The Unwritten',
+  'release.0_13_0.unwritten':
+    'A page has torn open over Emberhold’s square. From level 16 you can send a company into the Unwritten: three folios of lost history, each a map of branching roads that is never the same twice.',
+  'release.0_13_0.inscriptions':
+    'Every victory offers inscriptions to write into your company — fifty-four of them, in four inks. Write three of one ink and it illuminates, six and it blazes, and a company holding two inks is offered inscriptions that blend them.',
+  'release.0_13_0.company':
+    'Take up to six champions. Four go into each fight, and every wound is kept from one fight to the next, so choosing whom to send, where to rest and which road to take matters.',
+  'release.0_13_0.relics':
+    'Twenty-four relics bend the rules of an expedition and eight blots stain it. Between the fights wait twenty mysteries, shrines, a Peddler, reliquaries, and Echoes of champions who may join you for one expedition.',
+  'release.0_13_0.wardens':
+    'Each folio ends at its Warden: the Ink-Drowned Knight, the Hollow Choir and, last of all, the Unwriter.',
+  'release.0_13_0.omens':
+    'Sixteen Omens, each harder than the last and each with a twist of its own. Win an expedition to open the next, and the first win under each Omen pays its seal — gems, and shards and Skill Tomes under the deeper ones.',
+  'release.0_13_0.scriptorium':
+    'Win or fall, every expedition brings Recovered Pages home. Write them into the Scriptorium’s sixteen folios for a stronger start to every expedition after.',
+  'release.0_13_0.tithe':
+    'The first six Wardens you fell each week pay the Warden’s Tithe: gold, brews, materials and Skill Tomes — Legendary Tomes too, once you reach the eighth Omen.',
+  'release.0_13_0.tale':
+    'When an expedition ends its Tale is told — who went in, what they wrote, who fell — and the Records keep your last expeditions and your best.',
+  'release.0_13_0.saved':
+    'An expedition is saved as you walk it: close the game in the middle of a folio and it will be waiting where you left it.',
+  'release.0_13_0.deeds':
+    'The Hall of Deeds gains the Unwritten’s own ledger: four achievements, four challenges, the Ink-Black portrait frame and the title Author of the Unwritten.',
+  'release.0_13_0.lesson': 'Eldric points the way to the Torn Page the day it opens.',
+  'release.0_13_0.modes':
+    'Game Modes lists the Unwritten between the Brewery and the Tower, with your open Omen and the week’s Tithe on its card; the rift on the square tells you the same.',
+  'release.0_13_0.wallet':
+    'The Wallet names the Unwritten wherever it pays gold, gems, shards, brews, tomes or materials, with the way there.',
+  'release.0_13_0.ranks':
+    'The Hall’s four highest ranks ask for a little more renown, now that the Hall holds more deeds to earn it with.',
+
   'release.0_12_0.name': 'The Hall of Deeds',
   'release.0_12_0.hall':
     'The Hall of Deeds opens at level 13, on the hub’s bottom bar: thirty-seven achievements across every part of the game, each climbing through five tiers, each tier paid when you claim it.',

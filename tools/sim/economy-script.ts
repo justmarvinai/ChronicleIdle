@@ -42,6 +42,13 @@ export interface EconomyScript {
    */
   breweryRunsPerDay: number;
   breweryStage: number;
+  /**
+   * Wardens felled in the Unwritten a week, and the Omen the expeditions are read under. The
+   * first six a week pay the Warden's Tithe (UNWRITTEN.md §14.2); an expedition won is three, one of
+   * each folio, so they are booked in that order.
+   */
+  unwrittenWardensPerWeek: number;
+  unwrittenOmen: number;
   /** The tier they fight, and the share of its pool they take down — which chests that earns. */
   bossTier: string;
   bossDamagePct: number;
@@ -101,6 +108,9 @@ export const MID_GAME: EconomyScript = {
   // Every run, on the mid-game stage: brews are the reason to open the mode at all.
   breweryRunsPerDay: 20,
   breweryStage: 3,
+  // Two expeditions won a week, at the Omen a mid roster reads: the whole Tithe.
+  unwrittenWardensPerWeek: 6,
+  unwrittenOmen: 2,
   bossTier: 'normal',
   bossDamagePct: 60,
   missionsPerWeek: 8,
@@ -133,6 +143,9 @@ export const CASUAL: EconomyScript = {
   weeklyBossKeys: 1,
   breweryRunsPerDay: 6,
   breweryStage: 2,
+  // One expedition a week, won at the first rungs.
+  unwrittenWardensPerWeek: 3,
+  unwrittenOmen: 1,
   bossDamagePct: 30,
   missionsPerWeek: 3,
   firstClearsPerDay: 2,
@@ -161,6 +174,9 @@ export const DEDICATED: EconomyScript = {
   // The ceiling: the day's twenty runs on the deepest stage a finished roster farms.
   breweryRunsPerDay: 20,
   breweryStage: 4,
+  // More expeditions than the Tithe pays for; the six it pays, at a higher Omen.
+  unwrittenWardensPerWeek: 9,
+  unwrittenOmen: 5,
   firstClearsPerDay: 6,
   missionsPerWeek: 12,
   gearLevelsPerDay: 40,

@@ -15,8 +15,9 @@ export interface CurrencyFlow {
 }
 
 export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
-  // Stage drops, the bosses, the chest's hourly purse, the Tower and the Dungeons, both boards and
-  // the Path; the Gem Market's bundles carry some, and dismantling refunds a share. Digging the Mine
+  // Stage drops, the bosses, the chest's hourly purse, the Tower, the Dungeons and the Unwritten's
+  // Tithe, both boards and the Path; the Gem Market's bundles carry some, and dismantling refunds a
+  // share. Digging the Mine
   // deeper is paid in gold before anything else.
   gold: {
     sources: [
@@ -25,6 +26,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'idle_chest',
       'tower',
       'dungeons',
+      'unwritten',
       'quests',
       'missions',
       'titan',
@@ -35,8 +37,8 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
     ],
     uses: ['tavern', 'armoury', 'forge', 'portal', 'market', 'mine'],
   },
-  // First clears and star chests, the boards, the Path, the bosses, every fifth level — and the Mine,
-  // which digs a few every hour of the day (MINE.md).
+  // First clears and star chests, the boards, the Path, the bosses, every fifth level — the Mine,
+  // which digs a few every hour of the day (MINE.md), and each Omen's seal in the Unwritten, once.
   gems: {
     sources: [
       'campaign',
@@ -47,6 +49,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'level_up',
       'login',
       'mine',
+      'unwritten',
       'idle_chest',
     ],
     uses: ['portal', 'market'],
@@ -95,6 +98,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'titan',
       'tower',
       'dungeons',
+      'unwritten',
       'idle_chest',
       'login',
       'market',
@@ -110,6 +114,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'gargoyle',
       'level_up',
       'tower',
+      'unwritten',
       'quests',
       'login',
       'market',
@@ -117,7 +122,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
     ],
     uses: ['portal'],
   },
-  shard_primordial: { sources: ['campaign', 'titan', 'missions'], uses: ['portal'] },
+  shard_primordial: { sources: ['campaign', 'titan', 'missions', 'unwritten'], uses: ['portal'] },
   // A settlement's stages and the chest farming it pay its own element's brew.
   brew_justice: {
     sources: ['brewery', 'campaign', 'idle_chest', 'tower', 'gargoyle', 'quests', 'market'],
@@ -130,16 +135,20 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   brew_faith: { sources: ['brewery', 'campaign', 'idle_chest', 'tower', 'market'], uses: ['tavern'] },
   brew_eclipse: { sources: ['brewery', 'campaign', 'idle_chest', 'tower', 'market'], uses: ['tavern'] },
   brew_universal: {
-    sources: ['campaign', 'quests', 'missions', 'gargoyle', 'titan', 'tower', 'login', 'market'],
+    sources: ['campaign', 'quests', 'missions', 'gargoyle', 'titan', 'tower', 'unwritten', 'login', 'market'],
     uses: ['tavern'],
   },
-  tome_rare: { sources: ['quests', 'missions', 'gargoyle', 'login', 'market'], uses: ['tavern'] },
+  // The Unwritten's Tithe pays tomes every week, Legendary ones from Omen 8 (UNWRITTEN.md §14.2).
+  tome_rare: {
+    sources: ['quests', 'missions', 'unwritten', 'gargoyle', 'login', 'market'],
+    uses: ['tavern'],
+  },
   tome_epic: {
-    sources: ['campaign', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
+    sources: ['campaign', 'unwritten', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
     uses: ['tavern'],
   },
   tome_legendary: {
-    sources: ['campaign', 'gargoyle', 'titan', 'missions', 'login', 'market'],
+    sources: ['campaign', 'unwritten', 'gargoyle', 'titan', 'missions', 'login', 'market'],
     uses: ['tavern'],
   },
   tome_mythic: { sources: ['titan', 'missions'], uses: ['tavern'] },
@@ -158,12 +167,12 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   },
   mat_arcane_dust: { sources: ['campaign', 'forge', 'quests', 'login', 'market'], uses: ['forge', 'mine'] },
   mat_refining_core: {
-    sources: ['campaign', 'forge', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
+    sources: ['campaign', 'forge', 'gargoyle', 'titan', 'unwritten', 'missions', 'quests', 'login', 'market'],
     uses: ['forge', 'mine'],
   },
   // The Mine's deeper levels are the one steady supply (MINE.md §2); everything else is a chest.
   mat_glyph_sigil: {
-    sources: ['campaign', 'mine', 'gargoyle', 'titan', 'missions', 'quests', 'login', 'market'],
+    sources: ['campaign', 'mine', 'gargoyle', 'titan', 'unwritten', 'missions', 'quests', 'login', 'market'],
     uses: ['forge'],
   },
 };

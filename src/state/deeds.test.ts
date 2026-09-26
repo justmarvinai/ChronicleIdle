@@ -176,6 +176,8 @@ describe('feats a won battle writes', () => {
     damageTaken: 0,
     healingDone: 0,
     kills: 3,
+    hp: 100,
+    maxHp: 100,
     ...patch,
   });
   const won = (units: UnitReport[], patch: Partial<BattleOutcome> = {}): BattleOutcome => ({

@@ -27,6 +27,8 @@ function ally(defId: string, patch: Partial<UnitReport> = {}): UnitReport {
     damageTaken: 120,
     healingDone: 0,
     kills: 1,
+    hp: 100,
+    maxHp: 100,
     ...patch,
   };
 }
@@ -42,6 +44,8 @@ const enemy: UnitReport = {
   damageTaken: 1000,
   healingDone: 0,
   kills: 0,
+  hp: 100,
+  maxHp: 100,
 };
 
 function fight(units: UnitReport[], patch: Partial<BattleOutcome> = {}): BattleOutcome {

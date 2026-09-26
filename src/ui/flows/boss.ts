@@ -14,6 +14,7 @@ import { beginBossFight, bossSession, clearBossSession, noteBossFightFinished } 
 import { clearCampaignSession } from '@state/campaign-session';
 import { progressOf } from '@state/campaign';
 import { useGameStore } from '@state/store';
+import { clearUnwrittenSession } from '@state/unwritten-session';
 
 export interface BossLaunchInput {
   bossId: string;
@@ -29,6 +30,7 @@ export function launchBossFight(input: BossLaunchInput): Result<void> {
   const control = input.control ?? (save.settings.autoBattle ? 'auto' : 'manual');
   // A race is never repeated and never carries a campaign batch's state into the HUD.
   clearCampaignSession();
+  clearUnwrittenSession();
   const charged = actions.startBossFight(input.bossId, input.tierId);
   if (!charged.ok) return charged;
 

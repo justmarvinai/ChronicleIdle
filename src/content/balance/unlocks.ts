@@ -20,6 +20,7 @@ export const FEATURE_IDS = [
   'quests_weekly',
   'deeds',
   'weekly_boss',
+  'unwritten',
   'gear_refine',
   'eternal_tower',
   'glorious_palace',
@@ -79,6 +80,12 @@ export const FEATURE_UNLOCK_LEVEL: Readonly<Record<FeatureId, number>> = {
    */
   deeds: 13,
   weekly_boss: 15,
+  /**
+   * The Unwritten (UNWRITTEN.md §2): after the Hall (13) and the Titan (15), when a chronicle has
+   * enough champions to choose a company from and has met every system an expedition leans on —
+   * gear, the Tavern, the Palace, statuses. The one level before the Refine that opens nothing.
+   */
+  unwritten: 16,
   gear_refine: 18,
   /**
    * The tower is gated on *progress*, not on level: the whole Intro campaign behind you

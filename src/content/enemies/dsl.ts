@@ -59,11 +59,23 @@ export interface EnemyInput {
  * were drawn, a tint was *required* here, so giving either of them their sheet meant leaving a
  * dead colour behind on it.
  */
-export type UnitArt = { scale?: number } & ({ model: ModelKey } | { tint: string; desaturate?: boolean });
+export type UnitArt = { scale?: number } & (
+  { model: ModelKey; echo?: true } | { tint: string; desaturate?: boolean }
+);
+
+/**
+ * The ink an **Echo** is drawn in (docs/design/UNWRITTEN.md §6.3). The Unwritten's Wardens are
+ * champions the Unwritten has twisted, and they are meant to be read as exactly that: the
+ * champion's own sheet, washed of its colours and inked violet. It is the one way a finished sheet
+ * is ever tinted, and it never stands in for a sprite nobody drew — the sheet is the champion's.
+ */
+export const ECHO_INK = '#8a6fd1';
 
 /** The stored art for a unit: a real sheet carries no tint, a placeholder carries nothing else. */
 export function resolveArt(art: UnitArt): EnemyDef['art'] {
   const model = 'model' in art ? art.model : LIZARD;
+  if ('model' in art && art.echo)
+    return { model, tint: ECHO_INK, facing: facingOf(model), scale: art.scale ?? 1, desaturate: true };
   return {
     model,
     tint: 'model' in art ? null : art.tint,

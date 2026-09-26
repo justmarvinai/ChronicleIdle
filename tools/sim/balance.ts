@@ -11,6 +11,8 @@
  *   pnpm sim:balance --dungeon       only the Dungeons' ladder and its bands
  *   pnpm sim:balance --scan --dungeon   how far apart the four keeps sit at the rungs the bands
  *                                    name, which is the table the keepers are fitted against
+ *   pnpm sim:balance --unwritten     only whole expeditions into the Unwritten, Omen by Omen, and
+ *                                    their bands (UNWRITTEN.md §20)
  */
 import { DIFFICULTY_MULT, stageScale, type Difficulty } from '@content/balance/battle';
 import { BREWERY_STAGE_SCALE, BREWERY_STAGES } from '@content/balance/brewery';
@@ -18,7 +20,18 @@ import { dungeonScale, type DungeonDifficulty } from '@content/balance/dungeon';
 import { globalStageIndex } from '@content/balance/campaign';
 import { ELEMENTS } from '@content/champions/types';
 import { content } from '@content/registry';
-import { BANDS, BREWERY_BANDS, DUNGEON_BANDS_CHECK, SIM_TEAMS, TEAM_BY_ID, type SimTeam } from './teams';
+import {
+  BANDS,
+  BREWERY_BANDS,
+  DUNGEON_BANDS_CHECK,
+  SIM_TEAMS,
+  TEAM_BY_ID,
+  UNWRITTEN_BANDS,
+  UNWRITTEN_COMPANY,
+  type SimTeam,
+} from './teams';
+import { UNWRITTEN } from '@content/unwritten/index';
+import { simulateExpeditions } from './unwritten';
 import {
   requiredBreweryScale,
   requiredDungeonScale,
@@ -280,8 +293,76 @@ function dungeonBands(): boolean {
   return ok;
 }
 
+// ── The Unwritten (UNWRITTEN.md §20) ──────────────────────────────────────────────────────────
+
+/**
+ * The Omens the report reads, and how many expeditions each cell plays. An expedition is one
+ * outcome drawn from ~15 fights and a hundred choices, so a cell needs several times a stage's
+ * runs to read steadily; they are cheap (a few hundredths of a second each).
+ */
+const OMENS = [0, 1, 2, 3, 5, 6, 7, 8, 10, 12, 13, 14, 15] as const;
+const EXPEDITIONS = Math.max(24, RUNS * 4);
+
+/** A team's six, and the Scriptorium folios of the shelves its chronicle would have written. */
+function unwrittenSetup(team: SimTeam): { company: string[]; scriptorium: string[] } {
+  const extra = UNWRITTEN_COMPANY[team.id];
+  const company = [...team.champions, ...(team.fourth ? [team.fourth] : []), ...(extra?.extra ?? [])];
+  const scriptorium = UNWRITTEN.scriptorium
+    .filter((folio) => folio.shelf <= (extra?.shelves ?? 0))
+    .map((folio) => folio.id);
+  return { company, scriptorium };
+}
+
+function unwrittenCurve(): void {
+  const teams = TEAMS.filter((team) => UNWRITTEN_COMPANY[team.id]);
+  console.log(`\nThe Unwritten — ${EXPEDITIONS} whole expeditions per cell, auto battles`);
+  console.log('  won · folio reached · fights (setbacks)');
+  console.log(`  omen  ${teams.map((t) => t.id.padEnd(26)).join('')}`);
+  for (const omen of OMENS) {
+    const cells = teams.map((team) => {
+      const { company, scriptorium } = unwrittenSetup(team);
+      const r = simulateExpeditions(team, company, omen, EXPEDITIONS, scriptorium);
+      return `${pct(r.rate)} · ${r.folio.toFixed(1)} · ${r.fights.toFixed(0)} (${r.setbacks.toFixed(1)})`.padEnd(
+        26,
+      );
+    });
+    console.log(`  ${String(omen).padStart(4)}  ${cells.join('')}`);
+  }
+}
+
+function unwrittenBands(): boolean {
+  console.log('\nUnwritten bands (UNWRITTEN.md §20)');
+  let ok = true;
+  for (const band of UNWRITTEN_BANDS) {
+    const team = TEAM_BY_ID[band.team];
+    if (!team) throw new Error(`unwritten band names unknown team ${band.team}`);
+    const { company, scriptorium } = unwrittenSetup(team);
+    const { rate } = simulateExpeditions(team, company, band.omen, EXPEDITIONS, scriptorium);
+    const pass = (band.min === undefined || rate >= band.min) && (band.max === undefined || rate <= band.max);
+    ok &&= pass;
+    const want = [
+      band.min !== undefined ? `≥ ${Math.round(band.min * 100)}%` : null,
+      band.max !== undefined ? `≤ ${Math.round(band.max * 100)}%` : null,
+    ]
+      .filter(Boolean)
+      .join(' and ');
+    console.log(
+      `  ${pass ? 'ok  ' : 'FAIL'} ${band.team.padEnd(15)} Omen ${String(band.omen).padStart(2)}  ${pct(rate)} (want ${want})  — ${band.why}`,
+    );
+  }
+  return ok;
+}
+
 const started = Date.now();
-if (flag('scan')) {
+if (flag('unwritten')) {
+  unwrittenCurve();
+  const ok = unwrittenBands();
+  console.log(`\n${((Date.now() - started) / 1000).toFixed(1)} s`);
+  if (!ok && flag('strict')) {
+    console.error('[sim] an Unwritten band is out of range — retune before shipping.');
+    process.exit(1);
+  }
+} else if (flag('scan')) {
   // `--scan --brewery` and `--scan --dungeon` narrow the fit to one mode's own ladder.
   if (flag('dungeon')) dungeonHeadroom();
   else {
@@ -311,8 +392,9 @@ if (flag('scan')) {
   const breweryOk = breweryBands();
   dungeonCurve();
   const dungeonOk = dungeonBands();
+  const unwrittenOk = unwrittenBands();
   console.log(`\n${((Date.now() - started) / 1000).toFixed(1)} s`);
-  if (!(campaignOk && breweryOk && dungeonOk) && flag('strict')) {
+  if (!(campaignOk && breweryOk && dungeonOk && unwrittenOk) && flag('strict')) {
     console.error('[sim] a band is out of range — retune before shipping.');
     process.exit(1);
   }

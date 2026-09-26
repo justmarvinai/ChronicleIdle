@@ -6,8 +6,93 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing pending, and no question open for the owner. Next, in the owner's order (`ROADMAP.md`):
-the roguelite mode._
+_Nothing pending, and no question open for the owner. The owner's order of 26 September is
+complete (`ROADMAP.md`); what comes next is theirs to say._
+
+## [0.13.0] — 2026-09-26 — The Unwritten
+
+The owner asked for a roguelite mode — "really outstanding", advanced, deep, and one of the most
+outstanding modes in the game. `docs/design/UNWRITTEN.md` (new); `docs/tech/UI_DESIGN.md` §5.2,
+§5.19, §5.31, §5.32; `TUTORIAL.md` §6; `GAME_DESIGN.md` §1, §3, §6, §7; `ACHIEVEMENTS.md` §1–§7,
+§9; `ECONOMY.md` §2, §7, §8, §13 (new); `ARCHITECTURE.md` §3.2, §3.3, §3.7e (new), §4, §6;
+`CONTENT_AUTHORING.md` §20 (new); ADR-050.
+
+### Added
+
+- **The Unwritten** (`src/content/unwritten/`, `engine/unwritten/`, `state/unwritten/`,
+  `ui/screens/unwritten/`, route `unwritten`), open from chronicle level 16
+  (`FEATURE_UNLOCK_LEVEL.unwritten`). An expedition takes a company of one to six champions through
+  three folios, each a map of four non-crossing walks over eight rows (`map.ts`: skirmishes,
+  elites, mysteries, shrines, the Peddler, reliquaries, Echoes, under fairness rules) ending in a
+  Warden. Four fight at a time; **wounds are kept** on both sides between fights (`company.ts`,
+  `fight.ts`), and a contested passage is re-entered with its survivors wounded.
+- **Content**: 54 inscriptions in four inks (`inscriptions/*.ts`, three levels each, carried by
+  every champion sent in, the leader, or a kinship), four illuminations at three and six of an ink,
+  blended inks, 24 relics (sixteen from the start, eight the Scriptorium opens), 8 blots, 8 elite
+  affixes, 20 mysteries, 16 Omens with a twist each, three Wardens with their own kits, drawn as
+  champions the Unwritten has twisted (the Ink-Drowned Knight, the Hollow Choir with its Inkling
+  Choristers, the Unwriter in three phases), and a 16-folio Scriptorium in four shelves. All of it is data built by the mode's DSL (`dsl.ts`) and validated by
+  `validateUnwritten` (`engine/schema/unwritten.ts`) beside the registry.
+- **The engine** is pure and seeded from the expedition's own seed: `lifecycle.ts` (begin, enter,
+  finish, interlude, abandon, the ending), `choices.ts` (offers, relics, shrines, the Peddler,
+  reliquaries, Echoes, mysteries, Rekindle tokens), `rules.ts` (one fold of every source that bends
+  a number), `offers.ts`, `encounter.ts` (fights derived from the expedition, pitched so
+  `unwrittenScale` is the one curve), `shaping.ts` / `passives.ts`, `rewards.ts`, `scriptorium.ts`.
+  Every reducer returns a receipt the state layer pays.
+- **Battle seams** every kit can use: `BattleShaping` on the setup (extra passives per ally, entry HP
+  shares, the first wave's wounds — replayable), the `attacker` target, the `selfHas` condition,
+  and each `UnitReport`'s end HP and max HP. `battleController.start` takes a one-fight `encounter`,
+  an `enemyById` and a `shaping`. Echoes and Wardens are drawn from champion sheets inked violet
+  (`ECHO_INK`, `UnitArt.echo`).
+- **Rewards**: Recovered Pages every expedition, won or lost, for the Scriptorium; the **Warden's
+  Tithe** — the week's first six Wardens each pay gold, Skill Tomes and more into the wallet,
+  Legendary Tomes from Omen 8; an **Omen Seal** the first time each Omen falls (5,080 gems in all,
+  one-off). The Wallet lists the Unwritten as a source of every currency it pays
+  (`currencies/flows.ts`), and `flows.test.ts` holds it to the Tithe and seal tables.
+- **The screen**: the threshold (Omen reading, company picker), the folio map in ink, a company
+  column with HP shares and tokens, passage panels (muster, mystery, shrine, Peddler, reliquary,
+  Echo, offer, relics), inscription cards in their inks, the codex of what the company holds, the
+  interlude, the Tale, the Records and the Scriptorium; fights go straight back to the folio with
+  what they left told. Its own ambience bed and ambient preset, four generated sounds
+  (`sfx.unwritten.*`, `tools/audio/unwritten-recipes.ts`) and four in-house glyphs (quill, candle,
+  coin purse, chest).
+- **Around Emberhold**: the hub's eleventh hotspot, *The Torn Page* (a rift over the square, with
+  the expedition under way or the week's Tithes as its status line); a Game Modes card between the
+  Brewery and the Tower; a place for "the way there"; the battle pause dialog's retreat warning for
+  an Unwritten fight.
+- **The Hall of Deeds** gains a ninth ledger: *Folios Turned*, *Inscribed*, *Relic-bearer* and *Omens
+  Read*, whose tiers pay Skill Tomes; four challenges (*The Unbroken Company*, *A Company of One*,
+  *Illuminated Manuscript*, *The Last Page Turned*); the **Ink-Black** frame and the title *Author of
+  the Unwritten*. Counters `unwritten.*` and the feats `feat.unwritten_unbroken`, `_lone`,
+  `_illuminated`; `unwritten.omens` is kept as a maximum.
+- **The lesson** (Steel and Bone, 6.11): from level 16, on the hub it points at the rift; inside, at
+  the Omen reading. New tutorial targets `hub.unwritten` and `unwritten.omen` and the screen
+  `unwritten`.
+- **Balance tooling**: `tools/sim/unwritten.ts` plays whole expeditions headlessly through the real
+  engine; `sim:balance --unwritten` prints the Omen curve and five bands (mid, late and endgame
+  reference companies with their Scriptorium shelves), all inside the default run and the gate.
+  `sim:economy` books the Tithe as a weekly line for all three scripts.
+- Tests: the engine's `map`, `offers`, `encounter`, `expedition`, `shaping`, `battle` and
+  `scriptorium` suites, `engine/battle/shaping.test.ts`, `state/unwritten/commands.test.ts`,
+  `ui/screens/unwritten/unwritten-screen.test.tsx`, the sim's expedition test, and the e2e
+  `tests/e2e/unwritten.spec.ts` on the new fixture `unwritten.chronicle`
+  (`tools/fixtures/unwritten-chronicle.ts`): set out, win a skirmish on auto, write an inscription,
+  reload, turn back, read the Tale, write the Scriptorium.
+
+### Changed
+
+- **Save v22**: `unwritten { pages, scriptorium, omen, tithe, records, tales, run }` — the
+  expedition in hand is saved whole, so closing the game mid-folio loses nothing. The v21 → v22
+  migration adds an untouched Unwritten. New fixture `tests/fixtures/saves/v22.json` (with an
+  expedition under way).
+- **The mode is one lazy chunk** (ADR-050): content, engine, commands, strings and screens load with
+  its screen; only the save slice, a glance (`state/unwritten-glance.ts`) and the fight's hand-off
+  (`state/unwritten-session.ts`) are eager. The first screen is 342.8 kB gzipped against the 350 kB
+  budget. Commands run the engine on a copy of the slice and commit the copy.
+- **Hall ranks 7–10** stand on 2,500 / 3,800 / 5,600 / 7,700 renown (were 2,300 / 3,400 / 5,000 /
+  7,000): the Hall is worth 8,805 now, and the tenth rank still asks for 87 % of it.
+- `AbilityIcon` gains `decorative`, a non-interactive face for icons inside buttons.
+- The navigation and chronicle e2e specs count six modes and eleven hotspots.
 
 ## [0.12.0] — 2026-09-26 — The Hall of Deeds
 
