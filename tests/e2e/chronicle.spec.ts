@@ -8,8 +8,9 @@ test.describe('chronicle lifecycle', () => {
     await expect(page.getByTestId('profile-chip')).toContainText('Marvin');
     await expect(page.getByTestId('pill-gold')).toContainText('2,500');
     await expect(page.getByTestId('pill-energy')).toContainText('60');
-    // Nine buildings stand on the Emberhold artwork; the ninth is the Glorious Palace (0.6.0).
-    await expect(page.locator('[data-testid^="hotspot-"]')).toHaveCount(9);
+    // Ten buildings stand on the Emberhold artwork: the ninth is the Glorious Palace (0.6.0) and the
+    // tenth the Mine by the fountain (0.10.0), both shown before they open.
+    await expect(page.locator('[data-testid^="hotspot-"]')).toHaveCount(10);
   });
 
   test('reload offers Continue and restores the chronicle', async ({ page }) => {
