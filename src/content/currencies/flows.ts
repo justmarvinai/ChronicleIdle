@@ -1,9 +1,10 @@
 /**
  * Where each currency comes from and what it is for (docs/design/ECONOMY.md §2), as places a
  * press can reach (`@content/places/types`). The Wallet reads these to say it — and to offer the
- * way to each — so a row here is a promise: every source listed must really pay the currency and
- * every use must really spend it. The order is the order the Wallet lists them in, the most
- * generous source and the main use first.
+ * way to each — so a row here is a promise: every source listed must really pay the currency, every
+ * place that pays it must be listed, and every use must really spend it. `flows.test.ts` holds the
+ * sources to that against every reward table in the game, both ways. The order is the order the
+ * Wallet lists them in, the most generous source and the main use first.
  */
 import type { PlaceId } from '@content/places/types';
 import type { CurrencyId } from './types';
@@ -14,17 +15,21 @@ export interface CurrencyFlow {
 }
 
 export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
-  // Stage drops, the chest's hourly purse, both boards and the Path; dismantling refunds a share.
+  // Stage drops, the bosses, the chest's hourly purse, the Tower and the Dungeons, both boards and
+  // the Path; the Gem Market's bundles carry some, and dismantling refunds a share.
   gold: {
     sources: [
       'campaign',
+      'gargoyle',
       'idle_chest',
+      'tower',
+      'dungeons',
       'quests',
       'missions',
-      'gargoyle',
       'titan',
       'level_up',
       'login',
+      'market',
       'forge',
     ],
     uses: ['tavern', 'armoury', 'forge', 'portal', 'market'],
@@ -35,7 +40,17 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
     uses: ['portal', 'market'],
   },
   energy: {
-    sources: ['regeneration', 'level_up', 'campaign', 'missions', 'quests', 'login', 'market'],
+    sources: [
+      'regeneration',
+      'level_up',
+      'campaign',
+      'idle_chest',
+      'tower',
+      'missions',
+      'quests',
+      'login',
+      'market',
+    ],
     uses: ['campaign', 'dungeons'],
   },
   key_daily: { sources: ['daily_reset'], uses: ['gargoyle'] },
@@ -44,7 +59,17 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   key_eternal: { sources: ['regeneration'], uses: ['tower'] },
   // The Portal's own exchange trades gold for Faded Shards and gems for the two above them.
   shard_faded: {
-    sources: ['campaign', 'quests', 'idle_chest', 'gargoyle', 'login', 'market', 'portal'],
+    sources: [
+      'campaign',
+      'dungeons',
+      'quests',
+      'idle_chest',
+      'gargoyle',
+      'missions',
+      'login',
+      'market',
+      'portal',
+    ],
     uses: ['portal'],
   },
   shard_ancient: {
@@ -56,6 +81,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'gargoyle',
       'titan',
       'tower',
+      'dungeons',
       'idle_chest',
       'login',
       'market',
@@ -64,7 +90,18 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
     uses: ['portal'],
   },
   shard_sacred: {
-    sources: ['campaign', 'missions', 'titan', 'gargoyle', 'level_up', 'tower', 'login', 'market', 'portal'],
+    sources: [
+      'campaign',
+      'missions',
+      'titan',
+      'gargoyle',
+      'level_up',
+      'tower',
+      'quests',
+      'login',
+      'market',
+      'portal',
+    ],
     uses: ['portal'],
   },
   shard_primordial: { sources: ['campaign', 'titan', 'missions'], uses: ['portal'] },
@@ -80,7 +117,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   brew_faith: { sources: ['brewery', 'campaign', 'idle_chest', 'tower', 'market'], uses: ['tavern'] },
   brew_eclipse: { sources: ['brewery', 'campaign', 'idle_chest', 'tower', 'market'], uses: ['tavern'] },
   brew_universal: {
-    sources: ['campaign', 'quests', 'missions', 'gargoyle', 'titan', 'login', 'market'],
+    sources: ['campaign', 'quests', 'missions', 'gargoyle', 'titan', 'tower', 'login', 'market'],
     uses: ['tavern'],
   },
   tome_rare: { sources: ['quests', 'missions', 'gargoyle', 'login', 'market'], uses: ['tavern'] },
@@ -94,7 +131,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
   },
   tome_mythic: { sources: ['titan', 'missions'], uses: ['tavern'] },
   mat_scrap_iron: {
-    sources: ['campaign', 'forge', 'idle_chest', 'quests', 'login', 'market'],
+    sources: ['campaign', 'forge', 'idle_chest', 'quests', 'missions', 'login', 'market'],
     uses: ['forge'],
   },
   mat_ember_alloy: {
