@@ -118,8 +118,9 @@ fails in fifteen seconds instead of consuming the test's whole budget. Do not re
 - Never use a serif font, a `border-radius` pill, a default browser control or an unstyled scrollbar.
 - Never add PvP, social, account or payment code paths "for later".
 - Never skip or weaken a failing test to get green.
-- Never force-push `main`; never create long-lived branches — work lands on `main` (fast-forward a
-  harness-assigned working branch into `main` before the session ends).
+- Never force-push `main` or `production`; never create another long-lived branch — game work lands
+  on `main`, desktop-shell work on `production` (`CLAUDE.md` §9.4); fast-forward a harness-assigned
+  working branch into the branch it worked for before the session ends.
 - Never add an asset without a `docs/tech/CREDITS.md` row (owner-provided, CC0 source, or generated in-house).
 - Never leave a phase half-done because it was "mostly working".
 
@@ -132,6 +133,6 @@ the "Answered" section, update the affected docs and content, and note it in the
 
 ## 7. Session end
 
-Before ending any session: all work committed with conventional messages, pushed to `main`
-(and to any harness-assigned branch), `CHANGELOG.md` and `ROADMAP.md` status current, and a final message that states what was
+Before ending any session: all work committed with conventional messages, pushed to `main` — or
+to `production` for desktop work — (and to any harness-assigned branch), `CHANGELOG.md` and `ROADMAP.md` status current, and a final message that states what was
 done, what is verified, and what is next.

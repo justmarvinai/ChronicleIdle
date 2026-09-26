@@ -190,9 +190,9 @@ of this guide that need a server were verified as far as a build can be:
   Rolling back to a build with an older `saveVersion` than a player's save shows the "newer save"
   panel and refuses to load it destructively (export is still offered).
 
-## 6. Later: Electron / Steam (backlog)
+## 6. The Windows desktop build (planned)
 
-The same `dist/` is loaded by an Electron `BrowserWindow`; `platform/` adapters switch to file
-storage under the user data directory and native dialogs; Steamworks integration (achievements,
-overlay) is added in the Electron main process only. Nothing in this guide changes for the web
-build.
+The desktop game is planned on the `production` branch in phases D0–D6 (`docs/tech/ELECTRON.md`):
+the same `dist/` served to an Electron window from an `app://` protocol, `platform/` adapters
+switched to save files and native dialogs, packaging with electron-builder, and Steam in the main
+process only. Nothing in this guide changes for the web build.

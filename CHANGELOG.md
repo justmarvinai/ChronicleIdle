@@ -6,8 +6,25 @@ All notable changes to ChronicleIdle are documented here. The format follows
 
 ## [Unreleased]
 
-_Next: the `production` branch and a phased plan for the Electron (Windows desktop) build —
-documents only. No Electron code is written until the owner says go._
+_Waiting on the owner: desktop phase D1 starts on their go, after one more quick task they have in
+mind. No Electron code exists yet._
+
+### Added
+
+- **The plan for the Windows desktop build**, `docs/tech/ELECTRON.md`: what "a real Windows game"
+  means here, the two branches and how work and versions flow between them, the three-process
+  shell (main, preload bridge, the unchanged game) loaded from an `app://` protocol, the adapter
+  swaps inside `src/platform/`, the security baseline, and six phases — D1 the game in its own
+  window, D2 display and window, D3 saves on disk, D4 the Windows build and CI, D5 Steam, D6
+  release readiness — each with its acceptance, plus testing, budgets and risks. Documents only:
+  the owner asked for no Electron code before their go.
+- **The `production` branch**, created from `main` at this commit: `main` plus, from D1 on, the
+  desktop shell. `CLAUDE.md` §1, §2.9, §9.4 and §10 and `AGENTS.md` now describe two long-lived
+  branches; `ROADMAP.md` tracks D0–D6; `DEPLOYMENT.md` §6 and `ARCHITECTURE.md` §10 point to the
+  plan.
+- **Q63–Q71** in `USER_QUESTIONS.md`: branches and versions, where the game is sold, the Steam App
+  ID, code signing, where saves live and sync, the first-launch window, the web build's future,
+  platforms after Windows, and what a minimised window does — each with the default the plan uses.
 
 ## [0.13.1] — 2026-09-26 — Title Screen & Patch Notes
 

@@ -662,7 +662,8 @@ The manifest is typed (`AssetKey` union) so a typo in a content file is a compil
 
 Everything platform-specific is behind `platform/`: `StorageAdapter` (IndexedDB now; file-based
 later), `FileDialogAdapter` (download/upload now; native dialogs later), `WindowAdapter`
-(fullscreen API now; BrowserWindow later). No Node APIs are used anywhere in `src/`.
+(fullscreen API now; BrowserWindow later). No Node APIs are used anywhere in `src/`. The desktop
+build that swaps them is planned in `docs/tech/ELECTRON.md` (phases D0–D6, on `production`).
 
 ## 11. Game window and PWA
 

@@ -5,8 +5,98 @@ blocks development. Answered items live in §2 with the owner's answer and the c
 
 ## 1. Open
 
-None. The owner handed the last nine to the recommendation each one carried (26 September 2026, in
-the `0.9.10` batch), and the table below records what that settled.
+Nine questions about the desktop (Electron) build, asked with its plan (`docs/tech/ELECTRON.md`,
+26 September 2026). None blocks phase D1; each names the default the plan uses until it is
+answered.
+
+### Q63 — How do `main` and `production` share work and version numbers?
+
+**Why it matters.** Two long-lived branches drift apart unless the rule for what goes where is
+simple, and the Chronicle of Changes needs one version line players can trust.
+
+**The default in use.** `main` stays the game's development line and the web build; `production`
+is `main` plus the desktop shell. `main` is merged into `production` after every release, never the
+other way round. Anything the desktop needs inside the game (an adapter choice, the bridge's
+interface, a Quit action the browser hides) lands on `main` first, inert in the browser, so
+`production` only adds files. A desktop build carries the game's version; a desktop-only fix ships
+from `production` with a fourth figure (`0.14.0.1`) and its own Chronicle entry there.
+
+If you would rather move all development to `production`, or keep the desktop shell on `main`
+behind a build switch instead of a second branch, the plan's §2 changes and nothing else does.
+
+### Q64 — Where is the Windows game sold or handed out?
+
+**Why it matters.** It decides whether the desktop build needs its own updater and signed
+installers (D6), or whether Steam does both.
+
+**The default in use.** **Steam first.** Steam installs and updates the game, so no in-app updater
+is built. An installer is still produced by every build for testers (D4), kept as a CI artifact,
+not published.
+
+Name another shop — itch.io, a download from your own site, the Microsoft Store — and D6 adds signed
+installers with in-app updates from GitHub Releases, or that store's own packaging.
+
+### Q65 — Is there a Steamworks account and an App ID for ChronicleIdle?
+
+**Why it matters.** Achievements, the overlay, Steam Cloud and uploading builds all need the App
+ID, and Steam asks a one-off app fee per game.
+
+**The default in use.** Everything that does not need it is built first (D1–D4). D5 (Steam)
+starts once the App ID exists; until then the Hall of Deeds' Steam mapping can be prepared as data.
+
+### Q66 — Should installers outside Steam be code-signed?
+
+**Why it matters.** Windows SmartScreen warns about an unsigned installer from the internet
+("Windows protected your PC"), which scares players off. Signing needs a certificate or a signing
+service with a yearly cost. Games launched from Steam are not affected.
+
+**The default in use.** Unsigned while the only installers are for testers; signed before any
+installer is public (D6).
+
+### Q67 — Where do desktop saves live, and does Steam Cloud sync them?
+
+**Why it matters.** A save the player can find, back up and carry between PCs is part of a game
+feeling like a game.
+
+**The default in use.** `%APPDATA%\ChronicleIdle\saves`, in the checksummed format the export
+already writes, with the rolling backups beside it; Steam Cloud syncs that folder (Auto-Cloud, no
+code). A chronicle from the web version comes across through Export / Import, which the first
+launch offers. An *Open saves folder* button sits in Settings → Save data.
+
+### Q68 — Fullscreen or a window on the first launch?
+
+**Why it matters.** The web build only ever *offers* fullscreen, because a browser page must not
+seize the screen. A desktop game usually starts fullscreen.
+
+**The default in use.** **Borderless fullscreen on the first launch**, remembered after that;
+F11 and Alt+Enter toggle it, and Settings gets a Display tab (windowed / fullscreen / start in
+fullscreen). Say "windowed first" and the first launch opens a centred 1600 × 900 window instead.
+
+### Q69 — Does the web build stay online once the desktop game exists?
+
+**Why it matters.** Both builds come from the same code, so keeping the web version costs little,
+but two places to play means a player's chronicle lives in two places unless they export it.
+
+**The default in use.** **Yes**: the web build keeps shipping from `main` as today, as the quickest
+way to try the game. Saying no retires the VPS / Vercel deployment and nothing else changes.
+
+### Q70 — Which platforms come after Windows?
+
+**Why it matters.** macOS needs Apple signing and notarisation; Linux is cheap to build. The Steam
+Deck runs Windows games through Proton.
+
+**The default in use.** **Windows 64-bit only.** The Steam Deck is checked through Proton in D6's
+hardware pass; native macOS and Linux builds stay in the backlog.
+
+### Q71 — Does the game keep playing while its window is minimised?
+
+**Why it matters.** Many desktop idle games keep going in the background. Here the fights are
+drawn frame by frame, so fighting while minimised would mean a new "resolve without drawing" mode,
+not a setting.
+
+**The default in use.** The browser's behaviour: while minimised, drawing stops and an auto-repeat
+pauses; energy, the Idle Chest and the Mine keep accruing by the clock as they always do. A
+"battles continue while minimised" option could come later as its own feature.
 
 ## 2. Answered
 

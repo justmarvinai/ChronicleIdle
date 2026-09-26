@@ -421,7 +421,22 @@ Three pieces, in this order; the third starts only after the first two ship.
 | --- | --- | --- | --- |
 | 1 | **The title screen reworked** like every other screen, with the Chronicle of Changes kept open on it | `0.13.1` | ✅ shipped in 0.13.1 (`UI_DESIGN.md` §5.1) |
 | 2 | **The Chronicle of Changes rewritten** — plain patch notes, nothing said twice, no lore | `0.13.1` | ✅ shipped in 0.13.1 (`CONTENT_AUTHORING.md` §13) |
-| 3 | **The Electron build** — a `production` branch and a phased plan to a Windows desktop game | — | ⏳ plan next; no Electron code until the owner says go |
+| 3 | **The Electron build** — a `production` branch and a phased plan to a Windows desktop game | — | 📝 planned: `production` created, phases D0–D6 in `docs/tech/ELECTRON.md`; D1 waits on the owner's go |
+
+## The Windows desktop build — on `production`
+
+Planned in `docs/tech/ELECTRON.md`. Each phase ships to the Definition of Done as a desktop build on
+`production`; no Electron code is written before the owner's go.
+
+| Phase | Deliverable | Status |
+| --- | --- | --- |
+| D0 | The `production` branch and the plan | ✅ done |
+| D1 | The game in its own window — the Electron shell, secure by default | ⏳ waits on the owner's go |
+| D2 | Display and window — windowed / fullscreen, remembered, Quit | ⏳ |
+| D3 | Saves on disk — files, backups, native dialogs, web-save import | ⏳ |
+| D4 | The Windows build — installer, Steam folder, icon, CI | ⏳ |
+| D5 | Steam — achievements from the Hall of Deeds, overlay, cloud, presence | ⏳ needs the App ID (Q65) |
+| D6 | Release readiness — hardware QA, updates outside Steam, first public build | ⏳ |
 
 ---
 
@@ -429,13 +444,13 @@ Three pieces, in this order; the third starts only after the first two ship.
 
 | Item | Notes |
 | --- | --- |
-| Electron wrapper & Steam release | `platform/` adapters, Steamworks achievements, installer, store assets |
+| ~~Electron wrapper & Steam release~~ | planned as phases D1–D6 on `production` (`docs/tech/ELECTRON.md`) |
 | More champions & models | replace placeholders first; new Legendaries/Mythics; faction models |
 | Accessories (ring, amulet, banner) | three more gear slots as in the references |
 | Awakening / Ascension | post-6★ growth track |
 | Dungeon variants for materials | the five keeps ship in `0.8.0` and pay gear; a potion/tome keep would be a sixth |
 | Events & limited banners | timed content with deterministic schedule |
-| Achievements & titles expansion | the Hall of Deeds shipped in `0.12.0` (`ACHIEVEMENTS.md`); mirroring its deeds as Steam achievements comes with the Electron build |
+| Achievements & titles expansion | the Hall of Deeds shipped in `0.12.0` (`ACHIEVEMENTS.md`); mirroring its deeds as Steam achievements is desktop phase D5 (`ELECTRON.md`) |
 | ~~Skip tickets / instant battle~~ | shipped as instant clears in `0.11.0` (`CAMPAIGN.md` §10): the energy is the ticket |
 | Multiple save slots, cloud-free sync via export | slots in UI |
 | Localization (German first) | i18n keys already in place |

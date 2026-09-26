@@ -22,8 +22,9 @@ Companion documents:
 ChronicleIdle is a **2D pixel-art, dark-fantasy, turn-based idle gacha champion-collection RPG**,
 in the family of Raid: Shadow Legends, Infinite Magicraid, Age of Magic and Void Hunters. It is a
 **single-player** game with **no accounts, no server, no PvP, no clans and no monetisation**. It ships
-first as a desktop-first web build (static files on an Ubuntu VPS or Vercel) and later as an Electron
-build for Steam (backlog only — never a scheduled phase before EA-0.1).
+as a desktop-first web build (static files on an Ubuntu VPS or Vercel) and — planned on the
+`production` branch, phases D0–D6 in `docs/tech/ELECTRON.md` — as a Windows desktop game built with
+Electron, for Steam.
 
 Core loop: collect champions → level, rank and gear them → beat content until you stall → summon,
 craft, upgrade → beat harder content. The game is incremental in spirit: there is always a next
@@ -51,8 +52,8 @@ battle animation, music and sound.
 7. **Champions without a finished model use the `teritorial_lizard` model** as a placeholder,
    never a missing-texture box.
 8. **Never serif fonts. Never generic rounded "AI-slop" UI.** See §7.
-9. **Everything is pushed directly to `main`.** The owner granted direct pushes; there are no
-   long-lived development branches (§9.4).
+9. **Game work is pushed directly to `main`; the desktop shell lives on `production`.** The owner
+   granted direct pushes to both; no other branch outlives a session (§9.4).
 10. **The player is told what changed.** Every shipped version adds a release to the in-game
     Chronicle of Changes (§9.3), which is a frame on the title screen — always visible, never a
     window you have to open — and a button in Settings.
@@ -301,10 +302,19 @@ next phase starts.
 
 ### 9.4 Branch policy
 
-`main` is the only branch and is always deployable. Every session commits to `main` and pushes
-directly (owner's decision, `USER_QUESTIONS.md` Q23). If a harness forces a named working branch,
-the session fast-forwards `main` to it before it ends; no branch outlives a session. Never
-force-push `main`.
+Two long-lived branches, both always deployable:
+
+- **`main`** is where the game is built and the web build ships from. Every session working on the
+  game commits to `main` and pushes directly (owner's decision, `USER_QUESTIONS.md` Q23).
+- **`production`** is `main` plus the Windows desktop shell — `electron/`, the packaging and the
+  Windows CI job (owner's decision, 26 September 2026; `docs/tech/ELECTRON.md` §2). `main` is
+  merged into `production` after each release (a merge commit, never a rebase), and `production` is
+  never merged into `main`. What the desktop needs *inside* the game lands on `main` first, inert
+  in the browser, so `production` only adds files.
+
+If a harness forces a named working branch, the session fast-forwards the branch it worked for
+(`main`, or `production` for desktop work) to it before it ends; no other branch outlives a
+session. Never force-push `main` or `production`.
 
 ### 9.5 Questions
 
@@ -344,6 +354,7 @@ docs/tech/UI_DESIGN.md         design tokens, layout grid, every screen, animati
 docs/tech/CONTENT_AUTHORING.md how to add champions, gear, stages, quests, etc.
 docs/tech/ASSETS.md            inventory of /game and the asset pipeline
 docs/tech/DEPLOYMENT.md        Ubuntu VPS (nginx) and Vercel guides, CI
+docs/tech/ELECTRON.md          the Windows desktop build: the two branches, the shell, phases D0–D6
 docs/tech/DECISIONS.md         architecture decision records
 docs/tech/CREDITS.md           asset provenance and licences
 ```
