@@ -308,11 +308,42 @@ describe('the featured rotation', () => {
       expect(view.rotation.epics).toHaveLength(2);
       expect(content.championById(view.rotation.legendary)?.rarity).toBe('legendary');
       expect(view.primordial).toBe(isPrimordialRotation(index));
-      if (view.primordial && view.rotation.mythic) expect(view.featured).toContain(view.rotation.mythic);
       expect(view.featured).toContain(view.rotation.legendary);
+      expect(view.featured.includes('champ.varkos_sundered_king')).toBe(view.primordial);
     }
     expect(isPrimordialRotation(PRIMORDIAL_EVERY - 1)).toBe(true);
     expect(isPrimordialRotation(0)).toBe(false);
+  });
+
+  it('never features the same Legendary two rotations running, and meets every pair in turn', () => {
+    if (!FEATURED) throw new Error('no featured banner');
+    const cycle = (FEATURED.rotations ?? []).length;
+    const seen = new Set<string>();
+    for (let index = 0; index < cycle * 2; index += 1) {
+      const view = rotationAt(FEATURED, ROTATION_EPOCH + index * ROTATION_MS);
+      const next = rotationAt(FEATURED, ROTATION_EPOCH + (index + 1) * ROTATION_MS);
+      if (!view || !next) throw new Error('no rotation');
+      expect(next.rotation.legendary, `rotation ${index + 2}`).not.toBe(view.rotation.legendary);
+      seen.add(`${view.rotation.legendary}|${view.rotation.epics.join('+')}`);
+    }
+    // Five Legendaries by six pairs: every pairing comes round once a cycle.
+    expect(seen.size).toBe(cycle);
+  });
+
+  it('kept the rotations that were running when the cycle was re-cut (0.9.10)', () => {
+    if (!FEATURED) throw new Error('no featured banner');
+    const at = (index: number) => rotationAt(FEATURED, ROTATION_EPOCH + index * ROTATION_MS)?.rotation;
+    // The nineteenth rotation opened on 14 September 2026 with Aurelia, and the five after it
+    // were already announced; the re-cut changes only what follows.
+    expect([18, 19, 20, 21, 22, 23].map((index) => at(index)?.legendary)).toEqual([
+      'champ.aurelia_dawnwarden',
+      'champ.vorrak_bloodhowl',
+      'champ.seraphine_vale',
+      'champ.morrigan_nightweaver',
+      'champ.kaelith_stormcaller',
+      'champ.aurelia_dawnwarden',
+    ]);
+    expect(at(24)?.legendary).toBe('champ.vorrak_bloodhowl');
   });
 
   it('cycles when it runs out of authored rotations', () => {

@@ -7,7 +7,9 @@ import type { AssetManifest } from '@assets/manifest-types';
 import { setManifestForTests } from '@assets/manifest';
 import { CHAMPION_CHOICES, SETTLEMENT_COUNT, STAGES_PER_SETTLEMENT } from '@content/balance/campaign';
 import { SHARD_EXCHANGE } from '@content/balance/summon';
+import { content } from '@content/registry';
 import { progressKey, stageIdOf } from '@engine/campaign/progress';
+import { rotationAt } from '@engine/summon/rotation';
 import { useGameStore } from '@state/store';
 import { DialogHost } from '@ui/dialogs/DialogHost';
 import { ViewportContext, VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from '@ui/viewport/viewport';
@@ -263,7 +265,12 @@ describe('the Portal', () => {
     await user.click(screen.getByTestId('portal-tab-featured'));
     const rotation = await screen.findByTestId('portal-rotation');
     expect(rotation).toBeInTheDocument();
-    expect(screen.getByTestId('portal-featured-champ.aurelia_dawnwarden')).toBeInTheDocument();
+    // Whoever the wheel features today — the test runs on the real clock.
+    const banner = content.banners.find((def) => def.kind === 'featured');
+    const today = banner ? rotationAt(banner, Date.now()) : null;
+    expect(today).not.toBeNull();
+    for (const id of today?.featured ?? [])
+      expect(screen.getByTestId(`portal-featured-${id}`)).toBeInTheDocument();
   });
 
   it('quotes the rates and mercy of every shard', async () => {

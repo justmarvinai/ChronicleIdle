@@ -725,6 +725,10 @@ function validateBanners(
       if (new Set(rotation.epics).size !== rotation.epics.length)
         error(`${path}.rotations[${r}]`, 'the two featured Epics must differ');
     });
+    // A Primordial Rotation is every fourth, and a cycle meets them on different rows each time it
+    // comes round, so a banner that features a Mythic names it on every row.
+    const mythics = new Set((def.rotations ?? []).map((rotation) => rotation.mythic ?? null));
+    if (mythics.size > 1) error(path, 'every rotation names the same Mythic, or none does');
   });
   return issues;
 }

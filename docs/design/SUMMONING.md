@@ -39,20 +39,38 @@ Always available; the four shard types above.
 
 ### Featured Banner
 A 14-day rotation computed from a fixed **UTC** epoch (`ROTATION_EPOCH = 2026-01-05T00:00Z`) so no
-server is needed and the same instant gives the same rotation in every time zone. Each rotation features **1 Legendary + 2 Epics**; featured champions get ×2 weight
-inside their rarity bucket for Ancient and Sacred pulls. Every 4th rotation is a **Primordial
-Rotation**: Varkos is featured (Mythic chance stays 5 % but the pity counter accelerates: +1 pp
-per pull after 10).
+server is needed and the same instant gives the same rotation in every time zone. Each rotation
+features **1 Legendary + 2 Epics**; featured champions get ×2 weight inside their rarity bucket for
+Ancient and Sacred pulls. Every 4th rotation is a **Primordial Rotation**: Varkos is featured on
+every one of them (Mythic chance stays 5 % but the pity counter accelerates: +1 pp per pull after
+10).
 
-| Rotation | Legendary | Epics |
-| --- | --- | --- |
-| 1 | Aurelia Dawnwarden | Khazgor, Maruan |
-| 2 | Vorrak Bloodhowl | Thordakk, Sethlurias |
-| 3 | Seraphine Vale | Maruan, Anuria |
-| 4 (Primordial) | Morrigan Nightweaver | Rattledagger, Darius |
-| 5 | Kaelith Stormcaller | Anuria, Darius |
-| 6 | Aurelia Dawnwarden | Khazgor, Thordakk |
-| … | cycle continues from 1 with the Legendary list rotated by one | |
+The cycle is **two wheels turning together**, one notch a rotation: the five summonable Legendaries
+in order, and six pairs of Epics. Five and six share no factor, so every Legendary meets every pair
+once in thirty rotations and no Legendary stands on two rotations running.
+
+| Wheel | Order |
+| --- | --- |
+| Legendaries | Aurelia Dawnwarden → Vorrak Bloodhowl → Seraphine Vale → Morrigan Nightweaver → Kaelith Stormcaller → (again) |
+| Epic pairs | Khazgor + Maruan → Thordakk + Sethlurias → Maruan + Anuria → Rattledagger + Darius → Anuria + Darius → Khazgor + Thordakk → (again) |
+
+The wheels as they stood when the cycle was re-cut in `0.9.10` (rotation 19 opened on 14 September
+2026); the Legendary wheel starts two notches on (`LEGENDARY_PHASE` in `content/banners/featured.ts`)
+so the rotation then running and the five after it kept their champions:
+
+| Rotation | Opens | Legendary | Epics |
+| --- | --- | --- | --- |
+| 19 | 2026-09-14 | Aurelia Dawnwarden | Khazgor, Maruan |
+| 20 (Primordial) | 2026-09-28 | Vorrak Bloodhowl | Thordakk, Sethlurias — and Varkos |
+| 21 | 2026-10-12 | Seraphine Vale | Maruan, Anuria |
+| 22 | 2026-10-26 | Morrigan Nightweaver | Rattledagger, Darius |
+| 23 | 2026-11-09 | Kaelith Stormcaller | Anuria, Darius |
+| 24 (Primordial) | 2026-11-23 | Aurelia Dawnwarden | Khazgor, Thordakk — and Varkos |
+| 25 | 2026-12-07 | Vorrak Bloodhowl | Khazgor, Maruan |
+
+Until `0.9.10` the cycle was one list of six rows walked in order, which put Aurelia on two
+rotations back to back each time it wrapped, and named Varkos only on its fourth row — so two
+Primordial Rotations in three featured no Mythic at all.
 
 The banner card shows the featured champions with idle sprites, the rotation timer, rates and the
 player's pity counters.
