@@ -21,6 +21,7 @@ import { useNow } from '@ui/hooks/useNow';
 import { useSceneAudio } from '@ui/hooks/useSceneAudio';
 import type { ScreenProps } from '@ui/router/screens';
 import { RecordsPanel } from './RecordsPanel';
+import { openingTier } from './boss-view';
 import { TierCard } from './TierCard';
 import styles from './BossScreen.module.css';
 
@@ -48,11 +49,11 @@ export default function BossScreen({ route }: ScreenProps) {
   const bosses = content.bosses;
   const [bossId, setBossId] = useState(() => params.boss ?? bosses[0]?.id ?? '');
   const view: BossView | null = save ? bossView(save, bossId, now) : null;
-  // No effect fills this in: an unset tier simply reads as the first card (BOSSES.md §4).
+  // No effect fills this in: an unset tier reads as the one the chronicle is working on (BOSSES.md §4).
   const [tierId, setTierId] = useState(() => params.tier ?? '');
 
   if (!save || !view) return null;
-  const selected = view.tiers.find((entry) => entry.tier.id === tierId) ?? view.tiers[0];
+  const selected = view.tiers.find((entry) => entry.tier.id === tierId) ?? openingTier(view);
   const boss = view.boss;
 
   const claim = (tier: string, pct: number): void => {

@@ -88,6 +88,10 @@ test.describe('the weekly boss', () => {
     await settle(page);
 
     // ── One key ───────────────────────────────────────────────────────────────
+    // A chronicle that has never fought her opens on Easy, the tier below; this roster is here for
+    // Normal, so it picks that card first.
+    await page.getByTestId('boss-tier-normal').click();
+    await expect(page.getByTestId('boss-tier-normal')).toHaveAttribute('aria-pressed', 'true');
     await page.getByTestId('bosses-fight').click();
     await expect(page.getByTestId('screen-battle-setup')).toBeVisible({ timeout: 20_000 });
     await settle(page);

@@ -65,6 +65,7 @@ export const CURRENCY_FLOWS: Readonly<Record<CurrencyId, CurrencyFlow>> = {
       'quests',
       'idle_chest',
       'gargoyle',
+      'titan',
       'missions',
       'login',
       'market',

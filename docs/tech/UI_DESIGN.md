@@ -664,6 +664,10 @@ that open on different clocks.
   adds two sections of its own: **How the fight changes** (one line per phase band, read off
   `boss.phases`, plus the note that the gear turns on its own next turn) and **What stands with
   it** (the escort's count, the share of a hit it takes, and how it comes back).
+- **Opening tier.** With no tier asked for, the gate opens on the one the chronicle is working on:
+  the deepest tier with damage in it this period, else the deepest it has ever fought, else the
+  first (`openingTier`, `ui/screens/bosses/boss-view.ts`). The Titan grew a tier below Normal in
+  `0.9.10`, and a chronicle that fights Normal is not sent back to Easy every time it opens her gate.
 - Motion: the selected tier card lifts to the ember frame; a claimed chest swaps its glyph for a
   trophy; the reward toast names the chest.
 

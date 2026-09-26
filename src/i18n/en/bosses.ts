@@ -28,6 +28,7 @@ export const bosses = {
   'boss.titan.title': 'The Sunless',
   'boss.titan.lore':
     'It was the last thing the Eclipse Gate was built to keep out, and the first thing the Gate learned to sing to. Two of the choir keep the note going while it works.',
+  'boss.titan.tier.easy': 'Easy',
   'boss.titan.tier.normal': 'Normal',
   'boss.titan.tier.hard': 'Hard',
   'boss.titan.tier.nightmare': 'Nightmare',

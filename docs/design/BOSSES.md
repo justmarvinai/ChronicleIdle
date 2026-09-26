@@ -88,6 +88,7 @@ Enrage: from its 24th own turn, +10 % ATK every 3 own turns (`enrageEvery: 3`).
 
 | Tier | HP | ATK | DEF | SPD | RES | ACC | Turn limit | Enrage turn |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Easy | 500,000 | 800 | 600 | 100 | 60 | 60 | 100 | 24 |
 | Normal | 5,000,000 | 2,200 | 1,300 | 108 | 100 | 100 | 100 | 24 |
 | Hard | 40,000,000 | 3,600 | 1,900 | 114 | 140 | 140 | 100 | 24 |
 | Nightmare | 250,000,000 | 5,500 | 2,600 | 120 | 180 | 180 | 100 | 24 |
@@ -100,7 +101,7 @@ turns, at 50 % HP; while a Chorister lives, Titan has Ally Protection 50 % from 
 adds first or accept the split). A Chorister holds 2 % of the tier's pool — 100,000 / 800,000 /
 5,000,000 HP — with ATK/DEF a little under hers and 8 SPD less. That is the size at which the
 choice is real: a mid-endgame roster that clears them spends a fifth of its turns doing it, and one
-that does not gives up half of every hit.
+that does not gives up half of every hit. On Easy they hold the same 2 % — 10,000 HP.
 
 - A1 *Shadow Verse* — `3.6 × ATK` on two random allies, 40 % Weaken 25 % (2) on two of them
   (each effect rolls its own pair, as everywhere in the effect DSL).
@@ -115,15 +116,22 @@ Reward chests (per tier per week; thresholds as % of tier HP): 2 / 5 / 12 / 25 /
 
 | Tier | 2 % | 5 % | 12 % | 25 % | 50 % | 100 % |
 | --- | --- | --- | --- | --- | --- | --- |
+| Easy | 12k Gold, 2 Universal Brews | 30 Gems, 1 Epic Tome | 2 Faded Shards, 5 Refining Cores | 60 Gems, 1 Ancient Shard | 8 Starsteel, 1 Glyph Sigil | Epic gear 5★, 2 Epic Tomes |
 | Normal | 30k Gold, 4 Universal Brews | 60 Gems, 2 Epic Tomes | 1 Ancient Shard, 10 Refining Cores | 120 Gems, 1 Glyph Sigil | 1 Sacred Shard, 15 Starsteel | Legendary gear 6★, 1 Legendary Tome |
 | Hard | 80k Gold, 8 Universal Brews | 120 Gems, 1 Legendary Tome | 2 Ancient Shards, 15 Refining Cores | 200 Gems, 2 Glyph Sigils | 1 Sacred Shard, 30 Starsteel | 1 Primordial Shard, Legendary gear 6★ |
 | Nightmare | 200k Gold, 12 Universal Brews | 250 Gems, 2 Legendary Tomes | 1 Sacred Shard, 25 Refining Cores | 400 Gems, 3 Glyph Sigils | 2 Sacred Shards, 50 Starsteel | 1 Primordial Shard, 1 Mythic Tome, Mythic gear 6★ |
 
-Player XP per key: 800 / 1,600 / 3,200.
+Player XP per key: 400 / 800 / 1,600 / 3,200.
 
-Her tiers start at Normal on purpose: the weekly boss is a long-term target, not a farm. A roster
-that has just unlocked it at level 15 will lose the fight early and bank a few thousand damage —
-that still counts towards the week's pool, and the daily boss is where a mid-game roster earns.
+**Easy is the way in** (`0.9.10`, USER_QUESTIONS.md Q41). Her other three tiers are long-term
+targets: a roster that has just unlocked her at level 15 loses in three turns on Normal and banks a
+few thousand damage against a 100,000 first chest. Easy is a tenth of Normal's pool with hits that
+roster can stand through. Measured with the sim's reference teams (`tools/sim/teams.ts`), one key
+banks about 5 % of Easy's pool for the ungeared 4★ Epic roster — the first three chests in a week —
+about 47 % for the half-geared 5★ one, and a finished roster puts her down in a single key. Its
+whole ladder is worth less than a key's share of Hard's, so it is a week's first target and not a
+farm. Putting her down on any tier pays the Glorious Palace's three weekly points
+(`GLORIOUS_PALACE.md` §3), exactly as the Gargoyle's Easy tier already pays its daily one.
 
 ## 4. Screen (clones `daily_weekly_boss_screen.png`)
 

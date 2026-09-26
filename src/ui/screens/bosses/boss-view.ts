@@ -5,7 +5,7 @@
 import { content } from '@content/registry';
 import type { SaveGame } from '@engine/schema/save';
 import { isFeatureUnlocked } from '@engine/progression/unlocks';
-import { bossView } from '@state/bosses';
+import { bossView, type BossTierView, type BossView } from '@state/bosses';
 import { t, translate } from '@i18n/index';
 
 /**
@@ -28,4 +28,16 @@ export function bossKeysNote(save: SaveGame, now: number): string | null {
     })
     .filter((part): part is string => part !== null);
   return parts.length ? parts.join(' · ') : null;
+}
+
+/**
+ * The tier the gate opens on when the player has not picked one: the deepest tier they have put
+ * damage into this period, else the deepest they have ever fought, else the first. A chronicle
+ * that has been working on Normal is not sent back to Easy every time the Titan gains a tier
+ * below it, and a new one starts at the bottom.
+ */
+export function openingTier(view: BossView): BossTierView | undefined {
+  const deepest = (pick: (tier: BossTierView) => boolean): BossTierView | undefined =>
+    [...view.tiers].reverse().find(pick);
+  return deepest((tier) => tier.damage > 0) ?? deepest((tier) => tier.record !== null) ?? view.tiers[0];
 }

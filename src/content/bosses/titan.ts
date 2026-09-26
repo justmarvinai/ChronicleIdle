@@ -128,6 +128,47 @@ export default defineBoss({
   ],
   tiers: [
     {
+      /*
+       * The way in (USER_QUESTIONS.md Q41). Normal is a long-term target — a roster that has just
+       * unlocked her at level 15 loses in three turns there and banks a few thousand against a
+       * 100,000 first chest — so this tier is sized for that roster: a tenth of Normal's pool and
+       * hits it can stand through. Measured with the sim's reference teams, a key here banks about
+       * 5 % of the pool for the ungeared 4★ Epic roster (three chests a week), about 47 % for the
+       * half-geared 5★ one, and a finished roster puts her down in one key. Its whole ladder is
+       * worth less than a key's share of Hard's, so it is a week's first target, not a farm.
+       */
+      id: 'easy',
+      stats: [500_000, 800, 600, 100, 15, 50, 60, 60],
+      addStats: [10_000, 560, 420, 92, 15, 50, 60, 60],
+      turnLimit: 100,
+      enrageTurn: 24,
+      enemyLevel: 25,
+      playerXp: 400,
+      chests: [
+        chest(2, [
+          { currency: 'gold', amount: 12_000 },
+          { currency: 'brew_universal', amount: 2 },
+        ]),
+        chest(5, [
+          { currency: 'gems', amount: 30 },
+          { currency: 'tome_epic', amount: 1 },
+        ]),
+        chest(12, [
+          { currency: 'shard_faded', amount: 2 },
+          { currency: 'mat_refining_core', amount: 5 },
+        ]),
+        chest(25, [
+          { currency: 'gems', amount: 60 },
+          { currency: 'shard_ancient', amount: 1 },
+        ]),
+        chest(50, [
+          { currency: 'mat_starsteel', amount: 8 },
+          { currency: 'mat_glyph_sigil', amount: 1 },
+        ]),
+        chest(100, [{ currency: 'tome_epic', amount: 2 }], { rarity: 'epic', stars: 5 }),
+      ],
+    },
+    {
       id: 'normal',
       stats: [5_000_000, 2_200, 1_300, 108, 15, 50, 100, 100],
       /*

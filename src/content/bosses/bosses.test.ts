@@ -130,7 +130,9 @@ describe('Titan, the Sunless', () => {
     expect(titan?.keysPerPeriod).toBe(3);
     expect(titan?.unlockLevel).toBe(15);
     expect(titan?.keyCurrency).toBe('key_weekly');
-    expect(titan?.tiers.map((tier) => tier.id)).toEqual(['normal', 'hard', 'nightmare']);
+    // Easy is the way in a level-15 roster can use (USER_QUESTIONS.md Q41); the other three are
+    // the long-term targets.
+    expect(titan?.tiers.map((tier) => tier.id)).toEqual(['easy', 'normal', 'hard', 'nightmare']);
   });
 
   it('fights in three phases, and every tier knows where they are', () => {
@@ -264,8 +266,11 @@ describe('Titan, the Sunless', () => {
   it('pays six chests a tier, from a sliver of the pool to the kill', () => {
     for (const tier of titan?.tiers ?? [])
       expect(tier.chests.map((chest) => chest.pct)).toEqual([2, 5, 12, 25, 50, 100]);
-    expect(titan?.tiers[2]?.chests[5]?.gear).toEqual({ rarity: 'mythic', stars: 6 });
-    expect(titan?.tiers.map((tier) => tier.playerXp)).toEqual([800, 1_600, 3_200]);
+    expect(titan?.tiers[0]?.chests[5]?.gear).toEqual({ rarity: 'epic', stars: 5 });
+    expect(titan?.tiers[3]?.chests[5]?.gear).toEqual({ rarity: 'mythic', stars: 6 });
+    expect(titan?.tiers.map((tier) => tier.playerXp)).toEqual([400, 800, 1_600, 3_200]);
+    // A tenth of Normal's pool: the way in, not a farm.
+    expect(titan?.tiers[0]?.stats.hp).toBe((titan?.tiers[1]?.stats.hp ?? 0) / 10);
   });
 });
 
