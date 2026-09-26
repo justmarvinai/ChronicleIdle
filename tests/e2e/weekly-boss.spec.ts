@@ -142,8 +142,9 @@ test.describe('the weekly boss', () => {
     await chest.click();
     await expect(page.getByTestId('pill-gold')).toContainText('530K');
     await expect(chest).toBeDisabled();
-    // The next rung is still out of reach on one key.
-    await expect(page.getByTestId('boss-chest-normal-12')).toBeDisabled();
+    // A quarter of the pool is still out of reach on one key: in its gear, this roster banks about
+    // an eighth of it with a whole key (BOSSES.md §3), and this one retreated early.
+    await expect(page.getByTestId('boss-chest-normal-25')).toBeDisabled();
 
     // The week survives a reload: the pool, the spent key and the taken chest are all saved.
     await page.reload();
