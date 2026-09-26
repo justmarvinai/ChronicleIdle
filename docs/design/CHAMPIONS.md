@@ -20,7 +20,7 @@ Every champion definition has:
 | `ai` | auto-battle priority hints (see `BATTLE.md` §7) |
 | `art` | model key (sprite atlas), avatar key, `facing` |
 | `lore` | 2–4 sentences (i18n key) |
-| `obtain` | list of sources: `summon`, `mission`, `starter`, `campaign_drop` |
+| `obtain` | list of sources: `summon`, `mission`, `starter`, `campaign_drop` (offered by a campaign mastery pick — the validator holds it to `CHAMPION_CHOICES`) |
 
 ### Names
 

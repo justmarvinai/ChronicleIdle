@@ -26,7 +26,7 @@ import { LOGIN_DAYS, LOGIN_FINALE_FROM } from '@content/balance/login';
 import { consumableSchema, gemShelfEntrySchema, grantSchema, loginDaySchema } from './market';
 import { GEAR_MAX_STARS } from '@content/balance/gear';
 import { ELEMENTS, STAT_IDS } from '@content/champions/types';
-import { SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
+import { CHAMPION_CHOICES, SETTLEMENT_COUNT, STARS_PER_SETTLEMENT } from '@content/balance/campaign';
 import { MISSION_CHAPTER_COUNT } from '@content/balance/missions';
 import { TUTORIAL_CHAPTER_COUNT } from '@content/balance/tutorial';
 import { ENERGY_PROVISIONS } from '@content/balance/energy';
@@ -1428,6 +1428,17 @@ function validateChampions(champions: readonly unknown[], refs: ContentRefs): Va
 
     if ((STARTER_IDS as readonly string[]).includes(def.id) && !def.obtain.includes('starter'))
       error(`${path}.obtain`, 'starters must list the starter source');
+    // The page says where a champion comes from, so the campaign source is listed exactly when a
+    // mastery pick offers the champion (the pick draws from the summonable pool of its rarity).
+    const offeredByCampaign =
+      def.obtain.includes('summon') && CHAMPION_CHOICES.some((choice) => choice.rarity === def.rarity);
+    if (offeredByCampaign !== def.obtain.includes('campaign_drop'))
+      error(
+        `${path}.obtain`,
+        offeredByCampaign
+          ? 'a campaign mastery pick offers this champion, so it lists campaign_drop'
+          : 'no campaign reward grants this champion, so it does not list campaign_drop',
+      );
 
     const deviation = statDeviation(def.stats, def.role, def.rarity);
     for (const stat of ['hp', 'atk', 'def'] as const)

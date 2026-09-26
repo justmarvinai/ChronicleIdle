@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'defense',
   stats: [17_400, 940, 1_460, 94, 15, 50, 40, 0],
   art: { model: 'model.khazgor', avatar: 'avatar.khazgor' },
-  obtain: ['summon'],
+  obtain: ['summon', 'campaign_drop'],
   abilities: [
     {
       slot: 'a1',

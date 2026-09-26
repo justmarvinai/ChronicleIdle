@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'support',
   stats: [15_300, 1_090, 1_110, 106, 15, 50, 30, 20],
   art: { model: 'model.maruan', avatar: 'avatar.maruan' },
-  obtain: ['summon'],
+  obtain: ['summon', 'campaign_drop'],
   abilities: [
     {
       slot: 'a1',

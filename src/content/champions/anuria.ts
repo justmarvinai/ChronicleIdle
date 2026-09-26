@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'attack',
   stats: [13_200, 1_480, 880, 104, 15, 60, 25, 10],
   art: { model: 'model.anuria', avatar: 'avatar.anuria' },
-  obtain: ['summon'],
+  obtain: ['summon', 'campaign_drop'],
   abilities: [
     {
       slot: 'a1',

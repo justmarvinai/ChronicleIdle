@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'attack',
   stats: [9_200, 1_010, 640, 96, 15, 50, 20, 0],
   art: { placeholderTint: '#8b4a2b' },
-  obtain: ['summon', 'starter', 'campaign_drop'],
+  obtain: ['summon', 'starter'],
   abilities: [
     {
       slot: 'a1',

@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'support',
   stats: [14_900, 1_060, 1_140, 102, 15, 50, 35, 30],
   art: { model: 'model.sethlurias', avatar: 'avatar.sethlurias' },
-  obtain: ['summon'],
+  obtain: ['summon', 'campaign_drop'],
   abilities: [
     {
       slot: 'a1',

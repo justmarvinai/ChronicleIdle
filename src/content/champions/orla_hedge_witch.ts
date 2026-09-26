@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'support',
   stats: [11_800, 880, 880, 102, 15, 50, 30, 10],
   art: { placeholderTint: '#6f8f3a' },
-  obtain: ['summon', 'campaign_drop'],
+  obtain: ['summon'],
   abilities: [
     {
       slot: 'a1',

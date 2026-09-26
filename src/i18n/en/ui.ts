@@ -326,7 +326,7 @@ export const ui = {
   'champions.obtain.summon': 'summoning',
   'champions.obtain.mission': 'the Chronicler’s Path',
   'champions.obtain.starter': 'the first pages',
-  'champions.obtain.campaign_drop': 'campaign drops',
+  'champions.obtain.campaign_drop': 'mastering a campaign difficulty',
   'champions.acquired': 'Joined {date}',
   'champions.stat.hp': 'HP',
   'champions.stat.atk': 'ATK',

@@ -8,7 +8,7 @@ export default defineChampion({
   role: 'defense',
   stats: [11_600, 660, 980, 92, 15, 50, 25, 0],
   art: { model: 'model.bran', avatar: 'avatar.bran' },
-  obtain: ['summon', 'starter', 'campaign_drop'],
+  obtain: ['summon', 'starter'],
   abilities: [
     {
       slot: 'a1',
